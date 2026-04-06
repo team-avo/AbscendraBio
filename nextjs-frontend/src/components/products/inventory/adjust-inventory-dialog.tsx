@@ -1,0 +1,169 @@
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
+import logger from '@/lib/logger';
+
+interface AdjustInventoryDialogProps {
+  inventory: {
+    id: string;
+    quantity: number;
+    reservedQty?: number;
+    lowStockAlert: number;
+    variant: {
+      sku: string;
+      name: string;
+      product: {
+        name: string;
+      };
+    };
+    location: {
+      name: string;
+    };
+  };
+  open: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+export function AdjustInventoryDialog({
+  inventory,
+  open,
+  onClose,
+  onSuccess,
+}: AdjustInventoryDialogProps) {
+  const [loading, setLoading] = useState(false);
+  const availableQuantity = inventory.quantity - (inventory.reservedQty || 0);
+  const [quantity, setQuantity] = useState(availableQuantity.toString());
+  const [lowStockAlert, setLowStockAlert] = useState(inventory.lowStockAlert.toString());
+  const [reason, setReason] = useState('');
+  const [showReason, setShowReason] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      // Calculate total quantity: available quantity + reserved quantity
+      const totalQuantity = parseInt(quantity) + (inventory.reservedQty || 0);
+      
+      const response = await api.updateInventory(inventory.id, {
+        quantity: totalQuantity,
+        lowStockAlert: parseInt(lowStockAlert),
+        ...(reason.trim() ? { reason: reason.trim() } : {})
+      });
+
+      if (response.success) {
+        onSuccess();
+      } else {
+        toast.error(response.error || 'Failed to update inventory');
+      }
+    } catch (error) {
+      logger.error('Failed to update inventory:', { error: error });
+      toast.error('Failed to update inventory');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Adjust Inventory</DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label>Product</Label>
+            <div className="text-sm text-muted-foreground">
+              {inventory.variant.product.name} - {inventory.variant.name}
+            </div>
+          </div>
+
+          <div>
+            <Label>SKU</Label>
+            <div className="text-sm text-muted-foreground">
+              {inventory.variant.sku}
+            </div>
+          </div>
+
+          <div>
+            <Label>Location</Label>
+            <div className="text-sm text-muted-foreground">
+              {inventory.location.name}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="quantity">Available Quantity</Label>
+              <Input
+                id="quantity"
+                type="number"
+                min="0"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+              <div className="text-xs text-muted-foreground mt-1">
+                Total: {inventory.quantity} | Reserved: {inventory.reservedQty || 0} | Available: {availableQuantity}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="lowStockAlert">Low Stock Alert</Label>
+              <Input
+                id="lowStockAlert"
+                type="number"
+                min="0"
+                value={lowStockAlert}
+                onChange={(e) => setLowStockAlert(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            {!showReason ? (
+              <Button
+                type="button"
+                variant="link"
+                className="px-0"
+                onClick={() => setShowReason(true)}
+              >
+                + Add a reason for adjustment
+              </Button>
+            ) : (
+              <>
+                <Label htmlFor="reason">Reason for Adjustment</Label>
+                <Textarea
+                  id="reason"
+                  placeholder="Explain why you're adjusting the inventory..."
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                />
+              </>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+} 

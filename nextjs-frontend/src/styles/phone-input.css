@@ -1,0 +1,70 @@
+.phone-input {
+  display: flex;
+  align-items: center;
+  background-color: var(--background);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+}
+
+.phone-input:focus-within {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.phone-input .PhoneInputInput {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: inherit;
+  color: var(--foreground);
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.phone-input .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.phone-input .PhoneInputCountrySelect {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.phone-input .PhoneInputCountryIcon {
+  width: 1.5rem;
+  height: auto;
+  border-radius: 0.125rem;
+  margin-right: 0.25rem;
+}
+
+.phone-input .PhoneInputCountrySelectArrow {
+  margin-left: 0.25rem;
+  color: var(--muted-foreground);
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Ensure the country select button is properly styled */
+.phone-input .PhoneInputCountrySelect button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Style for the flag emoji */
+.phone-input .PhoneInputCountrySelect span {
+  display: flex;
+  align-items: center;
+}
+
+

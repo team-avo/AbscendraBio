@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "EmailTemplateType" ADD VALUE 'MARKETING_GENERIC';
