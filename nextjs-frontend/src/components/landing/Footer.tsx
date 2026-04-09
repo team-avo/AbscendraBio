@@ -87,19 +87,19 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-background overflow-hidden">
+    <footer className="relative bg-[#F9FBFF] overflow-hidden">
       <section className="relative py-20">
         <motion.div className="absolute inset-0 opacity-0" />
 
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-center">
-            <div className="backdrop-blur-2xl bg-card/50 border border-border rounded-3xl p-12 mb-12">
-              <motion.h2 className={`text-6xl font-bold text-foreground mb-6 ${barlow.className}`}>Contact Us - Inquire Today</motion.h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">Join countless Medspa's and clinics across the country.</p>
+            <div className="bg-white border border-blue-50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-12 mb-12">
+              <motion.h2 className={`text-6xl font-bold text-[#070B14] tracking-tight mb-6 ${barlow.className}`}>Contact Us - Inquire Today</motion.h2>
+              <p className="text-xl text-gray-500 font-medium mb-8 max-w-3xl mx-auto">Join countless Medspa's and clinics across the country.</p>
               <motion.div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto mb-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                 <Input
                   placeholder="Enter your email"
-                  className="bg-input-background border-border text-foreground placeholder:text-muted-foreground rounded-full px-6 py-3 backdrop-blur-sm"
+                  className="bg-white border border-blue-100 text-[#070B14] placeholder:text-gray-400 rounded-full px-6 py-3 backdrop-blur-sm shadow-sm"
                   value={inquiryEmail}
                   onChange={(e) => setInquiryEmail(e.target.value)}
                   type="email"
@@ -107,7 +107,7 @@ export function Footer() {
                 />
                 <Button
                   size="lg"
-                  className="bg-foreground text-background border-0 rounded-full px-8 py-3 shadow-xl transition-all duration-300 group relative overflow-hidden hover:opacity-90"
+                  className="bg-[#4D7DF2] text-white hover:bg-[#3A6FA0] border-0 rounded-full px-8 py-3 shadow-xl transition-all duration-300 group relative overflow-hidden"
                   onClick={handleInquiry}
                   disabled={isSendingInquiry}
                 >
@@ -122,13 +122,13 @@ export function Footer() {
         </div>
       </section>
 
-      <div className="border-t border-border py-12">
+      <div className="border-t border-blue-100/50 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Store overview (title/description + socials) - match original sizing/styles */}
             <div>
-              <h3 className={`text-2xl font-bold text-foreground mb-4 ${barlow.className}`}>{footerSettings?.siteTitle || 'Ascendra Bio'}</h3>
-              <p className="text-muted-foreground mb-4 max-w-xs">
+              <h3 className={`text-2xl font-bold text-[#070B14] mb-4 ${barlow.className}`}>{footerSettings?.siteTitle || 'Ascendra Bio'}</h3>
+              <p className="text-gray-500 font-medium mb-4 max-w-xs">
                 {footerSettings?.siteDescription || 'Leading supplier of physician grade peptides with uncompromising quality standards.'}
               </p>
               {/* <div className="flex gap-4">
@@ -162,7 +162,7 @@ export function Footer() {
             {/* Remove duplicate hardcoded store block; dynamic block above handles DB + fallback */}
 
             <div>
-              <h4 className={`text-lg font-semibold text-foreground mb-4 ${barlow.className}`}>{footerSettings?.sections?.[0]?.title || 'Products'}</h4>
+              <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{footerSettings?.sections?.[0]?.title || 'Products'}</h4>
               <ul className="space-y-2">
                 {topProducts.length > 0 ? (
                   topProducts.map((product) => {
@@ -171,7 +171,7 @@ export function Footer() {
                       <li key={product.id}>
                         <Link
                           href={`/landing/products/${product.id}`}
-                          className="text-muted-foreground hover:text-foreground transition-colors duration-300 hover:underline"
+                          className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline"
                         >
                           {product.name}
                         </Link>
@@ -185,13 +185,13 @@ export function Footer() {
                     { title: 'Collagen Peptide Blend', href: '/landing/products' },
                     { title: 'BPC-157', href: '/landing/products' },
                   ].map((item, i) => (
-                    <li key={i}><Link href={item.href} className="text-muted-foreground hover:text-foreground transition-colors duration-300 hover:underline">{item.title}</Link></li>
+                    <li key={i}><Link href={item.href} className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline">{item.title}</Link></li>
                   ))
                 )}
                 <li>
                   <Link
                     href="/landing/products"
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-300 hover:underline"
+                    className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline"
                   >
                     All Products
                   </Link>
@@ -225,11 +225,11 @@ export function Footer() {
               // }
               return renderSections.map((sec: any, idx: number) => (
                 <div key={`footer-sec-${idx}`}>
-                  <h4 className={`text-lg font-semibold text-foreground mb-4 ${barlow.className}`}>{sec.title}</h4>
+                  <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{sec.title}</h4>
                   <ul className="space-y-2">
                     {(sec.links || []).map((lnk: any, i: number) => (
                       <li key={`${lnk.title}-${i}`}>
-                        <Link href={lnk.href} target={lnk.target || '_self'} rel={(lnk.target || '_self') === "_blank" ? "noopener noreferrer" : undefined} className="text-muted-foreground hover:text-foreground transition-colors duration-300 hover:underline">{lnk.title}</Link>
+                        <Link href={lnk.href} target={lnk.target || '_self'} rel={(lnk.target || '_self') === "_blank" ? "noopener noreferrer" : undefined} className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline">{lnk.title}</Link>
                       </li>
                     ))}
                   </ul>
@@ -249,11 +249,11 @@ export function Footer() {
               const address = (contact?.address || 'Los Angeles, CA');
               return (
                 <div>
-                  <h4 className={`text-lg font-semibold text-foreground mb-4 ${barlow.className}`}>{title}</h4>
-                  <div className="space-y-3 text-muted-foreground">
-                    <div className="flex items-center gap-3"><Mail className="w-5 h-5" /><span>{email}</span></div>
-                    {/* <div className="flex items-center gap-3"><Phone className="w-5 h-5" /><span>{phone}</span></div> */}
-                    <div className="flex items-center gap-3"><MapPin className="w-5 h-5" /><span>{address}</span></div>
+                  <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{title}</h4>
+                  <div className="space-y-3 text-gray-500 font-medium">
+                    <div className="flex items-center gap-3"><Mail className="w-5 h-5 text-[#4D7DF2]" /><span>{email}</span></div>
+                    {/* <div className="flex items-center gap-3"><Phone className="w-5 h-5 text-[#4D7DF2]" /><span>{phone}</span></div> */}
+                    <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-[#4D7DF2]" /><span>{address}</span></div>
                   </div>
                 </div>
               );
@@ -272,10 +272,10 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-border py-6">
+      <div className="border-t border-blue-100/50 py-6">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
+            <p className="text-gray-500 font-medium text-sm">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
           </div>
         </div>
       </div>

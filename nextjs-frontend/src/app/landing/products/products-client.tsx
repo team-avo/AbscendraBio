@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import ProductDetailView from '@/components/products/ProductDetailView'
 
 type Product = {
   id: string | number
@@ -45,6 +47,7 @@ export default function ProductsClient({ products }: Props) {
   const { add, items, update } = useCart()
   const { user, openLoginModal, isAuthenticated } = useAuth()
   const router = useRouter()
+  const [quickViewId, setQuickViewId] = useState<string | number | null>(null)
   const [addingId, setAddingId] = useState<string | number | null>(null)
   const [customerType, setCustomerType] = useState<'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined>(undefined)
   const [favoriteIdsByProduct, setFavoriteIdsByProduct] = useState<Record<string, string>>({})
@@ -317,12 +320,12 @@ export default function ProductsClient({ products }: Props) {
           const detailsHref = `/landing/products/${(p as any).seoSlug || p.id}`
           return (
             <Card key={p.id} className={`group hover:shadow-lg transition-all duration-300 border-gray-200 h-full ${viewMode === 'list' ? 'flex' : ''} cursor-pointer`}
-              onClick={() => router.push(detailsHref)}
+              onClick={() => setQuickViewId(p.id)}
             >
               <CardContent className={`p-0 ${viewMode === 'list' ? 'flex w-full' : 'flex flex-col h-full'}`}>
                 <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-28 h-28 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex-shrink-0' : 'aspect-square'} bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-lg ${viewMode === 'list' ? 'rounded-l-lg rounded-tr-none' : ''}`}>
                   {/* Mobile: full-image tap to open details */}
-                  <Link href={detailsHref} className="absolute inset-0 md:hidden z-10" aria-label="Open details" onClick={(e) => e.stopPropagation()} />
+                  <div className="absolute inset-0 md:hidden z-10" aria-label="Open details" onClick={(e) => { e.stopPropagation(); setQuickViewId(p.id); }} />
                   <ProductCardImage
                     src={p.image}
                     alt={p.name}
@@ -337,11 +340,9 @@ export default function ProductsClient({ products }: Props) {
                     <Badge className={`${p.inStock ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'} border-0`}>{p.inStock ? 'In Stock' : 'Out of Stock'}</Badge>
                   </div>
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3">
-                    <Link href={detailsHref} onClick={(e) => e.stopPropagation()}>
-                      <Button size="sm" className="bg-white text-black hover:bg-gray-100" aria-label="View details" onClick={(e) => e.stopPropagation()}>
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </Link>
+                    <Button size="sm" className="bg-white text-black hover:bg-gray-100" aria-label="View details" onClick={(e) => { e.stopPropagation(); setQuickViewId(p.id); }}>
+                      <Eye className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="sm"
                       className="bg-white text-black hover:bg-gray-100"
@@ -453,6 +454,16 @@ export default function ProductsClient({ products }: Props) {
           )
         })}
       </div>
+
+      {quickViewId && (
+        <Dialog open={!!quickViewId} onOpenChange={(open) => !open && setQuickViewId(null)}>
+          <DialogContent className="max-w-[95vw] sm:max-w-[1200px] w-[95vw] sm:w-[90vw] p-0 overflow-hidden max-h-[90vh] overflow-y-auto rounded-3xl">
+            <DialogTitle className="sr-only">Product Quick View</DialogTitle>
+            <DialogDescription className="sr-only">View product details and purchase</DialogDescription>
+            <ProductDetailView productId={String(quickViewId)} isModal={true} />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {filtered.length === 0 && (
         <div className="text-center py-16">

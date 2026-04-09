@@ -40,7 +40,9 @@ import {
     LogOut,
     Search as SearchIcon,
     User as UserIcon,
-    Plus
+    Plus,
+    Heart,
+    ArrowLeft
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -159,6 +161,23 @@ const navItems: NavItem[] = [
         title: "Customer Comments",
         href: "/admin/comments",
         icon: MessageSquare,
+    },
+    // Customer specific items
+    {
+        title: "Personal",
+        href: "/account",
+        icon: UserIcon,
+        children: [
+            { title: "Profile", href: "/account", icon: UserIcon },
+            { title: "My Orders", href: "/account/orders", icon: ShoppingCart },
+            { title: "Favorites", href: "/account/favorites", icon: Heart },
+            { title: "Bulk Quotes", href: "/account/bulk-quotes", icon: FileText },
+        ]
+    },
+    {
+        title: "Return to Shop",
+        href: "/landing",
+        icon: ArrowLeft,
     },
     {
         title: "Payments",
@@ -380,6 +399,10 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                             {(
                                 navItems
                                     .filter(item => {
+                                        if (user?.role === 'CUSTOMER') {
+                                            const allowed = ['Personal', 'Return to Shop', 'Support'];
+                                            return allowed.includes(item.title);
+                                        }
                                         if (user?.role === 'SALES_MANAGER') {
                                             const allowed = ['Orders', 'Customers'];
                                             if (!allowed.includes(item.title)) return false;
@@ -391,6 +414,8 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                                             }
                                             return allowed.includes(item.title);
                                         }
+                                        // Hide personal/return for non-customers, hide sensitive for non-admins
+                                        if (item.title === 'Personal' || item.title === 'Return to Shop') return false;
                                         return !['Tier Upgrades', 'Assign Customers', 'Analytics'].includes(item.title);
                                     })
                             ).map(item => renderNavItem(item))}

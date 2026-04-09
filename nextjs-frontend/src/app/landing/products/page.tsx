@@ -167,27 +167,7 @@ export default function LandingProductsPage() {
 
   return (
     <div className="force-light min-h-screen bg-white text-black">
-      {/* Hero Banner with Responsive Images */}
-      <div className="w-full">
-        <div className="hidden sm:block relative w-full aspect-[3072/750]">
-          <Image
-            src="/President-Desktop-Banner.png"
-            alt="Presidents Day Banner"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        <div className="block sm:hidden relative w-full aspect-[1280/1000]">
-          <Image
-            src="/Presidents-MobileBanner.png"
-            alt="Presidents Day Banner"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      </div>
+
 
       {/* Text Header */}
       <div className="w-full bg-[#f8f9fa] py-12 sm:py-16 text-center">

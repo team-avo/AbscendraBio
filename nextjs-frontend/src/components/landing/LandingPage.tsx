@@ -11,7 +11,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Barlow } from 'next/font/google';
 import { Award, Zap, FlaskConical, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import { AuthModal } from '@/components/auth/AuthModal';
-
+import { ProductCarousel } from '@/components/landing/ProductCarousel';
+import { WhyChooseUs } from '@/components/landing/WhyChooseUs';
+import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
+import { Footer } from '@/components/landing/Footer';
 const barlow = Barlow({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
 export default function LandingPage() {
@@ -280,6 +283,14 @@ export default function LandingPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* STOREFRONT SECTIONS                          */}
+      {/* ═══════════════════════════════════════════ */}
+      <ProductCarousel />
+      <WhyChooseUs />
+      <TestimonialsSection />
+      <Footer />
 
       {/* ═══════════════════════════════════════════ */}
       {/* CONTACT / INQUIRE MODAL                    */}

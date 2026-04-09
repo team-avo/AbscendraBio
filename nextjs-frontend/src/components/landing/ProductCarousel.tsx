@@ -11,6 +11,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import ProductDetailView from "@/components/products/ProductDetailView";
 
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
@@ -27,6 +29,7 @@ export function ProductCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0); // mobile slide index
   const [pageIndex, setPageIndex] = useState(0); // desktop page index
   const [items, setItems] = useState<CarouselItem[]>([]);
+  const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -113,13 +116,13 @@ export function ProductCarousel() {
   }
 
   return (
-    <section className="py-20 bg-background relative overflow-hidden" suppressHydrationWarning>
+    <section className="py-20 bg-[#F9FBFF] relative overflow-hidden" suppressHydrationWarning>
       <div className="absolute inset-0 opacity-0" />
 
       <div className="max-w-7xl mx-auto px-6">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-16">
-          <h2 className={`text-5xl font-bold text-foreground mb-4 ${barlow.className}`}>Popular Peptides</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">Some of the most adored peptides for your practice</p>
+          <h2 className={`text-5xl font-bold text-[#070B14] tracking-tight mb-4 ${barlow.className}`}>Popular Peptides</h2>
+          <p className="text-xl text-gray-500 font-medium max-w-2xl mx-auto">Some of the most adored peptides for your practice</p>
         </motion.div>
 
         {/* Mobile: auto-advancing carousel (all items) */}
@@ -127,33 +130,33 @@ export function ProductCarousel() {
           <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
             {items.map((product) => (
               <div key={product.id} className="w-full flex-shrink-0 px-1">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="backdrop-blur-lg bg-card/50 border border-border rounded-3xl p-8 relative overflow-hidden group mx-3 h-full flex flex-col">
-                  <Link href={`/landing/products/${(product as any).seoSlug || product.id}`} className="absolute inset-0 z-10" aria-label="Open details" />
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="bg-white border border-blue-50/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 relative overflow-hidden group mx-3 h-full flex flex-col">
+                  <div className="absolute inset-0 z-10 cursor-pointer" aria-label="Open details" onClick={() => setQuickViewId(product.id)} />
                   <div className="absolute top-4 left-4 z-20">
-                    <motion.div className="flex items-center gap-2 bg-card/70 backdrop-blur-sm border border-border rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(0, 0, 0, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-[#3A6FA0]" />
-                      <span className="text-sm text-[#3A6FA0]">{product.purity} Purity</span>
+                    <motion.div className="flex items-center gap-2 bg-[#F9FBFF] border border-blue-100 rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(58, 111, 160, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
+                      <Award className="w-4 h-4 text-[#4D7DF2]" />
+                      <span className="text-sm font-bold text-[#4D7DF2]">{product.purity} Purity</span>
                     </motion.div>
                   </div>
 
                   <div className="relative mt-8 mb-6">
-                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-border" whileHover={{ scale: 1.03 }} transition={{ duration: 0.25 }}>
-                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-[3px] border-[#F9FBFF]" whileHover={{ scale: 1.03 }} transition={{ duration: 0.25 }}>
+                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
                     </motion.div>
                   </div>
                   <div className="text-center flex flex-col flex-1">
-                    <h3 className={`text-2xl font-bold text-foreground mb-2 ${barlow.className}`}>{product.name}</h3>
-                    <p className="text-muted-foreground mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
-                    <div className="text-3xl font-bold text-foreground mb-6">{product.priceLabel}</div>
+                    <h3 className={`text-2xl font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>{product.name}</h3>
+                    <p className="text-sm text-gray-500 font-medium mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
+                    <div className="text-3xl font-black text-[#070B14] tracking-tight mb-6">{product.priceLabel}</div>
                     <Button
-                      className="relative z-20 w-full bg-card hover:bg-accent border border-border text-foreground rounded-full py-3 backdrop-blur-sm transition-all duration-300 group/btn overflow-hidden mt-auto"
+                      className="relative z-20 w-full bg-[#070B14] hover:bg-[#1B2D4F] border border-transparent text-white rounded-2xl py-6 font-bold backdrop-blur-sm transition-all duration-300 group/btn overflow-hidden mt-auto shadow-lg"
                       onClick={() => {
                         if (!user) { toast.info('Please sign in to add items'); return; }
-                        router.push(`/landing/products/${(product as any).seoSlug || product.id}`);
+                        setQuickViewId(product.id);
                       }}
                     >
                       <span className="relative z-10">Add to Cart</span>
-                      <motion.div className="absolute inset-0 bg-foreground/10 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" style={{ width: "30%" }} />
+                      <motion.div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" style={{ width: "30%" }} />
                     </Button>
                   </div>
                 </motion.div>
@@ -161,13 +164,13 @@ export function ProductCarousel() {
             ))}
           </div>
           {items.length > 1 && (
-            <Button onClick={() => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm md:hidden z-30 shadow" size="icon" aria-label="Previous">
-              <ChevronLeft className="w-5 h-5 text-foreground" />
+            <Button onClick={() => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-md md:hidden z-30" size="icon" aria-label="Previous">
+              <ChevronLeft className="w-5 h-5 text-[#070B14]" />
             </Button>
           )}
           {items.length > 1 && (
-            <Button onClick={() => setCurrentIndex((prev) => (prev + 1) % items.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm md:hidden z-30 shadow" size="icon" aria-label="Next">
-              <ChevronRight className="w-5 h-5 text-foreground" />
+            <Button onClick={() => setCurrentIndex((prev) => (prev + 1) % items.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-md md:hidden z-30" size="icon" aria-label="Next">
+              <ChevronRight className="w-5 h-5 text-[#070B14]" />
             </Button>
           )}
         </div>
@@ -176,44 +179,43 @@ export function ProductCarousel() {
         <div className="hidden md:block relative">
           {items.length > pageSize && (
             <>
-              <Button onClick={() => setPageIndex((prev) => (prev - 1 + totalPages) % totalPages)} className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm z-30 shadow" size="icon" aria-label="Previous">
-                <ChevronLeft className="w-5 h-5 text-foreground" />
+              <Button onClick={() => setPageIndex((prev) => (prev - 1 + totalPages) % totalPages)} className="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-lg z-30" size="icon" aria-label="Previous">
+                <ChevronLeft className="w-6 h-6 text-[#070B14]" />
               </Button>
-              <Button onClick={() => setPageIndex((prev) => (prev + 1) % totalPages)} className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm z-30 shadow" size="icon" aria-label="Next">
-                <ChevronRight className="w-5 h-5 text-foreground" />
+              <Button onClick={() => setPageIndex((prev) => (prev + 1) % totalPages)} className="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-lg z-30" size="icon" aria-label="Next">
+                <ChevronRight className="w-6 h-6 text-[#070B14]" />
               </Button>
             </>
           )}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {pageItems.map((product, index) => (
               <motion.div key={product.id} whileHover={{ y: -8 }} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.08 }} className="h-full">
-                <div className="backdrop-blur-lg bg-card/50 border border-border rounded-3xl p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
-                  <Link href={`/landing/products/${(product as any).seoSlug || product.id}`} className="absolute inset-0 z-10" aria-label="Open details" />
+                <div className="bg-white border border-blue-50/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 relative overflow-hidden group hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 h-full flex flex-col">
+                  <div className="absolute inset-0 z-10 cursor-pointer" aria-label="Open details" onClick={() => setQuickViewId(product.id)} />
                   <div className="absolute top-4 left-4 z-20">
-                    <motion.div className="flex items-center gap-2 bg-card/70 backdrop-blur-sm border border-border rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(0, 0, 0, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-[#3A6FA0]" />
-                      {!!product.purity && <span className="text-sm text-[#3A6FA0]">{product.purity} Purity</span>}
+                    <motion.div className="flex items-center gap-2 bg-[#F9FBFF] border border-blue-100 rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(77, 125, 242, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
+                      <Award className="w-4 h-4 text-[#4D7DF2]" />
+                      {!!product.purity && <span className="text-xs font-bold text-[#4D7DF2] uppercase tracking-wide">{product.purity} Purity</span>}
                     </motion.div>
                   </div>
 
                   <div className="relative mt-8 mb-6">
-                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-border" whileHover={{ scale: 1.05 }} transition={{ duration: 0.25 }}>
-                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-[3px] border-[#F9FBFF]" whileHover={{ scale: 1.05 }} transition={{ duration: 0.25 }}>
+                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
                     </motion.div>
                   </div>
                   <div className="text-center flex flex-col flex-1">
-                    <h3 className={`text-2xl font-bold text-foreground mb-2 ${barlow.className}`}>{product.name}</h3>
-                    <p className="text-muted-foreground mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
-                    <div className="text-3xl font-bold text-foreground mb-6">{product.priceLabel}</div>
+                    <h3 className={`text-2xl font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>{product.name}</h3>
+                    <p className="text-sm text-gray-500 font-medium mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
+                    <div className="text-3xl font-black text-[#070B14] tracking-tight mb-6">{product.priceLabel}</div>
                     <Button
-                      className="relative z-20 w-full bg-card hover:bg-accent border border-border text-foreground rounded-full py-3 backdrop-blur-sm transition-all duration-300 group/btn overflow-hidden mt-auto"
+                      className="relative z-20 w-full bg-white hover:bg-[#070B14] border-2 border-[#070B14] hover:text-white text-[#070B14] rounded-2xl py-6 font-bold transition-all duration-300 group/btn overflow-hidden mt-auto"
                       onClick={() => {
                         if (!user) { toast.info('Please sign in to add items'); return; }
-                        router.push(`/landing/products/${(product as any).seoSlug || product.id}`);
+                        setQuickViewId(product.id);
                       }}
                     >
                       <span className="relative z-10">Add to Cart</span>
-                      <motion.div className="absolute inset-0 bg-foreground/10 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" style={{ width: "30%" }} />
                     </Button>
                   </div>
                 </div>
@@ -223,6 +225,16 @@ export function ProductCarousel() {
         </div>
 
       </div>
+
+      {quickViewId && (
+        <Dialog open={!!quickViewId} onOpenChange={(open) => !open && setQuickViewId(null)}>
+          <DialogContent className="max-w-[95vw] sm:max-w-[1200px] w-[95vw] sm:w-[90vw] p-0 overflow-hidden max-h-[90vh] overflow-y-auto rounded-3xl">
+            <DialogTitle className="sr-only">Product Quick View</DialogTitle>
+            <DialogDescription className="sr-only">View product details and purchase</DialogDescription>
+            <ProductDetailView productId={String(quickViewId)} isModal={true} />
+          </DialogContent>
+        </Dialog>
+      )}
     </section>
   );
 }

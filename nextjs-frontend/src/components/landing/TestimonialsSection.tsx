@@ -24,14 +24,14 @@ export function TestimonialsSection() {
   const prevTestimonial = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <section className="py-20 bg-background relative overflow-hidden" suppressHydrationWarning>
+    <section className="py-32 bg-[#070B14] relative overflow-hidden" suppressHydrationWarning>
       <div className="absolute inset-0">
         <motion.div className="absolute inset-0 opacity-0" />
       </div>
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-16">
-          <h2 className={`text-5xl font-bold text-foreground mb-4 ${barlow.className}`}>What Doctors Say</h2>
+          <h2 className={`text-5xl font-bold text-white tracking-tight mb-4 ${barlow.className}`}>What Doctors Say</h2>
         </motion.div>
 
         <div className="relative">
@@ -40,26 +40,26 @@ export function TestimonialsSection() {
               {testimonials.map((testimonial) => (
                 <div key={testimonial.id} className="w-full flex-shrink-0">
                   <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} whileHover={{ scale: 1.02 }} className="relative group">
-                    <div className="relative backdrop-blur-2xl bg-card/50 border border-border rounded-3xl p-12 mx-4 overflow-hidden">
-                      <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/10" />
-                      <motion.div className="absolute top-8 left-8 w-16 h-16 bg-card/70 rounded-full flex items-center justify-center backdrop-blur-sm border border-border" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
-                        <Quote className="w-8 h-8 text-muted-foreground" />
+                    <div className="relative backdrop-blur-2xl bg-white/[0.03] border border-white/[0.08] shadow-[0_20px_40px_rgba(0,0,0,0.4)] rounded-3xl p-12 mx-4 overflow-hidden">
+                      <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-white/[0.02]" />
+                      <motion.div className="absolute top-8 left-8 w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
+                        <Quote className="w-8 h-8 text-[#4D7DF2]/60" />
                       </motion.div>
                       <div className="relative z-10 text-center">
                         <div className="flex justify-center gap-1 mb-6">
                           {[...Array(testimonial.rating)].map((_, i) => (
                             <motion.div key={i} animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}>
-                              <Star className="w-6 h-6 text-yellow-500 fill-current" />
+                              <Star className="w-6 h-6 text-yellow-400 fill-current" />
                             </motion.div>
                           ))}
                         </div>
-                        <motion.p className="text-xl text-foreground mb-8 max-w-3xl mx-auto leading-relaxed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
+                        <motion.p className="text-xl text-white font-medium mb-8 max-w-3xl mx-auto leading-relaxed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
                           "{testimonial.text}"
                         </motion.p>
                         <div className="flex items-center justify-center gap-6">
                           <div className="text-center">
-                            <motion.h4 className="text-lg font-bold text-foreground mb-1">{testimonial.name}</motion.h4>
-                            <p className="text-[#3A6FA0] font-medium">{testimonial.title}</p>
+                            <motion.h4 className="text-lg font-bold text-white mb-1">{testimonial.name}</motion.h4>
+                            <p className="text-[#4D7DF2] font-semibold">{testimonial.title}</p>
                             {/* <p className="text-muted-foreground text-sm">{testimonial.company}</p> */}
                           </div>
                         </div>
@@ -72,13 +72,13 @@ export function TestimonialsSection() {
 
             {/* Vertically centered arrow wrappers pinned to container edges */}
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
-              <Button onClick={prevTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm transition-all duration-300 group" size="icon">
-                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-[#3A6FA0] transition-colors duration-300" />
+              <Button onClick={prevTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm transition-all duration-300 group" size="icon">
+                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:text-white transition-colors duration-300" />
               </Button>
             </div>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <Button onClick={nextTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm transition-all duration-300 group" size="icon">
-                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-[#3A6FA0] transition-colors duration-300" />
+              <Button onClick={nextTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm transition-all duration-300 group" size="icon">
+                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:text-white transition-colors duration-300" />
               </Button>
             </div>
           </div>
@@ -86,9 +86,9 @@ export function TestimonialsSection() {
           <div className="flex justify-center gap-3 mt-12">
             {testimonials.map((_, index) => (
               <button key={index} onClick={() => setCurrentIndex(index)} className="relative group">
-                <div className={`w-4 h-4 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-foreground scale-125" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"}`} />
+                <div className={`w-4 h-4 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-white scale-125" : "bg-white/20 hover:bg-white/40"}`} />
                 {index === currentIndex && (
-                  <motion.div className="absolute inset-0 rounded-full bg-foreground blur-md opacity-20" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+                  <motion.div className="absolute inset-0 rounded-full bg-white blur-md opacity-30" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }} />
                 )}
               </button>
             ))}
