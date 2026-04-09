@@ -36,7 +36,11 @@ import {
     Building,
     Link2,
     Crown,
-    Shield
+    Shield,
+    LogOut,
+    Search as SearchIcon,
+    User as UserIcon,
+    Plus
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -232,7 +236,7 @@ const navItems: NavItem[] = [
 
 export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) {
     const pathname = usePathname();
-    const { user, hasPermission } = useAuth();
+    const { user, logout, hasPermission } = useAuth();
     const [expandedItems, setExpandedItems] = useState<string[]>(() => {
         // Auto-expand parent section if current route is inside it
         const expanded: string[] = [];
@@ -273,15 +277,19 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                     <Link
                         href={item.href}
                         className={cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                            "w-full text-left",
-                            level > 0 && "ml-6 text-muted-foreground",
-                            isActive && "bg-accent text-accent-foreground font-semibold shadow",
-                            isChildActive && "bg-accent/70 text-accent-foreground font-semibold"
+                            "flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition-all duration-300",
+                            "w-full text-left font-heading tracking-wide",
+                            level > 0 && "ml-8 text-muted-foreground/80 font-sans",
+                            isActive && !isChildActive && "bg-[#3A6FA0] text-white shadow-lg shadow-[#3A6FA0]/30 scale-[1.02]",
+                            isChildActive && "bg-sidebar-accent/50 text-[#1B2D4F] font-bold",
+                            !isActive && "text-muted-foreground hover:bg-sidebar-accent hover:text-[#1B2D4F]"
                         )}
                         aria-current={isActive ? "page" : undefined}
                     >
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className={cn(
+                            "h-[18px] w-[18px]",
+                            isActive && !isChildActive ? "text-white" : "text-[#3A6FA0]/70"
+                        )} />
                         <span className="flex-1">{item.title}</span>
                         {item.badge && (
                             <Badge variant="secondary" className="ml-auto">
@@ -317,109 +325,119 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
     return (
         <>
             <div className={cn(
-                "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border transition-transform duration-300 ease-in-out",
+                "fixed inset-y-0 left-0 z-50 w-72 transition-all duration-500 ease-in-out",
                 open ? "translate-x-0" : "-translate-x-full",
-                "lg:translate-x-0"
+                "lg:translate-x-0 p-4" // Floating margin
             )}>
-                <div className="flex h-full flex-col">
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-                        <Link href="/" className="flex items-center gap-2 dark:bg-white dark:rounded-2xl dark:p-2 dark:w-full">
+                <div className="flex h-full flex-col bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden">
+                    {/* Brand Header */}
+                    <div className="p-8 flex items-center justify-between border-b border-gray-100/50">
+                        <Link href="/" className="flex items-center gap-2 group transition-all">
                             <Image
                                 src="/logo.png"
-                                alt="Ascendra Bio"
-                                width={120}
+                                alt="Abscendra Bio"
+                                width={140}
                                 height={40}
-                                className="rounded-lg sm:w-[150px] sm:h-[50px]"
+                                className="w-auto h-8 group-hover:scale-105 transition-transform"
                             />
                         </Link>
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="lg:hidden"
+                            className="lg:hidden hover:bg-gray-100 rounded-full h-8 w-8 p-0"
                             onClick={() => onOpenChange(false)}
                         >
-                            <X className="h-4 w-4" />
+                            <X className="h-5 w-5 text-gray-500" />
                         </Button>
                     </div>
 
+                    {/* Integrated Quick Tools (Search & Notifs) */}
+                    <div className="px-6 pt-4 space-y-3">
+                        <div className="relative group">
+                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-[#3A6FA0] transition-colors" />
+                            <input 
+                                type="text"
+                                placeholder="Universal Search..."
+                                className="w-full bg-gray-50/50 border border-gray-100 rounded-full py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A6FA0]/10 transition-all font-medium"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2">
+                             <Button variant="outline" className="flex-1 rounded-full text-[11px] font-bold h-9 border-gray-100 bg-white/50 hover:bg-white">
+                                <Plus className="w-3 h-3 mr-1.5 text-[#3A6FA0]" />
+                                Quick Action
+                             </Button>
+                             <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-gray-100 bg-white/50 hover:bg-white relative">
+                                <Bell className="w-4 h-4 text-gray-500" />
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                             </Button>
+                        </div>
+                    </div>
+
                     {/* Navigation */}
-                    <ScrollArea className="flex-1 px-3 sm:px-4 py-4 sm:py-6 overflow-y-auto scrollbar-hide">
-                        <nav className="space-y-2">
+                    <div className="flex-1 min-h-0">
+                        <ScrollArea className="h-full px-4" scrollHideDelay={100}>
+                            <nav className="space-y-1.5 py-6">
                             {(
                                 navItems
                                     .filter(item => {
                                         if (user?.role === 'SALES_MANAGER') {
-                                            // Sales managers: show Orders, Customers, and specialized items
                                             const allowed = ['Orders', 'Customers'];
                                             if (!allowed.includes(item.title)) return false;
                                         }
                                         if (user?.role === 'SALES_REP') {
-                                            // Sales reps: allow core items; show Analytics only if permission granted
                                             const allowed = ['Orders', 'Customers', 'Bulk Quotes', 'Tier Upgrades'];
                                             if (item.title === 'Analytics') {
                                                 return !!hasPermission?.('ANALYTICS', 'READ');
                                             }
                                             return allowed.includes(item.title);
                                         }
-                                        // For all other users (admin, etc.), exclude Tier Upgrades and Assign Customers
-                                        return !['Tier Upgrades', 'Assign Customers'].includes(item.title);
-                                    })
-                                    .map(item => {
-                                        if ((user?.role === 'SALES_REP' || user?.role === 'SALES_MANAGER') && item.title === 'Customers') {
-                                            const excluded = ['Pending Approvals', 'Rejected Accounts'];
-                                            return { ...item, children: item.children?.filter(child => !excluded.includes(child.title)) };
-                                        }
-                                        return item;
+                                        return !['Tier Upgrades', 'Assign Customers', 'Analytics'].includes(item.title);
                                     })
                             ).map(item => renderNavItem(item))}
-                            {user?.role === 'SALES_MANAGER' && (
-                                <div className="space-y-1">
-                                    <Link
-                                        href="/sales-manager/my-team"
-                                        className={cn(
-                                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                                            "w-full text-left",
-                                            pathname === '/sales-manager/my-team' && "bg-accent text-accent-foreground font-semibold shadow"
-                                        )}
-                                        aria-current={pathname === '/sales-manager/my-team' ? "page" : undefined}
-                                    >
-                                        <Users className="h-4 w-4" />
-                                        <span className="flex-1">My Sales Team</span>
-                                    </Link>
-                                    <Link
-                                        href="/sales-manager/analytics"
-                                        className={cn(
-                                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                                            "w-full text-left",
-                                            pathname === '/sales-manager/analytics' && "bg-accent text-accent-foreground font-semibold shadow"
-                                        )}
-                                        aria-current={pathname === '/sales-manager/analytics' ? "page" : undefined}
-                                    >
-                                        <BarChart3 className="h-4 w-4" />
-                                        <span className="flex-1">Analytics</span>
-                                    </Link>
-                                </div>
-                            )}
                         </nav>
-                    </ScrollArea>
+                        </ScrollArea>
+                    </div>
 
-                    {/* Footer */}
-                    <div className="p-3 sm:p-4 border-t border-border">
-                        <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
-                            <span>System Status: Online</span>
+                    {/* User Profile & Footer */}
+                    <div className="p-4 border-t border-gray-100/50 bg-gray-50/30">
+                        <div className="flex items-center gap-3 p-3 bg-white/80 rounded-3xl border border-white shadow-sm">
+                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                {user?.email?.[0].toUpperCase() || 'A'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-[#1B2D4F] truncate uppercase tracking-tighter">
+                                    {user?.role?.replace('_', ' ') || 'Admin'}
+                                </p>
+                                <p className="text-[10px] text-gray-400 truncate">
+                                    {user?.email}
+                                </p>
+                            </div>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => logout()}
+                                className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
+                            >
+                                <LogOut className="h-4 w-4" />
+                            </Button>
                         </div>
                     </div>
                 </div>
             </div>
+            
             <style jsx global>{`
-                .scrollbar-hide::-webkit-scrollbar {
-                    display: none;
+                [data-slot="scroll-area-viewport"]::-webkit-scrollbar {
+                    width: 4px;
                 }
-                .scrollbar-hide {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
+                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-thumb {
+                    background: rgba(0, 0, 0, 0.05);
+                    border-radius: 10px;
+                }
+                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-thumb:hover {
+                    background: rgba(0, 0, 0, 0.1);
                 }
             `}</style>
         </>

@@ -12,6 +12,8 @@ import { Suspense } from "react";
 import GlobalFallback from "@/components/ui/global-fallback";
 import { PendingApprovalModal } from "@/components/auth/PendingApprovalModal";
 import { GlobalAuthModal } from "@/components/auth/GlobalAuthModal";
+import GlobalHeader from "@/components/ui/GlobalHeader";
+import { DashboardProvider } from "@/contexts/dashboard-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,8 +50,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${barlow.variable} antialiased`}
+        style={{ '--font-heading': 'var(--font-barlow)' } as React.CSSProperties}
       >
-        {/* SEO/Analytics scripts pulled from DB settings */}
         <SeoScripts />
         <ThemeProvider
           attribute="class"
@@ -58,17 +60,24 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <CartProvider>
-              <GooglePlacesProvider>
-                <Suspense fallback={<GlobalFallback />}>{children}</Suspense>
+            <DashboardProvider>
+              <CartProvider>
+                <GooglePlacesProvider>
+                  <div className="flex flex-col min-h-screen">
+                    <GlobalHeader />
+                    <main className="flex-1 flex flex-col">
+                      <Suspense fallback={<GlobalFallback />}>{children}</Suspense>
+                    </main>
+                  </div>
               </GooglePlacesProvider>
               <Toaster />
               <PendingApprovalModal />
               <GlobalAuthModal />
             </CartProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+          </DashboardProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </body>
+  </html>
   );
 }

@@ -1,7 +1,6 @@
 import { api } from "@/lib/api";
 import type { Metadata } from "next";
 import { buildMetadataForWebPage, buildWebPageJsonLd, getSiteConfig, absoluteUrl, serializeJsonLd } from "@/lib/seo";
-import LandingHeader from "@/components/landing/LandingHeader";
 import { sanitizeHtml } from "@/lib/sanitize";
 
 type PageData = {
@@ -44,7 +43,6 @@ export default async function PublicPage({ params, searchParams }: { params: Pro
   if (!page) {
     return (
       <>
-        <LandingHeader />
         <div className="container mx-auto p-6">Not found</div>
       </>
     );
@@ -55,7 +53,6 @@ export default async function PublicPage({ params, searchParams }: { params: Pro
 
   return (
     <>
-      <LandingHeader />
       <div className="container mx-auto p-6 prose max-w-none">
         <h1>{title}</h1>
         {description && <p className="text-muted-foreground">{description}</p>}

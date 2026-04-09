@@ -9,37 +9,16 @@ import logger from '@/lib/logger';
 import { branding } from '@/config/branding';
 import { motion, AnimatePresence } from 'motion/react';
 import { Barlow } from 'next/font/google';
-import { Award, Zap, FlaskConical, ShieldCheck, ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
+import { Award, Zap, FlaskConical, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import { AuthModal } from '@/components/auth/AuthModal';
 
 const barlow = Barlow({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
-/** Hook: returns true once user has scrolled past `threshold` pixels */
-function useScrolled(threshold = 20) {
-  const [scrolled, setScrolled] = useState(false);
-  const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > threshold);
-  }, [threshold]);
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-  return scrolled;
-}
-
 export default function LandingPage() {
   const { isAuthenticated } = useAuth?.() || ({} as any);
-  const scrolled = useScrolled(30);
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
-
-  const handleOpenAuthModal = (view: 'customer' | 'admin') => {
-    setAuthModalView(view);
-    setAuthModalOpen(true);
-  };
 
   const [formData, setFormData] = useState({
     name: '',
@@ -92,157 +71,13 @@ export default function LandingPage() {
 
   return (
     <div className={`flex flex-col min-h-screen bg-white text-[#070B14] relative overflow-hidden ${barlow.className}`}>
-
-      {/* ═══════════════════════════════════════════ */}
-      {/* STICKY GLASSMORPHIC NAVBAR                  */}
-      {/* ═══════════════════════════════════════════ */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500">
-        <div className={`mx-auto max-w-7xl px-4 sm:px-6 transition-all duration-500 ${scrolled ? 'pt-2' : 'pt-4 sm:pt-6'}`}>
-          <nav
-            className={`flex items-center justify-between rounded-full px-5 sm:px-6 transition-all duration-500
-              backdrop-blur-xl border
-              ${scrolled
-                ? 'h-14 bg-white/80 border-[#070B14]/[0.05] shadow-[0_8px_32px_rgba(0,0,0,0.05)]'
-                : 'h-16 bg-white/[0.05] border-[#070B14]/[0.03]'
-              }`}
-          >
-            {/* Logo */}
-            <Link href="/" className="flex-shrink-0 flex items-center group">
-              <Image
-                src={branding.logoSrc}
-                alt={branding.name}
-                width={140}
-                height={32}
-                className={`w-auto group-hover:opacity-80 transition-all duration-300
-                  ${scrolled ? 'h-6 sm:h-7' : 'h-7 sm:h-8'}`}
-                priority
-              />
-            </Link>
-
-            {/* Desktop nav links */}
-            <div className="hidden md:flex items-center gap-1">
-              {branding.navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#4D7DF2] rounded-full hover:bg-gray-50 transition-all duration-300"
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <button
-                onClick={() => setIsContactOpen(true)}
-                className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#4D7DF2] rounded-full hover:bg-gray-50 transition-all duration-300"
-              >
-                Contact
-              </button>
-
-              <div className="w-px h-4 bg-gray-200 mx-3" />
-
-              {isAuthenticated ? (
-                <Link
-                  href="/landing/products"
-                  className="px-6 py-2.5 text-[13px] font-bold rounded-full bg-[#4D7DF2] text-white hover:bg-[#3b66d1] transition-all duration-300 shadow-[0_10px_30px_rgba(77,125,242,0.3)]"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <button
-                    onClick={() => handleOpenAuthModal('customer')}
-                    className="px-4 py-2 text-[13px] font-semibold text-gray-500 hover:text-[#070B14] rounded-full hover:bg-gray-50 transition-all duration-300"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => setIsContactOpen(true)}
-                    className="px-6 py-2.5 text-[13px] font-bold rounded-full bg-[#070B14] text-white hover:bg-gray-800 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
-                  >
-                    Inquire Now
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </nav>
-        </div>
-
-        {/* Mobile dropdown menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="mx-4 sm:mx-6 mt-2 bg-[#0D1320]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden md:hidden"
-            >
-              <div className="flex flex-col p-4 space-y-1">
-                {branding.navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <button
-                  onClick={() => { setIsContactOpen(true); setMobileMenuOpen(false); }}
-                  className="px-4 py-3 text-left text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-                >
-                  Contact
-                </button>
-                <div className="h-px bg-white/10 mx-4 my-2" />
-                {!isAuthenticated ? (
-                  <>
-                    <button
-                      className="text-left px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-                      onClick={() => { setMobileMenuOpen(false); handleOpenAuthModal('customer'); }}
-                    >
-                      Login
-                    </button>
-                    <button
-                      className="text-left px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-                      onClick={() => { setMobileMenuOpen(false); handleOpenAuthModal('admin'); }}
-                    >
-                      Admin Login
-                    </button>
-                    <button
-                      onClick={() => { setIsContactOpen(true); setMobileMenuOpen(false); }}
-                      className="mt-2 w-full py-3.5 text-sm font-semibold rounded-xl bg-white text-[#070B14] hover:bg-gray-200 transition-colors"
-                    >
-                      Inquire Now
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    href="/landing/products"
-                    className="mt-2 w-full block text-center py-3.5 text-sm font-semibold rounded-xl bg-white text-[#070B14] hover:bg-gray-200 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+      
+      {/* Redundant Local Header Removed - Managed by GlobalHeader */}
 
       {/* ═══════════════════════════════════════════ */}
       {/* THE ASCENDRA SIGNATURE HERO — MINIMAL TECH */}
       {/* ═══════════════════════════════════════════ */}
-      <main className="relative z-20 flex items-center min-h-[95vh] w-full px-8 lg:px-20 pt-28 pb-20 bg-white overflow-hidden">
+      <main className="relative z-20 flex items-center min-h-[90vh] w-full px-8 lg:px-20 pt-32 pb-20 bg-white overflow-hidden">
         
         {/* Cinematic Background Layer (Peptide/Molecular Video Simulation) */}
         <div className="absolute inset-0 z-0 pointer-events-none bg-[#F9FBFF]">
@@ -421,9 +256,6 @@ export default function LandingPage() {
 
         </div>
       </main>
-
-
-
 
       {/* ═══════════════════════════════════════════ */}
       {/* FLOATING TRUST METRICS                       */}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import LandingHeader from "@/components/landing/LandingHeader";
 import { Barlow } from "next/font/google";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
@@ -168,8 +167,6 @@ export default function LandingProductsPage() {
 
   return (
     <div className="force-light min-h-screen bg-white text-black">
-      <LandingHeader />
-
       {/* Hero Banner with Responsive Images */}
       <div className="w-full">
         <div className="hidden sm:block relative w-full aspect-[3072/750]">

@@ -21,7 +21,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
     } catch { }
   }, []);
   return (
-    <div className="force-light min-h-screen bg-white text-black landing-theme" suppressHydrationWarning>
+    <div className="force-light min-h-screen bg-white text-black landing-theme pt-20 sm:pt-28" suppressHydrationWarning>
       {children}
     </div>
   );

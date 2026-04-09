@@ -1,6 +1,5 @@
 "use client";
 
-import LandingHeader from "@/components/landing/LandingHeader";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -490,7 +489,6 @@ export default function CheckoutItemsPage() {
 
   return (
     <div className="force-light min-h-screen bg-background text-foreground">
-      <LandingHeader />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress bar - 4 steps (clickable back-only) */}
         <div className="mb-6">

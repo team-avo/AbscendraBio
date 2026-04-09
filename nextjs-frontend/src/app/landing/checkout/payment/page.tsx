@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import LandingHeader from "@/components/landing/LandingHeader";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -579,7 +578,6 @@ function PaymentPageContent() {
 
   return (
     <div className="force-light min-h-screen bg-background text-foreground">
-      <LandingHeader />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress bar */}
         <div className="mb-6">

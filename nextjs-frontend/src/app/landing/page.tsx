@@ -6,13 +6,11 @@ import { ProductCarousel } from "@/components/landing/ProductCarousel";
 import { WhyChooseUs } from "@/components/landing/WhyChooseUs";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { Footer } from "@/components/landing/Footer";
-import LandingHeader from "@/components/landing/LandingHeader";
 import Image from "next/image";
 
 export default function LandingPage() {
   return (
     <div className="force-light min-h-screen bg-white text-black">
-      <LandingHeader />
       <motion.div
         className="fixed inset-0 pointer-events-none z-0"
         style={{

@@ -1,6 +1,5 @@
 "use client";
 
-import LandingHeader from "@/components/landing/LandingHeader";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -994,7 +993,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="force-light min-h-screen bg-background text-foreground">
-      <LandingHeader />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {redirecting ? (
           <div className="py-16 text-center text-gray-600">Loading checkout…</div>
