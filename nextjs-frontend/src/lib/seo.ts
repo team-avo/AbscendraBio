@@ -25,9 +25,9 @@ async function fetchSiteConfig(): Promise<SiteConfig> {
     if (resp.success && resp.data) {
       const d = resp.data as any;
       return {
-        siteName: d.siteName || "Centre Labs",
+        siteName: d.siteName || "Ascendra Bio",
         baseUrl: envBase.replace(/\/$/, ""),
-        defaultTitle: d.defaultTitle || "Centre Labs",
+        defaultTitle: d.defaultTitle || "Ascendra Bio",
         defaultDescription: d.defaultDescription || "Providing science backed solutions for medical providers.",
         defaultOgImageUrl: d.defaultOgImageUrl || undefined,
         allowIndexing: d.allowIndexing !== false,
@@ -35,9 +35,9 @@ async function fetchSiteConfig(): Promise<SiteConfig> {
     }
   } catch { }
   return {
-    siteName: "Centre Labs",
+    siteName: "Ascendra Bio",
     baseUrl: (process.env.FRONTEND_URL || "http://localhost:3000").replace(/\/$/, ""),
-    defaultTitle: "Centre Labs",
+    defaultTitle: "Ascendra Bio",
     defaultDescription: "Providing science backed solutions for medical providers.",
     defaultOgImageUrl: undefined,
     allowIndexing: true,

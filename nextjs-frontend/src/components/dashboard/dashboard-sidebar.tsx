@@ -327,7 +327,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                         <Link href="/" className="flex items-center gap-2 dark:bg-white dark:rounded-2xl dark:p-2 dark:w-full">
                             <Image
                                 src="/logo.png"
-                                alt="Centre Labs"
+                                alt="Ascendra Bio"
                                 width={120}
                                 height={40}
                                 className="rounded-lg sm:w-[150px] sm:h-[50px]"

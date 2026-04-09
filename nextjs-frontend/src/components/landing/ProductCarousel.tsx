@@ -131,8 +131,8 @@ export function ProductCarousel() {
                   <Link href={`/landing/products/${(product as any).seoSlug || product.id}`} className="absolute inset-0 z-10" aria-label="Open details" />
                   <div className="absolute top-4 left-4 z-20">
                     <motion.div className="flex items-center gap-2 bg-card/70 backdrop-blur-sm border border-border rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(0, 0, 0, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-green-600" />
-                      <span className="text-sm text-green-600">{product.purity} Purity</span>
+                      <Award className="w-4 h-4 text-[#3A6FA0]" />
+                      <span className="text-sm text-[#3A6FA0]">{product.purity} Purity</span>
                     </motion.div>
                   </div>
 
@@ -191,8 +191,8 @@ export function ProductCarousel() {
                   <Link href={`/landing/products/${(product as any).seoSlug || product.id}`} className="absolute inset-0 z-10" aria-label="Open details" />
                   <div className="absolute top-4 left-4 z-20">
                     <motion.div className="flex items-center gap-2 bg-card/70 backdrop-blur-sm border border-border rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(0, 0, 0, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-green-600" />
-                      {!!product.purity && <span className="text-sm text-green-600">{product.purity} Purity</span>}
+                      <Award className="w-4 h-4 text-[#3A6FA0]" />
+                      {!!product.purity && <span className="text-sm text-[#3A6FA0]">{product.purity} Purity</span>}
                     </motion.div>
                   </div>
 

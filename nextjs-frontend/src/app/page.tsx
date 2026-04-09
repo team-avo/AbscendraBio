@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import CentreResearchHome from "@/components/landing/CentreResearchHome";
+import LandingPage from "@/components/landing/LandingPage";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function Home() {
@@ -26,6 +26,8 @@ export default function Home() {
       router.replace("/sales-manager/analytics");
     } else if (hasRole(["SALES_REP"])) {
       router.replace("/orders");
+    } else if (isAuthenticated && hasRole("CUSTOMER")) {
+      router.replace("/landing");
     }
   }, [isLoading, isAuthenticated, hasRole, router]);
 
@@ -47,5 +49,5 @@ export default function Home() {
     return null;
   }
 
-  return <CentreResearchHome />;
+  return <LandingPage />;
 }

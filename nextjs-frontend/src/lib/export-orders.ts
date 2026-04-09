@@ -48,7 +48,7 @@ export function ordersToExcel(orders: Order[]) {
             'Items Count': order.items?.length || 0,
             'Created Date': formatToPST(order.createdAt),
             'Notes': order.notes && Array.isArray(order.notes) && order.notes.length > 0 ? order.notes[0].note : '',
-            'Sales Channel': order.salesChannel?.companyName || (order.partnerOrderId ? 'Partner Order' : 'Centre Research'),
+            'Sales Channel': order.salesChannel?.companyName || (order.partnerOrderId ? 'Partner Order' : 'Ascendra Bio'),
             'Partner Order ID': order.partnerOrderId || 'N/A'
         };
     });

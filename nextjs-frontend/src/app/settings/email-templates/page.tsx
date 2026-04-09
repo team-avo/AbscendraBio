@@ -893,7 +893,7 @@ const wrapEmailWithHeaderFooter = (content: string, contentType: 'HTML_CONTENT' 
       <body>
         <div class="container">
           <div class="email-header">
-            <img src="/logo.png" alt="Centre Physician Directed" style="max-width: 80px; width: 100%; height: auto; display: block;">
+            <img src="/logo.png" alt="Ascendra Bio" style="max-width: 80px; width: 100%; height: auto; display: block;">
           </div>
           <div class="content">
             ${content}
@@ -911,7 +911,7 @@ const wrapEmailWithHeaderFooter = (content: string, contentType: 'HTML_CONTENT' 
     return `
       <div style="max-width: 600px; margin: 0 auto; background: #ffffff; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
         <div style="text-align: center; padding: 20px 0; background-color: #ffffff; display: flex; justify-content: center; align-items: center;">
-          <img src="/logo.png" alt="Centre Physician Directed" style="max-width: 80px; width: 100%; height: auto; display: block;">
+          <img src="/logo.png" alt="Ascendra Bio" style="max-width: 80px; width: 100%; height: auto; display: block;">
         </div>
         <div style="padding: 30px; word-wrap: break-word; overflow-wrap: break-word;">
           ${content}

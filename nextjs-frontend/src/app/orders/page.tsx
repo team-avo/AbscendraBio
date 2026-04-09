@@ -441,7 +441,7 @@ function OrdersPageContent() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Orders</SelectItem>
-                <SelectItem value="research">Centre Labs orders</SelectItem>
+                <SelectItem value="research">Ascendra Bio orders</SelectItem>
                 <SelectItem value="channels">All Sales Channels</SelectItem>
                 {salesChannels.length > 0 && <SelectSeparator />}
                 {salesChannels.map((channel) => (

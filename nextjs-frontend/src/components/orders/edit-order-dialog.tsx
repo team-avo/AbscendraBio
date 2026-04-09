@@ -555,9 +555,9 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
         shipFromCountry = countryCodeMap[sc.country || 'US'] || sc.country || 'US';
         shipFromEmail = sc.contactEmail || storeInfo.email || undefined;
       } else {
-        // Use store info (Centre Labs default)
-        shipFromName = storeInfo.name || 'Centre Labs';
-        shipFromCompany = storeInfo.name || 'Centre Labs';
+        // Use store info (Ascendra Bio default)
+        shipFromName = storeInfo.name || 'Ascendra Bio';
+        shipFromCompany = storeInfo.name || 'Ascendra Bio';
         shipFromPhone = storeInfo.phone || '1234567890';
         shipFromAddress1 = storeInfo.addressLine1 || '5825 W Sunset Blvd';
         shipFromAddress2 = storeInfo.addressLine2 || undefined;
@@ -1045,7 +1045,7 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
                       <div>
                         <Label>Order Source</Label>
                         <div className="p-2 bg-gray-50 rounded text-black">
-                          {order.salesChannel?.companyName || 'Centre Labs'}
+                          {order.salesChannel?.companyName || 'Ascendra Bio'}
                           {order.partnerOrderId && (
                             <span className="ml-2 text-xs text-muted-foreground group">
                               (ID: {order.partnerOrderId})

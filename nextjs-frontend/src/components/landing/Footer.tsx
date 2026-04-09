@@ -127,7 +127,7 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Store overview (title/description + socials) - match original sizing/styles */}
             <div>
-              <h3 className={`text-2xl font-bold text-foreground mb-4 ${barlow.className}`}>{footerSettings?.siteTitle || 'Centre Labs'}</h3>
+              <h3 className={`text-2xl font-bold text-foreground mb-4 ${barlow.className}`}>{footerSettings?.siteTitle || 'Ascendra Bio'}</h3>
               <p className="text-muted-foreground mb-4 max-w-xs">
                 {footerSettings?.siteDescription || 'Leading supplier of physician grade peptides with uncompromising quality standards.'}
               </p>
@@ -260,8 +260,8 @@ export function Footer() {
             })()}
 
             {/* Important Note Section */}
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <h4 className={`text-lg font-semibold text-red-600 mb-3 ${barlow.className}`}>Important Note</h4>
+            <div className="bg-blue-50 border-l-4 border-[#3A6FA0] p-4 rounded-md">
+              <h4 className={`text-lg font-semibold text-[#1B2D4F] mb-3 ${barlow.className}`}>Important Note</h4>
               <p className="text-sm text-gray-900 leading-relaxed">
                 Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law.
               </p>
@@ -275,7 +275,7 @@ export function Footer() {
       <div className="border-t border-border py-6">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Centre Labs. All rights reserved.</p>
+            <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
           </div>
         </div>
       </div>

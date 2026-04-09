@@ -1119,7 +1119,7 @@ export default function SalesChannelDetailsPage() {
                                                 <Truck className="h-5 w-5" />
                                                 Shipping Address
                                             </CardTitle>
-                                            <CardDescription>This address will appear as the &quot;Ship From&quot; and return address on shipping labels for this channel&apos;s orders. Leave blank to use Centre Labs&apos; default address.</CardDescription>
+                                            <CardDescription>This address will appear as the &quot;Ship From&quot; and return address on shipping labels for this channel&apos;s orders. Leave blank to use Ascendra Bio&apos;s default address.</CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1211,7 +1211,7 @@ export default function SalesChannelDetailsPage() {
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="DROPSHIP">Dropship (Fulfilled by Centre Research)</SelectItem>
+                                                            <SelectItem value="DROPSHIP">Dropship (Fulfilled by Ascendra Bio)</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>

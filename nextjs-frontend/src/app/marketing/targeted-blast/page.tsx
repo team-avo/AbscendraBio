@@ -3,7 +3,7 @@ import { TargetedBlastContent } from "@/components/marketing/targeted-blast-cont
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Targeted Marketing Blast | Centre Research',
+    title: 'Targeted Marketing Blast | Ascendra Bio',
     description: 'Send targeted marketing emails to selected customers.',
 };
 

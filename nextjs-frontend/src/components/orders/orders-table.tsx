@@ -617,7 +617,7 @@ export function OrdersTable({
                 <TableCell className="table-cell">
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] sm:text-xs font-medium truncate max-w-[100px]">
-                      {order.salesChannel?.companyName || 'Centre Labs'}
+                      {order.salesChannel?.companyName || 'Ascendra Bio'}
                     </span>
                     {order.partnerOrderId && (
                       <span className="text-[9px] text-muted-foreground truncate max-w-[80px]">

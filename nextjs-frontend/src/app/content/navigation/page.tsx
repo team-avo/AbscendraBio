@@ -349,7 +349,7 @@ export default function NavigationManagerPage() {
       section.links.push({ title: link.title, href: link.href, target: link.target, order: section.links.length });
     }
     const resp = await api.updateFooterSettings({
-      siteTitle: existing.siteTitle || fsTitle || 'Centre Labs',
+      siteTitle: existing.siteTitle || fsTitle || 'Ascendra Bio',
       siteDescription: existing.siteDescription || fsDescription || '',
       facebookUrl: existing.facebookUrl,
       twitterUrl: existing.twitterUrl,
@@ -643,7 +643,7 @@ export default function NavigationManagerPage() {
               <div className="space-y-3">
                 <div>
                   <Label>Store Title</Label>
-                  <Input value={fsTitle} onChange={(e) => setFsTitle(e.target.value)} placeholder="Centre Labs" />
+                  <Input value={fsTitle} onChange={(e) => setFsTitle(e.target.value)} placeholder="Ascendra Bio" />
                 </div>
                 <div>
                   <Label>Store Description</Label>

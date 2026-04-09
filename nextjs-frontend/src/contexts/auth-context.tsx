@@ -10,7 +10,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string, options?: { suppressToasts?: boolean; portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }) => Promise<boolean>;
+  login: (email: string, password: string, options?: { suppressToasts?: boolean; portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }) => Promise<User | null>;
   logout: (options?: { suppressToasts?: boolean; noRedirect?: boolean }) => void;
   register: (userData: {
     email: string;
@@ -35,7 +35,7 @@ interface AuthContextType {
   setShowEmailVerificationModal: (show: boolean) => void;
   // Email OTP login
   requestEmailOtp: (email: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithEmailOtp: (email: string, code: string, options?: { portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }) => Promise<boolean>;
+  loginWithEmailOtp: (email: string, code: string, options?: { portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }) => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = async (email: string, password: string, options?: { suppressToasts?: boolean; portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }): Promise<boolean> => {
+  const login = async (email: string, password: string, options?: { suppressToasts?: boolean; portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }): Promise<User | null> => {
     try {
       setIsLoading(true);
       const response = await api.login(email, password, options?.portal);
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (!options?.suppressToasts) {
           toast.success('Login successful');
         }
-        return true;
+        return response.data.user;
       } else {
         // Check for specific approval/verification errors
         logger.debug('[Auth] Login failed with error:', { error: response.error });
@@ -115,13 +115,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             toast.error(response.error || 'Login failed');
           }
         }
-        return false;
+        return null;
       }
     } catch (error) {
       logger.error('Login error:', { error });
       if (options?.onError) options.onError('Login failed');
       if (!options?.suppressToasts) toast.error('Login failed');
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         toast.success('Logged out successfully');
       }
       if (!options?.noRedirect) {
-        router.push('/login');
+        router.push('/');
       }
     } catch (error) {
       logger.error('Logout error:', { error });
@@ -280,7 +280,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     email: string,
     code: string,
     options?: { portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }
-  ): Promise<boolean> => {
+  ): Promise<User | null> => {
     try {
       setIsLoading(true);
       const response = await api.verifyEmailOtp(email, code, options?.portal);
@@ -289,7 +289,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(response.data.token);
         setUser(response.data.user);
         toast.success('Login successful');
-        return true;
+        return response.data.user;
       } else {
         const err = (response.error || '').toLowerCase();
         if (
@@ -306,13 +306,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (options?.onError) options.onError(response.error || 'Login failed');
           toast.error(response.error || 'Login failed');
         }
-        return false;
+        return null;
       }
     } catch (error) {
       logger.error('Email OTP login error:', { error });
       if (options?.onError) options.onError('Login failed');
       toast.error('Login failed');
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -367,8 +367,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     // Only redirect if we're not loading and the user is definitely not authenticated
     if (!isLoading && !isAuthenticated) {
       // eslint-disable-next-line no-console
-      logger.debug('[ProtectedRoute] redirecting to /login');
-      router.push('/login');
+      logger.debug('[ProtectedRoute] redirecting to /');
+      router.replace('/');
     }
   }, [isLoading, isAuthenticated, router]);
 

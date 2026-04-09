@@ -332,7 +332,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
           </div>
         </div>
       </SheetContent>
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+      <AuthModal isOpen={authOpen} onOpenChange={setAuthOpen} />
     </Sheet>
   );
 }

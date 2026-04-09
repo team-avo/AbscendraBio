@@ -61,9 +61,9 @@ export default function NewContentPage() {
         setPageType('STATIC_PAGE');
         setStatus('PUBLISHED');
         setExcerpt('Learn about our mission, team, and values.');
-        setMetaTitle('About Us | Centre Labs');
-        setMetaDescription('Discover Centre Labs: our mission, research excellence, and the team behind premium peptides.');
-        setMetaKeywords('about us, centre research, peptides, team, mission');
+        setMetaTitle('About Us | Ascendra Bio');
+        setMetaDescription('Discover Ascendra Bio: our mission, research excellence, and the team behind premium peptides.');
+        setMetaKeywords('about us, ascendra bio, peptides, team, mission');
         setOgImage('');
         setContent(`
 <h2>Our Mission</h2>
@@ -83,9 +83,9 @@ export default function NewContentPage() {
         setPageType('STATIC_PAGE');
         setStatus('PUBLISHED');
         setExcerpt('Reach our support and sales teams.');
-        setMetaTitle('Contact Us | Centre Labs');
-        setMetaDescription('Contact Centre Labs for product questions, orders, and support.');
-        setMetaKeywords('contact, support, sales, centre research');
+        setMetaTitle('Contact Us | Ascendra Bio');
+        setMetaDescription('Contact Ascendra Bio for product questions, orders, and support.');
+        setMetaKeywords('contact, support, sales, ascendra bio');
         setOgImage('');
         setContent(`
 <h2>We'd love to hear from you</h2>
@@ -99,8 +99,8 @@ export default function NewContentPage() {
         setPageType('LEGAL_PAGE');
         setStatus('PUBLISHED');
         setExcerpt('Your privacy matters. Read how we collect and use data.');
-        setMetaTitle('Privacy Policy | Centre Labs');
-        setMetaDescription('Learn how Centre Labs collects, uses, and safeguards your data.');
+        setMetaTitle('Privacy Policy | Ascendra Bio');
+        setMetaDescription('Learn how Ascendra Bio collects, uses, and safeguards your data.');
         setMetaKeywords('privacy policy, data protection, GDPR');
         setOgImage('');
         setContent(`
@@ -121,8 +121,8 @@ export default function NewContentPage() {
         setPageType('LEGAL_PAGE');
         setStatus('PUBLISHED');
         setExcerpt('Please review our terms before using our services.');
-        setMetaTitle('Terms of Service | Centre Labs');
-        setMetaDescription('Read Centre Labs Terms of Service covering use, liability, and compliance.');
+        setMetaTitle('Terms of Service | Ascendra Bio');
+        setMetaDescription('Read Ascendra Bio Terms of Service covering use, liability, and compliance.');
         setMetaKeywords('terms of service, terms, agreement, usage');
         setOgImage('');
         setContent(`

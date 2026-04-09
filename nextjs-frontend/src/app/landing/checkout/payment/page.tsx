@@ -432,7 +432,7 @@ function PaymentPageContent() {
       setPaymentInstructions({
         type: 'wire',
         title: 'Wire Transfer Instructions',
-        company: 'Centre Research Inc',
+        company: 'Ascendra Bio Inc',
         address: '383 Madison Avenue, New York, NY 10179',
         accountNumber: '716397685',
         routingNumber: '021000021',
@@ -553,7 +553,7 @@ function PaymentPageContent() {
       setShowPaymentInstructions(false);
       setIsManualResult(true);
       setResultSuccess(true);
-      setResultMessage('Your order has been placed successfully. Please share your payment details with Centre Research for confirmation.');
+      setResultMessage('Your order has been placed successfully. Please share your payment details with Ascendra Bio for confirmation.');
       setResultOpen(true);
       setManualCountdown(10);
     } catch (err: any) {

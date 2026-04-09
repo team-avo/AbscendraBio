@@ -615,11 +615,11 @@ function SeoSettings() {
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="site-name">Site Name</Label>
-                        <Input id="site-name" value={siteName} onChange={(e) => setSiteName(e.target.value)} placeholder="Centre Research" />
+                        <Input id="site-name" value={siteName} onChange={(e) => setSiteName(e.target.value)} placeholder="Ascendra Bio" />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="site-title">Site Title</Label>
-                        <Input id="site-title" value={defaultTitle} onChange={(e) => setDefaultTitle(e.target.value)} placeholder="Centre Research - Premium Peptides" />
+                        <Input id="site-title" value={defaultTitle} onChange={(e) => setDefaultTitle(e.target.value)} placeholder="Ascendra Bio - Premium Peptides" />
                     </div>
 
                     <div className="space-y-2">

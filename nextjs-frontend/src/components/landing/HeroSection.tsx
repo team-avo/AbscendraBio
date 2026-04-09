@@ -73,8 +73,8 @@ export function HeroSection() {
             className="flex flex-wrap items-center gap-6 lg:gap-8 justify-start"
           >
             {[
-              { icon: Award, label: "99% purity, backed by COA's", color: "text-yellow-600" },
-              { icon: Zap, label: "24hr Shipping", color: "text-green-600" },
+              { icon: Award, label: "99% purity, backed by COA's", color: "text-[#7EB3D8]" },
+              { icon: Zap, label: "24hr Shipping", color: "text-[#3A6FA0]" },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm">
@@ -159,8 +159,8 @@ function ConstellationCanvas() {
     ];
     // Match hero heading accent colors: red and green
     const palette = [
-      { hex: "#ef4444", rgba: [239, 68, 68] as [number, number, number] }, // red-500
-      { hex: "#22c55e", rgba: [34, 197, 94] as [number, number, number] },  // green-500
+      { hex: "#1B2D4F", rgba: [27, 45, 79] as [number, number, number] }, // navy
+      { hex: "#3A6FA0", rgba: [58, 111, 160] as [number, number, number] },  // steel blue
     ];
 
     const clamp = (v: number, min: number, max: number) => (v < min ? min : v > max ? max : v);

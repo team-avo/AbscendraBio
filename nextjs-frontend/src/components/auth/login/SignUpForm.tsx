@@ -93,8 +93,8 @@ export function SignUpForm({
 }: SignUpFormProps) {
     return (
         <form onSubmit={onSubmit} className="space-y-6">
-            <div>
-                <Label className="mb-1 block" htmlFor="email">Email address <span className="text-red-500">*</span></Label>
+            <div className="space-y-2">
+                <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="email">Email address <span className="text-red-500">*</span></Label>
                 <Input
                     id="email-signup"
                     name="email"
@@ -110,8 +110,8 @@ export function SignUpForm({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <Label className="mb-1 block" htmlFor="firstName">First name <span className="text-red-500">*</span></Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="firstName">First name <span className="text-red-500">*</span></Label>
                     <Input
                         required
                         id="firstName"
@@ -122,8 +122,8 @@ export function SignUpForm({
                     />
                     {errors.firstName && (<p className="mt-1 text-sm text-red-600">{errors.firstName}</p>)}
                 </div>
-                <div>
-                    <Label className="mb-1 block" htmlFor="lastName">Last name <span className="text-red-500">*</span></Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="lastName">Last name <span className="text-red-500">*</span></Label>
                     <Input
                         required
                         id="lastName"
@@ -137,8 +137,8 @@ export function SignUpForm({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <Label className="mb-1 block" htmlFor="companyName">Company</Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="companyName">Company</Label>
                     <Input
                         id="companyName"
                         value={companyName}
@@ -146,8 +146,8 @@ export function SignUpForm({
                         placeholder="e.g., RefinedMD"
                     />
                 </div>
-                <div className="space-y-1.5 flex-1">
-                    <Label htmlFor="licenseNumber" className="text-sm font-semibold text-gray-700">NPI / License Number <span className="text-red-500">*</span></Label>
+                <div className="space-y-2 flex-1">
+                    <Label htmlFor="licenseNumber" className="text-sm font-semibold text-gray-700 ml-1 block">NPI / License Number <span className="text-red-500">*</span></Label>
                     <Input
                         id="licenseNumber"
                         placeholder="e.g., 1234567890"
@@ -159,8 +159,8 @@ export function SignUpForm({
                 </div>
             </div>
 
-            <div className="space-y-1.5">
-                <Label htmlFor="mobile" className="text-sm font-semibold text-gray-700">Mobile Number <span className="text-red-500">*</span></Label>
+            <div className="space-y-2">
+                <Label htmlFor="mobile" className="text-sm font-semibold text-gray-700 ml-1 block">Mobile Number <span className="text-red-500">*</span></Label>
                 <div className="relative group">
                     <PhoneInputWithFlag
                         id="mobile"
@@ -174,8 +174,8 @@ export function SignUpForm({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <Label className="mb-1 block" htmlFor="city">City</Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="city">City</Label>
                     <CitySelector
                         id="city"
                         value={city}
@@ -183,8 +183,8 @@ export function SignUpForm({
                         placeholder="Select city"
                     />
                 </div>
-                <div>
-                    <Label className="mb-1 block" htmlFor="zip">ZIP Code</Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="zip">ZIP Code</Label>
                     <Input
                         id="zip"
                         value={zip}
@@ -194,9 +194,9 @@ export function SignUpForm({
                 </div>
             </div>
 
-            <div>
-                <Label className="mb-1 block" htmlFor="password-signup">Password <span className="text-red-500">*</span></Label>
-                <p className="text-xs text-gray-500 mb-2">Minimum 4 characters, no spaces</p>
+            <div className="space-y-2">
+                <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="password-signup">Password <span className="text-red-500">*</span></Label>
+                <p className="text-xs text-gray-500 ml-1 mb-2 block">Minimum 4 characters, no spaces</p>
                 <div className="relative">
                     <Input
                         id="password-signup"

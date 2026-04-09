@@ -34,7 +34,7 @@ export default function GeneralSettingsPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="store-name">Store Name</Label>
-                  <Input id="store-name" type="text" defaultValue="Centre Research" />
+                  <Input id="store-name" type="text" defaultValue="Ascendra Bio" />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="store-description">Description</Label>

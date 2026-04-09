@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Login | Centre Labs",
-    description: "Sign in or create an account at Centre Labs",
+    title: "Login | Ascendra Bio",
+    description: "Sign in or create an account at Ascendra Bio",
 };
 
 // Simple layout for login page - no SEO scripts needed

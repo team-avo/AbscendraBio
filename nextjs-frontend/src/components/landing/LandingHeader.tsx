@@ -13,6 +13,7 @@ import { CartSidebar } from "@/components/cart/CartSidebar";
 import { Menu, ShoppingCart, User, List, LogOut, LayoutDashboard, Copy, Check as CheckIcon, Tag } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useEffect, useState, useMemo } from "react";
@@ -32,6 +33,14 @@ export default function LandingHeader() {
   const [contactMessage, setContactMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [couponCopied, setCouponCopied] = useState<boolean>(false);
+
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
+
+  const handleOpenAuthModal = (view: 'customer' | 'admin') => {
+    setAuthModalView(view);
+    setAuthModalOpen(true);
+  };
 
   const isLinkActive = (href: string): boolean => {
     try {
@@ -146,7 +155,7 @@ export default function LandingHeader() {
           <Link href="/landing" className="flex items-center space-x-3">
             <Image
               src="/logo.png"
-              alt="Centre Labs"
+              alt="Ascendra Bio"
               width={210}
               height={70}
               className="h-14 sm:h-16 w-auto"
@@ -154,24 +163,24 @@ export default function LandingHeader() {
           </Link>
 
           <nav className="hidden md:flex space-x-8">
-            <Link href="/landing" className={`font-medium transition-colors relative group ${isHome ? "text-red-600" : "text-gray-600 hover:text-red-500"}`}>
+            <Link href="/landing" className={`font-medium transition-colors relative group ${isHome ? "text-[#1B2D4F]" : "text-gray-600 hover:text-[#3A6FA0]"}`}>
               Home
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-red-500 transition-all ${isHome ? "w-full" : "w-0 group-hover:w-full"}`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#1B2D4F] transition-all ${isHome ? "w-full" : "w-0 group-hover:w-full"}`} />
             </Link>
-            <Link href="/landing/products" className={`font-medium transition-colors relative group ${isProducts ? "text-green-600" : "text-gray-600 hover:text-green-500"}`}>
+            <Link href="/landing/products" className={`font-medium transition-colors relative group ${isProducts ? "text-[#3A6FA0]" : "text-gray-600 hover:text-[#3A6FA0]"}`}>
               Products
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-500 transition-all ${isProducts ? "w-full" : "w-0 group-hover:w-full"}`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#3A6FA0] transition-all ${isProducts ? "w-full" : "w-0 group-hover:w-full"}`} />
             </Link>
-            <Link href="/landing/third-party-testing" className={`font-medium transition-colors relative group ${isThirdPartyTesting ? "text-red-600" : "text-gray-600 hover:text-red-500"}`}>
+            <Link href="/landing/third-party-testing" className={`font-medium transition-colors relative group ${isThirdPartyTesting ? "text-[#1B2D4F]" : "text-gray-600 hover:text-[#3A6FA0]"}`}>
               3rd Party Testing
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-red-500 transition-all ${isThirdPartyTesting ? "w-full" : "w-0 group-hover:w-full"}`} />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#1B2D4F] transition-all ${isThirdPartyTesting ? "w-full" : "w-0 group-hover:w-full"}`} />
             </Link>
             {extraLinks.map((lnk) => {
               const active = isLinkActive(lnk.href);
               return (
-                <Link key={`${lnk.title}-${lnk.href}`} href={lnk.href} target={lnk.target} rel={lnk.target === "_blank" ? "noopener noreferrer" : undefined} className={`font-medium transition-colors relative group ${active ? "text-red-600" : "text-gray-600 hover:text-red-500"}`}>
+                <Link key={`${lnk.title}-${lnk.href}`} href={lnk.href} target={lnk.target} rel={lnk.target === "_blank" ? "noopener noreferrer" : undefined} className={`font-medium transition-colors relative group ${active ? "text-[#1B2D4F]" : "text-gray-600 hover:text-[#3A6FA0]"}`}>
                   {lnk.title}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-red-500 transition-all ${active ? "w-full" : "w-0 group-hover:w-full"}`} />
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#1B2D4F] transition-all ${active ? "w-full" : "w-0 group-hover:w-full"}`} />
                 </Link>
               );
             })}
@@ -180,10 +189,10 @@ export default function LandingHeader() {
           <div className="hidden md:flex items-center gap-3">
             <CartSidebar
               trigger={
-                <Button variant="outline" size="icon" aria-label="Cart" className="relative border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">
+                <Button variant="outline" size="icon" aria-label="Cart" className="relative border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">
                   <ShoppingCart className="h-5 w-5" />
                   {items.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    <span className="absolute -top-1 -right-1 bg-[#1B2D4F] text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                       {items.reduce((sum, it) => sum + it.quantity, 0)}
                     </span>
                   )}
@@ -193,7 +202,7 @@ export default function LandingHeader() {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button aria-label="Account menu" className="rounded-full border border-gray-300 p-0.5 hover:border-green-500">
+                  <button aria-label="Account menu" className="rounded-full border border-gray-300 p-0.5 hover:border-[#3A6FA0]">
                     <Avatar className="h-9 w-9">
                       <AvatarImage src="" alt="Account" />
                       <AvatarFallback>
@@ -263,15 +272,9 @@ export default function LandingHeader() {
               </DropdownMenu>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">Login</Button>
-                </Link>
-                <Link href="/admin/login">
-                  <Button variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-red-500">Admin Login</Button>
-                </Link>
-                <Link href="/login?tab=signup">
-                  <Button className="bg-black text-white hover:bg-black border-0 px-6 py-2 font-semibold">Sign Up</Button>
-                </Link>
+                <Button onClick={() => handleOpenAuthModal('customer')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
+                <Button onClick={() => handleOpenAuthModal('admin')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
+                <Button onClick={() => { handleOpenAuthModal('customer'); /* We should ideally pass signup tab or CustomerAuthModule handles it based on a query param or internal state if possible, but let's just open customer modal for now */ }} className="bg-black text-white hover:bg-black border-0 px-6 py-2 font-semibold">Sign Up</Button>
                 <Button onClick={() => setOpenContact(true)} className="bg-foreground text-background hover:opacity-90 border-0 px-6 py-2 font-semibold">Contact Lab</Button>
               </>
             )}
@@ -284,7 +287,7 @@ export default function LandingHeader() {
                 <Button variant="outline" size="icon" aria-label="Cart" className="relative">
                   <ShoppingCart className="h-5 w-5" />
                   {items.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    <span className="absolute -top-1 -right-1 bg-[#1B2D4F] text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                       {items.reduce((sum, it) => sum + it.quantity, 0)}
                     </span>
                   )}
@@ -303,7 +306,7 @@ export default function LandingHeader() {
                 </SheetHeader>
                 <div className="flex flex-col h-full">
                   <div className="p-6 border-b flex items-center gap-3">
-                    <Image src="/logo.png" alt="Centre Labs" width={140} height={42} className="h-10 w-auto" />
+                    <Image src="/logo.png" alt="Ascendra Bio" width={140} height={42} className="h-10 w-auto" />
                   </div>
                   <nav className="flex-1 p-6 space-y-2">
                     <Link href="/landing" className={`block px-4 py-4 text-lg rounded-md ${isHome ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}>Home</Link>
@@ -321,15 +324,15 @@ export default function LandingHeader() {
                       <>
                         {hasRole(["ADMIN", "MANAGER", "STAFF"]) ? (
                           <Link href="/">
-                            <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">Dashboard</Button>
+                            <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Dashboard</Button>
                           </Link>
                         ) : (
                           <>
                             <Link href="/account">
-                              <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">My Account</Button>
+                              <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">My Account</Button>
                             </Link>
                             <Link href="/account/orders">
-                              <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">My Orders</Button>
+                              <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">My Orders</Button>
                             </Link>
                           </>
                         )}
@@ -337,15 +340,9 @@ export default function LandingHeader() {
                       </>
                     ) : (
                       <>
-                        <Link href="/login">
-                          <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-green-500">Login</Button>
-                        </Link>
-                        <Link href="/admin/login">
-                          <Button variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-red-500">Admin Login</Button>
-                        </Link>
-                        <Link href="/login?tab=signup">
-                          <Button className="w-full bg-green-600 text-white hover:bg-green-700">Sign Up</Button>
-                        </Link>
+                        <Button onClick={() => handleOpenAuthModal('customer')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
+                        <Button onClick={() => handleOpenAuthModal('admin')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
+                        <Button onClick={() => handleOpenAuthModal('customer')} className="w-full bg-[#3A6FA0] text-white hover:bg-[#1B2D4F]">Sign Up</Button>
                         <button onClick={() => setOpenContact(true)}>
                           <Button className="w-full bg-foreground text-background hover:opacity-90">Contact Lab</Button>
                         </button>
@@ -388,6 +385,8 @@ export default function LandingHeader() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AuthModal isOpen={authModalOpen} onOpenChange={setAuthModalOpen} defaultView={authModalView} />
     </header>
   );
 }

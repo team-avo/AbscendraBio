@@ -44,12 +44,12 @@ export function SignInForm({
     clearErrors,
 }: SignInFormProps) {
     return (
-        <>
+        <div>
             <form onSubmit={onSubmit} className="space-y-6">
-                <div>
-                    <Label className="mb-1 block" htmlFor="email">Email address <span className="text-red-500">*</span></Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="email-signin">Email address <span className="text-red-500">*</span></Label>
                     <Input
-                        id="email"
+                        id="email-signin"
                         name="email"
                         type="email"
                         autoComplete="email"
@@ -65,8 +65,8 @@ export function SignInForm({
                     />
                     {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
                 </div>
-                <div>
-                    <Label className="mb-1 block" htmlFor="password">Password <span className="text-red-500">*</span></Label>
+                <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="password">Password <span className="text-red-500">*</span></Label>
                     <div className="relative">
                         <Input
                             id="password"
@@ -114,6 +114,48 @@ export function SignInForm({
                 </Button>
             </form>
 
+            <div className="mt-8 border-t border-gray-100 pt-6">
+                <p className="text-xs text-center text-gray-500 mb-4 font-medium uppercase tracking-wider">Demo Credentials</p>
+                <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs h-9 rounded-full bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                        onClick={() => { setEmail('admin@example.com'); setPassword('SecurePass123!'); clearErrors('email'); clearErrors('password'); }}
+                    >
+                        Admin (Dashboard)
+                    </Button>
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs h-9 rounded-full bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                        onClick={() => { setEmail('manager@example.com'); setPassword('SecurePass123!'); clearErrors('email'); clearErrors('password'); }}
+                    >
+                        Manager (Dashboard)
+                    </Button>
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs h-9 rounded-full bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                        onClick={() => { setEmail('staff@example.com'); setPassword('SecurePass123!'); clearErrors('email'); clearErrors('password'); }}
+                    >
+                        Staff (Dashboard)
+                    </Button>
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs h-9 rounded-full bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                        onClick={() => { setEmail('john.doe@example.com'); setPassword('SecurePass123!'); clearErrors('email'); clearErrors('password'); }}
+                    >
+                        Customer (Store)
+                    </Button>
+                </div>
+            </div>
+
             <div className="mt-6 text-center">
                 <button
                     type="button"
@@ -123,6 +165,6 @@ export function SignInForm({
                     Login using email one-time verification code
                 </button>
             </div>
-        </>
+        </div>
     );
 }

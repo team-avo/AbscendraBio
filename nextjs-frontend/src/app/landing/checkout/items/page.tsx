@@ -695,7 +695,7 @@ export default function CheckoutItemsPage() {
                 <label htmlFor="checkout-terms-checkbox" className="flex-1 cursor-pointer">
                   <h3 className="text-red-800 font-bold mb-2">Important Note</h3>
                   <div className="text-black text-sm leading-relaxed">
-                    Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law. These products are not FDA approved and are not intended to diagnose, treat, cure or prevent any medical disease or condition. Any and all content provided on this website is strictly for informational and educational purposes and should not be interpreted as medical advice. Centre Labs does not take any responsibility for distribution or use of these products.
+                    Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law. These products are not FDA approved and are not intended to diagnose, treat, cure or prevent any medical disease or condition. Any and all content provided on this website is strictly for informational and educational purposes and should not be interpreted as medical advice. Ascendra Bio does not take any responsibility for distribution or use of these products.
                   </div>
                 </label>
               </div>

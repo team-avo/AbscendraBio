@@ -9,8 +9,8 @@ import { Barlow } from "next/font/google";
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
 const testimonials = [
-  { id: 1, name: "Dr. Paul Somano", title: "New Smyrna Beach Family Practice", company: "New Smyrna Beach Family Practice", rating: 5, text: "I have been so happy since switching to a Lab from a pharmacy. When I used pharmacies I had to order for particular patients. Then it took however long it took to get the medication for the patient. Tedious and time consuming. Patients frequently ran out of medicine. Now I order a sufficient quantity and it’s there the next day, two max. Almost impossible to match that level of service. I have never once had a late order from centre labs. Never. Not one. I have yet had to apologize to a patient for not having their medications. This was not the case with multiple prior suppliers. Superior products at competitive prices with excellent customer service. My patients expect that and I deserve it. Centre delivers it.", image: "https://images.unsplash.com/photo-1618053448748-b7251851d014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", labBackground: "https://images.unsplash.com/photo-1739515054273-a2956b1e094a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" },
-  { id: 2, name: "Dr. Aleksandra Gajer", title: "The Gajer Practice", company: "The Gajer Practice", rating: 5, text: "Centre Labs peptides have significantly upleveled my practice. They are truly the highest quality peptides that have been game-changers in my patients’ health. Ben and Nick are incredible to work with and I couldn’t ask for a better partnership!", image: "https://images.unsplash.com/photo-1618053448748-b7251851d014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", labBackground: "https://images.unsplash.com/photo-1739515054273-a2956b1e094a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" },
+  { id: 1, name: "Dr. Paul Somano", title: "New Smyrna Beach Family Practice", company: "New Smyrna Beach Family Practice", rating: 5, text: "I have been so happy since switching to a Lab from a pharmacy. When I used pharmacies I had to order for particular patients. Then it took however long it took to get the medication for the patient. Tedious and time consuming. Patients frequently ran out of medicine. Now I order a sufficient quantity and it’s there the next day, two max. Almost impossible to match that level of service. I have never once had a late order from Ascendra Bio. Never. Not one. I have yet had to apologize to a patient for not having their medications. This was not the case with multiple prior suppliers. Superior products at competitive prices with excellent customer service. My patients expect that and I deserve it. Ascendra delivers it.", image: "https://images.unsplash.com/photo-1618053448748-b7251851d014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", labBackground: "https://images.unsplash.com/photo-1739515054273-a2956b1e094a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" },
+  { id: 2, name: "Dr. Aleksandra Gajer", title: "The Gajer Practice", company: "The Gajer Practice", rating: 5, text: "Ascendra Bio peptides have significantly upleveled my practice. They are truly the highest quality peptides that have been game-changers in my patients’ health. Ben and Nick are incredible to work with and I couldn’t ask for a better partnership!", image: "https://images.unsplash.com/photo-1618053448748-b7251851d014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", labBackground: "https://images.unsplash.com/photo-1739515054273-a2956b1e094a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" },
   // { id: 3, name: "Dr. Emily Watson", title: "Senior Scientist", company: "Johns Hopkins University", rating: 5, text: "The customer service team is incredibly knowledgeable and responsive.", image: "https://images.unsplash.com/photo-1618053448748-b7251851d014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", labBackground: "https://images.unsplash.com/photo-1739515054273-a2956b1e094a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" },
 ];
 
@@ -59,7 +59,7 @@ export function TestimonialsSection() {
                         <div className="flex items-center justify-center gap-6">
                           <div className="text-center">
                             <motion.h4 className="text-lg font-bold text-foreground mb-1">{testimonial.name}</motion.h4>
-                            <p className="text-green-600 font-medium">{testimonial.title}</p>
+                            <p className="text-[#3A6FA0] font-medium">{testimonial.title}</p>
                             {/* <p className="text-muted-foreground text-sm">{testimonial.company}</p> */}
                           </div>
                         </div>
@@ -73,12 +73,12 @@ export function TestimonialsSection() {
             {/* Vertically centered arrow wrappers pinned to container edges */}
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
               <Button onClick={prevTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm transition-all duration-300 group" size="icon">
-                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-green-600 transition-colors duration-300" />
+                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-[#3A6FA0] transition-colors duration-300" />
               </Button>
             </div>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <Button onClick={nextTestimonial} className="pointer-events-auto w-12 h-12 md:w-14 md:h-14 rounded-full bg-card/70 hover:bg-card border border-border backdrop-blur-sm transition-all duration-300 group" size="icon">
-                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-green-600 transition-colors duration-300" />
+                <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-foreground group-hover:text-[#3A6FA0] transition-colors duration-300" />
               </Button>
             </div>
           </div>
