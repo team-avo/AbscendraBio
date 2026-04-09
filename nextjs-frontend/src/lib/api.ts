@@ -81,6 +81,12 @@ export const resolveImageUrl = (url?: string | null): string => {
   const fallback = "/peptide-vial-bpc157.png";
   if (!url) return fallback;
   if (/^https?:\/\//i.test(url)) return url;
+
+  // If it's a known frontend asset directory, return as is
+  if (url.startsWith('/peptide-ab/') || url.startsWith('/products/') || url.startsWith('/avatars/') || url.startsWith('/logo')) {
+    return url;
+  }
+
   try {
     const base = API_BASE_URL.replace(/\/$/, "").replace(/\/api$/, "");
     const path = url.startsWith("/") ? url : `/${url}`;

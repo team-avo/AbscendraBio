@@ -24,11 +24,7 @@ export default function LandingProductsPage() {
 
   useEffect(() => {
     const fetchFirstPage = async () => {
-      // Only fetch products if user is authenticated
-      if (!isAuthenticated) {
-        setLoading(false);
-        return;
-      }
+      // Allow fetching products without authentication for landing page visibility
 
       try {
         const limit = 24;
@@ -95,7 +91,7 @@ export default function LandingProductsPage() {
   }, [isAuthenticated]);
 
   const loadMore = async () => {
-    if (loadingMore || !isAuthenticated) return;
+    if (loadingMore) return;
     const nextPage = page + 1;
     if (nextPage > totalPages) return;
     try {
@@ -155,7 +151,7 @@ export default function LandingProductsPage() {
 
   // Infinite scroll: observe sentinel
   useEffect(() => {
-    if (!isAuthenticated) return;
+    // Allow infinite scroll for public users too
     const node = sentinelRef.current;
     if (!node) return;
     const observer = new IntersectionObserver((entries) => {
@@ -174,7 +170,7 @@ export default function LandingProductsPage() {
     <div className="force-light min-h-screen bg-white text-black">
       <LandingHeader />
 
-      {/* Hero Banner with Responsive Images (Commented Out)
+      {/* Hero Banner with Responsive Images */}
       <div className="w-full">
         <div className="hidden sm:block relative w-full aspect-[3072/750]">
           <Image
@@ -195,7 +191,6 @@ export default function LandingProductsPage() {
           />
         </div>
       </div>
-      */}
 
       {/* Text Header */}
       <div className="w-full bg-[#f8f9fa] py-12 sm:py-16 text-center">
@@ -212,31 +207,7 @@ export default function LandingProductsPage() {
 
       {/* Client list */}
       <div className="px-4 sm:px-6 lg:px-8">
-        {!isAuthenticated ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="text-center max-w-md">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h3>
-              <p className="text-gray-600 mb-8">Please sign in to your account to view our premium Physician Directed and place orders.</p>
-              <div className="space-y-3">
-                <Link href="/login">
-                  <Button className="w-full bg-black text-white hover:bg-gray-800">
-                    Sign In to View Products
-                  </Button>
-                </Link>
-                <Link href="/login?tab=signup">
-                  <Button variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
-                    Create New Account
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : loading ? (
+        {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>

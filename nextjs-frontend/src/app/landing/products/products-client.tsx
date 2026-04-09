@@ -43,7 +43,7 @@ import { getPricingCustomerType } from '@/utils/pricingMapper'
 
 export default function ProductsClient({ products }: Props) {
   const { add, items, update } = useCart()
-  const { user } = useAuth()
+  const { user, openLoginModal, isAuthenticated } = useAuth()
   const router = useRouter()
   const [addingId, setAddingId] = useState<string | number | null>(null)
   const [customerType, setCustomerType] = useState<'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined>(undefined)
@@ -369,7 +369,7 @@ export default function ProductsClient({ products }: Props) {
                     </div>
                   </div>
                   <div className="space-y-3 mt-auto">
-                    {user && (
+                    {isAuthenticated ? (
                       <div className="flex items-center space-x-2">
                         {(() => {
                           const pr = priceForCustomerType(p); return (
@@ -380,6 +380,10 @@ export default function ProductsClient({ products }: Props) {
                           )
                         })()}
                       </div>
+                    ) : (
+                       <div className="py-1">
+                         <span className="text-sm font-medium text-gray-400 italic">Login to view pricing</span>
+                       </div>
                     )}
                     <div className="flex space-x-2 items-stretch">
                       {(() => {
@@ -411,10 +415,14 @@ export default function ProductsClient({ products }: Props) {
                         return (
                           <Button
                             className={`flex-1 bg-gradient-to-r ${justAdded[p.id] ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600'} hover:opacity-90 text-white border-0`}
-                            disabled={!user || !p.inStock || !p._firstVariantId || addingId === p.id}
+                            disabled={!p.inStock || !p._firstVariantId || addingId === p.id}
                             onClick={async (e) => {
                               e.stopPropagation();
-                              if (!user) { toast.info('Please sign in to add items'); return }
+                              if (!isAuthenticated) { 
+                                toast.info('Please sign in to add items to your cart'); 
+                                openLoginModal('customer');
+                                return 
+                              }
                               if (!p._firstVariantId) return
                               setAddingId(p.id)
                               const pr = priceForCustomerType(p)
@@ -430,7 +438,7 @@ export default function ProductsClient({ products }: Props) {
                             }}
                           >
                             {justAdded[p.id] ? <Check className="w-4 h-4 mr-2" /> : <ShoppingCart className="w-4 h-4 mr-2" />}
-                            {user ? (p.inStock ? (justAdded[p.id] ? 'Added' : addingId === p.id ? 'Adding...' : 'Add to Cart') : 'Out of Stock') : 'Sign in to buy'}
+                            {!isAuthenticated ? 'Login to Buy' : (p.inStock ? (justAdded[p.id] ? 'Added' : addingId === p.id ? 'Adding...' : 'Add to Cart') : 'Out of Stock')}
                           </Button>
                         )
                       })()}

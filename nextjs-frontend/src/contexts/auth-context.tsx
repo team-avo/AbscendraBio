@@ -33,6 +33,12 @@ interface AuthContextType {
   setShowPendingApprovalModal: (show: boolean) => void;
   showEmailVerificationModal: boolean;
   setShowEmailVerificationModal: (show: boolean) => void;
+  // Global Auth Modal
+  showAuthModal: boolean;
+  setShowAuthModal: (show: boolean) => void;
+  authModalView: 'customer' | 'admin';
+  setAuthModalView: (view: 'customer' | 'admin') => void;
+  openLoginModal: (view?: 'customer' | 'admin') => void;
   // Email OTP login
   requestEmailOtp: (email: string) => Promise<{ success: boolean; error?: string }>;
   loginWithEmailOtp: (email: string, code: string, options?: { portal?: 'CUSTOMER' | 'ADMIN'; onError?: (error: string) => void }) => Promise<User | null>;
@@ -57,6 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPendingApprovalModal, setShowPendingApprovalModal] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
   const router = useRouter();
 
   const isAuthenticated = !!user;
@@ -330,10 +338,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     hasRole,
     showPendingApprovalModal,
     setShowPendingApprovalModal,
-    showEmailVerificationModal,
-    setShowEmailVerificationModal,
-    requestEmailOtp,
     loginWithEmailOtp,
+    showAuthModal,
+    setShowAuthModal,
+    authModalView,
+    setAuthModalView,
+    openLoginModal: (view: 'customer' | 'admin' = 'customer') => {
+      setAuthModalView(view);
+      setShowAuthModal(true);
+    }
   };
 
   return (

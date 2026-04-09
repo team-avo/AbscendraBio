@@ -24,7 +24,7 @@ export default function LandingHeader() {
   const isHome = pathname === "/" || pathname === "/landing" || pathname === "/landing/";
   const isProducts = pathname?.startsWith("/landing/products");
   const isThirdPartyTesting = pathname?.startsWith("/landing/third-party-testing");
-  const { isAuthenticated, hasRole, logout, user } = useAuth();
+  const { isAuthenticated, hasRole, logout, user, openLoginModal } = useAuth();
   const { items } = useCart();
 
   const [extraLinks, setExtraLinks] = useState<Array<{ title: string; href: string; target?: string }>>([]);
@@ -34,13 +34,6 @@ export default function LandingHeader() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const [couponCopied, setCouponCopied] = useState<boolean>(false);
 
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
-
-  const handleOpenAuthModal = (view: 'customer' | 'admin') => {
-    setAuthModalView(view);
-    setAuthModalOpen(true);
-  };
 
   const isLinkActive = (href: string): boolean => {
     try {
@@ -272,9 +265,9 @@ export default function LandingHeader() {
               </DropdownMenu>
             ) : (
               <>
-                <Button onClick={() => handleOpenAuthModal('customer')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
-                <Button onClick={() => handleOpenAuthModal('admin')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
-                <Button onClick={() => { handleOpenAuthModal('customer'); /* We should ideally pass signup tab or CustomerAuthModule handles it based on a query param or internal state if possible, but let's just open customer modal for now */ }} className="bg-black text-white hover:bg-black border-0 px-6 py-2 font-semibold">Sign Up</Button>
+                <Button onClick={() => openLoginModal('customer')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
+                <Button onClick={() => openLoginModal('admin')} variant="outline" className="border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
+                <Button onClick={() => openLoginModal('customer')} className="bg-black text-white hover:bg-black border-0 px-6 py-2 font-semibold">Sign Up</Button>
                 <Button onClick={() => setOpenContact(true)} className="bg-foreground text-background hover:opacity-90 border-0 px-6 py-2 font-semibold">Contact Lab</Button>
               </>
             )}
@@ -340,9 +333,9 @@ export default function LandingHeader() {
                       </>
                     ) : (
                       <>
-                        <Button onClick={() => handleOpenAuthModal('customer')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
-                        <Button onClick={() => handleOpenAuthModal('admin')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
-                        <Button onClick={() => handleOpenAuthModal('customer')} className="w-full bg-[#3A6FA0] text-white hover:bg-[#1B2D4F]">Sign Up</Button>
+                        <Button onClick={() => openLoginModal('customer')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Login</Button>
+                        <Button onClick={() => openLoginModal('admin')} variant="outline" className="w-full border-gray-300 text-black hover:bg-gray-50 hover:border-[#3A6FA0]">Admin Login</Button>
+                        <Button onClick={() => openLoginModal('customer')} className="w-full bg-[#3A6FA0] text-white hover:bg-[#1B2D4F]">Sign Up</Button>
                         <button onClick={() => setOpenContact(true)}>
                           <Button className="w-full bg-foreground text-background hover:opacity-90">Contact Lab</Button>
                         </button>
@@ -386,7 +379,6 @@ export default function LandingHeader() {
         </DialogContent>
       </Dialog>
 
-      <AuthModal isOpen={authModalOpen} onOpenChange={setAuthModalOpen} defaultView={authModalView} />
     </header>
   );
 }

@@ -21,11 +21,9 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
     } catch { }
   }, []);
   return (
-    <ProtectedRoute>
-      <div className="force-light min-h-screen bg-white text-black landing-theme" suppressHydrationWarning>
-        {children}
-      </div>
-    </ProtectedRoute>
+    <div className="force-light min-h-screen bg-white text-black landing-theme" suppressHydrationWarning>
+      {children}
+    </div>
   );
 }
 

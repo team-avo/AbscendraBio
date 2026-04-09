@@ -48,6 +48,13 @@ async function main() {
       lastName: "User",
       role: "STAFF",
     },
+    {
+      email: "john.doe@example.com",
+      password: "SecurePass123!",
+      firstName: "John",
+      lastName: "Doe",
+      role: "CUSTOMER",
+    },
   ];
 
   const createdUsers = [];
@@ -162,6 +169,10 @@ async function main() {
       email: "john.doe@example.com",
       mobile: "+1234567890",
       customerType: "B2C",
+      isActive: true,
+      isApproved: true,
+      emailVerified: true,
+      approvalStatus: "APPROVED",
     },
     {
       firstName: "Jane",
@@ -169,6 +180,10 @@ async function main() {
       email: "jane.smith@example.com",
       mobile: "+1234567891",
       customerType: "B2C",
+      isActive: true,
+      isApproved: true,
+      emailVerified: true,
+      approvalStatus: "APPROVED",
     },
     {
       firstName: "Acme",
@@ -176,13 +191,23 @@ async function main() {
       email: "contact@acme.com",
       mobile: "+1234567892",
       customerType: "B2B",
+      isActive: true,
+      isApproved: true,
+      emailVerified: true,
+      approvalStatus: "APPROVED",
     },
   ];
 
   for (const customerData of customers) {
+    const existingUser = createdUsers.find(u => u.email === customerData.email);
     const customer = await prisma.customer.create({
-      data: customerData,
+      data: {
+        ...customerData,
+        user: existingUser ? { connect: { id: existingUser.id } } : undefined
+      },
     });
+
+    // If we linked a user, we should also update the user to link back (Prisma handles this via the relation but let's be explicitly sure if needed, though connect is enough)
     console.log(`✅ Created customer: ${customerData.email}`);
   }
 
@@ -190,129 +215,151 @@ async function main() {
   console.log("📦 Creating sample products...");
   const products = [
     {
-      name: "Peptide Complex A",
-      description: "Advanced peptide complex for muscle recovery and growth",
+      name: "BPC-157",
+      description: "Body Protection Compound-157 is a pentadecapeptide that aids in tissue repair and recovery.",
       status: "ACTIVE",
+      isPopular: true,
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_BPC15710_1024x1024.png"],
       variants: [
         {
-          sku: "PEP-A-30ML",
-          name: "30ml Bottle",
-          description: "30ml peptide complex solution",
-          regularPrice: 89.99,
-          salePrice: 79.99,
-          weight: 0.1,
-          segmentPrices: [
-            {
-              customerType: CustomerType.B2B,
-              regularPrice: 79.99,
-              salePrice: 69.99,
-            },
-            {
-              customerType: CustomerType.ENTERPRISE_1,
-              regularPrice: 69.99,
-              salePrice: 59.99,
-            },
-          ],
-        },
-        {
-          sku: "PEP-A-50ML",
-          name: "50ml Bottle",
-          description: "50ml peptide complex solution",
-          regularPrice: 129.99,
-          salePrice: 119.99,
-          weight: 0.15,
-          segmentPrices: [
-            {
-              customerType: CustomerType.B2B,
-              regularPrice: 119.99,
-              salePrice: 109.99,
-            },
-            {
-              customerType: CustomerType.ENTERPRISE_1,
-              regularPrice: 109.99,
-              salePrice: 99.99,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "Peptide Complex B",
-      description: "Specialized peptide complex for joint health",
-      status: "ACTIVE",
-      variants: [
-        {
-          sku: "PEP-B-30ML",
-          name: "30ml Bottle",
-          description: "30ml peptide complex solution",
-          regularPrice: 99.99,
-          salePrice: 89.99,
-          weight: 0.1,
-          segmentPrices: [
-            {
-              customerType: CustomerType.B2B,
-              regularPrice: 89.99,
-              salePrice: 79.99,
-            },
-            {
-              customerType: CustomerType.ENTERPRISE_1,
-              regularPrice: 79.99,
-              salePrice: 69.99,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "Collagen Peptide Blend",
-      description: "Premium collagen peptides for skin and joint health",
-      status: "ACTIVE",
-      variants: [
-        {
-          sku: "COL-B-50G",
-          name: "50g Powder",
-          description: "50g collagen peptide powder",
-          regularPrice: 45.99,
-          salePrice: 39.99,
+          sku: "BPC-157-10MG",
+          name: "10mg Vial",
+          description: "10mg ultra-pure BPC-157 peptide",
+          regularPrice: 49.99,
+          salePrice: 44.99,
           weight: 0.05,
           segmentPrices: [
-            {
-              customerType: CustomerType.B2B,
-              regularPrice: 39.99,
-              salePrice: 34.99,
-            },
-            {
-              customerType: CustomerType.ENTERPRISE_1,
-              regularPrice: 34.99,
-              salePrice: 29.99,
-            },
+            { customerType: CustomerType.B2B, regularPrice: 39.99, salePrice: 34.99 },
+            { customerType: CustomerType.ENTERPRISE_1, regularPrice: 34.99, salePrice: 29.99 },
+          ],
+        },
+        {
+          sku: "BPC-157-20MG",
+          name: "20mg Vial",
+          description: "20mg ultra-pure BPC-157 peptide",
+          regularPrice: 89.99,
+          salePrice: 79.99,
+          weight: 0.05,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 69.99, salePrice: 64.99 },
+            { customerType: CustomerType.ENTERPRISE_1, regularPrice: 59.99, salePrice: 54.99 },
           ],
         },
       ],
     },
     {
-      name: "Recovery Peptide Stack",
-      description: "Complete recovery peptide stack for athletes",
+      name: "CJC-1295 (DAC)",
+      description: "Growth hormone releasing hormone (GHRH) analog with Drug Affinity Complex for extended half-life.",
       status: "ACTIVE",
+      isPopular: true,
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_CJC1295DAC10_1024x1024.png"],
       variants: [
         {
-          sku: "REC-S-30DAY",
-          name: "30-Day Supply",
-          description: "30-day supply of recovery peptides",
-          regularPrice: 199.99,
-          salePrice: 179.99,
-          weight: 0.3,
+          sku: "CJC-1295-DAC-10MG",
+          name: "10mg Vial",
+          description: "10mg CJC-1295 with DAC",
+          regularPrice: 75.00,
+          salePrice: 65.00,
+          weight: 0.05,
           segmentPrices: [
-            {
-              customerType: CustomerType.B2B,
-              regularPrice: 179.99,
-              salePrice: 159.99,
-            },
-            {
-              customerType: CustomerType.ENTERPRISE_1,
-              regularPrice: 159.99,
-              salePrice: 139.99,
-            },
+            { customerType: CustomerType.B2B, regularPrice: 55.00, salePrice: 50.00 },
+          ],
+        },
+      ],
+    },
+    {
+      name: "CJC-1295 + Ipamorelin",
+      description: "A synergistic blend of CJC-1295 and Ipamorelin for optimal growth hormone optimization.",
+      status: "ACTIVE",
+      isPopular: true,
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_CJCIpa55_1024x1024.png"],
+      variants: [
+        {
+          sku: "CJC-IPA-55MG",
+          name: "5mg/5mg Blend",
+          description: "5mg CJC-1295 + 5mg Ipamorelin",
+          regularPrice: 110.00,
+          salePrice: 95.00,
+          weight: 0.05,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 85.00, salePrice: 75.00 },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Cagrilintide",
+      description: "A long-acting amylin analogue for weight management and metabolic health.",
+      status: "ACTIVE",
+      isPopular: true,
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_Cagrilintide10_1024x1024.png"],
+      variants: [
+        {
+          sku: "CAGRI-10MG",
+          name: "10mg Vial",
+          description: "10mg research-grade Cagrilintide",
+          regularPrice: 150.00,
+          salePrice: 135.00,
+          weight: 0.05,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 120.00, salePrice: 110.00 },
+          ],
+        },
+      ],
+    },
+    {
+      name: "AOD-9604",
+      description: "Anti-Obesity Drug peptide fragment derived from Human Growth Hormone.",
+      status: "ACTIVE",
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_AOD9645_1024x1024.png"],
+      variants: [
+        {
+          sku: "AOD-9604-5MG",
+          name: "5mg Vial",
+          description: "5mg AOD-9604 peptide",
+          regularPrice: 55.00,
+          salePrice: 49.00,
+          weight: 0.05,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 45.00, salePrice: 40.00 },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Epithalon",
+      description: "Synthetically derived peptide known for its anti-aging and telomere lengthening properties.",
+      status: "ACTIVE",
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_Epithalon10_1024x1024.png"],
+      variants: [
+        {
+          sku: "EPI-10MG",
+          name: "10mg Vial",
+          description: "10mg Epithalon (Epitalon)",
+          regularPrice: 65.00,
+          salePrice: 58.00,
+          weight: 0.05,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 50.00, salePrice: 45.00 },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Cerebrolysin",
+      description: "A mixture of neuropeptides and free amino acids for neuroprotection and repair.",
+      status: "ACTIVE",
+      images: ["/peptide-ab/PeptideVial_WhiteLabel_Cerebroylsin30_1024x1024.png"],
+      variants: [
+        {
+          sku: "CEREBRO-30ML",
+          name: "30ml Solution",
+          description: "30ml concentration of Cerebrolysin",
+          regularPrice: 120.00,
+          salePrice: 105.00,
+          weight: 0.1,
+          segmentPrices: [
+            { customerType: CustomerType.B2B, regularPrice: 90.00, salePrice: 80.00 },
           ],
         },
       ],
@@ -320,10 +367,13 @@ async function main() {
   ];
 
   for (const product of products) {
-    const { variants, ...productData } = product;
+    const { variants, images, ...productData } = product;
     const createdProduct = await prisma.product.create({
       data: {
         ...productData,
+        images: {
+          create: (images || []).map(url => ({ url, altText: product.name }))
+        },
         variants: {
           create: variants.map((variant) => {
             const { segmentPrices, ...variantData } = variant;
@@ -339,6 +389,9 @@ async function main() {
     });
     console.log(`Created product: ${createdProduct.name}`);
   }
+
+
+
 
   // Create default warehouse location
   console.log("🏢 Creating default warehouse location...");

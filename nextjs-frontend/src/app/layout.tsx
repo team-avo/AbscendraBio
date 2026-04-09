@@ -11,6 +11,7 @@ import { GooglePlacesProvider } from "@/contexts/google-places-context";
 import { Suspense } from "react";
 import GlobalFallback from "@/components/ui/global-fallback";
 import { PendingApprovalModal } from "@/components/auth/PendingApprovalModal";
+import { GlobalAuthModal } from "@/components/auth/GlobalAuthModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     ...base,
     icons: {
-      icon: "/favicon.png",
+      icon: "/logo.png",
     },
   };
 }
@@ -63,6 +64,7 @@ export default function RootLayout({
               </GooglePlacesProvider>
               <Toaster />
               <PendingApprovalModal />
+              <GlobalAuthModal />
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

@@ -27,8 +27,7 @@ export default function LandingProductDetailPage() {
   const params = useParams<{ id: string }>();
   const productId = params?.id as string;
   const { add } = useCart();
-  const { user } = useAuth();
-  const isLoggedIn = !!user;
+  const { user, isAuthenticated, openLoginModal } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -384,7 +383,7 @@ export default function LandingProductDetailPage() {
                 {/* Reviews removed per request */}
 
                 <div className="flex flex-wrap items-end gap-2 sm:space-x-4 mt-4 sm:mt-6">
-                  {isLoggedIn ? (
+                  {isAuthenticated ? (
                     <>
                       {selectedVariantId && typeof vialAmount === 'number' ? (
                         <>
@@ -397,7 +396,6 @@ export default function LandingProductDetailPage() {
                                 </Badge>
                               )}
                             </div>
-
                           </div>
                           {ui.originalPrice && (
                             <span className="text-xl sm:text-2xl text-gray-500 line-through sm:mb-2">${(ui.originalPrice * vialAmount * quantity).toFixed(2)}</span>
@@ -407,11 +405,13 @@ export default function LandingProductDetailPage() {
                           )}
                         </>
                       ) : (
-                        <span className="text-base sm:text-lg text-gray-600">Please select variant and vial amount to view price</span>
+                        <span className="text-base sm:text-lg text-gray-600">Please select variant to view price</span>
                       )}
                     </>
                   ) : (
-                    <span className="text-base sm:text-lg text-gray-600">Please sign in to view price</span>
+                    <div className="py-2">
+                       <span className="text-lg font-medium text-gray-400 italic">Sign in to view pricing</span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -600,10 +600,11 @@ export default function LandingProductDetailPage() {
                     ? 'bg-gray-500 cursor-not-allowed'
                     : 'bg-red-600 hover:bg-red-500'
                     }`}
-                  disabled={!ui.inStock || !ui.currentVariantId || !isLoggedIn || typeof vialAmount !== 'number'}
+                  disabled={!ui.inStock || !ui.currentVariantId || (isAuthenticated && typeof vialAmount !== 'number')}
                   onClick={() => {
-                    if (!isLoggedIn) {
+                    if (!isAuthenticated) {
                       toast.info("Please sign in to add to cart");
+                      openLoginModal('customer');
                       return;
                     }
                     if (!ui.currentVariantId) {
@@ -629,9 +630,11 @@ export default function LandingProductDetailPage() {
                 >
                   {!ui.inStock ?
                     "OUT OF STOCK" :
-                    (isLoggedIn && ui.currentVariantId && typeof vialAmount === 'number' ?
+                    (!isAuthenticated ? 
+                      "SIGN IN TO BUY" :
+                      (ui.currentVariantId && typeof vialAmount === 'number' ?
                       `ADD TO CART - $${(ui.price * vialAmount * quantity).toFixed(2)}` :
-                      "ADD TO CART")
+                      "ADD TO CART"))
                   }
                 </Button>
 
