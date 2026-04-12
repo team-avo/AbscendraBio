@@ -37,9 +37,9 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
       </SheetTrigger>
       <SheetContent side="right" className="force-light w-[100vw] max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl p-0 h-dvh overflow-hidden bg-background text-foreground">
         <div className="flex h-full flex-col">
-          <div className="px-4 py-3 border-b">
+          <div className="px-6 py-5 border-b border-primary/5">
             <SheetHeader>
-              <SheetTitle>Cart</SheetTitle>
+              <SheetTitle className="text-2xl font-black uppercase tracking-widest text-primary italic">Clinical Cart</SheetTitle>
             </SheetHeader>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -135,8 +135,8 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                               <div className="flex items-center gap-2">
                                 <span>${price.toFixed(2)}</span>
                                 {isBulkPrice && (
-                                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium">
-                                    Bulk Price
+                                  <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                    Bulk Tier
                                   </span>
                                 )}
                               </div>
@@ -198,7 +198,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                             toast.error(error.message || 'Failed to update quantity');
                           }
                         }}
-                        className="w-12 h-8 text-center text-sm border border-gray-300 rounded focus:border-red-500 focus:outline-none"
+                        className="w-12 h-10 text-center text-sm border-0 bg-primary/5 rounded-xl focus:ring-2 focus:ring-primary/20 focus:outline-none font-bold text-primary"
                       />
                       <Button
                         variant="outline"
@@ -244,7 +244,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                       return (
                         <div className="text-xs mt-1">
                           {isOutOfStock ? (
-                            <div className="text-red-600 font-semibold">
+                            <div className="text-destructive font-black uppercase tracking-widest text-[9px]">
                               ⚠️ Out of Stock (Available: {totalAvailable})
                             </div>
                           ) : totalAvailable > 0 ? (
@@ -298,8 +298,8 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
 
               if (hasOutOfStockItems) {
                 return (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">
-                    ⚠️ Some items are out of stock. Please remove them or reduce quantities to proceed.
+                  <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 text-[10px] font-black uppercase tracking-widest text-destructive">
+                    ⚠️ Allocation Issue: Some items are out of stock. Please adjust quantities.
                   </div>
                 );
               }
@@ -307,7 +307,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
             })()}
 
             <Button
-              className="w-full"
+              className="w-full h-14 rounded-2xl bg-primary hover:bg-ring text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.02]"
               disabled={
                 items.length === 0 ||
                 items.some(it => {
@@ -324,7 +324,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                 router.push('/landing/checkout');
               }}
             >
-              {discount.isEligible ? `Checkout - ${formatCurrency(total)}` : `Checkout - ${formatCurrency(subtotal)}`}
+              {discount.isEligible ? `Secure Checkout - ${formatCurrency(total)}` : `Secure Checkout - ${formatCurrency(subtotal)}`}
             </Button>
             <Link href="/landing/products" className="block">
               <Button variant="outline" className="w-full">Continue Shopping</Button>

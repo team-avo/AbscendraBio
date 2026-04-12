@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Search, Star, ShoppingCart, Eye, Heart, Grid3X3, List, SlidersHorizontal, Check, Minus, Plus } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Search, Star, ShoppingCart, Eye, Heart, Grid3X3, List, SlidersHorizontal, Check, Minus, Plus, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,7 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { motion, AnimatePresence } from 'motion/react'
+import { Barlow } from 'next/font/google'
 import ProductDetailView from '@/components/products/ProductDetailView'
+import { ProductCard } from '@/components/products/ProductCard'
+import { priceForCustomerType } from '@/lib/pricing'
+
+const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800', '900'] });
 
 type Product = {
   id: string | number
@@ -48,41 +55,55 @@ export default function ProductsClient({ products }: Props) {
   const { user, openLoginModal, isAuthenticated } = useAuth()
   const router = useRouter()
   const [quickViewId, setQuickViewId] = useState<string | number | null>(null)
-  const [addingId, setAddingId] = useState<string | number | null>(null)
   const [customerType, setCustomerType] = useState<'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined>(undefined)
   const [favoriteIdsByProduct, setFavoriteIdsByProduct] = useState<Record<string, string>>({})
   const [loadingFavorites, setLoadingFavorites] = useState<boolean>(false)
 
-  // Set customer type based on user's customer information
-  useEffect(() => {
-    if (user?.customer?.customerType) {
-      setCustomerType(user.customer.customerType)
-    } else if (user?.role === 'CUSTOMER') {
-      // Default to B2C if no customer type is set
-      setCustomerType('B2C')
-    }
-  }, [user])
-  function ProductCardImage({ src, alt, sizes, className }: { src: string; alt: string; sizes: string; className?: string }) {
-    const [imgSrc, setImgSrc] = useState(resolveImageUrl(src))
-    return (
-      <img
-        src={imgSrc || resolveImageUrl('/peptide-vial-bpc157.png')}
-        alt={alt}
-        className={className}
-        onError={() => setImgSrc(resolveImageUrl('/peptide-vial-bpc157.png'))}
-      />
-    )
-  }
+  // URL State Management
+  const searchParams = useSearchParams()
+  const q = searchParams.get('q') || ''
+  const s = searchParams.get('sort') || 'featured'
+  const c = searchParams.get('cat') || 'All'
+  const st = searchParams.get('stock') === 'true'
 
-  // Simple add-to-cart animation state per product card (success check)
-  const [justAdded, setJustAdded] = useState<Record<string | number, boolean>>({})
-  const [searchTerm, setSearchTerm] = useState('')
+  // Local state for UI only (search/sort will be URL-driven)
+  const [searchTerm, setSearchTerm] = useState(q)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200])
   const [maxPrice, setMaxPrice] = useState<number>(200)
-  const [sortBy, setSortBy] = useState('featured')
+  const [sortBy, setSortBy] = useState(s)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showFilters, setShowFilters] = useState(false)
-  const [inStockOnly, setInStockOnly] = useState(false)
+  const [showFilters, setShowFilters] = useState(searchParams.get('filters') === 'open')
+  const [inStockOnly, setInStockOnly] = useState(st)
+  const [selectedCategory, setSelectedCategory] = useState<string>(c)
+
+  // Sync internal state when URL changes
+  useEffect(() => { setSearchTerm(q) }, [q])
+  useEffect(() => { setSortBy(s) }, [s])
+  useEffect(() => { setSelectedCategory(c) }, [c])
+  useEffect(() => { setInStockOnly(st) }, [st])
+  useEffect(() => { 
+    if (searchParams.get('filters') === 'open') setShowFilters(true)
+    else setShowFilters(false)
+  }, [searchParams])
+
+  // Helper to update URL params
+  const updateParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString())
+    Object.entries(updates).forEach(([key, val]) => {
+      if (val === null || val === 'All' || val === 'featured' || val === '' || val === 'false') {
+        params.delete(key)
+      } else {
+        params.set(key, val)
+      }
+    })
+    router.replace(`/landing/products?${params.toString()}`, { scroll: false })
+  }
+
+  // Derive unique categories for Pill navigation
+  const categories = useMemo(() => {
+    const set = new Set(products.map(p => p.category).filter(Boolean))
+    return ['All', ...Array.from(set)]
+  }, [products])
 
 
 
@@ -91,7 +112,8 @@ export default function ProductsClient({ products }: Props) {
       const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.fullName.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1]
       const matchesStock = !inStockOnly || p.inStock
-      return matchesSearch && matchesPrice && matchesStock
+      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory
+      return matchesSearch && matchesPrice && matchesStock && matchesCategory
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -155,26 +177,27 @@ export default function ProductsClient({ products }: Props) {
     })()
   }, [user])
 
-  async function toggleFavorite(productId: string) {
+  async function toggleFavorite(productId: string | number) {
+    const id = String(productId);
     if (!user || user.role !== 'CUSTOMER' || !user.customerId) {
       toast.info('Please sign in as a customer to use favorites')
       return
     }
-    const existingFavoriteId = favoriteIdsByProduct[productId]
+    const existingFavoriteId = favoriteIdsByProduct[id]
     if (existingFavoriteId) {
       const res = await api.removeFavorite(user.customerId, existingFavoriteId)
       if (res.success) {
         setFavoriteIdsByProduct(prev => {
-          const { [productId]: _, ...rest } = prev
+          const { [id]: _, ...rest } = prev
           return rest
         })
         toast.success('Removed from favorites')
       }
     } else {
-      const res = await api.addFavorite(user.customerId, productId)
+      const res = await api.addFavorite(user.customerId, id)
       if (res.success && res.data && (res as any).data.id) {
         const favId = (res as any).data.id as string
-        setFavoriteIdsByProduct(prev => ({ ...prev, [productId]: favId }))
+        setFavoriteIdsByProduct(prev => ({ ...prev, [id]: favId }))
         toast.success('Added to favorites')
       } else if (!res.success && res.error?.toLowerCase().includes('already')) {
         // In case of race/duplicate
@@ -190,274 +213,132 @@ export default function ProductsClient({ products }: Props) {
     }
   }
 
-  function priceForCustomerType(p: Product): { price: number; original?: number | null } {
-    // Get the first variant (assuming single variant for now)
-    const variant = p._variantsPricing?.[0]
-
-    // FALLBACK: If no active variant exists (all variants inactive), use product-level pricing
-    if (!variant) {
-      // Use product's sale price if available, otherwise regular price
-      return {
-        price: p.price || 0,
-        original: null // No strikethrough
-      }
-    }
-
-    // If customer has a specific type and variant has segment prices, use those
-    if (customerType && variant.segmentPrices) {
-      let targetType = customerType;
-      // Map B2B -> B2C and ENTERPRISE_2 -> ENTERPRISE_1 for pricing
-      if (targetType === 'B2B') targetType = 'B2C';
-      if (targetType === 'ENTERPRISE_2') targetType = 'ENTERPRISE_1';
-
-      const seg = variant.segmentPrices.find((sp: any) => sp.customerType === targetType)
-      if (seg) {
-        // Use segment sale price if available, but return null for original to avoid strikethrough
-        const price = seg.salePrice && seg.salePrice > 0 ? seg.salePrice : seg.regularPrice
-        return { price, original: null }
-      }
-    }
-
-    // Default: use variant's regular price (ignore variant salePrice as requested)
-    // and set original to null to avoid strikethrough ("splash") pricing
-    return { price: variant.regularPrice, original: null }
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Search + Controls */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between mb-6">
-          <div className="relative flex-1 w-full md:max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              placeholder="Search peptides..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-gray-300 focus:border-red-500 focus:ring-red-500"
-            />
-          </div>
-          <div className="flex items-center gap-3 overflow-x-auto md:overflow-visible w-full md:w-auto pb-1">
-            <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="shrink-0 border-gray-300 hover:border-red-500">
-              <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
+    <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 ${barlow.className}`}>
+      {/* ───── STICKY GLASSMORPHIC CONTROL CENTER ───── */}
+      <div className="sticky top-24 z-40 transform-gpu md:hidden">
+        <div className="bg-white/40 backdrop-blur-2xl border border-white/40 shadow-[0_20px_50px_rgba(27,45,79,0.05)] rounded-[2.5rem] p-2 sm:p-3 transition-all duration-500">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            {/* Search + Category Pills Container */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full flex-1">
+              <div className="relative w-full sm:max-w-xs lg:max-w-md group md:hidden">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-primary/30 group-hover:text-primary transition-colors w-4 h-4" />
+                <Input
+                  placeholder="Catalog Identification..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                    updateParams({ q: e.target.value })
+                  }}
+                  className="pl-12 h-14 bg-white/50 border-white/20 rounded-3xl focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all font-medium text-primary placeholder:text-primary/30"
+                />
+              </div>
 
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v)}>
-              <SelectTrigger className="w-40 sm:w-48 border-gray-300 shrink-0">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="name">Name A-Z</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="flex items-center gap-1 border border-gray-300 rounded-lg p-1 shrink-0">
-              <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="sm" onClick={() => setViewMode('grid')} className={`${viewMode === 'grid' ? 'bg-red-500 hover:bg-red-600 text-white' : ''}`}>
-                <Grid3X3 className="w-4 h-4" />
-              </Button>
-              <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="sm" onClick={() => setViewMode('list')} className={`${viewMode === 'list' ? 'bg-red-500 hover:bg-red-600 text-white' : ''}`}>
-                <List className="w-4 h-4" />
-              </Button>
+              {/* Category Pills (Mobile Only - Desktop in Navbar) */}
+              <div className="md:hidden flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 w-full sm:w-auto px-1">
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setSelectedCategory(cat)
+                      updateParams({ cat: cat })
+                    }}
+                    className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
+                      selectedCategory === cat
+                        ? 'bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]'
+                        : 'bg-white/50 text-primary/40 hover:text-primary hover:bg-white border border-white/50'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
+            {/* View Mode + Sort + Deep Filters have been migrated to the GlobalHeader discovery bar. */}
+
+            {/* Background Filter Logic moved outside mobile-only container for global access */}
+
           </div>
         </div>
+      </div>
 
-        {showFilters && (
-          <Card className="mb-6 border-gray-200">
-            <CardContent className="p-6">
-              <div className="grid md:grid-cols-4 gap-6">
-
-
-                <div>
-                  <h3 className="font-semibold text-black mb-3">Price Range</h3>
-                  <div className="space-y-3">
-                    <Slider value={priceRange} onValueChange={(v) => setPriceRange(v as any)} max={maxPrice} step={10} />
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-black mb-3">Availability</h3>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="inStock" checked={inStockOnly} onCheckedChange={(v) => setInStockOnly(Boolean(v))} />
-                    <label htmlFor="inStock" className="text-sm text-gray-700">In Stock Only</label>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-black mb-3">Quick Actions</h3>
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => { setSearchTerm(''); setPriceRange([0, 200]); setInStockOnly(false); }}
-                      className="w-full border-gray-300 hover:border-red-500"
-                    >
-                      Clear Filters
-                    </Button>
-                  </div>
-                </div>
+      {/* Background Filter Logic (Global Access) */}
+      <Sheet open={showFilters} onOpenChange={(open) => {
+        setShowFilters(open)
+        updateParams({ filters: open ? 'open' : null })
+      }}>
+        <SheetContent side="right" className="w-[300px] sm:w-[400px] rounded-l-[3rem] border-0 shadow-2xl">
+          <SheetHeader className="pb-8 pt-4">
+            <SheetTitle className="text-3xl font-black tracking-tighter text-[#1B2D4F]">REFINE STORE</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-12">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-black uppercase tracking-widest text-[#1B2D4F]">Price Limit</label>
+                <span className="text-xs font-bold bg-[#1B2D4F]/5 text-[#1B2D4F] px-2 py-1 rounded-lg">${priceRange[0]} - ${priceRange[1]}</span>
               </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              <Slider value={priceRange} onValueChange={(v) => setPriceRange(v as any)} max={maxPrice} step={10} className="[&_[data-slot=slider-range]]:bg-[#1B2D4F] [&_[data-slot=slider-thumb]]:border-[#1B2D4F]" />
+            </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-gray-600">Showing {filtered.length} of {products.length} products</p>
-      </div>
+            <div className="space-y-4">
+              <label className="text-sm font-black uppercase tracking-widest text-[#1B2D4F]">Availability</label>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <span className="text-sm font-bold text-gray-700">In Stock ONLY</span>
+                <Checkbox id="inStockDrawer" checked={inStockOnly} onCheckedChange={(v) => {
+                  const val = Boolean(v)
+                  setInStockOnly(val)
+                  updateParams({ stock: val ? 'true' : null })
+                }} className="border-[#1B2D4F]/20 data-[state=checked]:bg-[#1B2D4F]" />
+              </div>
+            </div>
 
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6' : 'space-y-4'}>
-        {filtered.map((p) => {
-          const detailsHref = `/landing/products/${(p as any).seoSlug || p.id}`
-          return (
-            <Card key={p.id} className={`group hover:shadow-lg transition-all duration-300 border-gray-200 h-full ${viewMode === 'list' ? 'flex' : ''} cursor-pointer`}
-              onClick={() => setQuickViewId(p.id)}
+            <Button
+              variant="outline"
+              onClick={() => { 
+                setSearchTerm(''); 
+                setPriceRange([0, maxPrice]); 
+                setInStockOnly(false); 
+                setSelectedCategory('All'); 
+                updateParams({ q: null, cat: null, sort: null, stock: null })
+              }}
+              className="w-full h-14 border-primary/10 rounded-2xl hover:bg-secondary/30 font-bold"
             >
-              <CardContent className={`p-0 ${viewMode === 'list' ? 'flex w-full' : 'flex flex-col h-full'}`}>
-                <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-28 h-28 xs:w-36 xs:h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex-shrink-0' : 'aspect-square'} bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-lg ${viewMode === 'list' ? 'rounded-l-lg rounded-tr-none' : ''}`}>
-                  {/* Mobile: full-image tap to open details */}
-                  <div className="absolute inset-0 md:hidden z-10" aria-label="Open details" onClick={(e) => { e.stopPropagation(); setQuickViewId(p.id); }} />
-                  <ProductCardImage
-                    src={p.image}
-                    alt={p.name}
-                    sizes={viewMode === 'list' ? '(max-width: 1024px) 100vw, 25vw' : '(max-width: 1024px) 100vw, 20vw'}
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-1.5 left-1.5 space-y-2 z-20">
-                    {/* <Badge className="bg-[#f1ebda] text-[#C24C42] border-2 border-[#2B3B4C] shadow-[2px_2px_0px_#C24C42] font-black uppercase tracking-tighter rounded-sm [text-shadow:0.5px_0.5px_0px_#2B3B4C, -0.5px_-0.5px_0px_#2B3B4C]">Presidents Day Sale</Badge> */}
-                    {p.featured && (<Badge className="bg-red-500/90 text-white border-0">Featured</Badge>)}
-                  </div>
-                  <div className="absolute top-1.5 right-1.5">
-                    <Badge className={`${p.inStock ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'} border-0`}>{p.inStock ? 'In Stock' : 'Out of Stock'}</Badge>
-                  </div>
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3">
-                    <Button size="sm" className="bg-white text-black hover:bg-gray-100" aria-label="View details" onClick={(e) => { e.stopPropagation(); setQuickViewId(p.id); }}>
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-white text-black hover:bg-gray-100"
-                      aria-label={favoriteIdsByProduct[String(p.id)] ? 'Remove from favorites' : 'Add to favorites'}
-                      onClick={(e) => { e.stopPropagation(); toggleFavorite(String(p.id)); }}
-                      disabled={loadingFavorites}
-                    >
-                      <Heart className={`w-4 h-4 ${favoriteIdsByProduct[String(p.id)] ? 'fill-red-500 text-red-500' : ''}`} />
-                    </Button>
-                  </div>
-                </div>
+              Reset All
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-                <div className={`p-4 flex-1 flex flex-col ${viewMode === 'list' ? 'justify-between' : ''}`}>
-                  <div>
-                    <div className="flex items-center justify-end mb-2">
-                      <span className="text-xs text-green-600 font-semibold">{p.purity} Pure</span>
-                    </div>
-                    <h3 className="font-bold text-black text-lg mb-1">
-                      <Link href={`/landing/products/${(p as any).seoSlug || p.id}`} className="hover:text-red-600 transition-colors">{p.name}</Link>
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-2">{p.fullName}</p>
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">{p.description}</p>
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {p.concentrations.map(c => (<Badge key={c} variant="outline" className="text-xs border-gray-300">{c}</Badge>))}
-                    </div>
-                  </div>
-                  <div className="space-y-3 mt-auto">
-                    {isAuthenticated ? (
-                      <div className="flex items-center space-x-2">
-                        {(() => {
-                          const pr = priceForCustomerType(p); return (
-                            <>
-                              <span className="text-2xl font-bold text-black">${Number(pr.price).toFixed(2)}</span>
-                              {pr.original != null && (<span className="text-lg text-gray-500 line-through">${Number(pr.original).toFixed(2)}</span>)}
-                            </>
-                          )
-                        })()}
-                      </div>
-                    ) : (
-                       <div className="py-1">
-                         <span className="text-sm font-medium text-gray-400 italic">Login to view pricing</span>
-                       </div>
-                    )}
-                    <div className="flex space-x-2 items-stretch">
-                      {(() => {
-                        const variantId = p._firstVariantId as string | undefined
-                        const currentQty = variantId ? (items.find(it => it.variantId === variantId)?.quantity || 0) : 0
-                        if (currentQty > 0) {
-                          return (
-                            <div className="flex flex-1 items-center justify-between border border-gray-300 rounded-lg overflow-hidden">
-                              <button
-                                className="px-3 py-2 bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
-                                onClick={async () => { if (!variantId) return; await update(variantId, Math.max(0, currentQty - 1)); }}
-                                disabled={!p.inStock || !variantId}
-                                aria-label="Decrease quantity"
-                              >
-                                <Minus className="w-4 h-4" />
-                              </button>
-                              <div className="px-3 py-2 font-semibold min-w-[2rem] text-center">{currentQty}</div>
-                              <button
-                                className="px-3 py-2 bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
-                                onClick={async () => { if (!variantId) return; await update(variantId, currentQty + 1); }}
-                                disabled={!p.inStock || !variantId}
-                                aria-label="Increase quantity"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </button>
-                            </div>
-                          )
-                        }
-                        return (
-                          <Button
-                            className={`flex-1 bg-gradient-to-r ${justAdded[p.id] ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600'} hover:opacity-90 text-white border-0`}
-                            disabled={!p.inStock || !p._firstVariantId || addingId === p.id}
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (!isAuthenticated) { 
-                                toast.info('Please sign in to add items to your cart'); 
-                                openLoginModal('customer');
-                                return 
-                              }
-                              if (!p._firstVariantId) return
-                              setAddingId(p.id)
-                              const pr = priceForCustomerType(p)
-                              try {
-                                await add(p._firstVariantId, 1, pr.price)
-                                setJustAdded(prev => ({ ...prev, [p.id]: true }))
-                                setTimeout(() => setJustAdded(prev => ({ ...prev, [p.id]: false })), 1200)
-                              } catch (error: any) {
-                                toast.error(error.message || 'Failed to add to cart');
-                              } finally {
-                                setAddingId(null)
-                              }
-                            }}
-                          >
-                            {justAdded[p.id] ? <Check className="w-4 h-4 mr-2" /> : <ShoppingCart className="w-4 h-4 mr-2" />}
-                            {!isAuthenticated ? 'Login to Buy' : (p.inStock ? (justAdded[p.id] ? 'Added' : addingId === p.id ? 'Adding...' : 'Add to Cart') : 'Out of Stock')}
-                          </Button>
-                        )
-                      })()}
-                      <Link href={detailsHref} onClick={(e) => e.stopPropagation()}>
-                        <Button variant="outline" className="border-gray-300 min-w-[84px]" onClick={(e) => e.stopPropagation()}>View</Button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+      <div className="flex items-center justify-between px-2">
+        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-ring/60">Results ({filtered.length})</h2>
+        <div className="h-[1px] flex-1 mx-6 bg-gradient-to-r from-primary/10 to-transparent"></div>
       </div>
+
+      <motion.div 
+        layout
+        className={viewMode === 'grid' 
+          ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6' 
+          : 'space-y-6'
+        }
+      >
+        <AnimatePresence mode="popLayout">
+          {filtered.map((p, index) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              index={index}
+              onQuickView={setQuickViewId}
+              isFavorite={!!favoriteIdsByProduct[String(p.id)]}
+              onToggleFavorite={toggleFavorite}
+            />
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
 
       {quickViewId && (
         <Dialog open={!!quickViewId} onOpenChange={(open) => !open && setQuickViewId(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-[1200px] w-[95vw] sm:w-[90vw] p-0 overflow-hidden max-h-[90vh] overflow-y-auto rounded-3xl">
+          <DialogContent className="max-w-xl w-full p-0 overflow-hidden max-h-[90vh] rounded-3xl">
             <DialogTitle className="sr-only">Product Quick View</DialogTitle>
             <DialogDescription className="sr-only">View product details and purchase</DialogDescription>
             <ProductDetailView productId={String(quickViewId)} isModal={true} />
@@ -472,7 +353,12 @@ export default function ProductsClient({ products }: Props) {
           </div>
           <h3 className="text-xl font-semibold text-black mb-2">No products found</h3>
           <p className="text-gray-600 mb-4">Try adjusting your search criteria or filters.</p>
-          <Button onClick={() => { setSearchTerm(''); setPriceRange([0, 200]); setInStockOnly(false); }} className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0">Clear All Filters</Button>
+          <Button 
+            onClick={() => { setSearchTerm(''); setPriceRange([0, maxPrice]); setInStockOnly(false); setSelectedCategory('All'); }} 
+            className="bg-[#1B2D4F] hover:bg-[#3A6FA0] text-white border-0 rounded-2xl h-12 px-8 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#1B2D4F]/10"
+          >
+            Clear All Filters
+          </Button>
         </div>
       )}
     </div>

@@ -70,7 +70,7 @@ export default function NewBlogPostPage() {
       content:
         `<p>We are pleased to announce expanded analytical capabilities including advanced HPLC profiling and additional documentation options.</p>
          <h3>What’s New</h3><ul><li>Additional analytical panels</li><li>Enhanced batch traceability</li><li>Streamlined documentation for researchers</li></ul>
-         <p>These updates reinforce our commitment to physician grade quality.</p>`
+         <p>These updates reinforce our commitment to 99% pure research quality.</p>`
     },
     HOW_TO: {
       title: "How-To: Best Practices for Handling Lyophilized Peptides",

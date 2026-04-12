@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { api, type Address, getCustomCountries, getCustomStates, getCustomCities, createCustomLocation } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, X, Search, MapPin, Pencil, CheckCircle2, ShieldCheck, FileSearch } from "lucide-react";
 import { Country, State, City } from "country-state-city";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Promotion } from "@/lib/api";
@@ -18,7 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { calculateHighValueDiscount } from "@/utils/discount";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { CheckCircle2, Pencil } from "lucide-react";
 import { PhoneInputWithFlag } from "@/components/customers/phone-input-with-flag";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -1001,11 +1000,15 @@ export default function CheckoutPage() {
             <div className="mb-6">
               <div className="flex items-center">
                 <div className="flex items-center flex-1">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white">1</div>
+                  <button type="button" onClick={() => router.push('/landing/checkout')} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-primary text-white">
+                    1
+                  </button>
                   <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
                 </div>
                 <div className="flex items-center flex-1">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-gray-200 text-gray-600">2</div>
+                  <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-gray-200 text-gray-600 cursor-default">
+                    2
+                  </button>
                   <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
                 </div>
                 <div className="flex items-center flex-1">
@@ -1023,7 +1026,7 @@ export default function CheckoutPage() {
                 <div className="text-right">Summary</div>
               </div>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black mb-6">Shipping & Billing Address</h1>
+            <h1 className="text-3xl sm:text-5xl font-black mb-10 tracking-tight text-primary uppercase italic">Identification & Logistics</h1>
 
             <div className="max-w-4xl mx-auto">
               <Card className="border-gray-200">
@@ -1031,7 +1034,10 @@ export default function CheckoutPage() {
                   <div className="grid md:grid-cols-2 gap-8">
                     {/* Billing Address */}
                     <div>
-                      <h3 className="font-medium mb-4">Billing Address</h3>
+                      <div className="flex items-center gap-2 mb-4">
+                        <MapPin className="h-5 w-5 text-primary" />
+                        <h2 className="text-xs font-black uppercase tracking-widest italic">Billing Address</h2>
+                      </div>
                       {billingAddressOptions.length > 0 && (
                         <div className="mb-4 space-y-2">
                           <Label htmlFor="billing-address-select">Select saved billing address</Label>
@@ -1299,7 +1305,10 @@ export default function CheckoutPage() {
                     {/* Shipping Address */}
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-medium">Shipping Address</h3>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-5 w-5 text-primary" />
+                          <h2 className="text-xs font-black uppercase tracking-widest italic">Shipping Address</h2>
+                        </div>
                         <div className="flex items-center gap-2">
                           <Switch
                             id="same-as-billing"

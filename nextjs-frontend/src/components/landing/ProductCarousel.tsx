@@ -1,34 +1,24 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Award, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ImageWithFallback from "./figma/ImageWithFallback";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { api, resolveImageUrl } from "@/lib/api";
-import Link from "next/link";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Barlow } from "next/font/google";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import ProductDetailView from "@/components/products/ProductDetailView";
+import { ProductCard } from "@/components/products/ProductCard";
 
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
-type CarouselItem = {
-  id: string;
-  name: string;
-  description: string;
-  priceLabel: string;
-  image: string;
-  purity?: string;
-};
 
 export function ProductCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0); // mobile slide index
   const [pageIndex, setPageIndex] = useState(0); // desktop page index
-  const [items, setItems] = useState<CarouselItem[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const { user } = useAuth();
   const router = useRouter();
@@ -47,46 +37,14 @@ export function ProductCarousel() {
         const list = Array.isArray((resp as any)?.data)
           ? ((resp as any).data as any[])
           : (Array.isArray((resp as any)?.data?.products) ? ((resp as any).data.products as any[]) : []);
-        // Determine customer type and map to pricing tier
-        // B2B customers see B2C pricing, ENTERPRISE_2 customers see ENTERPRISE_1 pricing
-        const rawCustomerType: 'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined =
-          user?.customer?.customerType || (user?.role === 'CUSTOMER' ? 'B2C' : undefined);
+        
+        // Ensure products have the 'image' property mapped for the component prop
+        const processed = list.map(p => ({
+          ...p,
+          image: p.image || (p.images && p.images[0]?.url)
+        }));
 
-        // Map customer types for pricing (B2B → B2C, ENTERPRISE_2 → ENTERPRISE_1)
-        const pricingCustomerType = rawCustomerType === 'B2B'
-          ? 'B2C'
-          : rawCustomerType === 'ENTERPRISE_2'
-            ? 'ENTERPRISE_1'
-            : rawCustomerType;
-
-        const mapped: CarouselItem[] = list.map((p: any) => {
-          const firstVariant: any = (p.variants && p.variants[0]) || {};
-          // Start with variant's regular price (no sale price)
-          let price = firstVariant?.regularPrice ?? p.basePrice ?? 0;
-
-          // Check for segment pricing based on mapped customer type
-          if (pricingCustomerType && Array.isArray(firstVariant?.segmentPrices)) {
-            const seg = firstVariant.segmentPrices.find((sp: any) => sp.customerType === pricingCustomerType);
-            if (seg) {
-              // Use only regular price from segment, not sale price
-              price = seg.regularPrice ?? price;
-            }
-          }
-          const images = p.images || firstVariant.images || [];
-          const image = resolveImageUrl(images[0]?.url || "/peptide-vial-bpc157.png");
-          const slug = p.seoSlug || firstVariant.seoSlug || p.id;
-          return {
-            id: String(p.id ?? firstVariant.id ?? Math.random()),
-            name: String(p.name || firstVariant.name || "Product"),
-            description: String(p.shortDescription || p.description || firstVariant.description || ""),
-            priceLabel: user ? (price ? `$${Number(price).toFixed(2)}` : "") : "",
-            image,
-            purity: "99.8%",
-            // @ts-ignore attach for links
-            seoSlug: slug,
-          };
-        });
-        if (active) setItems(mapped);
+        if (active) setItems(processed);
       } catch (e) {
         if (active) setItems([]);
       }
@@ -97,7 +55,7 @@ export function ProductCarousel() {
   const pageSize = 4;
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const pageItems = useMemo(() => {
-    if (items.length === 0) return [] as CarouselItem[];
+    if (items.length === 0) return [] as any[];
     const start = pageIndex * pageSize;
     return items.slice(start, start + pageSize);
   }, [items, pageIndex]);
@@ -128,38 +86,13 @@ export function ProductCarousel() {
         {/* Mobile: auto-advancing carousel (all items) */}
         <div className="md:hidden overflow-hidden relative">
           <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-            {items.map((product) => (
-              <div key={product.id} className="w-full flex-shrink-0 px-1">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="bg-white border border-blue-50/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 relative overflow-hidden group mx-3 h-full flex flex-col">
-                  <div className="absolute inset-0 z-10 cursor-pointer" aria-label="Open details" onClick={() => setQuickViewId(product.id)} />
-                  <div className="absolute top-4 left-4 z-20">
-                    <motion.div className="flex items-center gap-2 bg-[#F9FBFF] border border-blue-100 rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(58, 111, 160, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-[#4D7DF2]" />
-                      <span className="text-sm font-bold text-[#4D7DF2]">{product.purity} Purity</span>
-                    </motion.div>
-                  </div>
-
-                  <div className="relative mt-8 mb-6">
-                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-[3px] border-[#F9FBFF]" whileHover={{ scale: 1.03 }} transition={{ duration: 0.25 }}>
-                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
-                    </motion.div>
-                  </div>
-                  <div className="text-center flex flex-col flex-1">
-                    <h3 className={`text-2xl font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>{product.name}</h3>
-                    <p className="text-sm text-gray-500 font-medium mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
-                    <div className="text-3xl font-black text-[#070B14] tracking-tight mb-6">{product.priceLabel}</div>
-                    <Button
-                      className="relative z-20 w-full bg-[#070B14] hover:bg-[#1B2D4F] border border-transparent text-white rounded-2xl py-6 font-bold backdrop-blur-sm transition-all duration-300 group/btn overflow-hidden mt-auto shadow-lg"
-                      onClick={() => {
-                        if (!user) { toast.info('Please sign in to add items'); return; }
-                        setQuickViewId(product.id);
-                      }}
-                    >
-                      <span className="relative z-10">Add to Cart</span>
-                      <motion.div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" style={{ width: "30%" }} />
-                    </Button>
-                  </div>
-                </motion.div>
+            {items.map((product, idx) => (
+              <div key={product.id} className="w-full flex-shrink-0 px-2 h-full">
+                <ProductCard 
+                  product={product} 
+                  index={idx} 
+                  onQuickView={(id) => setQuickViewId(String(id))} 
+                />
               </div>
             ))}
           </div>
@@ -189,37 +122,12 @@ export function ProductCarousel() {
           )}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {pageItems.map((product, index) => (
-              <motion.div key={product.id} whileHover={{ y: -8 }} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.08 }} className="h-full">
-                <div className="bg-white border border-blue-50/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 relative overflow-hidden group hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 h-full flex flex-col">
-                  <div className="absolute inset-0 z-10 cursor-pointer" aria-label="Open details" onClick={() => setQuickViewId(product.id)} />
-                  <div className="absolute top-4 left-4 z-20">
-                    <motion.div className="flex items-center gap-2 bg-[#F9FBFF] border border-blue-100 rounded-full px-3 py-1 w-fit" animate={{ boxShadow: ["0 0 0 rgba(0, 0, 0, 0)", "0 0 10px rgba(77, 125, 242, 0.15)", "0 0 0 rgba(0, 0, 0, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                      <Award className="w-4 h-4 text-[#4D7DF2]" />
-                      {!!product.purity && <span className="text-xs font-bold text-[#4D7DF2] uppercase tracking-wide">{product.purity} Purity</span>}
-                    </motion.div>
-                  </div>
-
-                  <div className="relative mt-8 mb-6">
-                    <motion.div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-[3px] border-[#F9FBFF]" whileHover={{ scale: 1.05 }} transition={{ duration: 0.25 }}>
-                      <ImageWithFallback src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
-                    </motion.div>
-                  </div>
-                  <div className="text-center flex flex-col flex-1">
-                    <h3 className={`text-2xl font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>{product.name}</h3>
-                    <p className="text-sm text-gray-500 font-medium mb-4 line-clamp-3 min-h-[4.5rem]">{product.description}</p>
-                    <div className="text-3xl font-black text-[#070B14] tracking-tight mb-6">{product.priceLabel}</div>
-                    <Button
-                      className="relative z-20 w-full bg-white hover:bg-[#070B14] border-2 border-[#070B14] hover:text-white text-[#070B14] rounded-2xl py-6 font-bold transition-all duration-300 group/btn overflow-hidden mt-auto"
-                      onClick={() => {
-                        if (!user) { toast.info('Please sign in to add items'); return; }
-                        setQuickViewId(product.id);
-                      }}
-                    >
-                      <span className="relative z-10">Add to Cart</span>
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+                onQuickView={(id) => setQuickViewId(String(id))}
+              />
             ))}
           </div>
         </div>
@@ -228,7 +136,7 @@ export function ProductCarousel() {
 
       {quickViewId && (
         <Dialog open={!!quickViewId} onOpenChange={(open) => !open && setQuickViewId(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-[1200px] w-[95vw] sm:w-[90vw] p-0 overflow-hidden max-h-[90vh] overflow-y-auto rounded-3xl">
+          <DialogContent className="max-w-xl w-full p-0 overflow-hidden max-h-[90vh] rounded-3xl">
             <DialogTitle className="sr-only">Product Quick View</DialogTitle>
             <DialogDescription className="sr-only">View product details and purchase</DialogDescription>
             <ProductDetailView productId={String(quickViewId)} isModal={true} />

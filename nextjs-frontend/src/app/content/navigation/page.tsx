@@ -647,7 +647,7 @@ export default function NavigationManagerPage() {
                 </div>
                 <div>
                   <Label>Store Description</Label>
-                  <Input value={fsDescription} onChange={(e) => setFsDescription(e.target.value)} placeholder="Leading supplier of physician grade peptides..." />
+                  <Input value={fsDescription} onChange={(e) => setFsDescription(e.target.value)} placeholder="Leading supplier of 99% pure research peptides..." />
                 </div>
                 {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div>

@@ -43,7 +43,7 @@ export default function LandingProductsPage() {
           const concentrations = (p.variants || []).map((v) => v.name).filter(Boolean);
           const rating = p._count?.reviews ? Math.min(5, 4 + (p._count.reviews % 10) / 10) : 4.6; // placeholder until ratings implemented
           const reviews = p._count?.reviews ?? 0;
-          const category = p.categories && p.categories.length > 0 ? p.categories[0].name : "Physician Directed Peptides";
+          const category = p.categories && p.categories.length > 0 ? p.categories[0].name : "Assayed Research Peptides";
 
           return {
             id: (p.variants && p.variants[0]?.seoSlug) || p.id,
@@ -111,7 +111,7 @@ export default function LandingProductsPage() {
         const concentrations = (p.variants || []).map((v) => v.name).filter(Boolean);
         const rating = p._count?.reviews ? Math.min(5, 4 + (p._count.reviews % 10) / 10) : 4.6;
         const reviews = p._count?.reviews ?? 0;
-        const category = p.categories && p.categories.length > 0 ? p.categories[0].name : "Physician Directed Peptides";
+        const category = p.categories && p.categories.length > 0 ? p.categories[0].name : "Assayed Research Peptides";
         return {
           id: (p.variants && p.variants[0]?.seoSlug) || p.id,
           name: p.name,
@@ -169,18 +169,7 @@ export default function LandingProductsPage() {
     <div className="force-light min-h-screen bg-white text-black">
 
 
-      {/* Text Header */}
-      <div className="w-full bg-[#f8f9fa] py-12 sm:py-16 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0B1215] mb-4 tracking-tight">
-          Physician Grade Peptides
-        </h1>
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#00D95A]"></div>
-          <p className="text-gray-500 font-medium text-base sm:text-lg">
-            99%+ Purity Guaranteed
-          </p>
-        </div>
-      </div>
+
 
       {/* Client list */}
       <div className="px-4 sm:px-6 lg:px-8">

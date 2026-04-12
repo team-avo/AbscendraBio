@@ -14,7 +14,6 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { ProductCarousel } from '@/components/landing/ProductCarousel';
 import { WhyChooseUs } from '@/components/landing/WhyChooseUs';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
-import { Footer } from '@/components/landing/Footer';
 const barlow = Barlow({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
 export default function LandingPage() {
@@ -22,6 +21,11 @@ export default function LandingPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -97,8 +101,8 @@ export default function LandingPage() {
             }}
           />
 
-          {/* Dynamic Molecular Particles */}
-          {[...Array(8)].map((_, i) => (
+          {/* Dynamic Molecular Particles - Only render on client to avoid hydration mismatch */}
+          {isMounted && [...Array(8)].map((_, i) => (
             <motion.div
               key={i}
               initial={{ 
@@ -290,7 +294,6 @@ export default function LandingPage() {
       <ProductCarousel />
       <WhyChooseUs />
       <TestimonialsSection />
-      <Footer />
 
       {/* ═══════════════════════════════════════════ */}
       {/* CONTACT / INQUIRE MODAL                    */}

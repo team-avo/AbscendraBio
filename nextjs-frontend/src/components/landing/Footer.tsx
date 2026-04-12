@@ -1,20 +1,37 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
-import { api, resolveImageUrl } from "@/lib/api";
+import { api } from "@/lib/api";
 import Link from "next/link";
 import { Barlow } from "next/font/google";
+import { usePathname } from "next/navigation";
 import logger from '@/lib/logger';
 
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
 export function Footer() {
+  const pathname = usePathname();
+  const isDashboardRoute = pathname?.startsWith('/admin') || 
+                          pathname?.startsWith('/dashboard') || 
+                          pathname?.startsWith('/account') ||
+                          pathname?.startsWith('/inventory') ||
+                          pathname?.startsWith('/orders') ||
+                          (pathname?.startsWith('/products') && !pathname?.startsWith('/landing/products')) ||
+                          pathname?.startsWith('/customers') ||
+                          pathname?.startsWith('/analytics') ||
+                          pathname?.startsWith('/marketing') ||
+                          pathname?.startsWith('/content') ||
+                          pathname?.startsWith('/payments') ||
+                          pathname?.startsWith('/shipping') ||
+                          pathname?.startsWith('/settings');
+
+  if (isDashboardRoute) return null;
+
   const [topProducts, setTopProducts] = useState<any[]>([]);
-  const [footerLinks, setFooterLinks] = useState<Array<{ title: string; href: string; target?: string }>>([]);
   const [footerSettings, setFooterSettings] = useState<any | null>(null);
   const [inquiryEmail, setInquiryEmail] = useState<string>("");
   const [isSendingInquiry, setIsSendingInquiry] = useState<boolean>(false);
@@ -30,29 +47,6 @@ export function Footer() {
         logger.error("Failed to fetch top products for footer:", { error: error });
       }
     };
-    const fetchFooterNav = async () => {
-      try {
-        const m = await api.getPublicNavigationMenus({ location: 'footer' });
-        if (m.success && m.data) {
-          const menus = m.data.menus || [];
-          const footer = menus[0];
-          if (footer) {
-            const r = await api.getPublicNavigationItems(footer.id);
-            if (r.success && r.data) {
-              const resolved: Array<{ title: string; href: string; target?: string }> = [];
-              for (const it of (r.data.items || []).filter((i: any) => i.isActive)) {
-                const href = it.href || it.url || "";
-                if (!href) continue;
-                resolved.push({ title: it.title || href, href, target: it.target || "_self" });
-              }
-              setFooterLinks(resolved);
-            }
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    };
     const fetchFooterSettings = async () => {
       try {
         const r = await api.getPublicFooter();
@@ -61,9 +55,9 @@ export function Footer() {
     };
 
     fetchTopProducts();
-    fetchFooterNav();
     fetchFooterSettings();
   }, []);
+
   const handleInquiry = async () => {
     const email = (inquiryEmail || "").trim();
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
@@ -87,31 +81,28 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#F9FBFF] overflow-hidden">
+    <footer className="relative bg-[#F9FBFF] overflow-hidden border-t border-blue-50">
       <section className="relative py-20">
-        <motion.div className="absolute inset-0 opacity-0" />
-
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-center">
-            <div className="bg-white border border-blue-50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-12 mb-12">
-              <motion.h2 className={`text-6xl font-bold text-[#070B14] tracking-tight mb-6 ${barlow.className}`}>Contact Us - Inquire Today</motion.h2>
-              <p className="text-xl text-gray-500 font-medium mb-8 max-w-3xl mx-auto">Join countless Medspa's and clinics across the country.</p>
+            <div className="bg-white border border-blue-50 shadow-[0_8px_30px_rgba(27,45,79,0.04)] rounded-[3rem] p-12 mb-12">
+              <motion.h2 className={`text-5xl sm:text-6xl font-black text-[#070B14] tracking-tight mb-6 ${barlow.className}`}>Contact Us - Inquire Today</motion.h2>
+              <p className="text-xl text-gray-500 font-medium mb-8 max-w-2xl mx-auto">Join leading research facilities and clinics across the country partnering for superior outcomes.</p>
               <motion.div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto mb-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                 <Input
                   placeholder="Enter your email"
-                  className="bg-white border border-blue-100 text-[#070B14] placeholder:text-gray-400 rounded-full px-6 py-3 backdrop-blur-sm shadow-sm"
+                  className="bg-white border border-blue-100 text-[#070B14] placeholder:text-gray-400 rounded-2xl px-6 py-3 backdrop-blur-sm shadow-sm h-14"
                   value={inquiryEmail}
                   onChange={(e) => setInquiryEmail(e.target.value)}
                   type="email"
-                  inputMode="email"
                 />
                 <Button
                   size="lg"
-                  className="bg-[#4D7DF2] text-white hover:bg-[#3A6FA0] border-0 rounded-full px-8 py-3 shadow-xl transition-all duration-300 group relative overflow-hidden"
+                  className="bg-[#1B2D4F] text-white hover:bg-primary border-0 rounded-2xl px-8 h-14 shadow-xl shadow-primary/10 transition-all duration-300 group"
                   onClick={handleInquiry}
                   disabled={isSendingInquiry}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="flex items-center gap-2 font-bold uppercase tracking-widest text-xs">
                     {isSendingInquiry ? 'Sending...' : 'Get Started'}
                     <ArrowRight className="w-4 h-4" />
                   </span>
@@ -122,160 +113,76 @@ export function Footer() {
         </div>
       </section>
 
-      <div className="border-t border-blue-100/50 py-12">
+      <div className="border-t border-blue-100/30 py-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Store overview (title/description + socials) - match original sizing/styles */}
-            <div>
-              <h3 className={`text-2xl font-bold text-[#070B14] mb-4 ${barlow.className}`}>{footerSettings?.siteTitle || 'Ascendra Bio'}</h3>
-              <p className="text-gray-500 font-medium mb-4 max-w-xs">
-                {footerSettings?.siteDescription || 'Leading supplier of physician grade peptides with uncompromising quality standards.'}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+            <div className="space-y-6">
+              <h3 className={`text-2xl font-black text-[#070B14] tracking-tighter ${barlow.className}`}>{footerSettings?.siteTitle || 'ASCENDRA BIO'}</h3>
+              <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-xs">
+                {footerSettings?.siteDescription || 'Uncompromising standards for 99%+ pure research peptides. Supporting cutting-edge clinical discovery nationwide.'}
               </p>
-              {/* <div className="flex gap-4">
-                {(footerSettings?.facebookUrl) && (
-                  <a href={footerSettings.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-card hover:bg-accent rounded-full flex items-center justify-center backdrop-blur-sm border border-border transition-all duration-300" aria-label="Facebook">
-                    <Facebook className="w-5 h-5 text-muted-foreground" />
-                  </a>
-                )}
-                {(footerSettings?.twitterUrl) && (
-                  <a href={footerSettings.twitterUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-card hover:bg-accent rounded-full flex items-center justify-center backdrop-blur-sm border border-border transition-all duration-300" aria-label="Twitter">
-                    <Twitter className="w-5 h-5 text-muted-foreground" />
-                  </a>
-                )}
-                {(footerSettings?.instagramUrl) && (
-                  <a href={footerSettings.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-card hover:bg-accent rounded-full flex items-center justify-center backdrop-blur-sm border border-border transition-all duration-300" aria-label="Instagram">
-                    <Instagram className="w-5 h-5 text-muted-foreground" />
-                  </a>
-                )}
-                {(!footerSettings?.facebookUrl && !footerSettings?.twitterUrl && !footerSettings?.instagramUrl) && (
-                  <>
-                    {[Facebook, Twitter, Instagram].map((Icon, i) => (
-                      <span key={i} className="w-10 h-10 bg-card rounded-full flex items-center justify-center backdrop-blur-sm border border-border opacity-60">
-                        <Icon className="w-5 h-5 text-muted-foreground" />
-                      </span>
-                    ))}
-                  </>
-                )}
-              </div> */}
             </div>
 
-            {/* Remove duplicate hardcoded store block; dynamic block above handles DB + fallback */}
-
             <div>
-              <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{footerSettings?.sections?.[0]?.title || 'Products'}</h4>
-              <ul className="space-y-2">
+              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-[#070B14] mb-6 ${barlow.className}`}>{footerSettings?.sections?.[0]?.title || 'Products'}</h4>
+              <ul className="space-y-4">
                 {topProducts.length > 0 ? (
-                  topProducts.map((product) => {
-                    // Use product ID directly for fast lookup
-                    return (
-                      <li key={product.id}>
-                        <Link
-                          href={`/landing/products/${product.id}`}
-                          className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline"
-                        >
-                          {product.name}
-                        </Link>
-                      </li>
-                    );
-                  })
+                  topProducts.map((product) => (
+                    <li key={product.id}>
+                      <Link href={`/landing/products/${product.id}`} className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">
+                        {product.name}
+                      </Link>
+                    </li>
+                  ))
                 ) : (
-                  // Fallback product list
-                  [
-                    { title: 'Peptide Complex A', href: '/landing/products' },
-                    { title: 'Collagen Peptide Blend', href: '/landing/products' },
-                    { title: 'BPC-157', href: '/landing/products' },
-                  ].map((item, i) => (
-                    <li key={i}><Link href={item.href} className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline">{item.title}</Link></li>
+                  ['BPC-157', 'Semaglutide', 'Tirzepatide', 'AOD-9604'].map((name) => (
+                    <li key={name}>
+                      <Link href="/landing/products" className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">
+                        {name}
+                      </Link>
+                    </li>
                   ))
                 )}
                 <li>
-                  <Link
-                    href="/landing/products"
-                    className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline"
-                  >
-                    All Products
+                  <Link href="/landing/products" className="text-primary font-black text-sm uppercase tracking-widest hover:underline decoration-2 underline-offset-4">
+                    View Catalog
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Dynamic footer sections from settings (title + list). Exclude the first section if used to label Products. */}
-            {(() => {
-              const sections = Array.isArray(footerSettings?.sections) ? footerSettings!.sections : [];
-              const firstTitle = sections?.[0]?.title || '';
-              const renderSections = sections.filter((s: any) => (s.title || '') !== firstTitle);
-              // if (renderSections.length === 0) {
-              //   return (
-              //     <div>
-              //       <h4 className={`text-lg font-semibold text-foreground mb-4 ${barlow.className}`}>Support</h4>
-              //       <ul className="space-y-2">
-              //         {(
-              //           (footerLinks.length > 0 ? footerLinks : [
-              //             { title: 'About Us', href: '/p/about-us' },
-              //             { title: 'Contact', href: '/p/contact-us' },
-              //           ])
-              //         ).map((lnk: any, i: number) => (
-              //           <li key={`${lnk.title}-${i}`}>
-              //             <Link href={lnk.href} target={lnk.target} rel={lnk.target === "_blank" ? "noopener noreferrer" : undefined} className="text-muted-foreground hover:text-foreground transition-colors duration-300 hover:underline">{lnk.title}</Link>
-              //           </li>
-              //         ))}
-              //       </ul>
-              //     </div>
-              //   );
-              // }
-              return renderSections.map((sec: any, idx: number) => (
-                <div key={`footer-sec-${idx}`}>
-                  <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{sec.title}</h4>
-                  <ul className="space-y-2">
-                    {(sec.links || []).map((lnk: any, i: number) => (
-                      <li key={`${lnk.title}-${i}`}>
-                        <Link href={lnk.href} target={lnk.target || '_self'} rel={(lnk.target || '_self') === "_blank" ? "noopener noreferrer" : undefined} className="text-gray-500 font-medium hover:text-[#4D7DF2] transition-colors duration-300 hover:underline">{lnk.title}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ));
-            })()}
-
-            {/* Contact section */}
-            {(() => {
-              const sections = Array.isArray(footerSettings?.sections) ? footerSettings!.sections : [];
-              const hasContactSection = sections.some((s: any) => String(s.title || '').trim().toLowerCase() === 'contact');
-              if (hasContactSection) return null;
-              const contact = footerSettings?.FooterContact;
-              const title = (contact?.title || 'Contact');
-              const email = (contact?.email || 'info@centreresearch.org');
-              const phone = (contact?.phone || '+1 (555) 123-4567');
-              const address = (contact?.address || 'Los Angeles, CA');
-              return (
-                <div>
-                  <h4 className={`text-lg font-semibold text-[#070B14] mb-4 ${barlow.className}`}>{title}</h4>
-                  <div className="space-y-3 text-gray-500 font-medium">
-                    <div className="flex items-center gap-3"><Mail className="w-5 h-5 text-[#4D7DF2]" /><span>{email}</span></div>
-                    {/* <div className="flex items-center gap-3"><Phone className="w-5 h-5 text-[#4D7DF2]" /><span>{phone}</span></div> */}
-                    <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-[#4D7DF2]" /><span>{address}</span></div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Important Note Section */}
-            <div className="bg-blue-50 border-l-4 border-[#3A6FA0] p-4 rounded-md">
-              <h4 className={`text-lg font-semibold text-[#1B2D4F] mb-3 ${barlow.className}`}>Important Note</h4>
-              <p className="text-sm text-gray-900 leading-relaxed">
-                Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law.
-              </p>
+            <div>
+              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-[#070B14] mb-6 ${barlow.className}`}>Support</h4>
+              <ul className="space-y-3">
+                {[
+                  { title: 'Research Hub', href: '/landing/third-party-testing' },
+                  { title: 'Quality Analysis', href: '/landing/third-party-testing' },
+                  { title: 'Clinical Inquiry', href: '#' },
+                  { title: 'About Our Lab', href: '#' },
+                ].map((lnk, i) => (
+                  <li key={i}>
+                    <Link href={lnk.href} className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">{lnk.title}</Link>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* Remove duplicate hardcoded contact block; conditional contact block above handles DB + fallback without duplicates */}
+            <div className="bg-primary/[0.03] border-l-4 border-primary p-6 rounded-2xl">
+              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-primary mb-3 ${barlow.className}`}>Regulatory Notice</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium italic">
+                Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong>. Not for human consumption. Use exclusively in a laboratory or clinical research setting by licensed researchers.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-blue-100/50 py-6">
+      <div className="border-t border-blue-100/20 py-8 bg-white/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 font-medium text-sm">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
+            <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
+              © {new Date().getFullYear()} ASCENDRA BIO SCIENCES. ALL RIGHTS RESERVED.
+            </p>
           </div>
         </div>
       </div>

@@ -5,11 +5,11 @@
 export const branding = {
   name: "Ascendra Bio",
   logoSrc: "/logo.png",
-  tagline: "Providing science backed solutions for medical providers.",
-  headline: "Physician-Grade Peptides, Delivered Next Day.",
+  tagline: "Precision-grade research solutions for professional environments.",
+  headline: "99% Purity Peptides, Delivered Next Day.",
   subheadline:
-    "99%+ purity, COA-verified peptides manufactured in America — trusted by physicians, medspas, and clinics nationwide.",
-  eyebrow: "PEPTIDE SUPPLIER FOR PHYSICIANS",
+    "COA-verified peptides manufactured in America — trusted by researchers, practitioners, and clinics nationwide.",
+  eyebrow: "PREMIUM PEPTIDES FOR RESEARCH",
 
   // Colors extracted from the actual logo (/public/logo.png)
   colors: {

@@ -2,7 +2,6 @@
 
 
 import { useEffect, useMemo, useState } from "react";
-import { Footer } from "@/components/landing/Footer";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
@@ -330,8 +329,6 @@ export default function LandingThirdPartyTestingPage() {
           </div>
         )}
       </main>
-
-      <Footer />
 
       {loading && (
         <div className="sr-only" aria-live="polite">

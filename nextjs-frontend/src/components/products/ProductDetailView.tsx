@@ -1,16 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { api, type Product, resolveImageUrl, getPublicReportsForProduct, getPublicReportDownloadUrl, type ThirdPartyReport } from "@/lib/api";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
-import { CheckCircle, ChevronRight, Zap, Microscope, Heart, Shield, Truck, Award, Eye, Download, Copy, Tag, Check } from "lucide-react";
+import { CheckCircle, ChevronRight, Zap, Microscope, Shield, Truck, Award, Eye, Download, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
 import { CartSidebar } from "@/components/cart/CartSidebar";
@@ -39,6 +35,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
   const [couponCopied, setCouponCopied] = useState<boolean>(false);
   const [reports, setReports] = useState<ThirdPartyReport[]>([]);
   const [reportsLoading, setReportsLoading] = useState<boolean>(false);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
 
   useEffect(() => {
@@ -115,7 +112,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
 
   const ui = useMemo(() => {
     const name = product?.name || "Product";
-    const category = product?.categories && product.categories.length > 0 ? product.categories[0].name : "Physician Directed Peptides";
+    const category = product?.categories && product.categories.length > 0 ? product.categories[0].name : "Assayed Research Peptides";
     const variants = product?.variants || [];
     const selectedVariant = variants.find(v => v.id === selectedVariantId) || variants[0];
 
@@ -255,6 +252,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
     const productFirstImage = (((product as any)?.images) && (product as any).images.length > 0) ? (product as any).images[0].url : undefined;
     const nextHero = resolveImageUrl(variantFirstImage || productFirstImage || "/products/peptide-1.jpg");
     setHeroSrc(nextHero);
+    setCurrentImgIndex(0);
   }, [selectedVariantId, product]);
 
   // Filter reports based on selected variant
@@ -270,570 +268,260 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
   }, [reports, selectedVariantId, productId]);
 
   return (
-    <div className={isModal ? "bg-white text-black w-full relative" : "force-light min-h-screen bg-white text-black"}>
-      <style jsx>{`
-        select {
-          background-image: none;
-        }
-        select:focus {
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-        select option {
-          padding: 12px 16px;
-          background-color: white;
-          color: #374151;
-          font-weight: 500;
-        }
-        select option:hover {
-          background-color: #f9fafb;
-        }
-        select option:checked {
-          background-color: #fef2f2;
-          color: #dc2626;
-        }
-      `}</style>
-      <main className={isModal ? "max-w-7xl mx-auto p-4 pt-12 sm:p-8 sm:pt-14" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16"}>
+    <div className={`relative ${isModal ? "bg-white text-primary w-full h-[85vh] max-h-[800px] flex flex-col overflow-hidden" : "force-light min-h-screen bg-[#FDFDFD] text-primary"} ${barlow.className}`}>
+      <main className={isModal ? "flex-1 flex flex-col min-h-0 w-full max-w-lg mx-auto" : "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 p-12"}>
         {loading && (
-          <div className="py-16 text-center text-gray-600">Loading product...</div>
+          <div className="py-32 flex flex-col items-center justify-center gap-4 text-primary/30">
+             <div className="w-10 h-10 rounded-full border-2 border-primary/10 border-t-primary animate-spin" />
+             <span className="text-xs font-black uppercase tracking-widest">Accessing Bio-Catalog...</span>
+          </div>
         )}
         {error && !loading && (
-          <div className="py-16 text-center text-red-600">{error}</div>
+          <div className="py-32 text-center">
+             <div className="inline-block px-6 py-3 rounded-2xl bg-red-50 text-red-600 text-xs font-black uppercase tracking-widest border border-red-100">
+                Sequence Error: {error}
+             </div>
+          </div>
         )}
         {!loading && !error && (
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-            <div className="space-y-6">
-              <div className="relative group">
-                <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden border border-gray-200 shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent" />
-                  <img
-                    src={heroSrc}
-                    alt={ui.name}
-                    className="object-cover relative z-10 w-full h-full"
-                    onError={() => setHeroSrc(resolveImageUrl("/products/peptide-1.jpg"))}
-                  />
-                  <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 backdrop-blur-sm">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Lab Verified
-                    </Badge>
-                    <button
-                      aria-label={favoriteId ? 'Remove from favorites' : 'Add to favorites'}
-                      className={`w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-gray-200 flex items-center justify-center shadow-sm transition ${favoriteId ? 'text-red-500' : 'text-gray-700'}`}
-                      onClick={async () => {
-                        if (!user || user.role !== 'CUSTOMER' || !user.customerId) {
-                          toast.info('Please sign in as a customer to use favorites');
-                          return;
-                        }
-                        if (favoriteId) {
-                          const res = await api.removeFavorite(user.customerId, favoriteId);
-                          if (res.success) { setFavoriteId(null); toast.success('Removed from favorites'); }
-                        } else {
-                          const res = await api.addFavorite(user.customerId, productId);
-                          if (res.success && res.data?.id) { setFavoriteId(res.data.id); toast.success('Added to favorites'); }
-                        }
-                      }}
-                    >
-                      <Heart className={`w-5 h-5 ${favoriteId ? 'fill-red-500' : ''}`} />
-                    </button>
-                  </div>
+          <>
+          {/* ────── FIXED HEADER LAYER ──── */}
+          <div className="flex-shrink-0 p-5 border-b border-gray-100 bg-white/50 backdrop-blur-md z-30">
+             <div className="flex items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                   <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/30">{ui.category}</span>
+                      <div className="w-0.5 h-0.5 rounded-full bg-primary/10" />
+                      <span className="text-[10px] font-mono text-primary/20">SEQ-{(Math.random() * 1000).toFixed(0)}</span>
+                   </div>
+                   <h1 className="text-xl font-black text-primary tracking-tighter leading-tight uppercase">
+                     {ui.name}
+                   </h1>
                 </div>
-                <div className="grid grid-cols-4 gap-2 sm:gap-4 mt-4">
-                  {(() => {
-                    const variant = (product?.variants || []).find((v) => v.id === selectedVariantId) || (product?.variants || [])[0];
-                    const gallery = (((variant as any)?.images) && (variant as any).images.length > 0)
-                      ? (variant as any).images
-                      : (((product as any)?.images) || []);
-                    const imgs = (gallery && gallery.length > 0) ? gallery : [{ url: heroSrc, altText: ui.name } as any];
-                    return imgs.slice(0, 4).map((img: any, i: number) => (
-                      <button key={i} className="aspect-square bg-gray-50 rounded-xl border border-gray-200 hover:border-red-500/50 overflow-hidden transition-all duration-300 hover:scale-105" onClick={() => setHeroSrc(resolveImageUrl(img.url))}>
-                        <img src={resolveImageUrl(img.url || "/products/peptide-1.jpg")} alt={img.altText || `Product view ${i + 1}`} className="w-full h-full object-cover" />
-                      </button>
-                    ));
-                  })()}
+                
+                <div className="flex items-center gap-1.5 bg-emerald-500/5 border border-emerald-500/10 px-3 py-1.5 rounded-full">
+                   <div className={`w-1.5 h-1.5 rounded-full ${ui.inStock ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                     {ui.inStock ? 'In-Stock' : 'Depleted'}
+                   </span>
                 </div>
-                {/* Feature badges below gallery */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                  <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center">
-                    <div className="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 mx-auto mb-3 flex items-center justify-center">
-                      <Microscope className="w-6 h-6 text-green-500" />
-                    </div>
-                    <div className="font-bold text-black">99.9% Pure</div>
-                    <div className="text-gray-600 text-sm">Laboratory Grade</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+             </div>
+          </div>
 
-            <div className="space-y-6 sm:space-y-8">
-              <div>
-                <div className="flex items-center space-x-3 mb-4">
-                  <Badge className="bg-red-500/20 text-red-400 border-red-500/30 px-3 py-1">Physician Directed</Badge>
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-3 py-1">
-                    <CheckCircle className="w-3 h-3 mr-1" /> {ui.inStock ? 'IN STOCK' : 'OUT OF STOCK'}
-                  </Badge>
-                </div>
-                <h1 className="text-3xl sm:text-5xl font-black mb-2 sm:mb-4 text-foreground">{ui.name}</h1>
-                {product?.description && (<p className="text-gray-600 text-base sm:text-lg leading-relaxed">{product.description}</p>)}
-
-                {/* Reviews removed per request */}
-
-                <div className="flex flex-wrap items-end gap-2 sm:space-x-4 mt-4 sm:mt-6">
-                  {isAuthenticated ? (
-                    <>
-                      {selectedVariantId && typeof vialAmount === 'number' ? (
-                        <>
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-3">
-                              <span className="text-3xl sm:text-5xl font-black text-black">${(ui.price * vialAmount * quantity).toFixed(2)}</span>
-                              {ui.isBulkPrice && (
-                                <Badge className="bg-green-500/20 text-green-700 border-green-500/30 px-3 py-1">
-                                  Bulk Price
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          {ui.originalPrice && (
-                            <span className="text-xl sm:text-2xl text-gray-500 line-through sm:mb-2">${(ui.originalPrice * vialAmount * quantity).toFixed(2)}</span>
-                          )}
-                          {(vialAmount > 1 || quantity > 1) && (
-                            <span className="text-sm text-gray-600 sm:mb-2">${ui.price.toFixed(2)} per vial</span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-base sm:text-lg text-gray-600">Please select variant to view price</span>
-                      )}
-                    </>
-                  ) : (
-                    <div className="py-2">
-                       <span className="text-lg font-medium text-gray-400 italic">Sign in to view pricing</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-6 bg-gray-50 rounded-2xl p-4 sm:p-6 border border-gray-200 relative" style={{ zIndex: 1 }}>
-                {/* Variable mg Selection */}
-                <div className="relative" style={{ zIndex: 30 }}>
-                  <label className="block text-sm font-bold text-black mb-3 uppercase tracking-wide">Variable mg</label>
-                  <div className="relative">
-                    <select
-                      value={selectedVariantId || ''}
-                      onChange={(e) => setSelectedVariantId(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-700 font-semibold focus:border-red-500 focus:outline-none transition-all duration-200 appearance-none cursor-pointer hover:border-gray-400 shadow-sm"
-                      style={{ zIndex: 40 }}
-                    >
-                      <option value="" disabled>Choose an option</option>
-                      {(ui.variants || []).map((v) => (
-                        <option key={v.id} value={v.id} className="py-2">
-                          {v.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vial Amount Selection
-              <div className="relative" style={{ zIndex: 30 }}>
-                <label className="block text-sm font-bold text-black mb-3 uppercase tracking-wide">Vial Amount</label>
-                <div className="relative">
-                  <select
-                    value={vialAmount}
-                    onChange={(e) => setVialAmount(Number(e.target.value))}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-700 font-semibold focus:border-red-500 focus:outline-none transition-all duration-200 appearance-none cursor-pointer hover:border-gray-400 shadow-sm"
-                    style={{ zIndex: 40 }}
-                  >
-                    <option value="" disabled>Choose an option</option>
-                    {(() => {
-                      const selectedVariant = (ui.variants || []).find(v => v.id === selectedVariantId);
-                      const availableQuantity = selectedVariant?.inventory?.reduce((total, inv) => total + (inv.quantity - inv.reservedQty), 0) || 0;
-                      
-                      // Generate options based on available inventory
-                      const options = [];
-                      if (availableQuantity >= 1) options.push({ value: 1, label: '1 Vial' });
-                      if (availableQuantity >= 5) options.push({ value: 5, label: '5 Vials' });
-                      if (availableQuantity >= 10) options.push({ value: 10, label: '10 Vials' });
-                      
-                      // If no specific vial amounts available, show quantity options
-                      if (options.length === 0) {
-                        for (let i = 1; i <= Math.min(availableQuantity, 10); i++) {
-                          options.push({ value: i, label: `${i} Vial${i > 1 ? 's' : ''}` });
-                        }
-                      }
-                      
-                      return options.map(option => (
-                        <option key={option.value} value={option.value} className="py-2">
-                          {option.label}
-                        </option>
-                      ));
-                    })()}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div> */}
-
-                {/* Quantity Controls */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-bold text-black uppercase tracking-wide">Quantity</label>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                      className="w-8 h-8 rounded-lg border-2 border-gray-300 hover:border-red-500 flex items-center justify-center transition-colors text-sm font-bold"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      max={ui.availableQuantity || 999}
-                      value={quantity}
-                      onChange={(e) => {
-                        const newQuantity = parseInt(e.target.value) || 1;
-                        setQuantity(Math.max(1, Math.min(newQuantity, ui.availableQuantity || 999)));
-                      }}
-                      className="w-16 h-8 text-center font-bold text-lg border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none"
-                    />
-                    <button
-                      onClick={() => setQuantity(q => Math.min(q + 1, ui.availableQuantity || 999))}
-                      className="w-8 h-8 rounded-lg border-2 border-gray-300 hover:border-green-500 flex items-center justify-center transition-colors text-sm font-bold"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Quick Bulk Add Buttons */}
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="text-xs text-gray-600 font-medium">Quick Add:</span>
-                    <button
-                      onClick={() => setQuantity(q => Math.min(q + 25, ui.availableQuantity || 999))}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                    >
-                      +25
-                    </button>
-                    <button
-                      onClick={() => setQuantity(q => Math.min(q + 50, ui.availableQuantity || 999))}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                    >
-                      +50
-                    </button>
-                    <button
-                      onClick={() => setQuantity(q => Math.min(q + 75, ui.availableQuantity || 999))}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                    >
-                      +75
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bulk Pricing Table - Moved above Add to Cart */}
+          {/* ──── SCROLLABLE CORE BODY ──── */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-8 scrollbar-hide">
+            {/* Image Visualizer Stake */}
+            <div className="relative group bg-gray-50/50 rounded-[1.2rem] border border-gray-100 overflow-hidden isolate aspect-[4/3] flex items-center justify-center">
+              <img
+                src={heroSrc}
+                alt={ui.name}
+                className="object-contain w-full h-full p-4 transition-all duration-[1s]"
+                onError={() => setHeroSrc(resolveImageUrl("/products/peptide-1.jpg"))}
+              />
+              
+              {/* Arrow Navigation (Stacked Style) */}
               {(() => {
-                const variants = product?.variants || [];
-                const selectedVariant = variants.find(v => v.id === selectedVariantId) || variants[0];
-                const bulkPrices = (selectedVariant as any)?.bulkPrices;
-
-                if (!bulkPrices || bulkPrices.length === 0) {
-                  return null;
-                }
+                const variant = (product?.variants || []).find((v) => v.id === selectedVariantId) || (product?.variants || [])[0];
+                const gallery = (((variant as any)?.images) && (variant as any).images.length > 0)
+                  ? (variant as any).images
+                  : (((product as any)?.images) || []);
+                const imgs = (gallery && gallery.length > 0) ? gallery : [{ url: heroSrc } as any];
+                
+                if (imgs.length <= 1) return null;
 
                 return (
-                  <div className="mb-6 relative">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-black">Bulk Pricing</h3>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden relative">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-200 bg-gray-50/50">
-                            <th className="text-center py-3 px-4 font-semibold text-black">Quantity</th>
-                            <th className="text-center py-3 px-4 font-semibold text-black">Price</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {bulkPrices.map((bulkPrice: any, index: number) => {
-                            return (
-                              <tr key={bulkPrice.id || index} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                                <td className="py-3 px-4 text-gray-700 text-center font-medium">
-                                  {bulkPrice.minQty}{bulkPrice.maxQty ? ` - ${bulkPrice.maxQty}` : '+'}
-                                </td>
-                                <td className="py-3 px-4 text-center">
-                                  <div className="flex flex-col items-center justify-center">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-bold text-green-600">
-                                        ${Number(bulkPrice.price).toFixed(2)}
-                                      </span>
-                                    </div>
-                                    <span className="text-[10px] text-gray-500 uppercase font-medium">per item</span>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
+                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 pointer-events-none">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const nextIdx = (currentImgIndex - 1 + imgs.length) % imgs.length;
+                        setCurrentImgIndex(nextIdx);
+                        setHeroSrc(resolveImageUrl(imgs[nextIdx].url));
+                      }}
+                      className="w-7 h-7 rounded-full bg-white/80 backdrop-blur-md border border-gray-100 flex items-center justify-center text-primary/60 hover:text-primary transition-all pointer-events-auto shadow-sm"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const nextIdx = (currentImgIndex + 1) % imgs.length;
+                        setCurrentImgIndex(nextIdx);
+                        setHeroSrc(resolveImageUrl(imgs[nextIdx].url));
+                      }}
+                      className="w-7 h-7 rounded-full bg-white/80 backdrop-blur-md border border-gray-100 flex items-center justify-center text-primary/60 hover:text-primary transition-all pointer-events-auto shadow-sm"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 );
               })()}
 
-              <div className="space-y-3 sm:space-y-4 mt-8">
-                <Button
-                  size="lg"
-                  className={`w-full text-white border-0 text-base sm:text-lg py-4 sm:py-6 font-bold rounded-xl shadow-lg ${!ui.inStock
-                    ? 'bg-gray-500 cursor-not-allowed'
-                    : 'bg-red-600 hover:bg-red-500'
-                    }`}
-                  disabled={!ui.inStock || !ui.currentVariantId || (isAuthenticated && typeof vialAmount !== 'number')}
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      toast.info("Please sign in to add to cart");
-                      openLoginModal('customer');
-                      return;
-                    }
-                    if (!ui.currentVariantId) {
-                      toast.info("Please select a variant");
-                      return;
-                    }
-                    if (typeof vialAmount !== 'number') {
-                      toast.info("Please select a vial amount");
-                      return;
-                    }
-                    if (ui.currentVariantId && typeof vialAmount === 'number') {
-                      // Add to cart with total quantity (vialAmount * quantity)
-                      add(ui.currentVariantId, vialAmount * quantity, ui.price)
-                        .then(() => {
-                          toast.success(`Added ${vialAmount * quantity} vials to cart`);
-                          setCartOpen(true);
-                        })
-                        .catch((error) => {
-                          toast.error(error.message || 'Failed to add to cart');
-                        });
-                    }
-                  }}
-                >
-                  {!ui.inStock ?
-                    "OUT OF STOCK" :
-                    (!isAuthenticated ? 
-                      "SIGN IN TO BUY" :
-                      (ui.currentVariantId && typeof vialAmount === 'number' ?
-                      `ADD TO CART - $${(ui.price * vialAmount * quantity).toFixed(2)}` :
-                      "ADD TO CART"))
-                  }
-                </Button>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                 {(() => {
+                   const variant = (product?.variants || []).find((v) => v.id === selectedVariantId) || (product?.variants || [])[0];
+                   const imgs = (((variant as any)?.images) && (variant as any).images.length > 0) ? (variant as any).images : (((product as any)?.images) || []);
+                   if (imgs.length <= 1) return null;
+                   return imgs.map((_: any, i: number) => (
+                     <div key={i} className={`h-0.5 rounded-full transition-all ${i === currentImgIndex ? 'w-3 bg-primary' : 'w-1 bg-primary/10'}`} />
+                   ));
+                 })()}
+              </div>
+            </div>
 
-                {/* Show available quantity message */}
-                {ui.currentVariantId && typeof vialAmount === 'number' && (
-                  <div className="text-center text-sm text-gray-600 mt-2">
-                    {!ui.inStock ? (
-                      <span className="text-red-600 font-medium">Out of Stock</span>
-                    ) : null}
-                  </div>
-                )}
-                {/* Bulk Quote button removed - bulk pricing table moved above */}
+            {/* Content Stack */}
+            <div className="space-y-6 pb-4">
+              {product?.description && (
+                <p className="text-sm text-primary/50 leading-relaxed font-medium">
+                  {product.description}
+                </p>
+              )}
 
-                {/* Presidents Day Sale Coupon Banner (Commented Out)
-                <div className="bg-[#f1ebda] border-4 border-[#2B3B4C] rounded-xl p-6 text-[#C24C42] relative overflow-hidden shadow-xl">
-                  <div className="absolute inset-0 border-2 border-[#C24C42] m-[2px] rounded-[9px] pointer-events-none" />
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Tag className="w-5 h-5 text-[#C24C42]" />
-                      <span className="font-black text-base uppercase tracking-[0.2em] [text-shadow:1px_1px_0px_#2B3B4C, -1px_-1px_0px_#2B3B4C, 1px_-1px_0px_#2B3B4C, -1px_1px_0px_#2B3B4C]">Presidents' Day Sale</span>
-                    </div>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-sm font-black text-[#2B3B4C] uppercase tracking-tighter">Use code</span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText('PRESIDENTS');
-                          setCouponCopied(true);
-                          setTimeout(() => setCouponCopied(false), 2000);
-                        }}
-                        className="inline-flex items-center gap-2 bg-[#f1ebda] hover:bg-[#e8e0c8] transition-colors font-mono font-black text-sm sm:text-lg px-5 py-2 rounded-sm border-2 border-[#2B3B4C] cursor-pointer shadow-[3px_3px_0px_#C24C42] relative group"
-                        title="Click to copy coupon code"
-                      >
-                        <div className="absolute inset-0 border border-[#C24C42] m-[1px] rounded-[1px] pointer-events-none" />
-                        <span className="relative z-10 [text-shadow:1px_1px_0px_#2B3B4C, -1px_-1px_0px_#2B3B4C, 1px_-1px_0px_#2B3B4C, -1px_1px_0px_#2B3B4C]">PRESIDENTS</span>
-                        {couponCopied ? <Check className="w-4 h-4 text-green-700 relative z-10" /> : <Copy className="w-4 h-4 opacity-70 relative z-10" />}
-                      </button>
-                      <span className="text-sm font-black text-[#2B3B4C] uppercase tracking-tighter">at checkout</span>
-                    </div>
-                  </div>
-                </div>
-                */}
-
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-700">
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-green-500" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-black">99.9% Purity</div>
-                      <div className="text-gray-600 text-xs">Verified by Lab</div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                      <Truck className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-black">Express Shipping</div>
-                      <div className="text-gray-600 text-xs">24-48 Hours</div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                      <Award className="w-6 h-6 text-emerald-500" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-black">Physician Directed</div>
-                      <div className="text-gray-600 text-xs">Premium Quality</div>
-                    </div>
-                  </div>
+              {/* VARIANT SELECTION */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/30 block">Vial Configuration</label>
+                <div className="flex flex-wrap gap-2">
+                  {(ui.variants || []).map((v) => (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedVariantId(v.id)}
+                      className={`px-4 py-2 rounded-xl border transition-all text-left ${
+                        selectedVariantId === v.id
+                          ? 'bg-primary border-primary text-white shadow-md shadow-primary/10'
+                          : 'bg-white border-gray-100 text-primary/60 text-xs uppercase font-black hover:border-primary/20'
+                      }`}
+                    >
+                      <span className="text-xs font-black uppercase">{v.name}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="hidden" />
+              {/* SPECS RAIL */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100/50 flex items-center gap-3">
+                   <Shield className="w-4 h-4 text-emerald-600 shrink-0" />
+                   <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] font-black uppercase text-emerald-800">Assay Verified</span>
+                      <span className="text-[8px] font-bold text-emerald-600/40 uppercase">99%+ Pure</span>
+                   </div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/5 flex items-center gap-3">
+                   <Truck className="w-4 h-4 text-primary/60 shrink-0" />
+                   <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] font-black uppercase text-primary">Cold-Chain</span>
+                      <span className="text-[8px] font-bold text-primary/30 uppercase">Priority</span>
+                   </div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 flex items-center gap-3">
+                   <Microscope className="w-4 h-4 text-primary/40 shrink-0" />
+                   <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] font-black uppercase text-primary">GMP USA</span>
+                      <span className="text-[8px] font-bold text-primary/30 uppercase">Facility</span>
+                   </div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-primary text-white flex items-center gap-3">
+                   <Award className="w-4 h-4 text-white/80 shrink-0" />
+                   <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] font-black uppercase text-white">Compliance</span>
+                      <span className="text-[8px] font-bold text-white/40 uppercase">Regulatory</span>
+                   </div>
+                </div>
+              </div>
+
+              {/* MINI AUTHORIZATION */}
+              <div className="p-3.5 rounded-lg bg-gray-950 text-white/40 flex items-center gap-3">
+                 <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                 <p className="text-[10px] font-medium leading-tight">
+                    Professional clinical use only. Verification required for inventory access.
+                 </p>
+              </div>
+
+              {/* COA RECORDS */}
+              {filteredReports.length > 0 && (
+                <div className="space-y-3">
+                   <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary/20">Lab Records</span>
+                      <div className="h-px flex-1 bg-gray-100" />
+                   </div>
+                   <div className="grid grid-cols-1 gap-2">
+                      {filteredReports.slice(0, 3).map((r) => (
+                        <div key={r.id} className="p-3 rounded-xl bg-white border border-gray-100 flex items-center justify-between group">
+                           <div className="flex flex-col gap-0.5">
+                              <span className="text-[8px] font-black uppercase text-primary/20">Biospecimen CoA</span>
+                              <span className="text-xs font-black text-primary truncate max-w-[140px]">{r.name}</span>
+                           </div>
+                           <button 
+                            onClick={async () => {
+                              const res = await getPublicReportDownloadUrl(r.id, 'inline');
+                              if (res.success && res.data?.url) window.open(res.data.url, '_blank');
+                            }}
+                            className="w-7 h-7 rounded-lg bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm"
+                           >
+                              <Eye className="w-3.5 h-3.5" />
+                           </button>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Professional Use Notice */}
-        <div className="mt-12 sm:mt-20">
-          <Card className="border-l-4 border-amber-500 bg-amber-50 border-gray-200">
-            <CardContent className="p-6 sm:p-8">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg className="h-6 w-6 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-4 flex-1">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Important Note</h3>
-                  <p className="text-sm sm:text-base text-gray-900 leading-relaxed">
-                    Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Third Party Testing Reports */}
-        {filteredReports.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-black mb-6 text-foreground uppercase tracking-tight">Testing</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredReports.map((report) => (
-                <Card key={report.id} className="overflow-hidden border border-gray-200 hover:border-red-500/30 transition-all duration-300 hover:shadow-lg bg-white group">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col h-full">
-                      {/* Document Preview Area */}
-                      <div className="bg-white h-56 flex items-center justify-center border-b border-gray-100 group-hover:bg-red-50/10 transition-colors relative overflow-hidden">
-                        {report.previewUrl ? (
-                          <div className="w-full h-full relative">
-                            <iframe
-                              src={`${report.previewUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                              className="w-full h-full border-0 pointer-events-none"
-                              scrolling="no"
-                            />
-                            <div className="absolute inset-0 bg-transparent z-10" />
-                          </div>
+          {/* ──── STICKY ACTION FOOTER ──── */}
+          <div className="flex-shrink-0 p-5 border-t border-gray-100 bg-white/80 backdrop-blur-xl z-30">
+             <div className="space-y-4">
+               <div className="flex items-end justify-between">
+                  <div className="flex flex-col">
+                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/30 leading-none">Price Execution</span>
+                     <div className="mt-1 flex items-baseline gap-2">
+                        {isAuthenticated ? (
+                          <>
+                            <span className="text-2xl font-black text-primary tracking-tighter tabular-nums">
+                              ${(ui.price * (Number(vialAmount) || 1) * quantity).toFixed(2)}
+                            </span>
+                            {ui.originalPrice && (
+                              <span className="text-xs text-primary/20 line-through tabular-nums font-bold">
+                                ${(ui.originalPrice * (Number(vialAmount) || 1) * quantity).toFixed(2)}
+                              </span>
+                            )}
+                          </>
                         ) : (
-                          <div className="relative">
-                            <div className="w-16 h-20 bg-white border-2 border-gray-300 rounded-md shadow-sm transform group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
-                              <Microscope className="w-8 h-8 text-red-500/40" />
-                            </div>
-                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-sm border border-white">
-                              <CheckCircle className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
+                          <span className="text-xs font-black uppercase text-primary/40 italic">Unauthorized</span>
                         )}
-                      </div>
+                     </div>
+                  </div>
 
-                      <div className="p-5 flex flex-col gap-3">
-                        <div>
-                          <Badge className="bg-red-500/10 text-red-600 border-red-500/20 mb-2 uppercase text-[10px] font-bold tracking-wider">
-                            {report.category}
-                          </Badge>
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-bold text-gray-900 leading-tight line-clamp-2 min-h-[2.5rem] flex-1">
-                              {report.name}
-                            </h3>
-                            <Shield className="w-4 h-4 text-green-500 mt-1 shrink-0" />
-                          </div>
-                        </div>
+                  <div className="flex items-center bg-gray-50 border border-gray-100 rounded-lg p-0.5">
+                     <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-8 h-8 flex items-center justify-center rounded-md bg-white text-xs font-bold shadow-xs hover:bg-gray-50">-</button>
+                     <input 
+                        type="number" 
+                        value={quantity} 
+                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-10 text-center font-black text-xs text-primary bg-transparent focus:outline-none" 
+                     />
+                     <button onClick={() => setQuantity(q => Math.min(q + 1, ui.availableQuantity || 999))} className="w-8 h-8 flex items-center justify-center rounded-md bg-white text-xs font-bold shadow-xs hover:bg-gray-50">+</button>
+                  </div>
+               </div>
 
-                        {report.description && (
-                          <p className="text-gray-500 text-xs line-clamp-2 min-h-[2rem]">
-                            {report.description}
-                          </p>
-                        )}
-
-                        <div className="flex gap-2 mt-2 pt-4 border-t border-gray-100">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs h-8 border-gray-300 hover:border-red-500 hover:text-red-600 font-bold flex-1"
-                            onClick={async () => {
-                              try {
-                                const res = await getPublicReportDownloadUrl(report.id, 'inline');
-                                if (res.success && res.data?.url) {
-                                  window.open(res.data.url, '_blank');
-                                } else {
-                                  toast.error("Failed to get preview link");
-                                }
-                              } catch (e) {
-                                toast.error("Error opening file");
-                              }
-                            }}
-                          >
-                            <Eye className="w-3.5 h-3.5 mr-1.5" />
-                            VIEW
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs h-8 border-gray-300 hover:border-red-500 hover:text-red-600 font-bold flex-1"
-                            onClick={async () => {
-                              try {
-                                const res = await getPublicReportDownloadUrl(report.id, 'attachment');
-                                if (res.success && res.data?.url) {
-                                  window.open(res.data.url, '_self');
-                                } else {
-                                  toast.error("Failed to get download link");
-                                }
-                              } catch (e) {
-                                toast.error("Error downloading file");
-                              }
-                            }}
-                          >
-                            <Download className="w-3.5 h-3.5 mr-1.5" />
-                            DOWNLOAD
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+               <Button
+                  size="sm"
+                  className="w-full h-12 text-xs font-black uppercase tracking-[0.2em] rounded-xl bg-primary text-white shadow-xl shadow-primary/10 transition-all hover:-translate-y-0.5 active:scale-95"
+                  disabled={!ui.inStock || !ui.currentVariantId}
+                  onClick={() => {
+                    if (!isAuthenticated) return openLoginModal('customer');
+                    add(ui.currentVariantId!, (typeof vialAmount === 'number' ? vialAmount : 1) * quantity, ui.price)
+                      .then(() => { toast.success(`Inventory Updated`); setCartOpen(true); });
+                  }}
+               >
+                 {ui.inStock ? 'Initialize Sequence' : 'Access Restricted'}
+               </Button>
+             </div>
           </div>
+          </>
         )}
       </main>
 
-      {/* Cart Sidebar */}
       <CartSidebar
         open={cartOpen}
         onOpenChange={setCartOpen}
@@ -844,7 +532,6 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
         }
       />
 
-      {/* Bulk Quote Request Dialog */}
       {user?.customerId && (
         <BulkQuoteRequestDialog
           open={bulkQuoteOpen}
@@ -857,5 +544,3 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
     </div>
   );
 }
-
-

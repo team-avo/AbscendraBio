@@ -494,13 +494,13 @@ export default function CheckoutItemsPage() {
         <div className="mb-6">
           <div className="flex items-center">
             <div className="flex items-center flex-1">
-              <button type="button" onClick={() => router.push('/landing/checkout')} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white">
+              <button type="button" onClick={() => router.push('/landing/checkout')} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-primary text-white">
                 1
               </button>
-              <div className="h-1 flex-1 mx-2 rounded bg-red-500" />
+              <div className="h-1 flex-1 mx-2 rounded bg-primary" />
             </div>
             <div className="flex items-center flex-1">
-              <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white cursor-default">
+              <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-primary text-white cursor-default">
                 2
               </button>
               <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
@@ -544,7 +544,7 @@ export default function CheckoutItemsPage() {
           }
         `}</style>
 
-        <h1 className="text-3xl sm:text-4xl font-black mb-6">Checkout</h1>
+        <h1 className="text-3xl sm:text-5xl font-black mb-10 tracking-tight text-primary uppercase italic">Secure Checkout</h1>
         <div className="grid lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
@@ -676,8 +676,8 @@ export default function CheckoutItemsPage() {
               </div>
             </div>
 
-            <div className={`border rounded-lg p-4 mt-8 ${showTermsError ? 'border-red-500 bg-red-100' : 'border-red-200 bg-red-50'}`}>
-              <div className="flex items-start gap-3">
+            <div className={`border rounded-[2rem] p-8 mt-8 transition-all duration-300 ${showTermsError ? 'border-destructive bg-destructive/5' : 'border-primary/10 bg-gray-50'}`}>
+              <div className="flex items-start gap-4">
                 <input
                   type="checkbox"
                   id="checkout-terms-checkbox"
@@ -688,21 +688,19 @@ export default function CheckoutItemsPage() {
                       setShowTermsError(false);
                     }
                   }}
-                  className="mt-1 h-5 w-5 rounded border-red-300 text-red-600 focus:ring-red-500 cursor-pointer flex-shrink-0"
+                  className="mt-1 h-6 w-6 rounded-lg border-primary/20 text-primary focus:ring-primary cursor-pointer flex-shrink-0"
                 />
                 <label htmlFor="checkout-terms-checkbox" className="flex-1 cursor-pointer">
-                  <h3 className="text-red-800 font-bold mb-2">Important Note</h3>
-                  <div className="text-black text-sm leading-relaxed">
+                  <h3 className="text-primary font-black uppercase tracking-widest text-xs mb-3">Clinical Use Protocol</h3>
+                  <div className="text-gray-600 text-sm leading-relaxed font-medium">
                     Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong> and are only to be sold to a licensed healthcare provider to be utilized at their discretion in accordance with applicable law. These products are not FDA approved and are not intended to diagnose, treat, cure or prevent any medical disease or condition. Any and all content provided on this website is strictly for informational and educational purposes and should not be interpreted as medical advice. Ascendra Bio does not take any responsibility for distribution or use of these products.
                   </div>
                 </label>
               </div>
               {showTermsError && (
-                <div className="mt-2 text-sm text-red-600 font-semibold flex items-center gap-2">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                  Please tick the checkbox above to place the order.
+                <div className="mt-4 text-xs text-destructive font-black uppercase tracking-widest flex items-center gap-2">
+                  <X className="h-4 w-4" />
+                  Please affirm compliance with the professional use protocol.
                 </div>
               )}
             </div>
@@ -720,8 +718,8 @@ export default function CheckoutItemsPage() {
                   <div className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-red-500" />
-                        <h2 className="text-base font-semibold">{title}</h2>
+                        <MapPin className="h-5 w-5 text-primary" />
+                        <h2 className="text-xs font-black uppercase tracking-widest">{title}</h2>
                       </div>
                       <Button
                         type="button"

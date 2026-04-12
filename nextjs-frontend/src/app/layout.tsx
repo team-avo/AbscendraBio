@@ -13,6 +13,7 @@ import GlobalFallback from "@/components/ui/global-fallback";
 import { PendingApprovalModal } from "@/components/auth/PendingApprovalModal";
 import { GlobalAuthModal } from "@/components/auth/GlobalAuthModal";
 import GlobalHeader from "@/components/ui/GlobalHeader";
+import Footer from "@/components/landing/Footer";
 import { DashboardProvider } from "@/contexts/dashboard-context";
 
 const geistSans = Geist({
@@ -64,10 +65,13 @@ export default function RootLayout({
               <CartProvider>
                 <GooglePlacesProvider>
                   <div className="flex flex-col min-h-screen">
-                    <GlobalHeader />
+                    <Suspense fallback={null}>
+                      <GlobalHeader />
+                    </Suspense>
                     <main className="flex-1 flex flex-col">
                       <Suspense fallback={<GlobalFallback />}>{children}</Suspense>
                     </main>
+                    <Footer />
                   </div>
               </GooglePlacesProvider>
               <Toaster />

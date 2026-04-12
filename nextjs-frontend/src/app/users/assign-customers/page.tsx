@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { useAuth } from '@/contexts/auth-context';

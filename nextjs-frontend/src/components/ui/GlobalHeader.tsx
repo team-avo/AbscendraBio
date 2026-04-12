@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -12,13 +12,14 @@ import { Separator } from "@/components/ui/separator";
 import { CartSidebar } from "@/components/cart/CartSidebar";
 import { 
   Menu, ShoppingCart, User, List, LogOut, LayoutDashboard, Copy, Check as CheckIcon, Tag, 
-  Search, Bell, Plus, Globe, CreditCard, Users, Heart, FileText, X
+  Search, Bell, Plus, Globe, CreditCard, Users, Heart, FileText, X, SlidersHorizontal, ArrowLeft, Home
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { api, formatDate } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -100,6 +101,20 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
   const [showCreateOrderDialog, setShowCreateOrderDialog] = useState(false);
   const [notifications, setNotifications] = useState<Array<any>>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Store page state (synced with URL)
+  const searchParams = useSearchParams();
+  const storeSearch = searchParams.get('q') || '';
+  const storeSort = searchParams.get('sort') || 'featured';
+
+  const updateStoreParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, val]) => {
+      if (!val || val === 'All' || val === 'featured') params.delete(key);
+      else params.set(key, val);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
 
   const isLinkActive = (href: string): boolean => {
@@ -231,48 +246,98 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 alt="Abscendra Bio"
                 width={140}
                 height={32}
-                className={`w-auto group-hover:opacity-80 transition-all duration-300 ${scrolled ? 'h-6 sm:h-7' : 'h-7 sm:h-8'}`}
+                className={`w-auto group-hover:opacity-80 transition-all duration-300 ${scrolled ? 'h-5 sm:h-6' : 'h-6 sm:h-7'}`}
                 priority
               />
             </Link>
           </div>
 
-          {/* Nav Links (Storefront/Admin/Account) */}
-          <div className="hidden md:flex items-center gap-1">
-            <nav className="flex items-center space-x-1 lg:space-x-2 px-4">
-              {isLandingPage ? (
-                <>
-                  <Link href="/landing/products" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                    Products
-                  </Link>
-                  <Link href="/landing/third-party-testing" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                    3rd Party Testing
-                  </Link>
-                  <button onClick={() => setOpenContact(true)} className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                    Contact
+          {/* ───── ADAPTIVE DISCOVERY BAR (Store Only) ───── */}
+          {isProducts ? (
+            <div className="flex-1 max-w-2xl mx-4 hidden md:flex items-center gap-3">
+              <div className="flex items-center gap-1.5 mr-2">
+                {['All', 'Assayed Research Peptides'].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => updateStoreParams({ cat: cat === 'All' ? null : cat })}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
+                      (searchParams.get('cat') || 'All') === cat
+                        ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105'
+                        : 'bg-black/[0.03] text-primary/40 hover:text-primary hover:bg-black/5'
+                    }`}
+                  >
+                    {cat}
                   </button>
-                </>
-              ) : isAdminPage ? (
-                <>
-                  <Link href="/admin-dashboard" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/admin-dashboard" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                    Dashboard
-                  </Link>
-                  <Link href="/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                    Orders
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/account" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/account" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                    Profile
-                  </Link>
-                  <Link href="/account/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/account/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                    My Orders
-                  </Link>
-                </>
-              )}
-            </nav>
+                ))}
+              </div>
 
+              <div className="relative flex-1 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/30 group-focus-within:text-primary transition-colors w-3.5 h-3.5" />
+                <Input
+                  placeholder="Identification..."
+                  value={storeSearch}
+                  onChange={(e) => updateStoreParams({ q: e.target.value })}
+                  className="pl-10 h-10 bg-black/[0.03] border-transparent rounded-full focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all text-xs font-bold"
+                />
+              </div>
+              <Select value={storeSort} onValueChange={(v) => updateStoreParams({ sort: v })}>
+                <SelectTrigger className="w-28 h-10 border-transparent bg-black/[0.03] rounded-full font-black text-[9px] uppercase tracking-widest text-primary/60">
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl shadow-2xl border-white/20 backdrop-blur-xl">
+                  <SelectItem value="featured">Featured</SelectItem>
+                  <SelectItem value="name">Alpha A-Z</SelectItem>
+                  <SelectItem value="price-low">Price: Low-High</SelectItem>
+                  <SelectItem value="price-high">Price: High-Low</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => updateStoreParams({ filters: 'open' })}
+                className="h-10 px-4 rounded-full bg-black/[0.03] text-primary/60 hover:text-primary transition-all text-[9px] font-black uppercase tracking-widest"
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5 mr-2" />
+                Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-1">
+              <nav className="flex items-center space-x-1 lg:space-x-2 px-4">
+                {isLandingPage ? (
+                  <>
+                    <Link href="/landing/products" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
+                      Products
+                    </Link>
+                    <Link href="/landing/third-party-testing" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
+                      3rd Party Testing
+                    </Link>
+                    <button onClick={() => setOpenContact(true)} className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
+                      Contact
+                    </button>
+                  </>
+                ) : isAdminPage ? (
+                  <>
+                    <Link href="/admin-dashboard" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/admin-dashboard" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                      Dashboard
+                    </Link>
+                    <Link href="/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                      Orders
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/account" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/account" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                      Profile
+                    </Link>
+                    <Link href="/account/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/account/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                      My Orders
+                    </Link>
+                  </>
+                )}
+              </nav>
+            </div>
+          )}
             <div className="w-[1px] h-4 bg-gray-200 mx-3 hidden lg:block" />
 
             {/* Actions Section */}
@@ -325,43 +390,56 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
               )}
 
               {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex items-center space-x-2 rounded-full border border-black/5 bg-gray-50/50 p-1 pr-3 transition-all hover:bg-gray-100 active:scale-95">
-                      <Avatar className="h-8 w-8 border-2 border-white">
-                        <AvatarFallback className="bg-[#1B2D4F] text-white font-bold text-[9px] uppercase">
-                          {`${(user?.firstName?.[0] || user?.email?.[0] || 'A').toUpperCase()}${(user?.lastName?.[0] || '').toUpperCase()}`}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#1B2D4F]">{user?.firstName}</span>
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="min-w-[200px] rounded-[1.25rem] p-3 shadow-2xl border-white/40 backdrop-blur-xl bg-white/95 mt-4">
-                    <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer">
-                      <Link href={hasRole(["ADMIN", "MANAGER", "STAFF"]) ? "/admin-dashboard" : "/account"} className="flex items-center gap-3">
-                        <LayoutDashboard className="h-4 w-4 text-[#1B2D4F]" />
-                        <span className="font-bold text-xs uppercase tracking-widest">Dashboard</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-1" />
-                    <DropdownMenuItem onClick={() => logout()} className="flex items-center gap-3 text-red-600 rounded-xl py-3 cursor-pointer">
-                      <LogOut className="h-4 w-4" />
-                      <span className="font-bold text-xs uppercase tracking-widest">Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center space-x-2">
+                  {/* Standard Profile Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center space-x-2 rounded-full border border-black/5 bg-gray-50/50 p-1 pr-3 transition-all hover:bg-gray-100 active:scale-95">
+                        <Avatar className="h-8 w-8 border-2 border-white">
+                          <AvatarFallback className="bg-[#1B2D4F] text-white font-bold text-[9px] uppercase">
+                            {`${(user?.firstName?.[0] || user?.email?.[0] || 'A').toUpperCase()}${(user?.lastName?.[0] || '').toUpperCase()}`}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#1B2D4F]">{user?.firstName}</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-[200px] rounded-[1.25rem] p-3 shadow-2xl border-white/40 backdrop-blur-xl bg-white/95 mt-4">
+                      <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer">
+                        <Link href={hasRole(["ADMIN", "MANAGER", "STAFF"]) ? "/admin-dashboard" : "/account"} className="flex items-center gap-3">
+                          <LayoutDashboard className="h-4 w-4 text-[#1B2D4F]" />
+                          <span className="font-bold text-xs uppercase tracking-widest">Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="my-1" />
+                      <DropdownMenuItem onClick={() => logout()} className="flex items-center gap-3 text-red-600 rounded-xl py-3 cursor-pointer">
+                        <LogOut className="h-4 w-4" />
+                        <span className="font-bold text-xs uppercase tracking-widest">Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <button onClick={() => openLoginModal('customer')} className="px-4 py-2 text-[13px] font-semibold text-gray-500 hover:text-[#070B14] rounded-full hover:bg-gray-50 transition-all">
-                    Login
-                  </button>
-                  <button onClick={() => setOpenContact(true)} className="px-6 py-2.5 text-[13px] font-bold rounded-full bg-[#070B14] text-white hover:bg-gray-800 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.15)] active:scale-95">
-                    Inquire Now
-                  </button>
+                  {isProducts ? (
+                    <Link href="/">
+                       <Button variant="ghost" className="hidden lg:flex items-center gap-2 rounded-full h-10 px-4 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-black/5 transition-all">
+                         <Home className="h-3.5 w-3.5" />
+                         Home
+                       </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <button onClick={() => openLoginModal('customer')} className="px-4 py-2 text-[13px] font-semibold text-gray-500 hover:text-[#070B14] rounded-full hover:bg-gray-50 transition-all">
+                        Login
+                      </button>
+                      <button onClick={() => setOpenContact(true)} className="px-6 py-2.5 text-[13px] font-bold rounded-full bg-[#070B14] text-white hover:bg-gray-800 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.15)] active:scale-95">
+                        Inquire Now
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
-          </div>
 
           {/* Mobile Trigger */}
           <div className="md:hidden flex items-center gap-2">
