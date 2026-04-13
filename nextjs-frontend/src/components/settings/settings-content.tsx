@@ -239,6 +239,17 @@ export function SettingsContent() {
 
     // Save Google Places config
     const saveGooglePlacesConfig = async () => {
+        // Validate API key format when enabled (Google Places keys start with "AIza")
+        if (googlePlacesEnabled && googlePlacesApiKey) {
+            if (!googlePlacesApiKey.startsWith('AIza') || googlePlacesApiKey.length < 30) {
+                toast.error('Invalid Google Places API key format. Keys should start with "AIza".');
+                return;
+            }
+        }
+        if (googlePlacesEnabled && !googlePlacesApiKey.trim()) {
+            toast.error('Please enter a Google Places API key before enabling.');
+            return;
+        }
         setGooglePlacesSaving(true);
         try {
             const res = await api.updateGooglePlacesConfig({

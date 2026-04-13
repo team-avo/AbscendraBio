@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Edit, MoreHorizontal, Trash2, MapPin, User, Building, Crown, Eye, Check, Key, MessageSquare } from 'lucide-react';
+import { Edit, MoreHorizontal, Trash2, MapPin, User, Building, Crown, Eye, Check, Key, MessageSquare, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { Customer, api } from '@/lib/api';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -57,6 +57,7 @@ interface CustomersTableProps {
   onExportAll?: () => void;
   onEmailReport?: () => void;
   onRefreshCommentCounts?: () => void;
+  onRefresh?: () => void;
 }
 
 const CustomerTypeBadge = ({ type }: { type: string }) => {
@@ -79,7 +80,10 @@ const CustomerTypeBadge = ({ type }: { type: string }) => {
 };
 
 const StatusBadge = ({ isApproved, approvalStatus }: { isApproved: boolean; approvalStatus?: 'PENDING' | 'APPROVED' | 'DEACTIVATED' }) => {
-  const status = approvalStatus || (isApproved ? 'APPROVED' : 'PENDING');
+  // approvalStatus is authoritative; fall back to isApproved only when absent
+  const status = approvalStatus
+    ? approvalStatus
+    : (isApproved ? 'APPROVED' : 'PENDING');
   const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
     PENDING: { label: 'Pending', variant: 'secondary' },
     APPROVED: { label: 'Approved', variant: 'default' },
@@ -118,29 +122,40 @@ export function CustomersTable({
   onPageChange,
   onExportAll,
   onEmailReport,
-  onRefreshCommentCounts
+  onRefreshCommentCounts,
+  onRefresh
 }: CustomersTableProps) {
   const isMobile = useIsMobile();
   const [selected, setSelected] = useState<string[]>([]);
-  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+  const [sortConfig, setSortConfig] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(null);
 
-  useEffect(() => {
-    if (customers.length > 0) {
-      const fetchCounts = async () => {
-        try {
-          // Assuming we can use the same batch count endpoint or a similar one
-          // For now, let's use the orderIds one if it's generic enough or add a new one
-          // Backend has GET /api/comments/counts?orderIds=...
-          // I should check if I added a customerIds one. I didn't.
-          // I'll skip the batch count for now if not available or just use individual checks
-          // Actually, let's just show the count from the customer object if provided
-        } catch (error) {
-          console.error('Error fetching comment counts:', error);
-        }
-      };
-      fetchCounts();
+  const handleSort = (key: string) => {
+    setSortConfig(prev =>
+      prev?.key === key
+        ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
+        : { key, dir: 'asc' }
+    );
+  };
+
+  const SortIcon = ({ col }: { col: string }) => {
+    if (sortConfig?.key !== col) return <ChevronsUpDown className="ml-1 h-3 w-3 inline opacity-40" />;
+    return sortConfig.dir === 'asc'
+      ? <ChevronUp className="ml-1 h-3 w-3 inline text-primary" />
+      : <ChevronDown className="ml-1 h-3 w-3 inline text-primary" />;
+  };
+
+  const sortedCustomers = [...customers].sort((a, b) => {
+    if (!sortConfig) return 0;
+    const dir = sortConfig.dir === 'asc' ? 1 : -1;
+    switch (sortConfig.key) {
+      case 'name': return dir * (`${a.firstName} ${a.lastName}`).localeCompare(`${b.firstName} ${b.lastName}`);
+      case 'email': return dir * (a.email || '').localeCompare(b.email || '');
+      case 'type': return dir * (a.customerType || '').localeCompare(b.customerType || '');
+      case 'created': return dir * (new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+      case 'orders': return dir * ((a._count?.orders || 0) - (b._count?.orders || 0));
+      default: return 0;
     }
-  }, [customers]);
+  });
 
   const [bulkAction, setBulkAction] = useState<null | 'delete' | 'export' | 'deactivate'>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -240,7 +255,7 @@ export function CustomersTable({
         setConfirmOpen(false);
         logger.info('=== BULK DELETE COMPLETED SUCCESSFULLY ===');
         // Reload page to refresh the list
-        window.location.reload();
+        onRefresh?.();
       } else {
         logger.error('Bulk delete failed:', { error: result.error });
         toast.error(result.error || 'Failed to delete customers');
@@ -345,20 +360,20 @@ export function CustomersTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[40px]"><input type="checkbox" checked={allSelected} onChange={toggleSelectAll} /></TableHead>
-              <TableHead className="min-w-[200px]">Customer</TableHead>
-              <TableHead className="min-w-[200px]">Contact</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead className="min-w-[200px] cursor-pointer select-none" onClick={() => handleSort('name')}>Customer<SortIcon col="name" /></TableHead>
+              <TableHead className="min-w-[200px] cursor-pointer select-none" onClick={() => handleSort('email')}>Contact<SortIcon col="email" /></TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => handleSort('type')}>Type<SortIcon col="type" /></TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Sales Rep</TableHead>
               <TableHead>Sales Manager</TableHead>
-              <TableHead>Orders</TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => handleSort('orders')}>Orders<SortIcon col="orders" /></TableHead>
               <TableHead>Comments</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => handleSort('created')}>Created<SortIcon col="created" /></TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.map((customer) => (
+            {sortedCustomers.map((customer) => (
               <TableRow key={customer.id}>
                 <TableCell><input type="checkbox" checked={selected.includes(customer.id)} onChange={() => toggleSelect(customer.id)} /></TableCell>
                 <TableCell
@@ -704,7 +719,7 @@ export function CustomersTable({
           // Providing a window reload for now to be safe as done elsewhere, or just close.
           // Since CustomersTable uses props 'customers', we can't easily refresh internal data without parent refresing.
           // We will notify parent or force reload.
-          window.location.reload();
+          onRefresh?.();
         }}
       />
 
@@ -714,7 +729,7 @@ export function CustomersTable({
         customer={assignManagerDialog.customer}
         onOpenChange={(open) => setAssignManagerDialog(prev => ({ ...prev, open }))}
         onSuccess={() => {
-          window.location.reload();
+          onRefresh?.();
         }}
       />
 
@@ -724,7 +739,7 @@ export function CustomersTable({
         customer={selectedCustomer}
         onOpenChange={setEditTypeOpen}
         onSuccess={() => {
-          window.location.reload();
+          onRefresh?.();
         }}
       />
     </div >

@@ -1631,22 +1631,74 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
     <>
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className={cn(
-          "w-[95vw] sm:max-w-[900px] flex flex-col bg-background text-foreground p-0",
+          "w-[95vw] sm:max-w-[900px] flex flex-col bg-background text-foreground p-0 rounded-2xl overflow-hidden",
           customerSearchOpen ? "h-[95vh] max-h-[95vh]" : "h-auto max-h-[90vh]"
         )}>
-          <DialogHeader className="flex-shrink-0 p-4 pr-12 sm:px-6 sm:py-4 border-b">
-            <DialogTitle className="text-base sm:text-xl">Create New Order</DialogTitle>
-            <DialogDescription>
-              Follow the steps to create a new order
-            </DialogDescription>
-          </DialogHeader>
+
+          {/* ── DARK HEADER ── */}
+          <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+            <div className="relative z-10 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <Package className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white leading-tight">New Order</h2>
+                <p className="text-xs text-white/40 mt-0.5">Complete the steps below to create an order</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── STEP INDICATOR ── */}
+          <div className="flex-shrink-0 px-6 py-4 border-b border-slate-100 bg-white">
+            <div className="flex items-center gap-0">
+              {[
+                { n: 1, label: 'Customer', icon: User },
+                { n: 2, label: 'Products', icon: Package },
+                { n: 3, label: 'Review', icon: CreditCard },
+              ].map(({ n, label, icon: Icon }, i) => {
+                const isActive = step === n;
+                const isDone = step > n;
+                const isDisabled = (n === 2 && !canProceedToStep2) || (n === 3 && !canProceedToStep3);
+                return (
+                  <div key={n} className="flex items-center flex-1">
+                    <button
+                      onClick={() => !isDisabled && setStep(n)}
+                      disabled={isDisabled}
+                      className={cn(
+                        "flex items-center gap-2 flex-1 transition-all",
+                        isDisabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all",
+                        isActive ? "bg-[#1B2D4F] text-white" :
+                        isDone ? "bg-emerald-500 text-white" :
+                        "bg-slate-100 text-slate-400"
+                      )}>
+                        {isDone ? "✓" : n}
+                      </div>
+                      <span className={cn(
+                        "text-xs font-semibold whitespace-nowrap",
+                        isActive ? "text-[#1B2D4F]" : isDone ? "text-emerald-600" : "text-slate-400"
+                      )}>{label}</span>
+                    </button>
+                    {i < 2 && (
+                      <div className={cn("h-px flex-1 mx-3 transition-all", step > n ? "bg-emerald-300" : "bg-slate-200")} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           <div className={cn(
             "flex-1 min-h-0 overflow-y-auto px-4 pb-4 pt-1 sm:px-6 sm:pb-2 sm:pt-2",
             customerSearchOpen ? "h-[60vh]" : ""
           )}>
             <Tabs value={step.toString()} onValueChange={(value) => setStep(parseInt(value))} className="h-full flex flex-col">
-              <div className="shrink-0">
+              <div className="shrink-0 hidden">
                 <TabsList className="flex w-full overflow-x-auto overflow-y-hidden justify-start sm:grid sm:grid-cols-3 sm:justify-center p-1 scrollbar-hide mb-4">
                   <TabsTrigger value="1" className="flex-1 px-3 py-1.5 text-xs sm:text-sm flex items-center gap-2">
                     <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -2704,38 +2756,37 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
                 </TabsContent>
               </div >
 
-              <div className="shrink-0 p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {step > 1 && (
-                    <Button variant="outline" onClick={() => setStep(step - 1)} className="w-full sm:w-auto">
-                      Back
+              <div className="shrink-0 px-6 py-4 border-t border-slate-100 bg-white sticky bottom-0 flex items-center justify-between gap-3">
+                  {step > 1 ? (
+                    <Button variant="outline" onClick={() => setStep(step - 1)} className="rounded-xl border-slate-200 text-slate-600 text-sm h-9">
+                      ← Back
                     </Button>
+                  ) : (
+                    <span />
                   )}
-                  <div className="flex-1" />
                   {step === 1 && (
                     <Button
                       onClick={() => setStep(2)}
                       disabled={!canProceedToStep2}
-                      className="w-full sm:w-auto"
+                      className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
                     >
-                      Next: Add Products
+                      Next: Add Products →
                     </Button>
                   )}
                   {step === 2 && (
                     <Button
                       onClick={() => setStep(3)}
                       disabled={!canProceedToStep3}
-                      className="w-full sm:w-auto flex-1"
+                      className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
                     >
-                      Next: Review Order ({orderItems.length} items)
+                      Review Order ({orderItems.length} items) →
                     </Button>
                   )}
                   {step === 3 && (
-                    <Button onClick={handleSubmit} disabled={loading} className="w-full sm:w-auto flex-1 font-bold">
-                      {loading ? 'Creating Order...' : 'Confirm and Create Order'}
+                    <Button onClick={handleSubmit} disabled={loading} className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 font-semibold disabled:opacity-40">
+                      {loading ? 'Creating...' : '✓ Confirm & Create Order'}
                     </Button>
                   )}
-                </div>
               </div>
             </Tabs >
           </div >

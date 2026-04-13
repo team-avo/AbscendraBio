@@ -3,14 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { toast } from "sonner";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarPrimitive } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
-import { Download, Users, ExternalLink, Calendar as CalendarIcon, Mail, Package } from "lucide-react";
+import { Download, Users, ExternalLink, Calendar as CalendarIcon, Mail, Package, PieChart as PieChartIcon, List, TrendingUp } from "lucide-react";
 import { api, formatCurrency, Order } from "@/lib/api";
 import logger from "@/lib/logger";
 import { OrderDateFilter } from "@/components/orders/order-date-filter";
@@ -62,13 +61,7 @@ export default function CustomerInsightsPage() {
   const fetchCustomerSummary = async (customerId: string) => {
     try {
       setSummaryLoading(true);
-      const res = await api.getCustomerSummary(
-        customerId,
-        range,
-        from,
-        to,
-        salesChannelId
-      );
+      const res = await api.getCustomerSummary(customerId, range, from, to, salesChannelId);
       if (res.success) setCustomerSummary(res.data);
     } catch (e) {
       logger.error("Failed to fetch customer summary", { error: e });
@@ -93,12 +86,8 @@ export default function CustomerInsightsPage() {
 
   const handleOrderUpdated = () => {
     setEditingOrder(null);
-    if (selectedCustomerId) {
-      fetchCustomerSummary(selectedCustomerId);
-    }
-    if (selectedFreqCustomerId) {
-      fetchCustomerSummary(selectedFreqCustomerId);
-    }
+    if (selectedCustomerId) fetchCustomerSummary(selectedCustomerId);
+    if (selectedFreqCustomerId) fetchCustomerSummary(selectedFreqCustomerId);
     toast.success("Order updated successfully");
   };
 
@@ -107,12 +96,8 @@ export default function CustomerInsightsPage() {
       const res = await api.hardDeleteOrder(orderId);
       if (res.success) {
         setEditingOrder(null);
-        if (selectedCustomerId) {
-          fetchCustomerSummary(selectedCustomerId);
-        }
-        if (selectedFreqCustomerId) {
-          fetchCustomerSummary(selectedFreqCustomerId);
-        }
+        if (selectedCustomerId) fetchCustomerSummary(selectedCustomerId);
+        if (selectedFreqCustomerId) fetchCustomerSummary(selectedFreqCustomerId);
         toast.success("Order deleted successfully");
       }
     } catch (error) {
@@ -133,11 +118,10 @@ export default function CustomerInsightsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-      setCurrentPage(1); // Reset to first page on search
+      setCurrentPage(1);
     }, 500);
     return () => clearTimeout(timer);
   }, [search]);
-
 
   useEffect(() => {
     (async () => {
@@ -147,7 +131,6 @@ export default function CustomerInsightsPage() {
         let fromToSend = from;
         let toToSend = to;
 
-        // Handle "1 Day" filter - rely on backend PST logic
         if (range === 'day' && from) {
           rangeToSend = 'custom';
           fromToSend = from;
@@ -159,7 +142,7 @@ export default function CustomerInsightsPage() {
           fromToSend || undefined,
           toToSend || undefined,
           debouncedSearch || undefined,
-          undefined, // managerId
+          undefined,
           salesChannelId,
           currentPage,
           itemsPerPage
@@ -180,10 +163,7 @@ export default function CustomerInsightsPage() {
     })();
   }, [range, from, to, debouncedSearch, salesChannelId, currentPage]);
 
-  // Reset page to 1 when filters change (not search, search has its own debounced reset)
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [range, from, to, salesChannelId]);
+  useEffect(() => { setCurrentPage(1); }, [range, from, to, salesChannelId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -198,7 +178,6 @@ export default function CustomerInsightsPage() {
     (async () => {
       try {
         setFreqLoading(true);
-
         let rangeToSend = range;
         let fromToSend = from;
         let toToSend = to;
@@ -218,16 +197,12 @@ export default function CustomerInsightsPage() {
           freqTab,
           plusFilter,
           freqPage,
-          itemsPerPage // limit
+          itemsPerPage
         );
         if (res.success && res.data) {
           setFreqData(res.data);
-          if (res.pagination) {
-            setFreqTotalPages(res.pagination.totalPages ?? 1);
-          }
-          if (res.metrics) {
-            setFreqMetrics(res.metrics);
-          }
+          if (res.pagination) setFreqTotalPages(res.pagination.totalPages ?? 1);
+          if (res.metrics) setFreqMetrics(res.metrics);
         } else {
           toast.error(res.error || "Failed to load order frequency data");
           setFreqData([]);
@@ -241,22 +216,13 @@ export default function CustomerInsightsPage() {
     })();
   }, [activeMainTab, debouncedFreqSearch, salesChannelId, range, from, to, freqTab, plusFilter, freqPage]);
 
-  // Reset page to 1 when filters change (not search, search has its own debounced reset)
-  useEffect(() => {
-    setFreqPage(1);
-  }, [freqTab, plusFilter, range, from, to, salesChannelId]);
-
-
+  useEffect(() => { setFreqPage(1); }, [freqTab, plusFilter, range, from, to, salesChannelId]);
 
   const segmentChart = useMemo(() => {
     const total = (data.segments || []).reduce((s: number, x: any) => s + x._count?.id || 0, 0) || 1;
     const palette = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
-    // Aggregate data
-    const aggregated: Record<string, number> = {
-      'Wholesale': 0,
-      'Enterprise': 0
-    };
+    const aggregated: Record<string, number> = { 'Wholesale': 0, 'Enterprise': 0 };
 
     (data.segments || []).forEach((s: any) => {
       const count = s._count?.id || 0;
@@ -265,7 +231,6 @@ export default function CustomerInsightsPage() {
       } else if (s.customerType === 'ENTERPRISE_1' || s.customerType === 'ENTERPRISE_2') {
         aggregated['Enterprise'] += count;
       } else if (s.customerType !== 'ENTERPRISE') {
-        // Handle other types if any (excluding legacy ENTERPRISE)
         const name = s.customerType.replace('_', ' ');
         if (!aggregated[name]) aggregated[name] = 0;
         aggregated[name] += count;
@@ -274,24 +239,17 @@ export default function CustomerInsightsPage() {
 
     return Object.entries(aggregated)
       .filter(([_, value]) => value > 0)
-      .map(([name, value], idx) => ({
-        name,
-        value,
-        color: palette[idx % palette.length]
-      }));
+      .map(([name, value], idx) => ({ name, value, color: palette[idx % palette.length] }));
   }, [data]);
 
   const csv = useMemo(() => {
     const header = "name,email,sales_rep,orders,revenue,customerType,since";
     const rows = (data.topCustomers || [])
-      .filter((c: any) => c.customerType !== 'ENTERPRISE') // legacy filter (kept)
+      .filter((c: any) => c.customerType !== 'ENTERPRISE')
       .map((c: any) => {
         let displayType = c.customerType;
-        if (c.customerType === 'B2C' || c.customerType === 'B2B') {
-          displayType = 'Wholesale';
-        } else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') {
-          displayType = 'Enterprise';
-        }
+        if (c.customerType === 'B2C' || c.customerType === 'B2B') displayType = 'Wholesale';
+        else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') displayType = 'Enterprise';
         const salesRep = c.salesRep ? `${c.salesRep.name} (${c.salesRep.email})` : 'N/A';
         return `${c.name},${c.email},"${salesRep}",${c.orders},${c.revenue},${displayType},${c.since}`;
       });
@@ -309,16 +267,12 @@ export default function CustomerInsightsPage() {
   };
 
   const handleSendEmailReport = async (email: string) => {
-    // We'll use the customer email report since this page is customer-focused
-    return api.sendCustomersEmailReport({
-      email,
-      type: 'insights' // We can use this to differentiate on backend if needed
-    });
+    return api.sendCustomersEmailReport({ email, type: 'insights' });
   };
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-5 px-2 sm:px-0">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Customer Insights</h1>
@@ -337,11 +291,11 @@ export default function CustomerInsightsPage() {
             />
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {!isMobile && (
-                <Button variant="outline" onClick={downloadCsv} className="flex-1 sm:w-auto h-9 sm:h-10 text-xs sm:text-sm" disabled={loading || (data.topCustomers || []).length === 0}>
+                <Button onClick={downloadCsv} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto" disabled={loading || (data.topCustomers || []).length === 0}>
                   <Download className="h-4 w-4 mr-2" /> Export
                 </Button>
               )}
-              <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 sm:w-auto h-9 sm:h-10 text-xs sm:text-sm">
+              <Button onClick={() => setShowEmailDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
                 <Mail className="h-4 w-4 mr-2" /> {isMobile ? "Email Report" : "Email"}
               </Button>
             </div>
@@ -356,7 +310,7 @@ export default function CustomerInsightsPage() {
           description="Enter your email to receive the customer insights report as an Excel file."
         />
 
-        <Tabs value={activeMainTab} onValueChange={setActiveMainTab} className="space-y-6">
+        <Tabs value={activeMainTab} onValueChange={setActiveMainTab} className="space-y-5">
           <div className="overflow-x-auto pb-1 scrollbar-hide flex w-full">
             <TabsList className="bg-muted/50 p-1 w-full max-w-sm grid grid-cols-2">
               <TabsTrigger value="overview" className="text-sm font-semibold">Top Customers</TabsTrigger>
@@ -364,177 +318,166 @@ export default function CustomerInsightsPage() {
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="mt-0 outline-none space-y-6">
-            <div className="grid gap-6 grid-cols-1">
-              <Card className="overflow-hidden">
-                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-lg sm:text-xl">Top Customers</CardTitle>
-                    <CardDescription>By revenue</CardDescription>
+          <TabsContent value="overview" className="mt-0 outline-none space-y-5">
+            {/* Top Customers table */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                    <Users className="h-4 w-4 text-blue-600" />
                   </div>
-                  <div className="relative w-full sm:w-72">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Search name or email..."
-                      className="w-full pl-9 pr-4 py-2 bg-muted/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all h-9 sm:h-10"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                    {search && (
-                      <button
-                        onClick={() => setSearch("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </button>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Top Customers</p>
+                    <p className="text-xs text-slate-500">By revenue</p>
+                  </div>
+                </div>
+                <div className="relative w-full sm:w-72">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search name or email..."
+                    className="w-full pl-9 pr-4 py-2 bg-muted/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all h-9 sm:h-10"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  {search && (
+                    <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[800px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Sales Rep</TableHead>
+                      <TableHead>Customer Type</TableHead>
+                      <TableHead>Orders</TableHead>
+                      <TableHead>Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      Array.from({ length: 10 }).map((_, i) => (
+                        <TableRow key={i}>
+                          <TableCell><Skeleton className="h-4 w-4" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      (data.topCustomers || []).map((c: any, idx: number) => {
+                        let displayType = c.customerType;
+                        if (c.customerType === 'B2C' || c.customerType === 'B2B') displayType = 'Wholesale';
+                        else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') displayType = 'Enterprise';
+                        return (
+                          <TableRow
+                            key={c.id || idx}
+                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                            onClick={() => setSelectedCustomerId(c.id)}
+                          >
+                            <TableCell>{((currentPage - 1) * itemsPerPage) + idx + 1}</TableCell>
+                            <TableCell className="font-medium text-primary hover:underline">{c.name}</TableCell>
+                            <TableCell className="truncate max-w-[180px]" title={c.email}>{c.email}</TableCell>
+                            <TableCell>
+                              {c.salesRep ? (
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">{c.salesRep.name}</span>
+                                  <span className="text-[10px] text-muted-foreground truncate max-w-[150px]" title={c.salesRep.email}>{c.salesRep.email}</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Unassigned</span>
+                              )}
+                            </TableCell>
+                            <TableCell>{displayType}</TableCell>
+                            <TableCell>{c.orders}</TableCell>
+                            <TableCell>{formatCurrency(c.revenue)}</TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {(() => {
+                if ((data.pagination?.totalPages || 0) <= 1) return null;
+                return (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t">
+                    <div className="text-sm text-muted-foreground">Page {currentPage} of {data.pagination?.totalPages}</div>
+                    <Pagination currentPage={currentPage} totalPages={data.pagination?.totalPages || 1} onPageChange={setCurrentPage} />
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Customer Segments */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-violet-50">
+                  <PieChartIcon className="h-4 w-4 text-violet-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Customer Segments</p>
+                  <p className="text-xs text-slate-500">Distribution by type</p>
+                </div>
+              </div>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                  <div className="flex-1 w-full flex items-center justify-center">
+                    {loading ? (
+                      <div className="flex items-center justify-center h-[250px] sm:h-[300px]">
+                        <Skeleton className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full" />
+                      </div>
+                    ) : (
+                      <div className="h-[250px] sm:h-[300px] w-full max-w-[400px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie data={segmentChart} cx="50%" cy="50%" innerRadius={80} outerRadius={110} dataKey="value">
+                              {segmentChart.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity" />
+                              ))}
+                            </Pie>
+                            <Tooltip contentStyle={{ background: 'var(--popover)', color: 'var(--popover-foreground)', border: '1px solid var(--border)', borderRadius: '12px' }} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     )}
                   </div>
-                </CardHeader>
-                <CardContent className="p-0 sm:p-6">
-                  <div className="overflow-x-auto">
-                    <Table className="min-w-[800px]">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>#</TableHead>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Sales Rep</TableHead>
-                          <TableHead>Customer Type</TableHead>
-                          <TableHead>Orders</TableHead>
-                          <TableHead>Revenue</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {loading ? (
-                          Array.from({ length: 10 }).map((_, i) => (
-                            <TableRow key={i}>
-                              <TableCell><Skeleton className="h-4 w-4" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-8" /></TableCell>
-                              <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          (data.topCustomers || []).map((c: any, idx: number) => {
-                            let displayType = c.customerType;
-                            if (c.customerType === 'B2C' || c.customerType === 'B2B') {
-                              displayType = 'Wholesale';
-                            } else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') {
-                              displayType = 'Enterprise';
-                            }
-                            return (
-                              <TableRow
-                                key={c.id || idx}
-                                className="cursor-pointer hover:bg-muted/50 transition-colors"
-                                onClick={() => setSelectedCustomerId(c.id)}
-                              >
-                                <TableCell>{((currentPage - 1) * itemsPerPage) + idx + 1}</TableCell>
-                                <TableCell className="font-medium text-primary hover:underline">{c.name}</TableCell>
-                                <TableCell className="truncate max-w-[180px]" title={c.email}>{c.email}</TableCell>
-                                <TableCell>
-                                  {c.salesRep ? (
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-medium">{c.salesRep.name}</span>
-                                      <span className="text-[10px] text-muted-foreground truncate max-w-[150px]" title={c.salesRep.email}>
-                                        {c.salesRep.email}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground italic">Unassigned</span>
-                                  )}
-                                </TableCell>
-                                <TableCell>{displayType}</TableCell>
-                                <TableCell>{c.orders}</TableCell>
-                                <TableCell>{formatCurrency(c.revenue)}</TableCell>
-                              </TableRow>
-                            );
-                          })
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  {(() => {
-                    if ((data.pagination?.totalPages || 0) <= 1) return null;
-
-                    return (
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-4 pb-4 sm:px-0 sm:pb-0">
-                        <div className="text-sm text-muted-foreground">
-                          Page {currentPage} of {data.pagination?.totalPages}
+                  <div className="flex-1 w-full grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-4">
+                    {loading ? (
+                      Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="flex flex-col p-3 sm:p-4 rounded-2xl bg-muted/30 border border-border/50">
+                          <Skeleton className="h-4 w-16 mb-2" />
+                          <Skeleton className="h-8 w-12" />
                         </div>
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={data.pagination?.totalPages || 1}
-                          onPageChange={setCurrentPage}
-                        />
+                      ))
+                    ) : segmentChart.map((s: any) => (
+                      <div key={s.name} className="flex flex-col p-3 sm:p-4 rounded-2xl bg-muted/30 border border-border/50 transition-all hover:bg-muted/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                          <span className="text-xs sm:text-sm font-bold truncate">{s.name}</span>
+                        </div>
+                        <div className="flex items-end justify-between">
+                          <span className="text-xl sm:text-2xl font-black text-primary">{s.value}</span>
+                          <span className="text-[10px] font-bold text-muted-foreground">Customers</span>
+                        </div>
                       </div>
-                    );
-                  })()}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Customer Segments</CardTitle>
-                  <CardDescription>Distribution by type</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
-                    <div className="flex-1 w-full flex items-center justify-center">
-                      {loading ? (
-                        <div className="flex items-center justify-center h-[250px] sm:h-[300px]">
-                          <Skeleton className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full" />
-                        </div>
-                      ) : (
-                        <div className="h-[250px] sm:h-[300px] w-full max-w-[400px]">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                              <Pie data={segmentChart} cx="50%" cy="50%" innerRadius={80} outerRadius={110} dataKey="value">
-                                {segmentChart.map((entry: any, index: number) => (
-                                  <Cell
-                                    key={`cell-${index}`}
-                                    fill={entry.color}
-                                    className="hover:opacity-80 transition-opacity"
-                                  />
-                                ))}
-                              </Pie>
-                              <Tooltip contentStyle={{ background: 'var(--popover)', color: 'var(--popover-foreground)', border: '1px solid var(--border)', borderRadius: '12px' }} />
-                            </PieChart>
-                          </ResponsiveContainer>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 w-full grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-4">
-                      {loading ? (
-                        Array.from({ length: 4 }).map((_, i) => (
-                          <div key={i} className="flex flex-col p-3 sm:p-4 rounded-2xl bg-muted/30 border border-border/50">
-                            <Skeleton className="h-4 w-16 mb-2" />
-                            <Skeleton className="h-8 w-12" />
-                          </div>
-                        ))
-                      ) : segmentChart.map((s: any) => (
-                        <div key={s.name} className="flex flex-col p-3 sm:p-4 rounded-2xl bg-muted/30 border border-border/50 transition-all hover:bg-muted/50">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                            <span className="text-xs sm:text-sm font-bold truncate">{s.name}</span>
-                          </div>
-                          <div className="flex items-end justify-between">
-                            <span className="text-xl sm:text-2xl font-black text-primary">{s.value}</span>
-                            <span className="text-[10px] font-bold text-muted-foreground">Customers</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="order_frequency" className="mt-0 outline-none space-y-6">
+          <TabsContent value="order_frequency" className="mt-0 outline-none space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <h2 className="text-lg font-semibold tracking-tight">Metrics Overview</h2>
               <OrderDateFilter
@@ -549,120 +492,91 @@ export default function CustomerInsightsPage() {
               />
             </div>
 
-            <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-              <Card className="p-0 gap-0 shadow-sm border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                  <CardTitle className="text-[10px] sm:text-sm font-medium">Total Customers</CardTitle>
-                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+            {/* Stat chips */}
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-50 shrink-0">
+                  <Users className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-slate-500 font-medium">Total Customers</p>
                   {freqLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-7 sm:h-8 w-16" />
-                      <Skeleton className="h-3 sm:h-4 w-32" />
-                    </div>
+                    <div className="space-y-1 mt-1"><Skeleton className="h-6 w-16" /><Skeleton className="h-3 w-28" /></div>
                   ) : (
                     <>
-                      <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                        {(range === "all" || range === "all_time")
-                          ? freqMetrics.total.toLocaleString()
-                          : freqMetrics.activeInPeriod.toLocaleString()}
-                      </div>
-                      <div className="flex items-center text-[10px] sm:text-xs">
-                        <span className="text-muted-foreground">
-                          {(range === "all" || range === "all_time") ? "All time records" : "Active in period"}
-                        </span>
-                      </div>
+                      <p className="text-xl font-bold text-slate-800 truncate">
+                        {(range === "all" || range === "all_time") ? freqMetrics.total.toLocaleString() : freqMetrics.activeInPeriod.toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-slate-500">{(range === "all" || range === "all_time") ? "All time records" : "Active in period"}</p>
                     </>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="p-0 gap-0 shadow-sm border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                  <CardTitle className="text-[10px] sm:text-sm font-medium">Never Ordered</CardTitle>
-                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-slate-100 shrink-0">
+                  <Users className="h-5 w-5 text-slate-500" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-slate-500 font-medium">Never Ordered</p>
                   {freqLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-7 sm:h-8 w-16" />
-                      <Skeleton className="h-3 sm:h-4 w-32" />
-                    </div>
+                    <div className="space-y-1 mt-1"><Skeleton className="h-6 w-16" /><Skeleton className="h-3 w-28" /></div>
                   ) : (
                     <>
-                      <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                        {freqMetrics.neverOrdered.toLocaleString()}
-                      </div>
-                      <div className="flex items-center text-[10px] sm:text-xs">
-                        <span className="text-muted-foreground">
-                          {range === "all" || range === "all_time" ? "0 total orders" : "0 orders in period"}
-                        </span>
-                      </div>
+                      <p className="text-xl font-bold text-slate-800 truncate">{freqMetrics.neverOrdered.toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-500">{range === "all" || range === "all_time" ? "0 total orders" : "0 orders in period"}</p>
                     </>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="p-0 gap-0 shadow-sm border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                  <CardTitle className="text-[10px] sm:text-sm font-medium">Single Order</CardTitle>
-                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-amber-50 shrink-0">
+                  <Users className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-slate-500 font-medium">Single Order</p>
                   {freqLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-7 sm:h-8 w-16" />
-                      <Skeleton className="h-3 sm:h-4 w-32" />
-                    </div>
+                    <div className="space-y-1 mt-1"><Skeleton className="h-6 w-16" /><Skeleton className="h-3 w-28" /></div>
                   ) : (
                     <>
-                      <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                        {freqMetrics.singleOrder.toLocaleString()}
-                      </div>
-                      <div className="flex items-center text-[10px] sm:text-xs">
-                        <span className="text-muted-foreground">
-                          {range === "all" || range === "all_time" ? "Exactly 1 order" : "1 order in period"}
-                        </span>
-                      </div>
+                      <p className="text-xl font-bold text-slate-800 truncate">{freqMetrics.singleOrder.toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-500">{range === "all" || range === "all_time" ? "Exactly 1 order" : "1 order in period"}</p>
                     </>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="p-0 gap-0 shadow-sm border-border/50">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                  <CardTitle className="text-[10px] sm:text-sm font-medium">Repeat Customers</CardTitle>
-                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-emerald-50 shrink-0">
+                  <TrendingUp className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-slate-500 font-medium">Repeat Customers</p>
                   {freqLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-7 sm:h-8 w-16" />
-                      <Skeleton className="h-3 sm:h-4 w-32" />
-                    </div>
+                    <div className="space-y-1 mt-1"><Skeleton className="h-6 w-16" /><Skeleton className="h-3 w-28" /></div>
                   ) : (
                     <>
-                      <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                        {freqMetrics.repeatOrder.toLocaleString()}
-                      </div>
-                      <div className="flex items-center text-[10px] sm:text-xs">
-                        <span className="text-muted-foreground">
-                          {range === "all" || range === "all_time" ? "2+ orders" : "2+ orders in period"}
-                        </span>
-                      </div>
+                      <p className="text-xl font-bold text-slate-800 truncate">{freqMetrics.repeatOrder.toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-500">{range === "all" || range === "all_time" ? "2+ orders" : "2+ orders in period"}</p>
                     </>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
 
-            <Card className="overflow-hidden">
-              <CardHeader className="flex flex-col gap-4">
+            {/* Customer Orders table */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div className="flex flex-col mb-1.5 sm:mb-0">
-                    <CardTitle className="text-lg sm:text-xl">Customer Orders</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Grouped by total orders</CardDescription>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                      <List className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Customer Orders</p>
+                      <p className="text-xs text-slate-500">Grouped by total orders</p>
+                    </div>
                   </div>
                   <div className="relative w-full sm:w-72">
                     <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -674,17 +588,12 @@ export default function CustomerInsightsPage() {
                       onChange={(e) => setFreqSearch(e.target.value)}
                     />
                     {freqSearch && (
-                      <button
-                        onClick={() => setFreqSearch("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </button>
+                      <button onClick={() => setFreqSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">×</button>
                     )}
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4 mt-2">
+                <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4">
                   <Tabs value={freqTab} onValueChange={(v) => { setFreqTab(v); setFreqPage(1); }} className="w-full md:w-auto">
                     <div className="overflow-x-auto pb-1.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:pb-0 scrollbar-hide">
                       <TabsList className="bg-muted/50 p-1 flex w-full min-w-max sm:inline-flex sm:w-auto sm:min-w-0">
@@ -705,115 +614,98 @@ export default function CustomerInsightsPage() {
                         {Array.from({ length: 19 }).map((_, i) => {
                           const val = i + 2;
                           return (
-                            <SelectItem key={val} value={val.toString()} className="text-xs sm:text-sm">
-                              {val}+ Orders
-                            </SelectItem>
+                            <SelectItem key={val} value={val.toString()} className="text-xs sm:text-sm">{val}+ Orders</SelectItem>
                           );
                         })}
                       </SelectContent>
                     </Select>
                   )}
                 </div>
-              </CardHeader>
-              <CardContent className="p-0 sm:p-6">
-                <div className="overflow-x-auto">
-                  <Table className="min-w-[800px]">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>#</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Sales Rep</TableHead>
-                        <TableHead>Customer Type</TableHead>
-                        <TableHead>Orders</TableHead>
-                        <TableHead>Revenue</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {freqLoading ? (
-                        Array.from({ length: 10 }).map((_, i) => (
-                          <TableRow key={i}>
-                            <TableCell><Skeleton className="h-4 w-4" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-8" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[800px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Sales Rep</TableHead>
+                      <TableHead>Customer Type</TableHead>
+                      <TableHead>Orders</TableHead>
+                      <TableHead>Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {freqLoading ? (
+                      Array.from({ length: 10 }).map((_, i) => (
+                        <TableRow key={i}>
+                          <TableCell><Skeleton className="h-4 w-4" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                          <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                        </TableRow>
+                      ))
+                    ) : (() => {
+                      if (freqData.length === 0) {
+                        return (
+                          <TableRow>
+                            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                              No customers found in this category.
+                            </TableCell>
                           </TableRow>
-                        ))
-                      ) : (() => {
-                        if (freqData.length === 0) {
-                          return (
-                            <TableRow>
-                              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                                No customers found in this category.
-                              </TableCell>
-                            </TableRow>
-                          );
-                        }
+                        );
+                      }
 
-                        return freqData.map((c: any, idx: number) => {
-                          let displayType = c.customerType;
-                          if (c.customerType === 'B2C' || c.customerType === 'B2B') {
-                            displayType = 'Wholesale';
-                          } else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') {
-                            displayType = 'Enterprise';
-                          }
-                          return (
-                            <TableRow
-                              key={c.id || idx}
-                              className="cursor-pointer hover:bg-muted/50 transition-colors"
-                              onClick={() => setSelectedFreqCustomerId(c.id)}
-                            >
-                              <TableCell>{((freqPage - 1) * itemsPerPage) + idx + 1}</TableCell>
-                              <TableCell className="font-medium text-primary hover:underline">{c.name}</TableCell>
-                              <TableCell className="truncate max-w-[180px]" title={c.email}>{c.email}</TableCell>
-                              <TableCell>
-                                {c.salesRep ? (
-                                  <div className="flex flex-col">
-                                    <span className="text-sm font-medium">{c.salesRep.name}</span>
-                                    <span className="text-[10px] text-muted-foreground truncate max-w-[150px]" title={c.salesRep.email}>
-                                      {c.salesRep.email}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <span className="text-xs text-muted-foreground italic">Unassigned</span>
-                                )}
-                              </TableCell>
-                              <TableCell>{displayType}</TableCell>
-                              <TableCell>{c.orders}</TableCell>
-                              <TableCell>{formatCurrency(c.revenue)}</TableCell>
-                            </TableRow>
-                          );
-                        });
-                      })()}
-                    </TableBody>
-                  </Table>
-                </div>
-                {(() => {
-                  if (freqTotalPages <= 1) return null;
-
-                  return (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-4 pb-4 sm:px-0 sm:pb-0">
-                      <div className="text-sm text-muted-foreground">
-                        Page {freqPage} of {freqTotalPages}
-                      </div>
-                      <Pagination
-                        currentPage={freqPage}
-                        totalPages={freqTotalPages}
-                        onPageChange={setFreqPage}
-                      />
-                    </div>
-                  );
-                })()}
-              </CardContent>
-            </Card>
+                      return freqData.map((c: any, idx: number) => {
+                        let displayType = c.customerType;
+                        if (c.customerType === 'B2C' || c.customerType === 'B2B') displayType = 'Wholesale';
+                        else if (c.customerType === 'ENTERPRISE_1' || c.customerType === 'ENTERPRISE_2') displayType = 'Enterprise';
+                        return (
+                          <TableRow
+                            key={c.id || idx}
+                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                            onClick={() => setSelectedFreqCustomerId(c.id)}
+                          >
+                            <TableCell>{((freqPage - 1) * itemsPerPage) + idx + 1}</TableCell>
+                            <TableCell className="font-medium text-primary hover:underline">{c.name}</TableCell>
+                            <TableCell className="truncate max-w-[180px]" title={c.email}>{c.email}</TableCell>
+                            <TableCell>
+                              {c.salesRep ? (
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">{c.salesRep.name}</span>
+                                  <span className="text-[10px] text-muted-foreground truncate max-w-[150px]" title={c.salesRep.email}>{c.salesRep.email}</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Unassigned</span>
+                              )}
+                            </TableCell>
+                            <TableCell>{displayType}</TableCell>
+                            <TableCell>{c.orders}</TableCell>
+                            <TableCell>{formatCurrency(c.revenue)}</TableCell>
+                          </TableRow>
+                        );
+                      });
+                    })()}
+                  </TableBody>
+                </Table>
+              </div>
+              {(() => {
+                if (freqTotalPages <= 1) return null;
+                return (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t">
+                    <div className="text-sm text-muted-foreground">Page {freqPage} of {freqTotalPages}</div>
+                    <Pagination currentPage={freqPage} totalPages={freqTotalPages} onPageChange={setFreqPage} />
+                  </div>
+                );
+              })()}
+            </div>
           </TabsContent>
         </Tabs>
 
         <Dialog open={!!selectedCustomerId} onOpenChange={(open) => !open && setSelectedCustomerId(null)}>
-
           <DialogContent className={cn("flex flex-col bg-background text-foreground", "w-[98vw] sm:w-[95vw] lg:w-[1000px] xl:w-[1200px] lg:max-w-none xl:max-w-none max-h-[96vh] overflow-y-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-border/40 shadow-2xl")}>
             <DialogHeader className="px-2 pt-2 sm:px-0 sm:pt-0">
               <DialogTitle className={cn("text-xl sm:text-2xl font-bold break-words text-left", summaryLoading && "sr-only")}>
@@ -837,21 +729,9 @@ export default function CustomerInsightsPage() {
 
             {summaryLoading ? (
               <div className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <Skeleton className="h-8 w-64" />
-                  <Skeleton className="h-4 w-48" />
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Skeleton className="h-32 w-full" />
-                  <Skeleton className="h-32 w-full" />
-                  <Skeleton className="h-32 w-full" />
-                  <Skeleton className="h-32 w-full" />
-                </div>
+                <div className="space-y-2"><Skeleton className="h-8 w-64" /><Skeleton className="h-4 w-48" /></div>
+                <div className="grid grid-cols-3 gap-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+                <div className="grid grid-cols-2 gap-4"><Skeleton className="h-32 w-full" /><Skeleton className="h-32 w-full" /><Skeleton className="h-32 w-full" /><Skeleton className="h-32 w-full" /></div>
               </div>
             ) : (
               <Tabs defaultValue="products" className="mt-6 sm:mt-8 flex flex-col h-full">
@@ -873,9 +753,7 @@ export default function CustomerInsightsPage() {
                           {p.image ? (
                             <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
-                              <Users className="w-6 h-6 sm:w-8 sm:h-8" />
-                            </div>
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/40"><Users className="w-6 h-6 sm:w-8 sm:h-8" /></div>
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -911,7 +789,6 @@ export default function CustomerInsightsPage() {
                             </span>
                           </div>
                         </div>
-
                         <div className="mt-auto pt-4 sm:pt-5 border-t border-dashed border-border/80 flex flex-col items-stretch gap-4">
                           <div className="flex-1">
                             <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/60 mb-2 sm:mb-3">Composition</p>
@@ -923,12 +800,7 @@ export default function CustomerInsightsPage() {
                               ))}
                             </div>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditOrder(o.id)}
-                            className="w-full rounded-xl border-primary/20 hover:border-primary/50 hover:bg-primary/5 font-bold shadow-sm transition-all group/btn h-8 px-3 text-[10px] sm:text-[11px]"
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleEditOrder(o.id)} className="w-full rounded-xl border-primary/20 hover:border-primary/50 hover:bg-primary/5 font-bold shadow-sm transition-all group/btn h-8 px-3 text-[10px] sm:text-[11px]">
                             <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1.5 text-primary group-hover/btn:scale-110 transition-transform" />
                             View Order
                           </Button>
@@ -944,19 +816,14 @@ export default function CustomerInsightsPage() {
                 </TabsContent>
 
                 <TabsContent value="growth" className="mt-0 outline-none flex-1 px-1">
-                  <Card className="border-none shadow-none bg-muted/5 rounded-2xl sm:rounded-3xl p-3 sm:p-6">
-                    <CardHeader className="px-0 pt-0 pb-4 sm:pb-6">
-                      <CardTitle className="text-base sm:text-lg font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        Monthly Revenue Growth
-                        <span className="text-[10px] w-fit font-medium text-muted-foreground bg-background px-3 py-1 rounded-full border border-border/50">Last 12 Months</span>
-                      </CardTitle>
-                    </CardHeader>
+                  <div className="border-none shadow-none bg-muted/5 rounded-2xl sm:rounded-3xl p-3 sm:p-6">
+                    <p className="text-base sm:text-lg font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                      Monthly Revenue Growth
+                      <span className="text-[10px] w-fit font-medium text-muted-foreground bg-background px-3 py-1 rounded-full border border-border/50">Last 12 Months</span>
+                    </p>
                     <div className="h-[250px] sm:h-[350px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={customerSummary?.monthlyGrowth || []}
-                          margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-                        >
+                        <AreaChart data={customerSummary?.monthlyGrowth || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorRevenueCustomer" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
@@ -964,26 +831,8 @@ export default function CustomerInsightsPage() {
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                          <XAxis
-                            dataKey="date"
-                            stroke="hsl(var(--muted-foreground))"
-                            fontSize={10}
-                            tickLine={false}
-                            axisLine={false}
-                            dy={10}
-                            interval={0}
-                            angle={0}
-                            textAnchor={'middle'}
-                            height={30}
-                          />
-                          <YAxis
-                            stroke="hsl(var(--muted-foreground))"
-                            fontSize={10}
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(v) => `$${v.toLocaleString()}`}
-                            width={50}
-                          />
+                          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} dy={10} interval={0} angle={0} textAnchor={'middle'} height={30} />
+                          <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v.toLocaleString()}`} width={50} />
                           <Tooltip
                             content={({ active, payload }) => {
                               if (active && payload && payload.length) {
@@ -1005,19 +854,11 @@ export default function CustomerInsightsPage() {
                               return null;
                             }}
                           />
-                          <Area
-                            type="monotone"
-                            dataKey="revenue"
-                            stroke="#10b981"
-                            strokeWidth={3}
-                            fillOpacity={1}
-                            fill="url(#colorRevenueCustomer)"
-                            animationDuration={1500}
-                          />
+                          <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenueCustomer)" animationDuration={1500} />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
-                  </Card>
+                  </div>
                 </TabsContent>
               </Tabs>
             )}
@@ -1051,7 +892,6 @@ export default function CustomerInsightsPage() {
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       {customerSummary?.customer?.customerType === 'B2C' || customerSummary?.customer?.customerType === 'B2B' ? 'Wholesale' : 'Enterprise'}
                     </div>
-
                     {customerSummary?.customer?.salesRep ? (
                       <div className="flex items-center gap-2 text-xs sm:text-sm bg-primary/5 border border-primary/10 px-3 py-1.5 rounded-lg w-fit">
                         <span className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider mr-1">Assigned:</span>
@@ -1068,11 +908,7 @@ export default function CustomerInsightsPage() {
 
             {summaryLoading ? (
               <div className="p-4 sm:p-6 space-y-6">
-                <div className="space-y-4">
-                  <Skeleton className="h-20 w-full rounded-2xl" />
-                  <Skeleton className="h-20 w-full rounded-2xl" />
-                  <Skeleton className="h-20 w-full rounded-2xl" />
-                </div>
+                <div className="space-y-4"><Skeleton className="h-20 w-full rounded-2xl" /><Skeleton className="h-20 w-full rounded-2xl" /><Skeleton className="h-20 w-full rounded-2xl" /></div>
               </div>
             ) : (
               <Tabs defaultValue="orders" className="mt-6 flex flex-col h-full gap-4">
@@ -1091,7 +927,6 @@ export default function CustomerInsightsPage() {
                       <CalendarIcon className="w-4 h-4 text-primary/40" />
                       Orders List
                     </h3>
-
                     <div className="overflow-hidden border border-border/40 rounded-2xl bg-card/30">
                       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent">
                         <Table>
@@ -1109,17 +944,12 @@ export default function CustomerInsightsPage() {
                             {(customerSummary?.recentOrders || []).map((o: any) => (
                               <TableRow key={o.id} className="group hover:bg-primary/5 transition-colors border-border/40">
                                 <TableCell className="py-3">
-                                  <button
-                                    onClick={() => handleEditOrder(o.id)}
-                                    className="font-mono text-[11px] font-bold bg-muted/60 text-muted-foreground px-2 py-0.5 rounded hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer"
-                                  >
+                                  <button onClick={() => handleEditOrder(o.id)} className="font-mono text-[11px] font-bold bg-muted/60 text-muted-foreground px-2 py-0.5 rounded hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer">
                                     #{o.orderNumber}
                                   </button>
                                 </TableCell>
                                 <TableCell className="py-3">
-                                  <span className="text-[11px] text-muted-foreground font-semibold">
-                                    {new Date(o.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-                                  </span>
+                                  <span className="text-[11px] text-muted-foreground font-semibold">{new Date(o.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
                                 </TableCell>
                                 <TableCell className="py-3">
                                   <div className="flex flex-wrap gap-1">
@@ -1131,22 +961,13 @@ export default function CustomerInsightsPage() {
                                   </div>
                                 </TableCell>
                                 <TableCell className="text-right py-3">
-                                  <span className="text-xs sm:text-sm font-black text-primary">
-                                    {formatCurrency(o.totalAmount)}
-                                  </span>
+                                  <span className="text-xs sm:text-sm font-black text-primary">{formatCurrency(o.totalAmount)}</span>
                                 </TableCell>
                                 <TableCell className="py-3">
-                                  <span className="capitalize border px-2 py-0.5 rounded-full bg-primary/5 border-primary/20 text-primary font-bold text-[9px] tracking-wider inline-block">
-                                    {o.status.toLowerCase()}
-                                  </span>
+                                  <span className="capitalize border px-2 py-0.5 rounded-full bg-primary/5 border-primary/20 text-primary font-bold text-[9px] tracking-wider inline-block">{o.status.toLowerCase()}</span>
                                 </TableCell>
                                 <TableCell className="text-right py-3">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleEditOrder(o.id)}
-                                    className="w-8 h-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-all"
-                                  >
+                                  <Button variant="ghost" size="icon" onClick={() => handleEditOrder(o.id)} className="w-8 h-8 rounded-lg hover:bg-primary/10 hover:text-primary transition-all">
                                     <ExternalLink className="w-3.5 h-3.5" />
                                   </Button>
                                 </TableCell>
@@ -1154,7 +975,6 @@ export default function CustomerInsightsPage() {
                             ))}
                           </TableBody>
                         </Table>
-
                         {(customerSummary?.recentOrders || []).length === 0 && (
                           <div className="flex flex-col items-center justify-center py-20 bg-muted/5">
                             <CalendarIcon className="w-12 h-12 text-muted/20 mb-3" />
@@ -1180,9 +1000,7 @@ export default function CustomerInsightsPage() {
                             {p.image ? (
                               <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-lg" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-muted-foreground/40 bg-muted/30 rounded-lg">
-                                <Package className="w-6 h-6" />
-                              </div>
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground/40 bg-muted/30 rounded-lg"><Package className="w-6 h-6" /></div>
                             )}
                           </div>
                           <div className="min-w-0 flex-1">

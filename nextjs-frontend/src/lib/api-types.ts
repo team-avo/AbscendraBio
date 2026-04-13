@@ -413,6 +413,7 @@ export interface Order {
   shippingAmount: number;
   taxAmount: number;
   totalAmount: number;
+  currency?: string;
   billingAddressId?: string | null;
   shippingAddressId?: string | null;
   selectedPaymentType?: "ZELLE" | "BANK_WIRE" | "AUTHORIZE_NET" | null;
@@ -472,6 +473,7 @@ export interface Payment {
   provider?: string;
   status: string;
   amount: number;
+  currency?: string;
   paidAt?: string;
 }
 

@@ -5,13 +5,6 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { api, formatCurrency, type SalesRepPerformance, type SalesRepPerformanceResponse } from '@/lib/api';
 import logger from '@/lib/logger';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
     Table,
@@ -259,7 +252,7 @@ export default function SalesManagerAnalyticsPage() {
     return (
         <ProtectedRoute requiredRoles={['SALES_MANAGER', 'ADMIN']}>
             <DashboardLayout>
-                <div className="space-y-6 pb-10">
+                <div className="space-y-5 px-2 sm:px-0 pb-10">
                     {/* Header */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-1">
@@ -354,103 +347,106 @@ export default function SalesManagerAnalyticsPage() {
                     </div>
 
                     {loading ? (
-                        <Card>
-                            <CardContent className="flex items-center justify-center py-16">
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                            <div className="flex items-center justify-center py-16">
                                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                                     <LoadingSpinner size={24} />
                                     <span className="text-sm">Loading performance data…</span>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     ) : error ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-red-600">Failed to load analytics</CardTitle>
-                                <CardDescription>{error}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Button onClick={handleRetry}>Try again</Button>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                            <h3 className="text-base font-semibold text-red-600 mb-1">Failed to load analytics</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+                            <Button
+                                className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                onClick={handleRetry}
+                            >
+                                Try again
+                            </Button>
+                        </div>
                     ) : !data || data.reps.length === 0 ? (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>No sales representatives found</CardTitle>
-                                <CardDescription>
-                                    You don't have any assigned sales representatives with data for this period.
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                            <h3 className="text-base font-semibold mb-1">No sales representatives found</h3>
+                            <p className="text-sm text-muted-foreground">
+                                You don't have any assigned sales representatives with data for this period.
+                            </p>
+                        </div>
                     ) : (
                         <>
-                            {/* Team Overview Cards */}
+                            {/* Team Overview Stat Chips */}
                             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Team Total Revenue</CardTitle>
-                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">
-                                            {formatCurrency(data.totals.totalRevenue)}
-                                        </div>
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
+                                        <DollarSign className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground font-medium">Team Total Revenue</p>
+                                        <p className="text-xl font-bold truncate">{formatCurrency(data.totals.totalRevenue)}</p>
                                         <p className="text-xs text-muted-foreground">
                                             Across {data.reps.length} sales rep{data.reps.length !== 1 ? 's' : ''}
                                         </p>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">{Math.round(data.totals.totalOrders)}</div>
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
+                                        <ShoppingCart className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground font-medium">Total Orders</p>
+                                        <p className="text-xl font-bold">{Math.round(data.totals.totalOrders)}</p>
                                         <p className="text-xs text-muted-foreground">
                                             {data.totals.averageConversion.toFixed(1)}% conversion rate
                                         </p>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Active Reps</CardTitle>
-                                        <Award className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-2xl font-bold">{data.totals.repsActive}</div>
-                                        <p className="text-xs text-muted-foreground">
-                                            With active customers
-                                        </p>
-                                    </CardContent>
-                                </Card>
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
+                                        <Award className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground font-medium">Active Reps</p>
+                                        <p className="text-xl font-bold">{data.totals.repsActive}</p>
+                                        <p className="text-xs text-muted-foreground">With active customers</p>
+                                    </div>
+                                </div>
 
-                                <Card className={cn(selectedRep ? 'border-primary/50 bg-primary/5' : '')}>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <CardTitle className="text-sm font-medium">Selected Rep</CardTitle>
-                                        <Users className="h-4 w-4 text-muted-foreground" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="text-lg font-bold truncate">
+                                <div className={cn(
+                                    "flex items-center gap-3 bg-white rounded-2xl border shadow-sm px-5 py-4",
+                                    selectedRep ? 'border-primary/50 bg-primary/5' : 'border-slate-200/80'
+                                )}>
+                                    <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
+                                        <Users className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground font-medium">Selected Rep</p>
+                                        <p className="text-lg font-bold truncate">
                                             {selectedRep ? `${selectedRep.user.firstName} ${selectedRep.user.lastName}` : 'Team Overview'}
-                                        </div>
+                                        </p>
                                         <p className="text-xs text-muted-foreground truncate">
                                             {selectedRep ? formatCurrency(selectedRep.metrics.totalRevenue) : 'Select a rep below'}
                                         </p>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Sales Reps Performance Table - MOVED UP */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Sales Representatives Overview</CardTitle>
-                                    <CardDescription>
-                                        Detailed performance metrics for each member of your team. Click a row to view customer details.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="overflow-x-auto">
+                            {/* Sales Reps Performance Table */}
+                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                                        <Users className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-sm font-semibold text-slate-900">Sales Representatives Overview</h2>
+                                        <p className="text-xs text-muted-foreground">
+                                            Detailed performance metrics for each member of your team. Click a row to view customer details.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="p-5 overflow-x-auto">
                                     <div className="flex flex-col gap-3 pb-4 md:flex-row md:items-center md:justify-between">
                                         <Input
                                             placeholder="Search your team..."
@@ -567,23 +563,28 @@ export default function SalesManagerAnalyticsPage() {
                                             )}
                                         </TableBody>
                                     </Table>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
 
                             {/* Main Analytics Section */}
-                            <div className="grid gap-6 xl:grid-cols-3">
+                            <div className="grid gap-5 xl:grid-cols-3">
                                 {/* Revenue Trend Chart */}
-                                <Card className="xl:col-span-2">
-                                    <CardHeader>
-                                        <CardTitle>Revenue Trend</CardTitle>
-                                        <CardDescription>
-                                            {selectedRep
-                                                ? `Monthly performance for ${selectedRep.user.firstName} ${selectedRep.user.lastName}`
-                                                : `Aggregate team performance (${data.reps.length} reps)`
-                                            }
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
+                                <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                                            <TrendingUp className="h-4 w-4 text-slate-600" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-sm font-semibold text-slate-900">Revenue Trend</h2>
+                                            <p className="text-xs text-muted-foreground">
+                                                {selectedRep
+                                                    ? `Monthly performance for ${selectedRep.user.firstName} ${selectedRep.user.lastName}`
+                                                    : `Aggregate team performance (${data.reps.length} reps)`
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="p-5">
                                         <div className="h-[350px] w-full">
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <AreaChart data={selectedRep ? selectedRep.monthlyPerformance : aggregateMonthlyPerformance}>
@@ -625,20 +626,25 @@ export default function SalesManagerAnalyticsPage() {
                                                 </AreaChart>
                                             </ResponsiveContainer>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
                                 {/* Top Customers Panel */}
                                 <div className="xl:col-span-1">
                                     {selectedRep ? (
-                                        <Card className="h-full flex flex-col">
-                                            <CardHeader>
-                                                <CardTitle>Top Customers</CardTitle>
-                                                <CardDescription>
-                                                    Highest revenue for {selectedRep.user.firstName}
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="flex-1 overflow-hidden">
+                                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden h-full flex flex-col">
+                                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                                                    <Users className="h-4 w-4 text-slate-600" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-sm font-semibold text-slate-900">Top Customers</h2>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Highest revenue for {selectedRep.user.firstName}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="p-5 flex-1 overflow-hidden">
                                                 <div className="h-[350px] overflow-y-auto pr-2 space-y-3">
                                                     {selectedRep.topCustomers.length === 0 ? (
                                                         <div className="h-full flex flex-col items-center justify-center text-sm text-muted-foreground p-4">
@@ -683,32 +689,37 @@ export default function SalesManagerAnalyticsPage() {
                                                         ))
                                                     )}
                                                 </div>
-                                            </CardContent>
-                                        </Card>
+                                            </div>
+                                        </div>
                                     ) : (
-                                        <Card className="h-full flex items-center justify-center bg-muted/20">
-                                            <CardContent className="text-center p-6">
+                                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 h-full flex items-center justify-center bg-muted/20">
+                                            <div className="text-center p-6">
                                                 <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                                 <h3 className="text-lg font-semibold mb-2">Select a Sales Rep</h3>
                                                 <p className="text-muted-foreground text-sm">
                                                     Click on any sales representative in the table above to view their detailed customer analytics and revenue breakdown.
                                                 </p>
-                                            </CardContent>
-                                        </Card>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             </div>
 
                             {/* Orders Breakdown Chart (for selected rep) */}
                             {selectedRep && selectedRep.monthlyPerformance.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Orders & Revenue Breakdown</CardTitle>
-                                        <CardDescription>
-                                            Monthly orders and revenue for {selectedRep.user.firstName} {selectedRep.user.lastName}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                                            <Package className="h-4 w-4 text-slate-600" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-sm font-semibold text-slate-900">Orders & Revenue Breakdown</h2>
+                                            <p className="text-xs text-muted-foreground">
+                                                Monthly orders and revenue for {selectedRep.user.firstName} {selectedRep.user.lastName}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="p-5">
                                         <div className="h-[300px] w-full">
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <BarChart data={selectedRep.monthlyPerformance}>
@@ -752,20 +763,25 @@ export default function SalesManagerAnalyticsPage() {
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             )}
 
                             {/* Recent Orders for Selected Rep */}
                             {selectedRep && selectedRep.recentOrders && selectedRep.recentOrders.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Recent Orders</CardTitle>
-                                        <CardDescription>
-                                            Latest orders from {selectedRep.user.firstName}'s customers
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                                            <ShoppingCart className="h-4 w-4 text-slate-600" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-sm font-semibold text-slate-900">Recent Orders</h2>
+                                            <p className="text-xs text-muted-foreground">
+                                                Latest orders from {selectedRep.user.firstName}'s customers
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="p-5">
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
@@ -805,8 +821,8 @@ export default function SalesManagerAnalyticsPage() {
                                                 ))}
                                             </TableBody>
                                         </Table>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             )}
                         </>
                     )}

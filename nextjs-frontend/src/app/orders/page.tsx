@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Card components no longer used in main layout (kept for potential future use)
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import { OrderDateFilter } from '@/components/orders/order-date-filter';
 import { SendReportDialog } from '@/components/shared/send-report-dialog';
@@ -425,18 +425,17 @@ function OrdersPageContent() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-2 sm:px-0">
-        {/* Header */}
+      <div className="space-y-5 px-2 sm:px-0">
+
+        {/* ── Page header ── */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Orders</h1>
-            <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-              Manage orders and fulfillment process
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Orders</h1>
+            <p className="text-sm text-slate-500 mt-0.5">Manage and track your fulfillment pipeline</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2">
             <Select value={salesChannelFilter} onValueChange={(val) => { setSalesChannelFilter(val); setCurrentPage(1); }}>
-              <SelectTrigger className="w-full sm:w-[200px] h-10 sm:h-9">
+              <SelectTrigger className="w-[180px] h-9 text-sm border-slate-200 rounded-xl">
                 <SelectValue placeholder="Filter by source" />
               </SelectTrigger>
               <SelectContent>
@@ -445,261 +444,276 @@ function OrdersPageContent() {
                 <SelectItem value="channels">All Sales Channels</SelectItem>
                 {salesChannels.length > 0 && <SelectSeparator />}
                 {salesChannels.map((channel) => (
-                  <SelectItem key={channel.id} value={channel.id}>
-                    {channel.companyName}
-                  </SelectItem>
+                  <SelectItem key={channel.id} value={channel.id}>{channel.companyName}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-
-            <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto h-10 sm:h-9">
-              <Plus className="mr-2 h-4 w-4" />
+            <Button
+              onClick={() => setShowCreateDialog(true)}
+              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
               Create Order
             </Button>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8 gap-2 sm:gap-3 w-full">
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Total Orders</CardTitle>
-              <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold">{(stats.total ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Pending</CardTitle>
-              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-yellow-600">{(stats.pending ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Processing</CardTitle>
-              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-blue-600">{(stats.processing ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Label Printed</CardTitle>
-              <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4 text-cyan-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-cyan-600">{(stats.labelCreated ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Shipped</CardTitle>
-              <Truck className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-purple-600">{(stats.shipped ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Delivered</CardTitle>
-              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-green-600">{(stats.delivered ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Cancelled</CardTitle>
-              <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-red-600">{(stats.cancelled ?? 0).toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Revenue</CardTitle>
-              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-green-600" title={`$${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
-                ${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-            </CardContent>
-          </Card>
+        {/* ── Stats grid (2 × 4 bento) ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+          {/* Row 1 */}
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+              <ShoppingCart className="h-5 w-5 text-slate-600" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Total Orders</p>
+              <p className="text-2xl font-bold text-slate-900 leading-tight">{(stats.total ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+              <Clock className="h-5 w-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Pending</p>
+              <p className="text-2xl font-bold text-amber-600 leading-tight">{(stats.pending ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+              <Package className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Processing</p>
+              <p className="text-2xl font-bold text-blue-600 leading-tight">{(stats.processing ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
+              <FileSpreadsheet className="h-5 w-5 text-cyan-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Label Printed</p>
+              <p className="text-2xl font-bold text-cyan-600 leading-tight">{(stats.labelCreated ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+              <Truck className="h-5 w-5 text-purple-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Shipped</p>
+              <p className="text-2xl font-bold text-purple-600 leading-tight">{(stats.shipped ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+              <CheckCircle className="h-5 w-5 text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Delivered</p>
+              <p className="text-2xl font-bold text-emerald-600 leading-tight">{(stats.delivered ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+            <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+              <XCircle className="h-5 w-5 text-red-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Cancelled</p>
+              <p className="text-2xl font-bold text-red-600 leading-tight">{(stats.cancelled ?? 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* Revenue — dark navy hero */}
+          <div className="flex items-center gap-3 bg-[#1B2D4F] rounded-2xl px-5 py-4 shadow-sm relative overflow-hidden">
+            <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/40 to-transparent" />
+            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative z-10">
+              <DollarSign className="h-5 w-5 text-emerald-400" />
+            </div>
+            <div className="relative z-10 min-w-0">
+              <p className="text-xs text-slate-400 font-medium">Total Revenue</p>
+              <p className="text-2xl font-bold text-white leading-tight truncate" title={`$${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
+                ${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </p>
+            </div>
+          </div>
+
         </div>
 
-        {/* Filters */}
-        <Card className="py-2 sm:py-3 gap-0">
-          <CardHeader className="px-3 sm:px-6 py-2 sm:py-3">
-            <CardTitle className="text-sm sm:text-base">Filters</CardTitle>
-            <CardDescription className="text-xs">Search and filter orders</CardDescription>
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6">
-            <div className="space-y-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search orders..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 h-10 sm:h-9"
-                />
-              </div>
+        {/* ── Filters bar ── */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search by order ID, customer or product…"
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+            />
+          </div>
 
-              <div className="flex flex-wrap gap-3 items-end">
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[150px] h-10 sm:h-9">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="PROCESSING">Processing</SelectItem>
-                    <SelectItem value="LABEL_CREATED">Label Printed</SelectItem>
-                    <SelectItem value="SHIPPED">Shipped</SelectItem>
-                    <SelectItem value="DELIVERED">Delivered</SelectItem>
-                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                    <SelectItem value="REFUNDED">Refunded</SelectItem>
-                    <SelectItem value="ON_HOLD">On Hold</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Filter pills row */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Select value={statusFilter} onValueChange={handleStatusFilter}>
+              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[130px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="PROCESSING">Processing</SelectItem>
+                <SelectItem value="LABEL_CREATED">Label Printed</SelectItem>
+                <SelectItem value="SHIPPED">Shipped</SelectItem>
+                <SelectItem value="DELIVERED">Delivered</SelectItem>
+                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                <SelectItem value="REFUNDED">Refunded</SelectItem>
+                <SelectItem value="ON_HOLD">On Hold</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <OrderDateFilter
-                  range={dateRangeType}
-                  setRange={handleDateRangeTypeChange}
-                  from={dateRange.from}
-                  setFrom={handleFromDateChange}
-                  to={dateRange.to}
-                  setTo={handleToDateChange}
-                  className=""
-                />
+            <OrderDateFilter
+              range={dateRangeType}
+              setRange={handleDateRangeTypeChange}
+              from={dateRange.from}
+              setFrom={handleFromDateChange}
+              to={dateRange.to}
+              setTo={handleToDateChange}
+              className=""
+            />
 
-                <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
-                  <SelectTrigger className="w-full sm:w-[160px] h-10 sm:h-9">
-                    <SelectValue placeholder="Customer type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Customer</SelectItem>
-                    <SelectItem value="wholesale">Wholesale</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
-                  </SelectContent>
-                </Select>
+            <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
+              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                <SelectValue placeholder="Customer type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Customer</SelectItem>
+                <SelectItem value="wholesale">Wholesale</SelectItem>
+                <SelectItem value="enterprise">Enterprise</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <Select value={paymentMethodFilter} onValueChange={handlePaymentMethodFilter}>
-                  <SelectTrigger className="w-full sm:w-[200px] h-10 sm:h-9">
-                    <SelectValue placeholder="Payment method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Payment Methods</SelectItem>
-                    <SelectItem value="ZELLE">Zelle</SelectItem>
-                    <SelectItem value="BANK_WIRE">Bank Wire</SelectItem>
-                    <SelectItem value="AUTHORIZE_NET">Authorize.Net</SelectItem>
-                  </SelectContent>
-                </Select>
+            <Select value={paymentMethodFilter} onValueChange={handlePaymentMethodFilter}>
+              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[170px]">
+                <SelectValue placeholder="Payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Payment Methods</SelectItem>
+                <SelectItem value="ZELLE">Zelle</SelectItem>
+                <SelectItem value="BANK_WIRE">Bank Wire</SelectItem>
+                <SelectItem value="AUTHORIZE_NET">Authorize.Net</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <Popover open={salesRepPopoverOpen} onOpenChange={setSalesRepPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className="w-full sm:w-[150px] h-10 sm:h-9 justify-between font-normal text-foreground"
-                    >
-                      <span className="truncate">
-                        {salesRepFilter === 'all'
-                          ? 'All Reps'
-                          : (() => {
-                            const rep = salesReps.find((r: any) => r?.id === salesRepFilter);
-                            const user = rep?.user;
-                            const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
-                            return name || user?.email || salesRepFilter;
-                          })()}
-                      </span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-0 z-50 w-[var(--radix-popover-trigger-width)]"
-                    side="bottom"
-                    align="start"
-                    sideOffset={4}
-                  >
-                    <Command shouldFilter={true} className="w-full">
-                      <CommandInput placeholder="Search sales rep..." />
-                      <CommandList className="max-h-[300px] w-full overflow-y-auto overflow-x-hidden pointer-events-auto">
-                        <CommandEmpty>No sales rep found.</CommandEmpty>
-                        <CommandGroup>
+            <Popover open={salesRepPopoverOpen} onOpenChange={setSalesRepPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 justify-between font-normal text-slate-700 min-w-[130px]"
+                >
+                  <span className="truncate">
+                    {salesRepFilter === 'all'
+                      ? 'All Reps'
+                      : (() => {
+                          const rep = salesReps.find((r: any) => r?.id === salesRepFilter);
+                          const user = rep?.user;
+                          const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
+                          return name || user?.email || salesRepFilter;
+                        })()}
+                  </span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-0 z-50 w-[var(--radix-popover-trigger-width)]"
+                side="bottom"
+                align="start"
+                sideOffset={4}
+              >
+                <Command shouldFilter={true} className="w-full">
+                  <CommandInput placeholder="Search sales rep..." />
+                  <CommandList className="max-h-[300px] w-full overflow-y-auto overflow-x-hidden pointer-events-auto">
+                    <CommandEmpty>No sales rep found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="all reps"
+                        onSelect={() => {
+                          handleSalesRepFilter('all');
+                          setSalesRepPopoverOpen(false);
+                        }}
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", salesRepFilter === 'all' ? "opacity-100" : "opacity-0")} />
+                        All Reps
+                      </CommandItem>
+                      {salesReps.map((rep: any) => {
+                        const user = rep?.user;
+                        const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
+                        const label = name || user?.email || rep.id;
+                        return (
                           <CommandItem
-                            value="all reps"
+                            key={rep.id}
+                            value={`${label} ${user?.email || ''}`}
                             onSelect={() => {
-                              handleSalesRepFilter('all');
+                              handleSalesRepFilter(rep.id);
                               setSalesRepPopoverOpen(false);
                             }}
                           >
-                            <Check className={cn("mr-2 h-4 w-4", salesRepFilter === 'all' ? "opacity-100" : "opacity-0")} />
-                            All Reps
+                            <Check className={cn("mr-2 h-4 w-4", rep.id === salesRepFilter ? "opacity-100" : "opacity-0")} />
+                            {label}
                           </CommandItem>
-                          {salesReps.map((rep: any) => {
-                            const user = rep?.user;
-                            const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
-                            const label = name || user?.email || rep.id;
-                            return (
-                              <CommandItem
-                                key={rep.id}
-                                value={`${label} ${user?.email || ''}`}
-                                onSelect={() => {
-                                  handleSalesRepFilter(rep.id);
-                                  setSalesRepPopoverOpen(false);
-                                }}
-                              >
-                                <Check className={cn("mr-2 h-4 w-4", rep.id === salesRepFilter ? "opacity-100" : "opacity-0")} />
-                                {label}
-                              </CommandItem>
-                            );
-                          })}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                        );
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        {/* ── Orders table ── */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          {/* Table header */}
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-[#1B2D4F]/8 flex items-center justify-center">
+                <ShoppingCart className="h-4 w-4 text-[#1B2D4F]" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Orders List</h2>
+                <p className="text-xs text-slate-400">{totalOrders.toLocaleString()} total orders</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Orders Table */}
-        <Card className="overflow-hidden">
-          <CardHeader className="px-3 sm:px-6">
-            <CardTitle className="text-lg sm:text-xl">Orders List</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6">
-            <div className="overflow-x-auto">
-              <OrdersTable
-                orders={orders}
-                loading={loading}
-                onEdit={handleEditOrder}
-                onDelete={handleDeleteOrder}
-                onUpdateStatus={handleUpdateStatus}
-                onViewDetails={handleViewDetails}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                onRefresh={fetchOrders}
-                totalOrders={totalOrders}
-                onExportAll={handleExportAll}
-                onEmailReport={() => setShowEmailDialog(true)}
-              />
-            </div>
-          </CardContent>
-        </Card >
+          </div>
+          <div className="overflow-x-auto">
+            <OrdersTable
+              orders={orders}
+              loading={loading}
+              onEdit={handleEditOrder}
+              onDelete={handleDeleteOrder}
+              onUpdateStatus={handleUpdateStatus}
+              onViewDetails={handleViewDetails}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              onRefresh={fetchOrders}
+              totalOrders={totalOrders}
+              onExportAll={handleExportAll}
+              onEmailReport={() => setShowEmailDialog(true)}
+            />
+          </div>
+        </div>
 
         {/* Dialogs */}
         < CreateOrderDialog

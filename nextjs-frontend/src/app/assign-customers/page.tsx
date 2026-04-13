@@ -5,10 +5,9 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, UserPlus, CheckCircle, Users, Building } from 'lucide-react';
+import { Search, UserPlus, Users } from 'lucide-react';
 import { api } from '@/lib/api';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
@@ -80,11 +79,14 @@ export default function AssignCustomersPage() {
       fetchCustomers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, user, pagination.page]);
+  }, [user, pagination.page]);
 
-  // Debounce search to reset page
+  // When search changes, reset to page 1 (avoid including pagination.page in the search effect)
   useEffect(() => {
-    setPagination(prev => ({ ...prev, page: 1 }));
+    if (user?.role === 'SALES_REP') {
+      setPagination(prev => ({ ...prev, page: 1 }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
   const handleAssign = async (customerId: string) => {
@@ -116,16 +118,16 @@ export default function AssignCustomersPage() {
     return types[type] || { label: type, variant: 'default' as const };
   };
 
-  if (user?.role === 'SALES_REP') {
+  if (user && user.role !== 'SALES_REP') {
     return (
       <ProtectedRoute>
         <DashboardLayout>
           <div className="p-6">
-            <Card>
-              <CardContent className="flex items-center justify-center py-12">
-                <p className="text-lg text-muted-foreground">You do not have permission to access this page.</p>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+              <div className="flex items-center justify-center py-12">
+                <p className="text-lg text-muted-foreground">This page is for Sales Representatives only.</p>
+              </div>
+            </div>
           </div>
         </DashboardLayout>
       </ProtectedRoute>
@@ -135,7 +137,7 @@ export default function AssignCustomersPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6 space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Assign Customers</h1>
@@ -145,17 +147,19 @@ export default function AssignCustomersPage() {
             </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Unassigned Customers
-              </CardTitle>
-              <CardDescription>
-                These customers have not been assigned
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            {/* Icon header row */}
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                <Users className="h-4 w-4 text-slate-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 text-sm">Unassigned Customers</p>
+                <p className="text-xs text-slate-500">These customers have not been assigned</p>
+              </div>
+            </div>
+
+            <div className="p-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="relative flex-1 max-w-sm">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -247,7 +251,11 @@ export default function AssignCustomersPage() {
                                 size="sm"
                                 onClick={() => handleAssign(customer.id)}
                                 disabled={assigningId === customer.id || (customer.salesAssignments && customer.salesAssignments.length > 0)}
-                                className="gap-2"
+                                className={
+                                  customer.salesAssignments && customer.salesAssignments.length > 0
+                                    ? 'gap-2'
+                                    : 'gap-2 h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium'
+                                }
                                 variant={customer.salesAssignments && customer.salesAssignments.length > 0 ? "outline" : "default"}
                               >
                                 <UserPlus className="h-4 w-4" />
@@ -286,10 +294,10 @@ export default function AssignCustomersPage() {
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
-    </ProtectedRoute >
+    </ProtectedRoute>
   );
 }

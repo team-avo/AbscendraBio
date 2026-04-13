@@ -212,7 +212,7 @@ export function OrdersTable({
         setCommentCounts(res.data);
       }
     } catch (error) {
-      console.error('Error fetching comment counts:', error);
+      logger.error('Error fetching comment counts:', { error });
     }
   };
 
@@ -494,8 +494,7 @@ export function OrdersTable({
                 <TableCell
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
                   onClick={() => {
-                    // Open Edit Order dialog instead of read-only details
-                    onEdit?.(order);
+                    onViewDetails?.(order.id);
                   }}
                 >
                   <div className="flex flex-col">

@@ -65,9 +65,9 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
 
     if (formData.mobile) {
       const digitsOnly = formData.mobile.replace(/\D/g, '');
-      const localTen = digitsOnly.slice(-10);
-      if (localTen.length !== 10) {
-        toast.error('Mobile number must be exactly 10 digits');
+      // Accept 10-digit local numbers or 11-15 digit international numbers (with country code)
+      if (digitsOnly.length < 10 || digitsOnly.length > 15) {
+        toast.error('Please enter a valid phone number (10-15 digits)');
         return;
       }
     }
@@ -224,8 +224,10 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
                   <SelectValue placeholder="Select customer type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="B2C">Wholesale</SelectItem>
-                  <SelectItem value="ENTERPRISE_1">Enterprise</SelectItem>
+                  <SelectItem value="B2C">Wholesale (B2C)</SelectItem>
+                  <SelectItem value="B2B">Wholesale (B2B)</SelectItem>
+                  <SelectItem value="ENTERPRISE_1">Enterprise Tier 1</SelectItem>
+                  <SelectItem value="ENTERPRISE_2">Enterprise Tier 2</SelectItem>
                 </SelectContent>
               </Select>
             </div>

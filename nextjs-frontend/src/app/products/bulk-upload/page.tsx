@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BulkPreviewTable } from '@/components/products/BulkPreviewTable';
@@ -70,7 +69,8 @@ export default function ProductsBulkUploadPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-6 w-full max-w-[100vw] overflow-x-hidden px-4">
+        <div className="space-y-5 px-2 sm:px-0 w-full max-w-[100vw] overflow-x-hidden">
+          {/* Back button row */}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 max-w-full">
               <Button variant="ghost" onClick={() => router.push('/products')}>
@@ -78,23 +78,20 @@ export default function ProductsBulkUploadPage() {
                 Back to Products
               </Button>
             </div>
-            {/* <div className="shrink-0">
-              <a
-                href="/Product_Bulk-UPLOAD.xlsx"
-                download
-                className="text-sm underline break-words"
-              >
-                Download Template
-              </a>
-            </div> */}
           </div>
 
-          <Card className="overflow-x-hidden">
-            <CardHeader>
-              <CardTitle>Bulk Upload Products</CardTitle>
-              <CardDescription>Upload the Excel file and preview data before Uploading.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 overflow-x-hidden">
+          {/* Main card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                <Upload className="h-4 w-4 text-blue-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Bulk Upload Products</h2>
+                <p className="text-xs text-slate-400">Upload Excel file and preview data before importing</p>
+              </div>
+            </div>
+            <div className="p-6 space-y-4 overflow-x-hidden">
               <div>
                 <label className="flex items-center gap-3 border rounded-md p-3 cursor-pointer w-fit">
                   <Upload className="h-4 w-4" />
@@ -130,7 +127,7 @@ export default function ProductsBulkUploadPage() {
                     onViewRow={(r) => setViewRow(r)}
                   />
                   <div className="flex justify-end w-full">
-                    <Button onClick={handleSubmit} disabled={uploading} className="w-full sm:w-auto">
+                    <Button onClick={handleSubmit} disabled={uploading} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                       {uploading ? (
                         <>
                           <LoadingSpinner size={16} className="mr-2" /> Uploading...
@@ -186,12 +183,10 @@ export default function ProductsBulkUploadPage() {
                   )}
                 </DialogContent>
               </Dialog>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>
   );
 }
-
-

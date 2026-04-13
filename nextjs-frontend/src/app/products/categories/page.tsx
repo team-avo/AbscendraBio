@@ -5,7 +5,6 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tag, Plus, Search } from 'lucide-react';
 import { api } from '@/lib/api';
 import logger from '@/lib/logger';
@@ -107,65 +106,69 @@ export default function CategoriesPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']} requiredPermissions={[{ module: 'PRODUCTS', action: 'READ' }]}>
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Categories</h1>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Categories</h1>
+              <p className="text-sm text-slate-500 mt-0.5">
                 Manage product categories and classifications
               </p>
             </div>
-            <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto">
+            <Button
+              onClick={() => setShowCreateDialog(true)}
+              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Category
             </Button>
           </div>
 
-          {/* Stats Card */}
-          <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1 max-w-xs">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-              <CardTitle className="text-[10px] sm:text-xs font-medium">Total Categories</CardTitle>
-              <Tag className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-              <div className="text-base sm:text-lg lg:text-2xl font-bold">{totalItems}</div>
-            </CardContent>
-          </Card>
+          {/* Single stat chip */}
+          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4 w-fit">
+            <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+              <Tag className="h-5 w-5 text-slate-500" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 font-medium">Total Categories</p>
+              <p className="text-xl font-bold text-slate-900">{totalItems}</p>
+            </div>
+          </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search categories</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="w-full">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by category name..."
-                      className="pl-10 w-full"
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                    />
-                  </div>
-                </div>
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search by category name..."
+                className="pl-10 w-full"
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Categories Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-100">
+                <Tag className="h-4 w-4 text-slate-500" />
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Categories Table */}
-          <CategoriesTable
-            categories={categories}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            onEditCategory={setEditingCategory}
-            onDeleteCategory={handleDeleteCategory}
-          />
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Categories List</h2>
+                <p className="text-xs text-slate-400">{totalItems} categories</p>
+              </div>
+            </div>
+            <CategoriesTable
+              categories={categories}
+              loading={loading}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              onEditCategory={setEditingCategory}
+              onDeleteCategory={handleDeleteCategory}
+            />
+          </div>
 
           {/* Dialogs */}
           {showCreateDialog && (

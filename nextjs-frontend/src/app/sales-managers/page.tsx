@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 import logger from '@/lib/logger';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -208,13 +207,11 @@ export default function SalesManagersPage() {
   if (!isAdmin) {
     return (
       <DashboardLayout>
-        <div className="p-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Denied</CardTitle>
-            </CardHeader>
-            <CardContent>You do not have permission to view this page.</CardContent>
-          </Card>
+        <div className="space-y-5 px-2 sm:px-0">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+            <h2 className="text-lg font-semibold mb-1">Access Denied</h2>
+            <p className="text-muted-foreground text-sm">You do not have permission to view this page.</p>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -255,12 +252,11 @@ export default function SalesManagersPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sales Managers Management</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <div className="space-y-5 px-2 sm:px-0">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <h2 className="text-lg font-semibold mb-4">Sales Managers Management</h2>
+
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
               <div>
                 <Label>Select Sales Manager</Label>
@@ -329,7 +325,13 @@ export default function SalesManagersPage() {
                 )}
               </div>
               <div className="flex gap-2">
-                <Button disabled={!selectedManagerId || loading} onClick={handleSaveAssignments} className="bg-black hover:bg-gray-800 text-white">Save Assignments</Button>
+                <Button
+                  disabled={!selectedManagerId || loading}
+                  onClick={handleSaveAssignments}
+                  className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                >
+                  Save Assignments
+                </Button>
                 {selectedManagerId && (
                   <Button
                     variant="outline"
@@ -651,8 +653,8 @@ export default function SalesManagersPage() {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

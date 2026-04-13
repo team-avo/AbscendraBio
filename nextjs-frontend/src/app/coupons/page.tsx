@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Plus,
   Search,
@@ -46,7 +45,8 @@ export default function CouponsPage() {
 
   useEffect(() => {
     fetchCoupons();
-  }, [currentPage, statusFilter, typeFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, statusFilter, typeFilter, searchTerm]);
 
   const fetchCoupons = async () => {
     try {
@@ -55,6 +55,8 @@ export default function CouponsPage() {
         page: currentPage,
         limit: 10,
         isActive: statusFilter === 'active' ? true : statusFilter === 'inactive' ? false : undefined,
+        type: typeFilter !== 'all' ? typeFilter : undefined,
+        search: searchTerm || undefined,
       });
 
       logger.debug('Promotions API Response:', { response });
@@ -139,20 +141,13 @@ export default function CouponsPage() {
     }
   };
 
-  const filteredCoupons = coupons.filter(coupon => {
-    const matchesSearch = searchTerm === '' ||
-      coupon.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      coupon.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesType = typeFilter === '' || typeFilter === 'all' || coupon.type === typeFilter;
-
-    return matchesSearch && matchesType;
-  });
+  // Filtering is handled server-side via API params
+  const filteredCoupons = coupons;
 
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -161,111 +156,111 @@ export default function CouponsPage() {
                 Manage promotional codes and discount campaigns.
               </p>
             </div>
-            <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto">
+            <Button
+              onClick={() => setShowCreateDialog(true)}
+              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Coupon
             </Button>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 w-full">
-            <Card className="py-0 sm:py-0 gap-0">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                <CardTitle className="text-[10px] sm:text-sm font-medium">Total Coupons</CardTitle>
-                <Tag className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                <div className="text-base sm:text-2xl font-bold truncate leading-tight">{stats.totalCoupons}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0 sm:py-0 gap-0">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                <CardTitle className="text-[10px] sm:text-sm font-medium">Active Coupons</CardTitle>
-                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                <div className="text-base sm:text-2xl font-bold truncate leading-tight text-green-600">{stats.activeCoupons}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0 sm:py-0 gap-0 col-span-2 md:col-span-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                <CardTitle className="text-[10px] sm:text-sm font-medium">Total Usage</CardTitle>
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                <div className="text-base sm:text-2xl font-bold truncate leading-tight">{stats.totalUsage}</div>
-              </CardContent>
-            </Card>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {/* Total Coupons */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                <Tag className="h-5 w-5 text-slate-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total Coupons</p>
+                <p className="text-xl font-bold text-slate-900">{stats.totalCoupons}</p>
+              </div>
+            </div>
+
+            {/* Active Coupons */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Active Coupons</p>
+                <p className="text-xl font-bold text-emerald-600">{stats.activeCoupons}</p>
+              </div>
+            </div>
+
+            {/* Total Usage — dark navy hero chip */}
+            <div className="relative col-span-2 sm:col-span-1 flex items-center gap-3 bg-[#1B2D4F] rounded-2xl shadow-sm px-5 py-4 overflow-hidden">
+              <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-300" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-medium">Total Usage</p>
+                <p className="text-2xl font-bold text-white">{stats.totalUsage}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>
-                Filter and search through your coupons.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search coupons..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-8"
-                    />
-                  </div>
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="PERCENTAGE">Percentage</SelectItem>
-                    <SelectItem value="FIXED_AMOUNT">Fixed Amount</SelectItem>
-                    <SelectItem value="FREE_SHIPPING">Free Shipping</SelectItem>
-                    <SelectItem value="BOGO">Buy One Get One</SelectItem>
-                    <SelectItem value="VOLUME_DISCOUNT">Volume Discount</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Coupons Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Coupons</CardTitle>
-              <CardDescription>
-                A list of all your promotional codes and their performance.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CouponsTable
-                coupons={filteredCoupons}
-                loading={loading}
-                onEdit={handleEditCoupon}
-                onDelete={handleDeleteCoupon}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search coupons..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
               />
-            </CardContent>
-          </Card>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="PERCENTAGE">Percentage</SelectItem>
+                  <SelectItem value="FIXED_AMOUNT">Fixed Amount</SelectItem>
+                  <SelectItem value="FREE_SHIPPING">Free Shipping</SelectItem>
+                  <SelectItem value="BOGO">Buy One Get One</SelectItem>
+                  <SelectItem value="VOLUME_DISCOUNT">Volume Discount</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                <Tag className="h-4 w-4 text-purple-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-900">Coupons</h2>
+                <p className="text-xs text-slate-500">{totalItems.toLocaleString()} coupons</p>
+              </div>
+            </div>
+            <CouponsTable
+              coupons={filteredCoupons}
+              loading={loading}
+              onEdit={handleEditCoupon}
+              onDelete={handleDeleteCoupon}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
 
           {/* Dialogs */}
           <CreateCouponDialog

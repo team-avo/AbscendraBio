@@ -276,6 +276,14 @@ export function CreateCouponDialog({ open, onOpenChange, onSuccess }: CreateCoup
       newErrors.minOrderAmount = 'Minimum order amount is required';
     } else if (parseFloat(formData.minOrderAmount) < 0) {
       newErrors.minOrderAmount = 'Minimum order amount cannot be negative';
+    } else if (
+      formData.type === 'PERCENTAGE' || formData.type === 'FIXED_AMOUNT'
+    ) {
+      const discountVal = parseFloat(formData.value) || 0;
+      const minOrder = parseFloat(formData.minOrderAmount);
+      if (formData.type === 'FIXED_AMOUNT' && discountVal > minOrder) {
+        newErrors.minOrderAmount = 'Minimum order amount must be greater than or equal to the discount value';
+      }
     }
 
     setErrors(newErrors);
@@ -328,14 +336,7 @@ export function CreateCouponDialog({ open, onOpenChange, onSuccess }: CreateCoup
         }),
       };
 
-      // Let's correct the payload construction:
-      const payload: any = {
-        ...couponData,
-        isForIndividualCustomer: formData.isForIndividualCustomer,
-        specificCustomerIds: selectedCustomers.map(c => c.id)
-      };
-
-      const response = await api.createPromotion(payload);
+      const response = await api.createPromotion(couponData);
 
       if (response.success) {
         onSuccess();

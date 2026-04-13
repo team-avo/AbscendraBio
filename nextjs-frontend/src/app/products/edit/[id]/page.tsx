@@ -915,8 +915,8 @@ export default function EditProductPage() {
           </div>
 
           {/* Form */}
-          <Card>
-            <CardContent className="p-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Tabs value={currentTab} onValueChange={(value) => {
                   // ... (validation logic remains same)
@@ -1252,14 +1252,14 @@ export default function EditProductPage() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {variants.map((variant) => (
-                          <Card
+                          <div
                             key={variant.id}
                             ref={(el) => {
                               variantRefs.current[variant.id] = el;
                             }}
-                            className="flex flex-col h-full"
+                            className="rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col h-full"
                           >
-                            <CardContent className="p-4 flex flex-col h-full">
+                            <div className="p-4 flex flex-col h-full">
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 h-full">
                                 <div className="flex-1 space-y-2">
                                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1324,8 +1324,8 @@ export default function EditProductPage() {
                                   </div>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     )}
@@ -1529,8 +1529,8 @@ export default function EditProductPage() {
                       ) : (
                         <div className="space-y-4">
                           {reviews.map((review) => (
-                            <Card key={review.id}>
-                              <CardContent className="p-4">
+                            <div key={review.id} className="rounded-xl border border-slate-200 bg-slate-50/50">
+                              <div className="p-4">
                                 <div className="flex items-start justify-between">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
@@ -1585,8 +1585,8 @@ export default function EditProductPage() {
                                     </Button>
                                   </div>
                                 </div>
-                              </CardContent>
-                            </Card>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       )}
@@ -1617,8 +1617,8 @@ export default function EditProductPage() {
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Variant Form Dialog */}
           {showVariantForm && (
@@ -1748,21 +1748,19 @@ export default function EditProductPage() {
                     </div>
 
                     {variantFormData.segmentPrices.map((sp, index) => (
-                      <Card key={index} className="bg-card">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm">Segment Price {index + 1}</CardTitle>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeSegmentPrice(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="p-3 sm:p-4 space-y-4">
+                      <div key={index} className="rounded-lg border border-slate-200 bg-white">
+                        <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-slate-600">Segment Price {index + 1}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeSegmentPrice(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="p-3 sm:p-4 space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             <div className="space-y-2">
                               <Label className="text-xs sm:text-sm">Customer Type <span className="text-red-500">*</span></Label>
@@ -1807,8 +1805,8 @@ export default function EditProductPage() {
                               </div>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     ))}
                   </div>
 
@@ -1823,21 +1821,19 @@ export default function EditProductPage() {
                     </div>
 
                     {variantFormData.bulkPrices.map((bp, index) => (
-                      <Card key={index} className="bg-card">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm">Bulk Price {index + 1}</CardTitle>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeBulkPrice(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="p-3 sm:p-4 space-y-4">
+                      <div key={index} className="rounded-lg border border-slate-200 bg-white">
+                        <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-slate-600">Bulk Price {index + 1}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeBulkPrice(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="p-3 sm:p-4 space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             <div className="space-y-2">
                               <Label className="text-xs sm:text-sm">Min Quantity <span className="text-red-500">*</span></Label>
@@ -1877,8 +1873,8 @@ export default function EditProductPage() {
                               </div>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     ))}
                   </div>
 

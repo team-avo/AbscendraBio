@@ -300,149 +300,139 @@ export default function CustomersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Customers</h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Manage customer database and relationships
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customers</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Manage and grow your customer relationships</p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {/* <Button 
-                onClick={handleSendBlackFridayEmail} 
-                disabled={sendingBlackFridayEmail}
-                variant="outline"
-                className="w-full sm:w-auto"
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                {sendingBlackFridayEmail ? 'Sending...' : 'Send Black Friday Email'}
-              </Button> */}
-              <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Customer
+            <div className="flex items-center gap-2">
+              <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                <Plus className="mr-1.5 h-4 w-4" />Add Customer
               </Button>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 w-full">
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Total Customers</CardTitle>
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold">{stats.total}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Active</CardTitle>
-                <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-green-600">{stats.active}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Inactive</CardTitle>
-                <UserX className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-red-600">{stats.inactive}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Pending Approval</CardTitle>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-yellow-600">{stats.pendingApproval}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Wholesale</CardTitle>
-                <Building className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-blue-600">{stats.b2c + stats.b2b}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Enterprise</CardTitle>
-                <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-amber-600">{stats.e1 + stats.e2}</div>
-              </CardContent>
-            </Card>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {/* Total Customers */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                <Users className="h-5 w-5 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total Customers</p>
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{stats.total}</p>
+              </div>
+            </div>
+            {/* Active */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                <UserCheck className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Active</p>
+                <p className="text-2xl font-bold text-emerald-600 leading-tight">{stats.active}</p>
+              </div>
+            </div>
+            {/* Inactive */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+                <UserX className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Inactive</p>
+                <p className="text-2xl font-bold text-red-600 leading-tight">{stats.inactive}</p>
+              </div>
+            </div>
+            {/* Pending Approval */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <Clock className="h-5 w-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Pending Approval</p>
+                <p className="text-2xl font-bold text-amber-600 leading-tight">{stats.pendingApproval}</p>
+              </div>
+            </div>
+            {/* Wholesale */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                <Building className="h-5 w-5 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Wholesale</p>
+                <p className="text-2xl font-bold text-blue-600 leading-tight">{stats.b2c + stats.b2b}</p>
+              </div>
+            </div>
+            {/* Enterprise — dark navy hero chip */}
+            <div className="relative flex items-center gap-3 bg-[#1B2D4F] rounded-2xl px-5 py-4 shadow-sm overflow-hidden">
+              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-white/5" />
+              <div className="absolute -right-2 -bottom-6 h-24 w-24 rounded-full bg-white/5" />
+              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative">
+                <Crown className="h-5 w-5 text-amber-400" />
+              </div>
+              <div className="relative">
+                <p className="text-xs text-white/60 font-medium">Enterprise</p>
+                <p className="text-2xl font-bold text-white leading-tight">{stats.e1 + stats.e2}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search and filter customers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search customers by name, email, or mobile..."
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={typeFilter} onValueChange={handleTypeFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="WHOLESALE">Wholesale</SelectItem>
-                    <SelectItem value="ENTERPRISE">Enterprise</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search customers by name, email, or mobile..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 items-center">
+              <Select value={typeFilter} onValueChange={handleTypeFilter}>
+                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="WHOLESALE">Wholesale</SelectItem>
+                  <SelectItem value="ENTERPRISE">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              <SalesRoleFilters
+                selectedSalesRepId={salesRepFilter}
+                selectedSalesManagerId={salesManagerFilter}
+                onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
+                onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
+              />
+            </div>
+          </div>
 
-                <SalesRoleFilters
-                  selectedSalesRepId={salesRepFilter}
-                  selectedSalesManagerId={salesManagerFilter}
-                  onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
-                  onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
-                />
+          {/* Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                <Users className="h-4 w-4 text-slate-600" />
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Customers Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Customers List</CardTitle>
-              <CardDescription>
-                {loading ? 'Loading...' : `Showing ${customers.length} of ${totalCustomers} customers`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Customers List</h2>
+                <p className="text-xs text-slate-400">{loading ? '...' : totalCustomers.toLocaleString()} customers</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
               <CustomersTable
                 customers={customers}
                 loading={loading}
@@ -456,9 +446,10 @@ export default function CustomersPage() {
                 onExportAll={handleExportAll}
                 onEmailReport={() => setShowEmailDialog(true)}
                 onRefreshCommentCounts={fetchCustomers}
+                onRefresh={fetchCustomers}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Dialogs */}
           <CreateCustomerDialog

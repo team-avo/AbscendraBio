@@ -752,8 +752,8 @@ export default function CreateProductPage() {
           </div>
 
           {/* Form */}
-          <Card>
-            <CardContent className="p-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+            <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
                   <div className="overflow-x-auto pb-2 scrollbar-hide">
@@ -838,28 +838,27 @@ export default function CreateProductPage() {
 
                     <div className="space-y-4">
                       {formData.variants.map((variant, index) => (
-                        <Card
+                        <div
                           key={index}
                           ref={(el) => {
                             variantRefs.current[index] = el;
                           }}
+                          className="rounded-xl border border-slate-200 bg-slate-50/50"
                         >
-                          <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                              <CardTitle className="text-sm">Variant {index + 1}</CardTitle>
-                              {formData.variants.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeVariant(index)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
+                          <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                            <span className="text-sm font-semibold text-slate-700">Variant {index + 1}</span>
+                            {formData.variants.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeVariant(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                          <div className="p-4 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="space-y-2">
                                 <Label>SKU <span className="text-red-500">*</span></Label>
@@ -1018,21 +1017,19 @@ export default function CreateProductPage() {
                               </div>
 
                               {variant.segmentPrices.map((sp, spIndex) => (
-                                <Card key={spIndex} className="bg-card">
-                                  <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between">
-                                      <CardTitle className="text-sm">Segment Price {spIndex + 1}</CardTitle>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeSegmentPrice(index, spIndex)}
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </CardHeader>
-                                  <CardContent className="p-3 sm:p-6 space-y-4">
+                                <div key={spIndex} className="rounded-lg border border-slate-200 bg-white">
+                                  <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                                    <span className="text-xs font-semibold text-slate-600">Segment Price {spIndex + 1}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeSegmentPrice(index, spIndex)}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <div className="p-3 sm:p-6 space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                                       <div className="space-y-2">
                                         <Label className="text-xs sm:text-sm">Customer Type <span className="text-red-500">*</span></Label>
@@ -1077,8 +1074,8 @@ export default function CreateProductPage() {
                                         </div>
                                       </div>
                                     </div>
-                                  </CardContent>
-                                </Card>
+                                  </div>
+                                </div>
                               ))}
                             </div>
 
@@ -1098,21 +1095,19 @@ export default function CreateProductPage() {
                               </div>
 
                               {variant.bulkPrices.map((bp, bpIndex) => (
-                                <Card key={bpIndex} className="bg-card">
-                                  <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between">
-                                      <CardTitle className="text-sm">Bulk Price {bpIndex + 1}</CardTitle>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeBulkPrice(index, bpIndex)}
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </CardHeader>
-                                  <CardContent className="p-3 sm:p-6 space-y-4">
+                                <div key={bpIndex} className="rounded-lg border border-slate-200 bg-white">
+                                  <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                                    <span className="text-xs font-semibold text-slate-600">Bulk Price {bpIndex + 1}</span>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeBulkPrice(index, bpIndex)}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <div className="p-3 sm:p-6 space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                                       <div className="space-y-2">
                                         <Label className="text-xs sm:text-sm">Min Quantity <span className="text-red-500">*</span></Label>
@@ -1151,8 +1146,8 @@ export default function CreateProductPage() {
                                         </div>
                                       </div>
                                     </div>
-                                  </CardContent>
-                                </Card>
+                                  </div>
+                                </div>
                               ))}
                             </div>
 
@@ -1198,8 +1193,8 @@ export default function CreateProductPage() {
                               />
                               <Label htmlFor={`variant-active-${index}`}>Active</Label>
                             </div>
-                          </CardContent>
-                        </Card>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </TabsContent>
@@ -1524,8 +1519,8 @@ export default function CreateProductPage() {
                   </div>
                 </Tabs>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>

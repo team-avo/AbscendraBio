@@ -250,7 +250,7 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
                     shipping: order.shippingAmount || 0,
                     discount: order.discountAmount || 0,
                     total: order.totalAmount || 0,
-                    currency: "USD",
+                    currency: order.currency || "USD",
                     createdAt: order.createdAt,
                     updatedAt: order.updatedAt,
                     shippingAddress: order.shippingAddress ? {

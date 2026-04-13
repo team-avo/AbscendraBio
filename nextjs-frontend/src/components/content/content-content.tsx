@@ -62,45 +62,6 @@ type UIRow = {
     views: number;
 };
 
-// Mock data for media
-const mediaFiles = [
-    {
-        id: 1,
-        name: "peptide-research-lab.jpg",
-        type: "image",
-        size: "2.4 MB",
-        dimensions: "1920x1080",
-        uploadDate: "2024-06-15",
-        url: "/media/peptide-research-lab.jpg",
-    },
-    {
-        id: 2,
-        name: "product-showcase.mp4",
-        type: "video",
-        size: "15.2 MB",
-        duration: "2:45",
-        uploadDate: "2024-06-12",
-        url: "/media/product-showcase.mp4",
-    },
-    {
-        id: 3,
-        name: "company-logo.png",
-        type: "image",
-        size: "156 KB",
-        dimensions: "512x512",
-        uploadDate: "2024-06-10",
-        url: "/media/company-logo.png",
-    },
-    {
-        id: 4,
-        name: "research-presentation.pdf",
-        type: "document",
-        size: "4.8 MB",
-        pages: 24,
-        uploadDate: "2024-06-08",
-        url: "/media/research-presentation.pdf",
-    },
-];
 
 const StatusBadge = ({ status }: { status: string }) => {
     const variants: { [key: string]: "default" | "secondary" | "destructive" | "outline" } = {

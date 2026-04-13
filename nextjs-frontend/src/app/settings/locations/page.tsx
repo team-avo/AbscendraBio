@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,7 +42,8 @@ import {
     Building2,
     Loader2,
     AlertCircle,
-    X
+    X,
+    Warehouse,
 } from "lucide-react";
 import { toast } from "sonner";
 import * as api from "@/lib/api";
@@ -65,23 +65,20 @@ export default function LocationsManagementPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterCountry, setFilterCountry] = useState<string>("United States");
     const [filterActive, setFilterActive] = useState<string>("all");
-    const [filterEntryType, setFilterEntryType] = useState<string>("cities"); // New filter: all, cities, states, countries
+    const [filterEntryType, setFilterEntryType] = useState<string>("cities");
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [total, setTotal] = useState(0);
 
-    // Available countries for filter dropdown
     const [availableCountries, setAvailableCountries] = useState<string[]>([]);
     const [loadingCountries, setLoadingCountries] = useState(false);
 
-    // Dialog states
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<CustomLocation | null>(null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-    // Form states
     const [formData, setFormData] = useState({
         country: "",
         state: "",
@@ -90,26 +87,21 @@ export default function LocationsManagementPage() {
     });
     const [formLoading, setFormLoading] = useState(false);
 
-    // Dialog dropdown states
     const [dialogCountries, setDialogCountries] = useState<string[]>([]);
     const [dialogStates, setDialogStates] = useState<string[]>([]);
     const [dialogCities, setDialogCities] = useState<string[]>([]);
     const [loadingDialogStates, setLoadingDialogStates] = useState(false);
     const [loadingDialogCities, setLoadingDialogCities] = useState(false);
 
-    // Custom input dialog
     const [isCustomCountry, setIsCustomCountry] = useState(false);
     const [isCustomState, setIsCustomState] = useState(false);
     const [isCustomCity, setIsCustomCity] = useState(false);
 
-    // Fetch available countries for filter
     const fetchAvailableCountries = async () => {
         setLoadingCountries(true);
         try {
-            // Fetch all locations to extract unique countries
             const response = await api.getCustomLocations({ page: 1, limit: 1000 });
             if (response.success && response.data && response.data.locations) {
-                // Extract unique countries
                 const countries = Array.from(new Set(response.data.locations.map((loc: CustomLocation) => loc.country)))
                     .filter(Boolean) as string[];
                 setAvailableCountries(countries.sort());
@@ -121,12 +113,10 @@ export default function LocationsManagementPage() {
         }
     };
 
-    // Load countries on mount
     useEffect(() => {
         fetchAvailableCountries();
     }, []);
 
-    // Fetch locations
     const fetchLocations = async () => {
         setLoading(true);
         try {
@@ -143,22 +133,17 @@ export default function LocationsManagementPage() {
             if (response.success && response.data) {
                 let filteredLocations = response.data.locations;
 
-                // Apply entry type filter (client-side)
                 if (filterEntryType === "cities") {
-                    // Only show entries with city (not null)
                     filteredLocations = filteredLocations.filter((loc: CustomLocation) => loc.city !== null);
                 } else if (filterEntryType === "states") {
-                    // Only show entries with state but no city
                     filteredLocations = filteredLocations.filter((loc: CustomLocation) => loc.state !== null && loc.city === null);
                 } else if (filterEntryType === "countries") {
-                    // Only show entries with no state and no city
                     filteredLocations = filteredLocations.filter((loc: CustomLocation) => loc.state === null && loc.city === null);
                 }
-                // "all" shows everything (no filter)
 
                 setLocations(filteredLocations);
                 setTotalPages(response.data.pagination.pages);
-                setTotal(filteredLocations.length); // Update total to reflect filtered count
+                setTotal(filteredLocations.length);
             }
         } catch (error: any) {
             toast.error(error.message || "Failed to load locations");
@@ -171,7 +156,6 @@ export default function LocationsManagementPage() {
         fetchLocations();
     }, [page, filterCountry, filterActive, filterEntryType]);
 
-    // Handle search with debounce
     useEffect(() => {
         const timer = setTimeout(() => {
             if (page === 1) {
@@ -184,7 +168,6 @@ export default function LocationsManagementPage() {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    // Handle create
     const handleCreate = async () => {
         if (!formData.country.trim()) {
             toast.error("Country is required");
@@ -215,7 +198,6 @@ export default function LocationsManagementPage() {
         }
     };
 
-    // Handle update
     const handleUpdate = async () => {
         if (!selectedLocation) return;
 
@@ -243,7 +225,6 @@ export default function LocationsManagementPage() {
         }
     };
 
-    // Handle delete
     const handleDelete = async () => {
         if (!selectedLocation) return;
 
@@ -266,7 +247,6 @@ export default function LocationsManagementPage() {
         }
     };
 
-    // Handle bulk delete
     const handleBulkDelete = async () => {
         if (selectedIds.length === 0) return;
 
@@ -304,10 +284,8 @@ export default function LocationsManagementPage() {
     };
 
     const openAddDialog = async () => {
-        // Load countries
         setDialogCountries(availableCountries);
 
-        // Pre-select United States and load its states
         if (availableCountries.includes("United States")) {
             setFormData({
                 country: "United States",
@@ -316,7 +294,6 @@ export default function LocationsManagementPage() {
                 isActive: true
             });
 
-            // Load states for United States
             setLoadingDialogStates(true);
             try {
                 const response = await api.getCustomStates("United States");
@@ -342,15 +319,12 @@ export default function LocationsManagementPage() {
             isActive: location.isActive
         });
 
-        // Reset flags
         setIsCustomCountry(false);
         setIsCustomState(false);
         setIsCustomCity(false);
 
-        // Load dependencies
         setDialogCountries(availableCountries);
 
-        // Check if country is custom
         if (location.country && availableCountries.length > 0 && !availableCountries.includes(location.country)) {
             setIsCustomCountry(true);
         }
@@ -361,7 +335,6 @@ export default function LocationsManagementPage() {
                 const response = await api.getCustomStates(location.country);
                 if (response.success && response.data) {
                     setDialogStates(response.data);
-                    // Check if state is custom
                     if (location.state && !response.data.includes(location.state)) {
                         setIsCustomState(true);
                     }
@@ -379,7 +352,6 @@ export default function LocationsManagementPage() {
                 const response = await api.getCustomCities(location.country, location.state);
                 if (response.success && response.data) {
                     setDialogCities(response.data);
-                    // Check if city is custom
                     if (location.city && !response.data.includes(location.city)) {
                         setIsCustomCity(true);
                     }
@@ -416,7 +388,7 @@ export default function LocationsManagementPage() {
     return (
         <ProtectedRoute>
             <DashboardLayout>
-                <div className="space-y-4 sm:space-y-4">{/* Removed p-6 since DashboardLayout adds padding */}
+                <div className="space-y-5 px-2 sm:px-0">
                     {/* Header */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -425,194 +397,192 @@ export default function LocationsManagementPage() {
                                 Manage countries, states, and cities for customer addresses
                             </p>
                         </div>
-                        <Button className="w-full sm:w-auto" onClick={openAddDialog}>
+                        <Button
+                            className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                            onClick={openAddDialog}
+                        >
                             <Plus className="h-4 w-4 mr-2" />
                             Add Location
                         </Button>
                     </div>
 
                     {/* Filters */}
-                    <Card className="shadow-sm border-muted-foreground/10">
-                        <CardContent className="p-4 sm:p-5">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div className="sm:col-span-2">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search by country, state, or city..."
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-10 h-10"
-                                        />
-                                    </div>
-                                </div>
-                                <Select value={filterCountry} onValueChange={setFilterCountry} disabled={loadingCountries}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={loadingCountries ? "Loading countries..." : "All Countries"} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all_countries">All Countries</SelectItem>
-                                        {loadingCountries ? (
-                                            <SelectItem value="loading" disabled>
-                                                <div className="flex items-center gap-2">
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                    Loading...
-                                                </div>
-                                            </SelectItem>
-                                        ) : (
-                                            availableCountries.map((country) => (
-                                                <SelectItem key={country} value={country}>
-                                                    {country}
-                                                </SelectItem>
-                                            ))
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                <Select value={filterActive} onValueChange={setFilterActive}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="active">Active Only</SelectItem>
-                                        <SelectItem value="inactive">Inactive Only</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Bulk Actions */}
-                    {
-                        selectedIds.length > 0 && (
-                            <Card className="border-destructive shadow-sm">
-                                <CardContent className="p-4 sm:p-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium">
-                                            {selectedIds.length} location(s) selected
-                                        </span>
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={handleBulkDelete}
-                                            disabled={formLoading}
-                                        >
-                                            {formLoading ? (
-                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                            ) : (
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                            )}
-                                            Delete Selected
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )
-                    }
-
-                    {/* Table */}
-                    <Card className="shadow-sm border-muted-foreground/10">
-                        <CardHeader className="p-4 sm:p-5 pb-2 sm:pb-3 border-b">
-                            <CardTitle className="flex items-center justify-between text-lg sm:text-xl">
-                                <span>Locations ({total})</span>
-                                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 sm:p-4">
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-12">
-                                                <Checkbox
-                                                    checked={selectedIds.length === locations.length && locations.length > 0}
-                                                    onCheckedChange={toggleSelectAll}
-                                                />
-                                            </TableHead>
-                                            <TableHead className="min-w-[150px]">
-                                                <div className="flex items-center gap-2">
-                                                    <Globe className="h-4 w-4" />
-                                                    Country
-                                                </div>
-                                            </TableHead>
-                                            <TableHead className="min-w-[150px]">
-                                                <div className="flex items-center gap-2">
-                                                    <MapPin className="h-4 w-4" />
-                                                    State
-                                                </div>
-                                            </TableHead>
-                                            <TableHead className="min-w-[150px]">
-                                                <div className="flex items-center gap-2">
-                                                    <Building2 className="h-4 w-4" />
-                                                    City
-                                                </div>
-                                            </TableHead>
-                                            <TableHead className="min-w-[100px]">Status</TableHead>
-                                            <TableHead className="text-right min-w-[100px]">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {locations.length === 0 && !loading ? (
-                                            <TableRow>
-                                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                                                    <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                                    No locations found
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            locations.map((location) => (
-                                                <TableRow key={location.id}>
-                                                    <TableCell>
-                                                        <Checkbox
-                                                            checked={selectedIds.includes(location.id)}
-                                                            onCheckedChange={() => toggleSelect(location.id)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="font-medium">{location.country}</TableCell>
-                                                    <TableCell>{location.state || "—"}</TableCell>
-                                                    <TableCell>{location.city || "—"}</TableCell>
-                                                    <TableCell>
-                                                        <Badge variant={location.isActive ? "default" : "secondary"}>
-                                                            {location.isActive ? "Active" : "Inactive"}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <div className="flex items-center justify-end gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => openEditDialog(location)}
-                                                            >
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => openDeleteDialog(location)}
-                                                            >
-                                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-
-                            {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="mt-4 pt-4 border-t">
-                                    <Pagination
-                                        currentPage={page}
-                                        totalPages={totalPages}
-                                        onPageChange={setPage}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="sm:col-span-2">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        placeholder="Search by country, state, or city..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-10 h-10"
                                     />
                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                            </div>
+                            <Select value={filterCountry} onValueChange={setFilterCountry} disabled={loadingCountries}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={loadingCountries ? "Loading countries..." : "All Countries"} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all_countries">All Countries</SelectItem>
+                                    {loadingCountries ? (
+                                        <SelectItem value="loading" disabled>
+                                            <div className="flex items-center gap-2">
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                Loading...
+                                            </div>
+                                        </SelectItem>
+                                    ) : (
+                                        availableCountries.map((country) => (
+                                            <SelectItem key={country} value={country}>
+                                                {country}
+                                            </SelectItem>
+                                        ))
+                                    )}
+                                </SelectContent>
+                            </Select>
+                            <Select value={filterActive} onValueChange={setFilterActive}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="active">Active Only</SelectItem>
+                                    <SelectItem value="inactive">Inactive Only</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    {/* Bulk Actions */}
+                    {selectedIds.length > 0 && (
+                        <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">
+                                    {selectedIds.length} location(s) selected
+                                </span>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={handleBulkDelete}
+                                    disabled={formLoading}
+                                >
+                                    {formLoading ? (
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                    )}
+                                    Delete Selected
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Table */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-slate-100 rounded-lg">
+                                    <Warehouse className="h-4 w-4 text-slate-600" />
+                                </div>
+                                <span className="font-semibold text-slate-800">Locations ({total})</span>
+                            </div>
+                            {loading && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+                        </div>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-12">
+                                            <Checkbox
+                                                checked={selectedIds.length === locations.length && locations.length > 0}
+                                                onCheckedChange={toggleSelectAll}
+                                            />
+                                        </TableHead>
+                                        <TableHead className="min-w-[150px]">
+                                            <div className="flex items-center gap-2">
+                                                <Globe className="h-4 w-4" />
+                                                Country
+                                            </div>
+                                        </TableHead>
+                                        <TableHead className="min-w-[150px]">
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="h-4 w-4" />
+                                                State
+                                            </div>
+                                        </TableHead>
+                                        <TableHead className="min-w-[150px]">
+                                            <div className="flex items-center gap-2">
+                                                <Building2 className="h-4 w-4" />
+                                                City
+                                            </div>
+                                        </TableHead>
+                                        <TableHead className="min-w-[100px]">Status</TableHead>
+                                        <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {locations.length === 0 && !loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                                                <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                                No locations found
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        locations.map((location) => (
+                                            <TableRow key={location.id}>
+                                                <TableCell>
+                                                    <Checkbox
+                                                        checked={selectedIds.includes(location.id)}
+                                                        onCheckedChange={() => toggleSelect(location.id)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="font-medium">{location.country}</TableCell>
+                                                <TableCell>{location.state || "—"}</TableCell>
+                                                <TableCell>{location.city || "—"}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={location.isActive ? "default" : "secondary"}>
+                                                        {location.isActive ? "Active" : "Inactive"}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => openEditDialog(location)}
+                                                        >
+                                                            <Edit className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => openDeleteDialog(location)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="px-5 py-4 border-t border-slate-100">
+                                <Pagination
+                                    currentPage={page}
+                                    totalPages={totalPages}
+                                    onPageChange={setPage}
+                                />
+                            </div>
+                        )}
+                    </div>
 
                     {/* Add Dialog */}
                     <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
@@ -658,7 +628,6 @@ export default function LocationsManagementPage() {
                                                     setFormData({ ...formData, country: "", state: "", city: "" });
                                                 } else {
                                                     setFormData({ ...formData, country: value, state: "", city: "" });
-                                                    // Load states for selected country
                                                     setLoadingDialogStates(true);
                                                     try {
                                                         const response = await api.getCustomStates(value);
@@ -721,7 +690,6 @@ export default function LocationsManagementPage() {
                                                     setFormData({ ...formData, state: "", city: "" });
                                                 } else {
                                                     setFormData({ ...formData, state: value, city: "" });
-                                                    // Load cities for selected state
                                                     setLoadingDialogCities(true);
                                                     try {
                                                         const response = await api.getCustomCities(formData.country, value);
@@ -823,7 +791,11 @@ export default function LocationsManagementPage() {
                                 <Button variant="outline" onClick={() => { setIsAddDialogOpen(false); resetForm(); }}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleCreate} disabled={formLoading}>
+                                <Button
+                                    className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                    onClick={handleCreate}
+                                    disabled={formLoading}
+                                >
                                     {formLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                                     Create
                                 </Button>
@@ -1036,7 +1008,11 @@ export default function LocationsManagementPage() {
                                 <Button variant="outline" onClick={() => { setIsEditDialogOpen(false); resetForm(); }}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleUpdate} disabled={formLoading}>
+                                <Button
+                                    className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                    onClick={handleUpdate}
+                                    disabled={formLoading}
+                                >
                                     {formLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                                     Update
                                 </Button>
@@ -1073,8 +1049,8 @@ export default function LocationsManagementPage() {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
-                </div >
-            </DashboardLayout >
-        </ProtectedRoute >
+                </div>
+            </DashboardLayout>
+        </ProtectedRoute>
     );
 }

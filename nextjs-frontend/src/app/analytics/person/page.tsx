@@ -1,16 +1,11 @@
 'use client';
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import {
     Table,
     TableBody,
@@ -50,14 +45,16 @@ import {
 import {
     DollarSign,
     ShoppingCart,
-    Users,
     TrendingUp,
     Download,
     ArrowLeft,
     UserCircle,
     UserPlus,
     Repeat,
-    Mail
+    Mail,
+    BarChart2,
+    PieChart as PieChartIcon,
+    List,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { cn } from '@/lib/utils';
@@ -84,7 +81,6 @@ function SalesPersonAnalyticsContent() {
     const isMobile = useIsMobile();
     const [showEmailDialog, setShowEmailDialog] = useState(false);
 
-    // Sales Log pagination
     const SALES_LOG_PAGE_SIZE = 10;
     const [salesLogPage, setSalesLogPage] = useState(1);
 
@@ -134,7 +130,6 @@ function SalesPersonAnalyticsContent() {
 
         const wb = XLSX.utils.book_new();
 
-        // --- SHEET 1: PERFORMANCE OVERVIEW ---
         const overviewData = [
             ['SALES PERFORMANCE REPORT', ''],
             ['Generated on:', new Date().toLocaleString()],
@@ -157,13 +152,9 @@ function SalesPersonAnalyticsContent() {
         ];
 
         const wsOverview = XLSX.utils.aoa_to_sheet(overviewData);
-
-        // Basic column widths
         wsOverview['!cols'] = [{ wch: 25 }, { wch: 35 }];
-
         XLSX.utils.book_append_sheet(wb, wsOverview, 'Summary Overview');
 
-        // --- SHEET 2: DAILY TRENDS ---
         const dailyData = data.dailyBreakdown.map(d => ({
             'Date': new Date(d.date).toLocaleDateString(undefined, {
                 year: 'numeric',
@@ -178,7 +169,6 @@ function SalesPersonAnalyticsContent() {
         wsDaily['!cols'] = [{ wch: 15 }, { wch: 15 }, { wch: 10 }];
         XLSX.utils.book_append_sheet(wb, wsDaily, 'Daily Trends');
 
-        // --- SHEET 3: DETAILED SALES LOG ---
         const detailedData = data.detailedOrders.map(o => ({
             'Order Number': o.orderNumber,
             'Order ID': o.orderId,
@@ -200,24 +190,20 @@ function SalesPersonAnalyticsContent() {
         }));
 
         const wsDetailed = XLSX.utils.json_to_sheet(detailedData);
-
-        // Add column widths for readability
         wsDetailed['!cols'] = [
-            { wch: 15 }, // Order Number
-            { wch: 25 }, // Order ID
-            { wch: 12 }, // Date
-            { wch: 10 }, // Time
-            { wch: 25 }, // Customer Name
-            { wch: 30 }, // Customer Email
-            { wch: 12 }, // Revenue
-            { wch: 15 }, // Status
-            { wch: 15 }, // Purchase Type
-            { wch: 20 }  // Sales Rep
+            { wch: 15 },
+            { wch: 25 },
+            { wch: 12 },
+            { wch: 10 },
+            { wch: 25 },
+            { wch: 30 },
+            { wch: 12 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 20 }
         ];
-
         XLSX.utils.book_append_sheet(wb, wsDetailed, 'Detailed Sales Log');
 
-        // Finalize and Download
         const fileName = `Detailed_Performance_${data.personName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
         XLSX.writeFile(wb, fileName);
 
@@ -240,12 +226,11 @@ function SalesPersonAnalyticsContent() {
     const pieData = useMemo(() => {
         if (!data) return [];
         return [
-            { name: 'First-time', value: data.firstTimeOrdersCount, color: '#10b981' }, // emerald-500
-            { name: 'Repeat', value: data.repeatOrdersCount, color: '#3b82f6' } // blue-500
+            { name: 'First-time', value: data.firstTimeOrdersCount, color: '#10b981' },
+            { name: 'Repeat', value: data.repeatOrdersCount, color: '#3b82f6' }
         ].filter(item => item.value > 0);
     }, [data]);
 
-    // Paginate detailed orders
     const totalSalesLogPages = useMemo(() => {
         if (!data) return 1;
         return Math.max(1, Math.ceil(data.detailedOrders.length / SALES_LOG_PAGE_SIZE));
@@ -259,7 +244,6 @@ function SalesPersonAnalyticsContent() {
         );
     }, [data, salesLogPage]);
 
-    // Reset page when data changes
     useEffect(() => {
         setSalesLogPage(1);
     }, [data]);
@@ -282,7 +266,7 @@ function SalesPersonAnalyticsContent() {
         : 0;
 
     return (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                     <Button variant="ghost" size="icon" onClick={() => window.history.back()} className="rounded-full">
@@ -317,7 +301,7 @@ function SalesPersonAnalyticsContent() {
                                 Export
                             </Button>
                         )}
-                        <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 sm:sm:flex-none h-9 sm:h-10 text-xs sm:text-sm">
+                        <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm">
                             <Mail className="h-4 w-4 mr-2" />
                             {isMobile ? "Email Report" : "Email"}
                         </Button>
@@ -333,61 +317,53 @@ function SalesPersonAnalyticsContent() {
                 description={`Enter your email to receive the performance report for ${data.personName} as an Excel file.`}
             />
 
+            {/* Stat chips */}
             <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-                <Card className="py-0 sm:py-0 gap-0 border-none shadow-sm bg-gradient-to-br from-primary/5 to-primary/10">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
+                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] sm:text-sm font-medium text-slate-600">Total Revenue</span>
                         <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{formatCurrency(data.totalRevenue)}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            Gross sales in range
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="py-0 sm:py-0 gap-0 border-none shadow-sm bg-slate-50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Orders</CardTitle>
+                    </div>
+                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">{formatCurrency(data.totalRevenue)}</div>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Gross sales in range</p>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] sm:text-sm font-medium text-slate-600">Total Orders</span>
                         <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totalOrders}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            Successful purchases
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card className="py-0 sm:py-0 gap-0 border-none shadow-sm bg-emerald-50/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">First-time</CardTitle>
+                    </div>
+                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totalOrders}</div>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Successful purchases</p>
+                </div>
+
+                <div className="bg-emerald-50/50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] sm:text-sm font-medium text-slate-600">First-time</span>
                         <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight text-emerald-700">{data.firstTimeOrdersCount}</div>
-                        <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
-                            <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 py-0 bg-emerald-100 text-emerald-700 border-emerald-200">
-                                {firstTimeRate}%
-                            </Badge>
-                            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">New</span>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="py-0 sm:py-0 gap-0 border-none shadow-sm bg-blue-50/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Repeat</CardTitle>
+                    </div>
+                    <div className="text-base sm:text-2xl font-bold truncate leading-tight text-emerald-700">{data.firstTimeOrdersCount}</div>
+                    <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
+                        <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 py-0 bg-emerald-100 text-emerald-700 border-emerald-200">
+                            {firstTimeRate}%
+                        </Badge>
+                        <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">New</span>
+                    </div>
+                </div>
+
+                <div className="bg-blue-50/50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] sm:text-sm font-medium text-slate-600">Repeat</span>
                         <Repeat className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight text-blue-700">{data.repeatOrdersCount}</div>
-                        <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
-                            <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 py-0 bg-blue-100 text-blue-700 border-blue-200">
-                                {repeatRate}%
-                            </Badge>
-                            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Repeat</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="text-base sm:text-2xl font-bold truncate leading-tight text-blue-700">{data.repeatOrdersCount}</div>
+                    <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
+                        <Badge variant="outline" className="text-[8px] sm:text-[10px] px-1 py-0 bg-blue-100 text-blue-700 border-blue-200">
+                            {repeatRate}%
+                        </Badge>
+                        <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Repeat</span>
+                    </div>
+                </div>
             </div>
 
             <Tabs defaultValue="analytics" className="w-full">
@@ -402,22 +378,26 @@ function SalesPersonAnalyticsContent() {
                     </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="analytics" className="space-y-6 mt-0">
-                    <div className="grid gap-6 md:grid-cols-3">
-                        <Card className="md:col-span-2 shadow-sm py-0 sm:py-0 gap-0">
-                            <CardHeader className="flex flex-row items-center justify-between p-2 py-1.5 sm:p-4 sm:py-3">
-                                <div>
-                                    <CardTitle className="text-sm sm:text-base">Revenue Trend</CardTitle>
-                                    <CardDescription className="text-[10px] sm:text-xs">Daily revenue performance</CardDescription>
-                                </div>
+                <TabsContent value="analytics" className="space-y-5 mt-0">
+                    <div className="grid gap-5 md:grid-cols-3">
+                        {/* Revenue Trend chart */}
+                        <div className="md:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1">
-                                        <div className="h-3 w-3 rounded-full bg-primary" />
-                                        <span className="text-xs text-muted-foreground font-medium">Revenue</span>
+                                    <div className="p-1.5 bg-slate-100 rounded-lg">
+                                        <BarChart2 className="h-4 w-4 text-slate-600" />
+                                    </div>
+                                    <div>
+                                        <span className="text-sm sm:text-base font-semibold text-slate-800">Revenue Trend</span>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground">Daily revenue performance</p>
                                     </div>
                                 </div>
-                            </CardHeader>
-                            <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+                                <div className="flex items-center gap-1">
+                                    <div className="h-3 w-3 rounded-full bg-primary" />
+                                    <span className="text-xs text-muted-foreground font-medium">Revenue</span>
+                                </div>
+                            </div>
+                            <div className="p-2 sm:p-4">
                                 <div className="h-[300px] sm:h-[350px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={data.dailyBreakdown} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
@@ -460,15 +440,21 @@ function SalesPersonAnalyticsContent() {
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
 
-                        <Card className="shadow-sm py-0 sm:py-0 gap-0">
-                            <CardHeader className="p-2 py-1.5 sm:p-4 sm:py-3">
-                                <CardTitle className="text-sm sm:text-base">Purchase Breakdown</CardTitle>
-                                <CardDescription className="text-[10px] sm:text-xs">First-time vs. Repeat</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex flex-col items-center justify-center p-2 pt-0 sm:p-4 sm:pt-0">
+                        {/* Purchase Breakdown chart */}
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                                <div className="p-1.5 bg-slate-100 rounded-lg">
+                                    <PieChartIcon className="h-4 w-4 text-slate-600" />
+                                </div>
+                                <div>
+                                    <span className="text-sm sm:text-base font-semibold text-slate-800">Purchase Breakdown</span>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground">First-time vs. Repeat</p>
+                                </div>
+                            </div>
+                            <div className="p-2 sm:p-4 flex flex-col items-center justify-center">
                                 {data.totalOrders > 0 ? (
                                     <>
                                         <div className="h-[200px] sm:h-[250px] w-full">
@@ -514,18 +500,23 @@ function SalesPersonAnalyticsContent() {
                                         No order data to display for this period
                                     </div>
                                 )}
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     </div>
                 </TabsContent>
 
                 <TabsContent value="orders" className="mt-0">
-                    <Card className="shadow-sm py-0 sm:py-0 gap-0">
-                        <CardHeader className="p-2 py-1.5 sm:p-4 sm:py-3">
-                            <CardTitle className="text-sm sm:text-base">Detailed Sales Log</CardTitle>
-                            <CardDescription className="text-[10px] sm:text-xs">Orders attributed to this user</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-2 pt-0 sm:p-4 sm:pt-0">
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <List className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <div>
+                                <span className="text-sm sm:text-base font-semibold text-slate-800">Detailed Sales Log</span>
+                                <p className="text-[10px] sm:text-xs text-muted-foreground">Orders attributed to this user</p>
+                            </div>
+                        </div>
+                        <div className="p-2 sm:p-4">
                             <div className="rounded-lg border bg-white overflow-hidden">
                                 <Table>
                                     <TableHeader className="bg-slate-50">
@@ -623,8 +614,8 @@ function SalesPersonAnalyticsContent() {
                                     />
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
 

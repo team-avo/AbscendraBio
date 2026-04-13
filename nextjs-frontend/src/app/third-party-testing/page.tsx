@@ -27,14 +27,6 @@ import { toast } from "sonner";
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -164,7 +156,8 @@ const ThirdPartyTestingOverviewPage = () => {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
+          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">3rd Party Testing</h1>
@@ -174,28 +167,30 @@ const ThirdPartyTestingOverviewPage = () => {
             </div>
           </div>
 
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search reports by name..."
-              className="pl-9 bg-background w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          {/* Filter bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search reports by name..."
+                className="pl-9 bg-background w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
 
+          {/* Stat chips */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {cards.map((c) => (
               <Link key={c.category} href={c.href} className="block group">
-                <Card className="hover:border-primary/50 transition-colors py-0 gap-0">
-                  <CardHeader className="p-3 sm:p-4 pb-0 sm:pb-0">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4 hover:border-slate-300 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                       {c.title}
-                      <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
-                    <div className="flex items-baseline gap-2">
+                      <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </div>
+                    <div className="flex items-baseline gap-2 mt-1">
                       <div className="text-2xl sm:text-3xl font-bold tracking-tight">
                         {loading ? (
                           <span className="text-muted-foreground">—</span>
@@ -205,20 +200,25 @@ const ThirdPartyTestingOverviewPage = () => {
                       </div>
                       <div className="text-xs sm:text-sm text-muted-foreground">Reports</div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
 
-          <Card>
-            <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
-              <CardTitle className="text-lg sm:text-xl">All Reports</CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                All uploaded files across Purity, Endotoxicity, and Sterility.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* All Reports section */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <FileText className="h-5 w-5 text-slate-500" />
+              <div>
+                <div className="font-semibold text-slate-900">All Reports</div>
+                <div className="text-xs text-muted-foreground">
+                  All uploaded files across Purity, Endotoxicity, and Sterility.
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
               {loading ? (
                 <div className="flex items-center justify-center py-16 text-muted-foreground">
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
@@ -248,89 +248,88 @@ const ThirdPartyTestingOverviewPage = () => {
                           {items.map((r) => {
                             const kind = guessFileKind(r.url);
                             return (
-                              <Card key={r.id} className="overflow-hidden">
-                                <CardHeader className="pb-3">
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                      <CardTitle className="text-base truncate">
-                                        {r.name}
-                                      </CardTitle>
-                                      {r.description ? (
-                                        <CardDescription className="mt-1 line-clamp-2">
-                                          {r.description}
-                                        </CardDescription>
-                                      ) : (
-                                        <CardDescription className="mt-1">
-                                          No description
-                                        </CardDescription>
-                                      )}
+                              <div
+                                key={r.id}
+                                className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 overflow-hidden"
+                              >
+                                <div className="flex items-start justify-between gap-3 mb-3">
+                                  <div className="min-w-0">
+                                    <div className="text-base font-semibold truncate text-slate-900">
+                                      {r.name}
                                     </div>
-                                    <Badge variant="secondary" className="shrink-0">
-                                      {kind === "none" ? "FILE" : kind.toUpperCase()}
-                                    </Badge>
-                                  </div>
-                                </CardHeader>
-
-                                <CardContent className="pt-0">
-                                  <div className="rounded-md border overflow-hidden bg-muted/20 h-44">
-                                    {r.url ? (
-                                      (() => {
-                                        if (kind === "image") {
-                                          return (
-                                            <img
-                                              src={r.url}
-                                              alt={r.name}
-                                              className="w-full h-full object-cover bg-background"
-                                            />
-                                          );
-                                        }
-                                        if (kind === "pdf") {
-                                          return (
-                                            <iframe
-                                              src={r.url}
-                                              className="w-full h-full"
-                                              title={r.name}
-                                            />
-                                          );
-                                        }
-                                        return (
-                                          <div className="h-full w-full flex items-center justify-center text-sm text-muted-foreground p-4 text-center">
-                                            Preview is not available for this file type.
-                                          </div>
-                                        );
-                                      })()
+                                    {r.description ? (
+                                      <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                                        {r.description}
+                                      </div>
                                     ) : (
-                                      <div className="h-full w-full flex items-center justify-center text-sm text-muted-foreground">
-                                        No file uploaded.
+                                      <div className="mt-1 text-sm text-muted-foreground">
+                                        No description
                                       </div>
                                     )}
                                   </div>
+                                  <Badge variant="secondary" className="shrink-0">
+                                    {kind === "none" ? "FILE" : kind.toUpperCase()}
+                                  </Badge>
+                                </div>
 
-                                  <div className="mt-4 flex flex-wrap gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        if (!r.url) return toast.error("No file uploaded");
-                                        openInNewTab(r.url);
-                                      }}
-                                      disabled={!r.url}
-                                    >
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      View
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => downloadFromApi(r.id, r.url)}
-                                      disabled={!r.url}
-                                    >
-                                      <Download className="h-4 w-4 mr-2" />
-                                      Download
-                                    </Button>
-                                  </div>
-                                </CardContent>
-                              </Card>
+                                <div className="rounded-md border overflow-hidden bg-muted/20 h-44">
+                                  {r.url ? (
+                                    (() => {
+                                      if (kind === "image") {
+                                        return (
+                                          <img
+                                            src={r.url}
+                                            alt={r.name}
+                                            className="w-full h-full object-cover bg-background"
+                                          />
+                                        );
+                                      }
+                                      if (kind === "pdf") {
+                                        return (
+                                          <iframe
+                                            src={r.url}
+                                            className="w-full h-full"
+                                            title={r.name}
+                                          />
+                                        );
+                                      }
+                                      return (
+                                        <div className="h-full w-full flex items-center justify-center text-sm text-muted-foreground p-4 text-center">
+                                          Preview is not available for this file type.
+                                        </div>
+                                      );
+                                    })()
+                                  ) : (
+                                    <div className="h-full w-full flex items-center justify-center text-sm text-muted-foreground">
+                                      No file uploaded.
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (!r.url) return toast.error("No file uploaded");
+                                      openInNewTab(r.url);
+                                    }}
+                                    disabled={!r.url}
+                                  >
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => downloadFromApi(r.id, r.url)}
+                                    disabled={!r.url}
+                                  >
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download
+                                  </Button>
+                                </div>
+                              </div>
                             );
                           })}
                         </div>
@@ -339,8 +338,8 @@ const ThirdPartyTestingOverviewPage = () => {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>

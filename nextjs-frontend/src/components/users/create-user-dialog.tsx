@@ -329,7 +329,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
           >
             Cancel
           </Button>
-          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting || !isFormValid()} className="w-full sm:w-auto order-1 sm:order-2">
+          <Button type="submit" disabled={isSubmitting || !isFormValid()} className="w-full sm:w-auto order-1 sm:order-2">
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

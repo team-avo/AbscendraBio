@@ -5,13 +5,6 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuth, ProtectedRoute } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -232,18 +225,22 @@ export default function PagesManagerPage() {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
+          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Pages</h1>
               <p className="text-sm sm:text-base text-muted-foreground">Create and manage website pages</p>
             </div>
-            <Button onClick={onCreate} className="w-full sm:w-auto">
+            <Button
+              onClick={onCreate}
+              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
+            >
               <Plus className="h-4 w-4 mr-2" /> New Page
             </Button>
           </div>
 
-          <Tabs defaultValue="pages" className="space-y-6">
+          <Tabs defaultValue="pages" className="space-y-5">
             <div className="w-full overflow-x-auto pb-2">
               <TabsList>
                 <TabsTrigger value="pages">Pages</TabsTrigger>
@@ -252,151 +249,159 @@ export default function PagesManagerPage() {
             </div>
 
             <TabsContent value="pages">
-              {/* Tabs: Pages and Analytics */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>All Pages</CardTitle>
-                  <CardDescription>Search, filter and edit pages</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center">
-                    <div className="relative w-full sm:w-auto">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search title or slug..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-8 w-full sm:w-72"
-                      />
-                    </div>
-                    <Select value={statusFilter || undefined} onValueChange={(v) => setStatusFilter(v === 'ALL_STATUS' ? '' : v)}>
-                      <SelectTrigger className="w-full sm:w-40">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL_STATUS">All Status</SelectItem>
-                        <SelectItem value="PUBLISHED">Published</SelectItem>
-                        <SelectItem value="DRAFT">Draft</SelectItem>
-                        <SelectItem value="ARCHIVED">Archived</SelectItem>
-                        <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={typeFilter || undefined} onValueChange={(v) => setTypeFilter(v === 'ALL_TYPES' ? '' : v)}>
-                      <SelectTrigger className="w-full sm:w-44">
-                        <SelectValue placeholder="Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL_TYPES">All Types</SelectItem>
-                        <SelectItem value="STATIC_PAGE">Static Page</SelectItem>
-                        <SelectItem value="BLOG_POST">Blog Post</SelectItem>
-                        <SelectItem value="LEGAL_PAGE">Legal Page</SelectItem>
-                        <SelectItem value="LANDING_PAGE">Landing Page</SelectItem>
-                        <SelectItem value="PRODUCT_PAGE">Product Page</SelectItem>
-                        <SelectItem value="CUSTOM_PAGE">Custom Page</SelectItem>
-                      </SelectContent>
-                    </Select>
+              {/* Filter bar */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3 mb-4">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center">
+                  <div className="relative w-full sm:w-auto">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search title or slug..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="pl-9 w-full sm:w-72"
+                    />
                   </div>
+                  <Select value={statusFilter || undefined} onValueChange={(v) => setStatusFilter(v === 'ALL_STATUS' ? '' : v)}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL_STATUS">All Status</SelectItem>
+                      <SelectItem value="PUBLISHED">Published</SelectItem>
+                      <SelectItem value="DRAFT">Draft</SelectItem>
+                      <SelectItem value="ARCHIVED">Archived</SelectItem>
+                      <SelectItem value="SCHEDULED">Scheduled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={typeFilter || undefined} onValueChange={(v) => setTypeFilter(v === 'ALL_TYPES' ? '' : v)}>
+                    <SelectTrigger className="w-full sm:w-44">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL_TYPES">All Types</SelectItem>
+                      <SelectItem value="STATIC_PAGE">Static Page</SelectItem>
+                      <SelectItem value="BLOG_POST">Blog Post</SelectItem>
+                      <SelectItem value="LEGAL_PAGE">Legal Page</SelectItem>
+                      <SelectItem value="LANDING_PAGE">Landing Page</SelectItem>
+                      <SelectItem value="PRODUCT_PAGE">Product Page</SelectItem>
+                      <SelectItem value="CUSTOM_PAGE">Custom Page</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-                  <div className="overflow-x-auto -mx-6 sm:mx-0">
-                    <Table className="min-w-[800px]">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>URL</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Views</TableHead>
-                          <TableHead>Author</TableHead>
-                          <TableHead>Last Modified</TableHead>
-                          <TableHead className="w-16"></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {(loading ? [] : rows).map((p) => (
-                          <TableRow key={p.id}>
-                            <TableCell className="font-medium">{p.title}</TableCell>
-                            <TableCell>
-                              <code className="text-sm bg-muted px-2 py-1 rounded">/{p.slug.replace(/^\//, "")}</code>
-                            </TableCell>
-                            <TableCell>{typeLabel(p.pageType)}</TableCell>
-                            <TableCell>
-                              <Badge variant={statusToBadge(p.status)}>
-                                {p.status === "PUBLISHED"
-                                  ? "Published"
-                                  : p.status === "DRAFT"
-                                    ? "Draft"
-                                    : p.status === "ARCHIVED"
-                                      ? "Archived"
-                                      : "Scheduled"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{(p.views || 0).toLocaleString()}</TableCell>
-                            <TableCell>
-                              {p.author ? `${p.author.firstName} ${p.author.lastName}` : "—"}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-1">
-                                <Calendar className="h-4 w-4" />
-                                {p.updatedAt ? new Date(p.updatedAt).toISOString().slice(0, 10) : ""}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => onEdit(p)}>
-                                    <Edit3 className="h-4 w-4 mr-2" />
-                                    Edit Page
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => onPreview(p)}>
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Preview Page
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => openStatusDialog(p)}>
-                                    <Edit3 className="h-4 w-4 mr-2" />
-                                    Change Status
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem disabled={p.status !== "PUBLISHED"} onClick={() => onViewLive(p)}>
-                                    <Globe className="h-4 w-4 mr-2" />
-                                    View Live
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="text-red-600"
-                                    onSelect={(e) => {
-                                      e.preventDefault();
-                                      confirmDelete(p);
-                                    }}
-                                  >
-                                    Delete Page
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+              {/* Table card */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <Globe className="h-5 w-5 text-slate-500" />
+                  <div>
+                    <div className="font-semibold text-slate-900">All Pages</div>
+                    <div className="text-xs text-muted-foreground">Search, filter and edit pages</div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[800px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>URL</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Views</TableHead>
+                        <TableHead>Author</TableHead>
+                        <TableHead>Last Modified</TableHead>
+                        <TableHead className="w-16"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(loading ? [] : rows).map((p) => (
+                        <TableRow key={p.id}>
+                          <TableCell className="font-medium">{p.title}</TableCell>
+                          <TableCell>
+                            <code className="text-sm bg-muted px-2 py-1 rounded">/{p.slug.replace(/^\//, "")}</code>
+                          </TableCell>
+                          <TableCell>{typeLabel(p.pageType)}</TableCell>
+                          <TableCell>
+                            <Badge variant={statusToBadge(p.status)}>
+                              {p.status === "PUBLISHED"
+                                ? "Published"
+                                : p.status === "DRAFT"
+                                  ? "Draft"
+                                  : p.status === "ARCHIVED"
+                                    ? "Archived"
+                                    : "Scheduled"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{(p.views || 0).toLocaleString()}</TableCell>
+                          <TableCell>
+                            {p.author ? `${p.author.firstName} ${p.author.lastName}` : "—"}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {p.updatedAt ? new Date(p.updatedAt).toISOString().slice(0, 10) : ""}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => onEdit(p)}>
+                                  <Edit3 className="h-4 w-4 mr-2" />
+                                  Edit Page
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => onPreview(p)}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Preview Page
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openStatusDialog(p)}>
+                                  <Edit3 className="h-4 w-4 mr-2" />
+                                  Change Status
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem disabled={p.status !== "PUBLISHED"} onClick={() => onViewLive(p)}>
+                                  <Globe className="h-4 w-4 mr-2" />
+                                  View Live
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onSelect={(e) => {
+                                    e.preventDefault();
+                                    confirmDelete(p);
+                                  }}
+                                >
+                                  Delete Page
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="analytics">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> Page Analytics</CardTitle>
-                  <CardDescription>Views over time and top pages</CardDescription>
-                </CardHeader>
-                <CardContent>
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <BarChart3 className="h-5 w-5 text-slate-500" />
+                  <div>
+                    <div className="font-semibold text-slate-900">Page Analytics</div>
+                    <div className="text-xs text-muted-foreground">Views over time and top pages</div>
+                  </div>
+                </div>
+                <div className="p-6">
                   <AnalyticsPanel typeFilter={typeFilter} />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
 

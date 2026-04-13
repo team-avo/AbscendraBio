@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { toast } from "sonner";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getPaymentMethodDisplay } from "@/lib/payment-utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,7 +12,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
-import { Download, Eye, Mail, FileSpreadsheet, DollarSign, ShoppingCart, Target, TrendingUp, TrendingDown } from "lucide-react";
+import { Download, Eye, Mail, FileSpreadsheet, DollarSign, ShoppingCart, Target, TrendingUp, TrendingDown, BarChart2, MapPin, ClipboardList, LineChart as LineChartIcon } from "lucide-react";
 import { api, formatCurrency, Order } from "@/lib/api";
 import logger from "@/lib/logger";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -33,7 +32,6 @@ const formatDateLabel = (dateStr: string) => {
     if (!dateStr) return '';
     if (typeof dateStr !== 'string') return String(dateStr);
 
-    // Handle hourly buckets or pre-formatted PST labels
     if (dateStr.includes('PST')) return dateStr;
 
     if (dateStr.includes('T')) {
@@ -70,7 +68,6 @@ export default function SalesReportsPage() {
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [showEmailDialog, setShowEmailDialog] = useState(false);
 
-    // Pagination for Daily Breakdown table
     const [breakdownPage, setBreakdownPage] = useState(1);
 
     const dailyItems = useMemo(() => {
@@ -86,10 +83,8 @@ export default function SalesReportsPage() {
         [dailyItems, breakdownPage]
     );
 
-    // Reset page when data changes
     useEffect(() => { setBreakdownPage(1); }, [data]);
 
-    // Day details state
     const [showDayDetailsDialog, setShowDayDetailsDialog] = useState(false);
     const [dayOrders, setDayOrders] = useState<Order[]>([]);
     const [dayDetailsLoading, setDayDetailsLoading] = useState(false);
@@ -112,7 +107,6 @@ export default function SalesReportsPage() {
                     toToSend = to || from;
                 }
 
-                // Request detailed data when viewing a single day
                 const requestDetailed = range === 'day';
                 const res = await api.getSalesReports(
                     rangeToSend as any,
@@ -120,7 +114,7 @@ export default function SalesReportsPage() {
                     toToSend || undefined,
                     requestDetailed,
                     salesChannelId,
-                    true // usePSTFilter legacy flag, now default
+                    true
                 );
                 logger.debug("[SalesReports] API response:", { response: res });
                 if (res.success && res.data) {
@@ -217,14 +211,12 @@ export default function SalesReportsPage() {
         try {
             setLoading(true);
 
-            // 1. Generate Aggregated Summary Data
             const summaryData = (data.daily || []).map((d: any) => ({
                 'Date': d.date,
                 'Revenue ($)': Number(d.revenue || 0).toFixed(2),
                 'Orders Count': d.orders || 0
             }));
 
-            // 2. Fetch All Detailed Orders
             do {
                 const res: any = await api.getOrders({
                     page,
@@ -258,16 +250,12 @@ export default function SalesReportsPage() {
                 'Updated Date': order.updatedAt ? format(new Date(order.updatedAt), 'MMM d, yyyy, hh:mm a') : '',
             }));
 
-            // 3. Create Workbook and Sheets
             const wb = XLSX.utils.book_new();
-
             const wsSummary = XLSX.utils.json_to_sheet(summaryData);
             XLSX.utils.book_append_sheet(wb, wsSummary, 'Sales Summary');
-
             const wsDetailed = XLSX.utils.json_to_sheet(detailedData);
             XLSX.utils.book_append_sheet(wb, wsDetailed, 'Order Details');
 
-            // 4. Download
             const fileName = `sales-analytics-export-${range}-${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, fileName);
             toast.success(`Exported ${summaryData.length} summary rows and ${filteredAll.length} detailed orders`);
@@ -295,7 +283,7 @@ export default function SalesReportsPage() {
             range: rangeToSend,
             from: fromToSend?.toISOString(),
             to: toToSend?.toISOString(),
-            usePSTFilter: true, // Legacy flag, now default behavior
+            usePSTFilter: true,
         });
     };
 
@@ -319,7 +307,7 @@ export default function SalesReportsPage() {
     };
 
     const handleDayClick = async (dateStr: string) => {
-        if (!dateStr || range === 'day') return; // Don't do anything if already in detailed view or invalid date
+        if (!dateStr || range === 'day') return;
 
         setSelectedDayDate(dateStr);
         setDayDetailsLoading(true);
@@ -333,11 +321,10 @@ export default function SalesReportsPage() {
                 usePSTFilter: true,
                 salesChannelId: salesChannelId,
                 excludeFailedPayments: true,
-                limit: 100 // Reasonable limit for a day drill-down
+                limit: 100
             });
 
             if (res.success && res.data && res.data.orders) {
-                // Exclude CANCELLED and REFUNDED orders to match main analytics totals
                 const filteredOrders = (res.data.orders as Order[]).filter(
                     (o) => o.status !== 'CANCELLED' && o.status !== 'REFUNDED'
                 );
@@ -355,7 +342,7 @@ export default function SalesReportsPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-5 px-2 sm:px-0">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sales Reports</h1>
@@ -374,18 +361,18 @@ export default function SalesReportsPage() {
                         />
                         <div className="flex items-center gap-2 w-full sm:w-auto">
                             {!isMobile && (
-                                <Button variant="outline" onClick={handleExportAll} className="flex-1 sm:w-auto">
+                                <Button onClick={handleExportAll} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
                                     <FileSpreadsheet className="h-4 w-4 mr-2" /> Export
                                 </Button>
                             )}
-                            <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 sm:w-auto">
+                            <Button onClick={() => setShowEmailDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
                                 <Mail className="h-4 w-4 mr-2" /> {isMobile ? "Email Report" : "Email"}
                             </Button>
                         </div>
                     </div>
                 </div>
 
-                <Tabs defaultValue="overview" className="space-y-4">
+                <Tabs defaultValue="overview" className="space-y-5">
                     <div className="w-full overflow-x-auto scrollbar-hide">
                         <TabsList className="flex items-center justify-start w-max h-auto p-1 bg-muted gap-1 min-h-[40px]">
                             <TabsTrigger value="overview" className="whitespace-nowrap py-2 px-4 text-xs sm:text-sm">Overview</TabsTrigger>
@@ -395,47 +382,50 @@ export default function SalesReportsPage() {
                         </TabsList>
                     </div>
 
-                    <TabsContent value="overview" className="space-y-4">
-                        <div className="grid gap-2 sm:gap-3 grid-cols-2 lg:grid-cols-4">
-                            <Card className="p-0 gap-0 shadow-sm border-border/50">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                                    <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
-                                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+                    <TabsContent value="overview" className="space-y-5">
+                        {/* Stat chips */}
+                        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-emerald-50 shrink-0">
+                                    <DollarSign className="h-5 w-5 text-emerald-600" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs text-slate-500 font-medium">Total Revenue</p>
                                     {loading ? (
-                                        <Skeleton className="h-7 sm:h-8 w-24" />
+                                        <Skeleton className="h-7 w-24 mt-1" />
                                     ) : (
-                                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                            {formatCurrency(data.totalRevenue || 0)}
-                                        </div>
+                                        <p className="text-xl font-bold text-slate-800 truncate">{formatCurrency(data.totalRevenue || 0)}</p>
                                     )}
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
 
-                            <Card className="p-0 gap-0 shadow-sm border-border/50">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                                    <CardTitle className="text-[10px] sm:text-sm font-medium">Total Orders</CardTitle>
-                                    <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
+                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-50 shrink-0">
+                                    <ShoppingCart className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs text-slate-500 font-medium">Total Orders</p>
                                     {loading ? (
-                                        <Skeleton className="h-7 sm:h-8 w-16" />
+                                        <Skeleton className="h-7 w-16 mt-1" />
                                     ) : (
-                                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                            {(data.totalOrders || 0).toLocaleString()}
-                                        </div>
+                                        <p className="text-xl font-bold text-slate-800 truncate">{(data.totalOrders || 0).toLocaleString()}</p>
                                     )}
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         </div>
 
-                        <Card className="overflow-hidden">
-                            <CardHeader>
-                                <CardTitle>Revenue Trend</CardTitle>
-                                <CardDescription>Daily revenue</CardDescription>
-                            </CardHeader>
-                            <CardContent>
+                        {/* Revenue Trend chart */}
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                                    <LineChartIcon className="h-4 w-4 text-blue-600" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-slate-800">Revenue Trend</p>
+                                    <p className="text-xs text-slate-500">Daily revenue</p>
+                                </div>
+                            </div>
+                            <div className="p-4 sm:p-6">
                                 {loading ? (
                                     <Skeleton className="w-full h-[320px]" />
                                 ) : (
@@ -451,15 +441,8 @@ export default function SalesReportsPage() {
                                         <ResponsiveContainer width="100%" height={320}>
                                             <LineChart data={data.chartData || data.daily || []}>
                                                 <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis
-                                                    dataKey="date"
-                                                    tickFormatter={formatDateLabel}
-                                                    tick={{ fontSize: 12 }}
-                                                />
-                                                <YAxis
-                                                    tickFormatter={(value) => `$${Math.round(value)}`}
-                                                    tick={{ fontSize: 12 }}
-                                                />
+                                                <XAxis dataKey="date" tickFormatter={formatDateLabel} tick={{ fontSize: 12 }} />
+                                                <YAxis tickFormatter={(value) => `$${Math.round(value)}`} tick={{ fontSize: 12 }} />
                                                 <Tooltip
                                                     labelFormatter={formatDateLabel}
                                                     formatter={(value) => [`$${Math.round(Number(value)).toLocaleString()}`, 'Revenue']}
@@ -478,15 +461,21 @@ export default function SalesReportsPage() {
                                         </ResponsiveContainer>
                                     </>
                                 )}
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
 
-                        <Card className="overflow-hidden">
-                            <CardHeader>
-                                <CardTitle>Orders per Day</CardTitle>
-                                <CardDescription>Daily order count</CardDescription>
-                            </CardHeader>
-                            <CardContent>
+                        {/* Orders per Day chart */}
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-violet-50">
+                                    <BarChart2 className="h-4 w-4 text-violet-600" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-slate-800">Orders per Day</p>
+                                    <p className="text-xs text-slate-500">Daily order count</p>
+                                </div>
+                            </div>
+                            <div className="p-4 sm:p-6">
                                 {loading ? (
                                     <Skeleton className="w-full h-[320px]" />
                                 ) : (
@@ -503,17 +492,21 @@ export default function SalesReportsPage() {
                                         </BarChart>
                                     </ResponsiveContainer>
                                 )}
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
 
-                        <Card className="overflow-hidden">
-                            <CardHeader>
-                                <CardTitle>Daily Breakdown</CardTitle>
-                                <CardDescription>
-                                    {data.detailed ? 'Individual orders' : 'Aggregated by time period'}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="overflow-x-auto">
+                        {/* Daily Breakdown table */}
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-amber-50">
+                                    <ClipboardList className="h-4 w-4 text-amber-600" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-slate-800">Daily Breakdown</p>
+                                    <p className="text-xs text-slate-500">{data.detailed ? 'Individual orders' : 'Aggregated by time period'}</p>
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto">
                                 <Table className="min-w-[700px]">
                                     <TableHeader>
                                         <TableRow>
@@ -544,7 +537,6 @@ export default function SalesReportsPage() {
                                                 </TableRow>
                                             ))
                                         ) : data.detailed ? (
-                                            // Show individual orders (paginated)
                                             paginatedDaily.map((d: any) => (
                                                 <TableRow
                                                     key={d.orderId}
@@ -563,7 +555,6 @@ export default function SalesReportsPage() {
                                                 </TableRow>
                                             ))
                                         ) : (
-                                            // Show aggregated data (paginated)
                                             paginatedDaily.map((d: any) => (
                                                 <TableRow
                                                     key={d.date}
@@ -595,43 +586,51 @@ export default function SalesReportsPage() {
                                         />
                                     </div>
                                 )}
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     </TabsContent>
 
-                    <TabsContent value="regional" className="space-y-4">
-                        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 mb-4">
-                            <div className="w-full sm:w-[200px]">
-                                <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity("ALL"); }}>
-                                    <SelectTrigger><SelectValue placeholder="State" /></SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
-                                        <SelectItem value="ALL">All States</SelectItem>
-                                        {filters.states.map((s) => (
-                                            <SelectItem key={s} value={s}>{s}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="w-full sm:w-[200px]">
-                                <Select value={selectedCity} onValueChange={setSelectedCity} disabled={selectedState === "ALL"}>
-                                    <SelectTrigger><SelectValue placeholder="City" /></SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
-                                        <SelectItem value="ALL">All Cities</SelectItem>
-                                        {selectedState !== "ALL" && (filters.citiesByState[selectedState] || []).map((c) => (
-                                            <SelectItem key={c} value={c}>{c}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                    <TabsContent value="regional" className="space-y-5">
+                        {/* Filter bar */}
+                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+                            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3">
+                                <div className="w-full sm:w-[200px]">
+                                    <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity("ALL"); }}>
+                                        <SelectTrigger><SelectValue placeholder="State" /></SelectTrigger>
+                                        <SelectContent className="max-h-[300px]">
+                                            <SelectItem value="ALL">All States</SelectItem>
+                                            {filters.states.map((s) => (
+                                                <SelectItem key={s} value={s}>{s}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="w-full sm:w-[200px]">
+                                    <Select value={selectedCity} onValueChange={setSelectedCity} disabled={selectedState === "ALL"}>
+                                        <SelectTrigger><SelectValue placeholder="City" /></SelectTrigger>
+                                        <SelectContent className="max-h-[300px]">
+                                            <SelectItem value="ALL">All Cities</SelectItem>
+                                            {selectedState !== "ALL" && (filters.citiesByState[selectedState] || []).map((c) => (
+                                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="grid gap-4 lg:grid-cols-2">
-                            <Card className="col-span-1">
-                                <CardHeader>
-                                    <CardTitle>Regional Distribution</CardTitle>
-                                    <CardDescription>Sales by {selectedState === 'ALL' ? 'State' : 'City'}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
+                        <div className="grid gap-5 lg:grid-cols-2">
+                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                                        <MapPin className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">Regional Distribution</p>
+                                        <p className="text-xs text-slate-500">Sales by {selectedState === 'ALL' ? 'State' : 'City'}</p>
+                                    </div>
+                                </div>
+                                <div className="p-4 sm:p-6">
                                     {regionLoading ? (
                                         <Skeleton className="w-full h-[300px]" />
                                     ) : (
@@ -651,14 +650,19 @@ export default function SalesReportsPage() {
                                             )}
                                         </div>
                                     )}
-                                </CardContent>
-                            </Card>
-                            <Card className="col-span-1">
-                                <CardHeader>
-                                    <CardTitle>Details</CardTitle>
-                                    <CardDescription>Top regions by revenue</CardDescription>
-                                </CardHeader>
-                                <CardContent className="h-[300px] overflow-auto">
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-50">
+                                        <ClipboardList className="h-4 w-4 text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">Details</p>
+                                        <p className="text-xs text-slate-500">Top regions by revenue</p>
+                                    </div>
+                                </div>
+                                <div className="h-[300px] overflow-auto">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -691,10 +695,9 @@ export default function SalesReportsPage() {
                                             )}
                                         </TableBody>
                                     </Table>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         </div>
-                        {/* Map Placeholder or Actual Map would go here. I'm starting with Charts for reliability */}
                     </TabsContent>
 
                     <TabsContent value="logs">
@@ -711,112 +714,108 @@ export default function SalesReportsPage() {
                         />
                     </TabsContent>
                 </Tabs>
-            </div>
 
-            <EditOrderDialog
-                open={showEditDialog}
-                onOpenChange={setShowEditDialog}
-                order={editingOrder}
-                onSuccess={() => {
-                    // Re-fetch data to reflect changes if needed
-                    // We can just keep the current view or refetch the current range
-                    // For now, simpler to leave as is or we can trigger a re-fetch if we abstract the fetch logic
-                }}
-            />
+                <EditOrderDialog
+                    open={showEditDialog}
+                    onOpenChange={setShowEditDialog}
+                    order={editingOrder}
+                    onSuccess={() => {}}
+                />
 
-            <Dialog open={showDayDetailsDialog} onOpenChange={setShowDayDetailsDialog}>
-                <DialogContent className="w-[95vw] sm:max-w-[1400px] max-h-[90vh] flex flex-col">
-                    <DialogHeader>
-                        <DialogTitle className="flex flex-col gap-1">
-                            <span>Orders for {(() => {
-                                const parts = selectedDayDate.split('-');
-                                if (parts.length === 3) {
-                                    return format(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])), 'dd MMM yyyy');
-                                }
-                                return selectedDayDate;
-                            })()}</span>
-                            <span className="text-sm font-normal text-muted-foreground">
-                                {(() => {
+                <Dialog open={showDayDetailsDialog} onOpenChange={setShowDayDetailsDialog}>
+                    <DialogContent className="w-[95vw] sm:max-w-[1400px] max-h-[90vh] flex flex-col">
+                        <DialogHeader>
+                            <DialogTitle className="flex flex-col gap-1">
+                                <span>Orders for {(() => {
                                     const parts = selectedDayDate.split('-');
                                     if (parts.length === 3) {
-                                        const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-                                        const prev = new Date(d); prev.setDate(prev.getDate() - 1);
-                                        return `(${format(prev, 'dd MMM')} 4:30 PM - ${format(d, 'dd MMM')} 4:30 PM PST)`;
+                                        return format(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])), 'dd MMM yyyy');
                                     }
-                                    return '';
-                                })()}
-                            </span>
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="flex-1 overflow-auto mt-4">
-                        {dayDetailsLoading ? (
-                            <div className="flex items-center justify-center p-8">Loading orders...</div>
-                        ) : dayOrders.length === 0 ? (
-                            <div className="flex items-center justify-center p-8 text-muted-foreground">No orders found for this day.</div>
-                        ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Order #</TableHead>
-                                        <TableHead>Customer</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Total</TableHead>
-                                        <TableHead>Created At</TableHead>
-                                        <TableHead>Payment Method</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {dayOrders.map((order) => (
-                                        <TableRow key={order.id}>
-                                            <TableCell className="font-medium">
-                                                <span
-                                                    className="text-primary hover:underline cursor-pointer"
-                                                    onClick={() => handleRowClick(order.id)}
-                                                >
-                                                    {order.orderNumber}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col">
-                                                    <span>{order.shippingAddress?.firstName} {order.shippingAddress?.lastName}</span>
-                                                    <span className="text-xs text-muted-foreground">{order.customer?.email}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>{order.status}</TableCell>
-                                            <TableCell>{formatCurrency(Number(order.totalAmount))}</TableCell>
-                                            <TableCell className="whitespace-nowrap">
-                                                {order.createdAt ? format(new Date(order.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline" className="whitespace-nowrap">
-                                                    {getPaymentMethodDisplay(order)}
-                                                </Badge>
-                                            </TableCell>
+                                    return selectedDayDate;
+                                })()}</span>
+                                <span className="text-sm font-normal text-muted-foreground">
+                                    {(() => {
+                                        const parts = selectedDayDate.split('-');
+                                        if (parts.length === 3) {
+                                            const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+                                            const prev = new Date(d); prev.setDate(prev.getDate() - 1);
+                                            return `(${format(prev, 'dd MMM')} 4:30 PM - ${format(d, 'dd MMM')} 4:30 PM PST)`;
+                                        }
+                                        return '';
+                                    })()}
+                                </span>
+                            </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex-1 overflow-auto mt-4">
+                            {dayDetailsLoading ? (
+                                <div className="flex items-center justify-center p-8">Loading orders...</div>
+                            ) : dayOrders.length === 0 ? (
+                                <div className="flex items-center justify-center p-8 text-muted-foreground">No orders found for this day.</div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Order #</TableHead>
+                                            <TableHead>Customer</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Total</TableHead>
+                                            <TableHead>Created At</TableHead>
+                                            <TableHead>Payment Method</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-right font-bold">Total</TableCell>
-                                        <TableCell className="font-bold">
-                                            {formatCurrency(dayOrders.reduce((acc, order) => acc + Number(order.totalAmount || 0), 0))}
-                                        </TableCell>
-                                        <TableCell colSpan={2} />
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {dayOrders.map((order) => (
+                                            <TableRow key={order.id}>
+                                                <TableCell className="font-medium">
+                                                    <span
+                                                        className="text-primary hover:underline cursor-pointer"
+                                                        onClick={() => handleRowClick(order.id)}
+                                                    >
+                                                        {order.orderNumber}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span>{order.shippingAddress?.firstName} {order.shippingAddress?.lastName}</span>
+                                                        <span className="text-xs text-muted-foreground">{order.customer?.email}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{order.status}</TableCell>
+                                                <TableCell>{formatCurrency(Number(order.totalAmount))}</TableCell>
+                                                <TableCell className="whitespace-nowrap">
+                                                    {order.createdAt ? format(new Date(order.createdAt), 'dd MMM yyyy, hh:mm a') : 'N/A'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="whitespace-nowrap">
+                                                        {getPaymentMethodDisplay(order)}
+                                                    </Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell colSpan={3} className="text-right font-bold">Total</TableCell>
+                                            <TableCell className="font-bold">
+                                                {formatCurrency(dayOrders.reduce((acc, order) => acc + Number(order.totalAmount || 0), 0))}
+                                            </TableCell>
+                                            <TableCell colSpan={2} />
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
-            <SendReportDialog
-                open={showEmailDialog}
-                onOpenChange={setShowEmailDialog}
-                onSend={handleSendEmailReport}
-                title="Send Sales Report"
-                description="Enter the email address where you want to receive the filtered sales report."
-            />
+                <SendReportDialog
+                    open={showEmailDialog}
+                    onOpenChange={setShowEmailDialog}
+                    onSend={handleSendEmailReport}
+                    title="Send Sales Report"
+                    description="Enter the email address where you want to receive the filtered sales report."
+                />
+            </div>
         </DashboardLayout>
     );
 }

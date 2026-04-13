@@ -4,13 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { EditOrderDialog } from '@/components/orders/edit-order-dialog';
 import { ProtectedRoute } from '@/contexts/auth-context';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -302,7 +295,7 @@ export default function SalesManagerAnalyticsPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'SALES_MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-6 pb-10">
+        <div className="space-y-5 px-2 sm:px-0">
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -314,174 +307,189 @@ export default function SalesManagerAnalyticsPage() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
-                <SelectTrigger className="w-full sm:w-40 h-9 sm:h-10">
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent>
-                  {RANGE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
+            {/* Filter bar */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
+                  <SelectTrigger className="w-full sm:w-40 h-9 sm:h-10">
+                    <SelectValue placeholder="Select range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RANGE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
 
-              {range === 'day' && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-44 text-left font-normal h-9 sm:h-10">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} initialFocus />
-                  </PopoverContent>
-                </Popover>
-              )}
-
-              {range === 'custom' && (
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                {range === 'day' && (
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                      <Button variant="outline" className="w-full sm:w-44 text-left font-normal h-9 sm:h-10">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {customFrom ? customFrom.toLocaleDateString() : 'From date'}
+                        {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} />
+                      <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} initialFocus />
                     </PopoverContent>
                   </Popover>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {customTo ? customTo.toLocaleDateString() : 'To date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker mode="single" selected={customTo || undefined} onSelect={(d) => setCustomTo(d || null)} />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              )}
+                )}
 
-              <Button
-                variant="outline"
-                onClick={handleRetry}
-                disabled={loading || (range === 'day' && !customFrom) || (range === 'custom' && (!customFrom || !customTo))}
-                className="w-full sm:w-auto h-9 sm:h-10"
-              >
-                Refresh
-              </Button>
+                {range === 'custom' && (
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {customFrom ? customFrom.toLocaleDateString() : 'From date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} />
+                      </PopoverContent>
+                    </Popover>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {customTo ? customTo.toLocaleDateString() : 'To date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarPicker mode="single" selected={customTo || undefined} onSelect={(d) => setCustomTo(d || null)} />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleRetry}
+                  disabled={loading || (range === 'day' && !customFrom) || (range === 'custom' && (!customFrom || !customTo))}
+                  className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
           </div>
 
           {loading && !data ? (
-            <Card>
-              <CardContent className="flex items-center justify-center py-16">
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="flex items-center justify-center py-16">
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                   <LoadingSpinner size={24} />
                   <span className="text-sm">Loading performance data…</span>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ) : error ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-red-600">Failed to load analytics</CardTitle>
-                <CardDescription>{error}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={handleRetry}>Try again</Button>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                <p className="font-semibold text-red-600">Failed to load analytics</p>
+              </div>
+              <div className="px-6 py-4 space-y-3">
+                <p className="text-sm text-muted-foreground">{error}</p>
+                <button
+                  onClick={handleRetry}
+                  className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
           ) : !data || data.managers.length === 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>No sales managers found</CardTitle>
-                <CardDescription>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                <p className="font-semibold">No sales managers found</p>
+              </div>
+              <div className="px-6 py-4">
+                <p className="text-sm text-muted-foreground">
                   Add sales managers and assign teams to start tracking performance.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                </p>
+              </div>
+            </div>
           ) : (
             <>
-              {/* Summary Cards aligned with sales-reps styling */}
+              {/* Summary stat chips */}
               <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-3">
-                <Card className="py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Global Revenue</CardTitle>
-                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
+                    <DollarSign className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">Global Revenue</p>
+                    <p className="text-base sm:text-2xl font-bold truncate leading-tight">
                       {formatCurrency(data.totals.totalRevenue)}
-                    </div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
                       Total from all manager-led teams
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card className="py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Total Orders</CardTitle>
-                    <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totals.totalOrders}</div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
+                    <ShoppingCart className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">Total Orders</p>
+                    <p className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totals.totalOrders}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
                       Across all segments
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card className={cn(
-                  "py-0 sm:py-0 gap-0 col-span-2 lg:col-span-1",
-                  selectedManager ? 'border-primary/20 bg-primary/5' : ''
+                <div className={cn(
+                  "flex items-center gap-3 bg-white rounded-2xl border shadow-sm px-5 py-4 col-span-2 lg:col-span-1",
+                  selectedManager ? 'border-primary/20 bg-primary/5' : 'border-slate-200/80'
                 )}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Selected Manager</CardTitle>
-                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
+                    <Users className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">Selected Manager</p>
+                    <p className="text-base sm:text-2xl font-bold truncate leading-tight">
                       {selectedManager ? selectedManager.user.firstName : 'None'}
-                    </div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate">
+                    </p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
                       {selectedManager ? `${selectedManager.metrics.assignedReps} Reps | ${formatCurrency(selectedManager.metrics.totalRevenue)} Rev` : 'Select a manager below'}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
 
-              {/* Top Performer Card styling matched to sales-reps */}
+              {/* Top Performer banner */}
               {filteredSortedManagers[0] && (
-                <Card className="border-primary/20 bg-primary/5 rounded-2xl sm:rounded-3xl overflow-hidden group shadow-sm hover:shadow-md transition-all py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between p-2 py-1 sm:p-4 sm:py-2">
-                    <div className="space-y-0.5">
-                      <CardTitle className="flex items-center gap-2 text-sm sm:text-lg font-bold text-primary">
-                        <Award className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-110" />
-                        Top Performing Manager
-                      </CardTitle>
-                      <CardDescription className="text-xs sm:text-base font-medium text-foreground/70">
-                        {filteredSortedManagers[0].user.firstName} {filteredSortedManagers[0].user.lastName}'s team generated <span className="text-primary font-bold">{formatCurrency(filteredSortedManagers[0].metrics.totalRevenue)}</span> from <span className="text-primary font-bold">{filteredSortedManagers[0].metrics.totalOrders}</span> orders.
-                      </CardDescription>
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                  <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 shrink-0">
+                      <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary transition-transform group-hover:scale-110" />
                     </div>
-                  </CardHeader>
-                </Card>
+                    <div>
+                      <p className="text-sm sm:text-base font-bold text-primary">Top Performing Manager</p>
+                      <p className="text-xs sm:text-sm text-foreground/70">
+                        {filteredSortedManagers[0].user.firstName} {filteredSortedManagers[0].user.lastName}'s team generated{' '}
+                        <span className="text-primary font-bold">{formatCurrency(filteredSortedManagers[0].metrics.totalRevenue)}</span> from{' '}
+                        <span className="text-primary font-bold">{filteredSortedManagers[0].metrics.totalOrders}</span> orders.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {/* Manager Selection Table */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sales Managers</CardTitle>
-                  <CardDescription>
-                    Compare performance across your managerial team.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-4 pb-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 shrink-0">
+                    <Users className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">Sales Managers</p>
+                    <p className="text-xs text-muted-foreground">Compare performance across your managerial team.</p>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="relative w-full lg:max-w-md">
                       <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -570,7 +578,7 @@ export default function SalesManagerAnalyticsPage() {
                   </div>
 
                   {totalPages > 1 && (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
                       <div className="text-sm text-muted-foreground">
                         Page {currentPage} of {totalPages} ({filteredSortedManagers.length} Managers)
                       </div>
@@ -581,20 +589,25 @@ export default function SalesManagerAnalyticsPage() {
                       />
                     </div>
                   )}
-                </CardContent>
-              </Card>
-
+                </div>
+              </div>
 
               {selectedManager && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Order History</CardTitle>
-                      <CardDescription>
-                        All orders associated with {selectedManager.user.firstName} {selectedManager.user.lastName} (Direct & Team) for the selected period.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 shrink-0">
+                        <ShoppingCart className="h-4 w-4 text-slate-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Order History</p>
+                        <p className="text-xs text-muted-foreground">
+                          All orders associated with {selectedManager.user.firstName} {selectedManager.user.lastName} (Direct &amp; Team) for the selected period.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-6 space-y-4">
                       <div className="rounded-xl border overflow-x-auto bg-muted/5">
                         <Table className="min-w-[900px]">
                           <TableHeader>
@@ -654,7 +667,7 @@ export default function SalesManagerAnalyticsPage() {
                         </Table>
                       </div>
                       {totalOrderPages > 1 && (
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
                           <div className="text-sm text-muted-foreground">
                             Page {orderPage} of {totalOrderPages} ({selectedManager.recentOrders?.length || 0} Orders)
                           </div>
@@ -665,8 +678,8 @@ export default function SalesManagerAnalyticsPage() {
                           />
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -688,8 +701,8 @@ export default function SalesManagerAnalyticsPage() {
               />
             </>
           )}
-        </div >
-      </DashboardLayout >
-    </ProtectedRoute >
+        </div>
+      </DashboardLayout>
+    </ProtectedRoute>
   );
 }

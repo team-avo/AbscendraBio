@@ -3,13 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -52,6 +45,7 @@ import {
   DollarSign,
   Users,
   Calendar as CalendarIcon,
+  List,
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { cn } from "@/lib/utils";
@@ -125,7 +119,6 @@ export default function SalesRepPerformancePage() {
   const [sortMetric, setSortMetric] = useState<SortMetric>("revenue");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -196,9 +189,7 @@ export default function SalesRepPerformancePage() {
     const query = searchQuery.trim().toLowerCase();
     const filtered = data.reps.filter((rep) => {
       if (!query) return true;
-      const name = `${rep.user.firstName ?? ""} ${rep.user.lastName ?? ""}`
-        .trim()
-        .toLowerCase();
+      const name = `${rep.user.firstName ?? ""} ${rep.user.lastName ?? ""}`.trim().toLowerCase();
       const email = (rep.user.email ?? "").toLowerCase();
       return name.includes(query) || email.includes(query);
     });
@@ -207,17 +198,12 @@ export default function SalesRepPerformancePage() {
     return filtered.sort((a, b) => {
       const aValue = sorter(a);
       const bValue = sorter(b);
-      if (sortDirection === "desc") {
-        return bValue - aValue;
-      }
+      if (sortDirection === "desc") return bValue - aValue;
       return aValue - bValue;
     });
   }, [data, searchQuery, currentMetricOption, sortDirection]);
 
-  // Reset pagination when search or sort changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, sortMetric, sortDirection, data]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, sortMetric, sortDirection, data]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSortedReps.length / itemsPerPage));
   const paginatedReps = useMemo(() => {
@@ -241,15 +227,11 @@ export default function SalesRepPerformancePage() {
 
   const selectedRep: SalesRepPerformance | null = useMemo(() => {
     if (!filteredSortedReps.length || !selectedRepId) return null;
-    return (
-      filteredSortedReps.find((rep) => rep.salesRepId === selectedRepId) ?? null
-    );
+    return filteredSortedReps.find((rep) => rep.salesRepId === selectedRepId) ?? null;
   }, [filteredSortedReps, selectedRepId]);
 
   const overallTrend = useMemo(() => {
-    if (!filteredSortedReps.length) {
-      return null;
-    }
+    if (!filteredSortedReps.length) return null;
     const topPerformer = filteredSortedReps[0];
     return { topPerformer };
   }, [filteredSortedReps]);
@@ -272,51 +254,35 @@ export default function SalesRepPerformancePage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-6 pb-10">
+        <div className="space-y-5 px-2 sm:px-0 pb-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Sales Rep Performance
-              </h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sales Rep Performance</h1>
               <p className="text-muted-foreground text-sm sm:text-base">
-                Monitor revenue, productivity, and customer engagement across your
-                sales team.
+                Monitor revenue, productivity, and customer engagement across your sales team.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <Select
-                value={range}
-                onValueChange={(value) => setRange(value as RangeKey)}
-              >
+              <Select value={range} onValueChange={(value) => setRange(value as RangeKey)}>
                 <SelectTrigger className="w-full sm:w-40 h-9 sm:h-10">
                   <SelectValue placeholder="Select range" />
                 </SelectTrigger>
                 <SelectContent>
                   {RANGE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {range === "day" && (
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full sm:w-44 text-left font-normal h-9 sm:h-10"
-                    >
+                    <Button variant="outline" className="w-full sm:w-44 text-left font-normal h-9 sm:h-10">
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {customFrom ? customFrom.toLocaleDateString() : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarPicker
-                      mode="single"
-                      selected={customFrom ?? undefined}
-                      onSelect={(date) => setCustomFrom(date ?? null)}
-                      initialFocus
-                    />
+                    <CalendarPicker mode="single" selected={customFrom ?? undefined} onSelect={(date) => setCustomFrom(date ?? null)} initialFocus />
                   </PopoverContent>
                 </Popover>
               )}
@@ -324,167 +290,128 @@ export default function SalesRepPerformancePage() {
                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm"
-                      >
+                      <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {customFrom ? customFrom.toLocaleDateString() : "From date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={customFrom ?? undefined}
-                        onSelect={(date) => setCustomFrom(date ?? null)}
-                        initialFocus
-                      />
+                      <CalendarPicker mode="single" selected={customFrom ?? undefined} onSelect={(date) => setCustomFrom(date ?? null)} initialFocus />
                     </PopoverContent>
                   </Popover>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm"
-                      >
+                      <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {customTo ? customTo.toLocaleDateString() : "To date"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={customTo ?? undefined}
-                        onSelect={(date) => setCustomTo(date ?? null)}
-                        initialFocus
-                      />
+                      <CalendarPicker mode="single" selected={customTo ?? undefined} onSelect={(date) => setCustomTo(date ?? null)} initialFocus />
                     </PopoverContent>
                   </Popover>
                 </div>
               )}
-              <Button
-                variant="outline"
-                onClick={handleRetry}
-                disabled={disableRefresh}
-                className="w-full sm:w-auto h-9 sm:h-10"
-              >
+              <Button variant="outline" onClick={handleRetry} disabled={disableRefresh} className="w-full sm:w-auto h-9 sm:h-10">
                 Refresh
               </Button>
             </div>
           </div>
 
           {loading ? (
-            <Card>
-              <CardContent className="flex items-center justify-center py-16">
-                <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                  <LoadingSpinner size={24} />
-                  <span className="text-sm">Loading performance data…</span>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-center py-16">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                <LoadingSpinner size={24} />
+                <span className="text-sm">Loading performance data…</span>
+              </div>
+            </div>
           ) : error ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-red-600">Failed to load analytics</CardTitle>
-                <CardDescription>{error}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={handleRetry}>Try again</Button>
-              </CardContent>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+              <p className="text-red-600 font-semibold mb-1">Failed to load analytics</p>
+              <p className="text-sm text-muted-foreground mb-4">{error}</p>
+              <Button onClick={handleRetry}>Try again</Button>
+            </div>
           ) : !data || data.reps.length === 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>No sales representatives found</CardTitle>
-                <CardDescription>
-                  Add sales reps and assign customers to start tracking performance.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+              <p className="font-semibold mb-1">No sales representatives found</p>
+              <p className="text-sm text-muted-foreground">Add sales reps and assign customers to start tracking performance.</p>
+            </div>
           ) : (
             <>
-              <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-3">
-                <Card className="py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
-                    <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                      {formatCurrency(data.totals.totalRevenue)}
-                    </div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                      Across {data.reps.length} sales reps
-                    </p>
-                  </CardContent>
-                </Card>
+              {/* Stat chips */}
+              <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                  <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-emerald-50 shrink-0">
+                    <DollarSign className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-500 font-medium">Total Revenue</p>
+                    <p className="text-xl font-bold text-slate-800 truncate leading-tight">{formatCurrency(data.totals.totalRevenue)}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">Across {data.reps.length} sales reps</p>
+                  </div>
+                </div>
 
-                <Card className="py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Orders Closed</CardTitle>
-                    <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totals.totalOrders}</div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                  <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-50 shrink-0">
+                    <Users className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-500 font-medium">Orders Closed</p>
+                    <p className="text-xl font-bold text-slate-800 truncate leading-tight">{data.totals.totalOrders}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5 truncate">
                       {data.period
-                        ? `${new Date(data.period.from).toLocaleDateString()} - ${new Date(
-                          data.period.to
-                        ).toLocaleDateString()}`
+                        ? `${new Date(data.period.from).toLocaleDateString()} - ${new Date(data.period.to).toLocaleDateString()}`
                         : `${data.rangeDays}-day window`}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card className="py-0 sm:py-0 gap-0 col-span-2 lg:col-span-1">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                    <CardTitle className="text-[10px] sm:text-sm font-medium">Active Reps</CardTitle>
-                    <Award className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                    <div className="text-base sm:text-2xl font-bold truncate leading-tight">{data.totals.repsActive}</div>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                      Reps with active customers
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4 col-span-2 lg:col-span-1">
+                  <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-amber-50 shrink-0">
+                    <Award className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-500 font-medium">Active Reps</p>
+                    <p className="text-xl font-bold text-slate-800 truncate leading-tight">{data.totals.repsActive}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">Reps with active customers</p>
+                  </div>
+                </div>
               </div>
 
               {overallTrend?.topPerformer && (
-                <Card className="border-primary/20 bg-primary/5 rounded-2xl sm:rounded-3xl overflow-hidden group shadow-sm hover:shadow-md transition-all py-0 sm:py-0 gap-0">
-                  <CardHeader className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between p-2 py-1 sm:p-4 sm:py-2">
-                    <div className="space-y-0.5">
-                      <CardTitle className="flex items-center gap-2 text-sm sm:text-lg font-bold text-primary">
-                        <Award className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-110" />
-                        Top Performer
-                      </CardTitle>
-                      <CardDescription className="text-xs sm:text-base font-medium text-foreground/70">
-                        {overallTrend.topPerformer.user.firstName}{" "}
-                        {overallTrend.topPerformer.user.lastName} generated{" "}
-                        <span className="text-primary font-bold">{formatCurrency(overallTrend.topPerformer.metrics.totalRevenue)}</span> from{" "}
-                        <span className="text-primary font-bold">{overallTrend.topPerformer.metrics.totalOrders}</span> orders.
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-background/80 backdrop-blur-sm border-primary/20 text-primary font-bold px-3 py-1 rounded-lg">
-                        {overallTrend.topPerformer.metrics.totalOrders} Orders
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                </Card>
+                <div className="border border-primary/20 bg-primary/5 rounded-2xl overflow-hidden shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <p className="flex items-center gap-2 text-sm sm:text-lg font-bold text-primary">
+                      <Award className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Top Performer
+                    </p>
+                    <p className="text-xs sm:text-base font-medium text-foreground/70">
+                      {overallTrend.topPerformer.user.firstName}{" "}
+                      {overallTrend.topPerformer.user.lastName} generated{" "}
+                      <span className="text-primary font-bold">{formatCurrency(overallTrend.topPerformer.metrics.totalRevenue)}</span> from{" "}
+                      <span className="text-primary font-bold">{overallTrend.topPerformer.metrics.totalOrders}</span> orders.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-background/80 backdrop-blur-sm border-primary/20 text-primary font-bold px-3 py-1 rounded-lg">
+                      {overallTrend.topPerformer.metrics.totalOrders} Orders
+                    </Badge>
+                  </div>
+                </div>
               )}
 
-              <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-              </div>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sales Rep Summary</CardTitle>
-                  <CardDescription>
-                    Compare performance metrics across all sales reps in the selected range.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              {/* Sales Rep Summary table */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                    <List className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Sales Rep Summary</p>
+                    <p className="text-xs text-slate-500">Compare performance metrics across all sales reps in the selected range.</p>
+                  </div>
+                </div>
+                <div className="p-4 sm:p-6">
                   <div className="flex flex-col gap-4 pb-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="relative w-full lg:max-w-md">
                       <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -496,37 +423,23 @@ export default function SalesRepPerformancePage() {
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full lg:w-auto">
-                      <Select
-                        value={sortMetric}
-                        onValueChange={(value) => setSortMetric(value as SortMetric)}
-                      >
+                      <Select value={sortMetric} onValueChange={(value) => setSortMetric(value as SortMetric)}>
                         <SelectTrigger className="w-full lg:w-48 h-10 rounded-xl">
                           <SelectValue placeholder="Sort metric" />
                         </SelectTrigger>
                         <SelectContent>
                           {METRIC_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select
-                        value={sortDirection}
-                        onValueChange={(value) =>
-                          setSortDirection(value as "asc" | "desc")
-                        }
-                      >
+                      <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as "asc" | "desc")}>
                         <SelectTrigger className="w-full lg:w-48 h-10 rounded-xl">
                           <SelectValue placeholder="Sort order" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="desc">
-                            {currentMetricOption.highLabel}
-                          </SelectItem>
-                          <SelectItem value="asc">
-                            {currentMetricOption.lowLabel}
-                          </SelectItem>
+                          <SelectItem value="desc">{currentMetricOption.highLabel}</SelectItem>
+                          <SelectItem value="asc">{currentMetricOption.lowLabel}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -542,16 +455,12 @@ export default function SalesRepPerformancePage() {
                           <TableHead>Avg. Order</TableHead>
                           <TableHead>Assigned Customers</TableHead>
                           <TableHead>Active</TableHead>
-                          {/* <TableHead className="text-right">Actions</TableHead> */}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredSortedReps.length === 0 ? (
                           <TableRow>
-                            <TableCell
-                              colSpan={7}
-                              className="py-10 text-center text-sm text-muted-foreground"
-                            >
+                            <TableCell colSpan={7} className="py-10 text-center text-sm text-muted-foreground">
                               No sales reps match your current filters.
                             </TableCell>
                           </TableRow>
@@ -564,12 +473,8 @@ export default function SalesRepPerformancePage() {
                             >
                               <TableCell>
                                 <div className="flex flex-col">
-                                  <span className="font-medium">
-                                    {rep.user.firstName} {rep.user.lastName}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {rep.user.email}
-                                  </span>
+                                  <span className="font-medium">{rep.user.firstName} {rep.user.lastName}</span>
+                                  <span className="text-xs text-muted-foreground">{rep.user.email}</span>
                                 </div>
                               </TableCell>
                               <TableCell className="hidden xl:table-cell">
@@ -579,9 +484,7 @@ export default function SalesRepPerformancePage() {
                               </TableCell>
                               <TableCell>{formatCurrency(rep.metrics.totalRevenue)}</TableCell>
                               <TableCell>{rep.metrics.totalOrders}</TableCell>
-                              <TableCell>
-                                {formatCurrency(rep.metrics.averageOrderValue)}
-                              </TableCell>
+                              <TableCell>{formatCurrency(rep.metrics.averageOrderValue)}</TableCell>
                               <TableCell>{rep.metrics.assignedCustomers}</TableCell>
                               <TableCell>{rep.metrics.activeCustomers}</TableCell>
                             </TableRow>
@@ -595,15 +498,11 @@ export default function SalesRepPerformancePage() {
                       <div className="text-sm text-muted-foreground">
                         Page {currentPage} of {totalPages} ({filteredSortedReps.length} Reps)
                       </div>
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                      />
+                      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </>
           )}
         </div>

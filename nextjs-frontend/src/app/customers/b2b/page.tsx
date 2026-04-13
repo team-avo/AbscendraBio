@@ -208,63 +208,56 @@ export default function B2BCustomersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Tier 2 Customers</h1>
-              <p className="text-muted-foreground">
-                Manage your Tier 2 (Business) customers
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Tier 2 Customers</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Manage your Tier 2 (Business) customers</p>
             </div>
-            <Button onClick={() => setShowCreateDialog(true)}>
+            <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
               <Plus className="mr-2 h-4 w-4" />
               Add Customer
             </Button>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search and filter Tier 2 customers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search customers by name, email, or mobile..."
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Filter bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search customers by name, email, or mobile..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                <SelectTrigger className="h-10 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-full sm:w-[160px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {/* Customers Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tier 2 Customers List</CardTitle>
-              <CardDescription>
-                {loading ? 'Loading...' : `Showing ${customers.length} of ${totalCustomers} Tier 2 customers`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Table card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-indigo-50">
+                <Building className="h-4 w-4 text-indigo-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Tier 2 Customers List</h2>
+                <p className="text-xs text-slate-400">{loading ? 'Loading...' : `${totalCustomers.toLocaleString()} customers`}</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
               <CustomersTable
                 customers={customers}
                 loading={loading}
@@ -276,8 +269,8 @@ export default function B2BCustomersPage() {
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Dialogs */}
           <CreateCustomerDialog

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -39,6 +39,14 @@ export function OrderStatusDialog({ order, open, onOpenChange, onSuccess }: Orde
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(order?.status || '');
   const [note, setNote] = useState('');
+
+  // Sync status when order changes (dialog reused for different orders)
+  useEffect(() => {
+    if (open && order?.status) {
+      setStatus(order.status);
+      setNote('');
+    }
+  }, [open, order]);
 
   const handleSubmit = async () => {
     if (!order) return;

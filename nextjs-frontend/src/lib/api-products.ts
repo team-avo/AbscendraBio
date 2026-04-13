@@ -830,6 +830,8 @@ export const createProductMethods = (client: ApiClient) => ({
     page?: number;
     limit?: number;
     isActive?: boolean;
+    type?: string;
+    search?: string;
   }): Promise<ApiResponse<any>> {
     const searchParams = new URLSearchParams();
     if (params) {

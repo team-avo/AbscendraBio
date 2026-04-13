@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
@@ -91,64 +90,60 @@ export default function WarehouseLocationsPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="space-y-6 p-6">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Warehouse className="h-8 w-8" />
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                <Warehouse className="h-5 w-5 text-slate-500" />
                 Warehouse Locations
               </h1>
-              <p className="text-muted-foreground mt-2">
+              <p className="text-sm text-slate-500 mt-0.5">
                 Manage your warehouse and distribution center locations
               </p>
             </div>
-            <Button onClick={handleAddLocation} className="gap-2">
-              <Plus className="h-4 w-4" />
+            <Button
+              onClick={handleAddLocation}
+              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
+            >
+              <Plus className="mr-2 h-4 w-4" />
               Add Warehouse Location
             </Button>
           </div>
 
-          {/* Search and Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Search & Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search warehouse locations..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Warehouse Locations Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Warehouse Locations</CardTitle>
-              <CardDescription>
-                {loading
-                  ? 'Loading...'
-                  : `Showing ${filteredLocations.length} of ${locations.length} warehouse locations`
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <WarehouseLocationsTable
-                locations={filteredLocations}
-                loading={loading}
-                onEdit={handleEditLocation}
-                onDelete={handleDeleteLocation}
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search warehouse locations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full"
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          {/* Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-100">
+                <Warehouse className="h-4 w-4 text-slate-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Warehouse Locations</h2>
+                <p className="text-xs text-slate-400">
+                  {loading ? 'Loading...' : `${filteredLocations.length} locations`}
+                </p>
+              </div>
+            </div>
+            <WarehouseLocationsTable
+              locations={filteredLocations}
+              loading={loading}
+              onEdit={handleEditLocation}
+              onDelete={handleDeleteLocation}
+            />
+          </div>
 
           {/* Edit/Add Dialog */}
           <ManageWarehouseLocationsDialog

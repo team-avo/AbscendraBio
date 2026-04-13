@@ -134,12 +134,10 @@ export default function SalesUsersPage() {
     return (
       <DashboardLayout>
         <div className="p-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Denied</CardTitle>
-            </CardHeader>
-            <CardContent>You do not have permission to view this page.</CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <h2 className="text-sm font-semibold text-slate-800 mb-1">Access Denied</h2>
+            <p className="text-sm text-slate-500">You do not have permission to view this page.</p>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -190,8 +188,8 @@ export default function SalesUsersPage() {
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Sales Users Management</h1>
         </div>
 
-        <Card className="shadow-sm border-muted-foreground/10">
-          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
               <div className="flex-1 space-y-2">
                 <Label className="text-xs sm:text-sm font-medium">Select Sales Rep User</Label>
@@ -263,7 +261,7 @@ export default function SalesUsersPage() {
                 <Button
                   disabled={!selectedUserId || loading}
                   onClick={handleSaveAssignments}
-                  className="w-full lg:w-auto bg-black hover:bg-gray-800 text-white h-10 sm:h-11 shadow-sm"
+                  className="w-full lg:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white h-10 sm:h-11 rounded-xl shadow-sm"
                 >
                   Save Assignments
                 </Button>
@@ -440,8 +438,8 @@ export default function SalesUsersPage() {
                 </Tabs>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

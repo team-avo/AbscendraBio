@@ -6,8 +6,7 @@ import { ProtectedRoute } from '@/contexts/auth-context';
 import { ShippingTiersTable } from '@/components/shipping/shipping-tiers-table';
 import { ShippingTierDialog } from '@/components/shipping/shipping-tier-dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Truck, AlertTriangle } from 'lucide-react';
+import { Plus, Truck } from 'lucide-react';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
@@ -99,7 +98,7 @@ export default function ShippingTiersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="space-y-6">
+                <div className="space-y-5 px-2 sm:px-0">
                     {/* Header */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -108,32 +107,33 @@ export default function ShippingTiersPage() {
                                 Configure dynamic shipping rates based on order subtotal ranges.
                             </p>
                         </div>
-                        <Button className="w-full sm:w-auto" onClick={() => setShowDialog(true)}>
+                        <Button
+                            className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                            onClick={() => setShowDialog(true)}
+                        >
                             <Plus className="mr-2 h-4 w-4" />
                             Add Tier
                         </Button>
                     </div>
 
                     {/* Tiers Table */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Truck className="h-5 w-5" />
-                                Configured Tiers
-                            </CardTitle>
-                            <CardDescription>
-                                Define shipping costs for different order value ranges. Leave &quot;Max Subtotal&quot; empty for open-ended ranges.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <ShippingTiersTable
-                                tiers={tiers}
-                                loading={loading}
-                                onEdit={handleEdit}
-                                onDelete={(tier) => setDeletingTier(tier)}
-                            />
-                        </CardContent>
-                    </Card>
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
+                                <Truck className="h-4 w-4 text-blue-500" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-800">Configured Tiers</p>
+                                <p className="text-xs text-slate-500">Define shipping costs for different order value ranges</p>
+                            </div>
+                        </div>
+                        <ShippingTiersTable
+                            tiers={tiers}
+                            loading={loading}
+                            onEdit={handleEdit}
+                            onDelete={(tier) => setDeletingTier(tier)}
+                        />
+                    </div>
 
                     {/* Dialogs */}
                     <ShippingTierDialog

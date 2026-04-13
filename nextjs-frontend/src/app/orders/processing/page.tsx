@@ -66,8 +66,8 @@ export default function ProcessingOrdersPage() {
         status: statusFilter,
         customerId: customerFilter !== 'all' ? customerFilter : undefined,
         customerType: customerTypeFilter !== 'all' ? customerTypeFilter : undefined,
-        dateFrom: dateRange.from?.toISOString(),
-        dateTo: dateRange.to?.toISOString(),
+        dateFrom: dateRange.from?.toISOString().split('T')[0],
+        dateTo: dateRange.to?.toISOString().split('T')[0],
         excludeFailedPayments: true,
       };
 
@@ -189,8 +189,8 @@ export default function ProcessingOrdersPage() {
           status: 'PROCESSING',
           customerId: customerFilter !== 'all' ? customerFilter : undefined,
           customerType: customerTypeFilter !== 'all' ? customerTypeFilter : undefined,
-          dateFrom: dateRange.from?.toISOString(),
-          dateTo: dateRange.to?.toISOString(),
+          dateFrom: dateRange.from?.toISOString().split('T')[0],
+          dateTo: dateRange.to?.toISOString().split('T')[0],
           excludeFailedPayments: true,
         });
         if (res?.success && res?.data) {
@@ -227,96 +227,88 @@ export default function ProcessingOrdersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-3 sm:space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Processing Orders</h1>
-              <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-                Manage all orders being processed
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Processing Orders</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Orders currently being prepared and packed</p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto h-10 sm:h-9">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200">
+                <Package className="h-3 w-3" />
+                Processing
+              </span>
+              <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Order
               </Button>
             </div>
           </div>
 
-          {/* Filters */}
-          <Card className="overflow-hidden">
-            <CardHeader className="px-3 sm:px-6">
-              <CardTitle className="text-lg sm:text-xl">Filters</CardTitle>
-              <CardDescription>Search and filter processing orders</CardDescription>
-            </CardHeader>
-            <CardContent className="px-3 sm:px-6">
-              <div className="flex flex-col space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search orders by number, customer, or email..."
-                        value={searchTerm}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-                  <OrderDateFilter
-                    range={dateRangeType}
-                    setRange={handleDateRangeTypeChange}
-                    from={dateRange.from}
-                    setFrom={handleFromDateChange}
-                    to={dateRange.to}
-                    setTo={handleToDateChange}
-                    className="w-full sm:w-auto"
-                  />
-                  <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
-                    <SelectTrigger className="w-full sm:w-[200px] min-h-[40px]">
-                      <SelectValue placeholder="Filter by customer type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Customer</SelectItem>
-                      <SelectItem value="wholesale">Wholesale</SelectItem>
-                      <SelectItem value="enterprise">Enterprise</SelectItem>
-                      {/* Customer options would be populated from API */}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Filter bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search orders by number, customer, or email..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 items-center">
+              <OrderDateFilter
+                range={dateRangeType}
+                setRange={handleDateRangeTypeChange}
+                from={dateRange.from}
+                setFrom={handleFromDateChange}
+                to={dateRange.to}
+                setTo={handleToDateChange}
+                className="w-full sm:w-auto"
+              />
+              <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
+                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                  <SelectValue placeholder="Customer type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Customer</SelectItem>
+                  <SelectItem value="wholesale">Wholesale</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {/* Orders Table */}
-          <Card>
-            <CardHeader className="px-3 sm:px-6">
-              <CardTitle className="text-lg sm:text-xl">Processing Orders</CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 sm:px-6">
-              <div className="overflow-x-auto">
-                <OrdersTable
-                  orders={orders}
-                  loading={loading}
-                  onEdit={handleEditOrder}
-                  onDelete={handleDeleteOrder}
-                  onUpdateStatus={handleUpdateStatus}
-                  onRefresh={fetchOrders}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  totalOrders={totalOrders}
-                  onExportAll={handleExportAll}
-                  onEmailReport={() => setShowEmailDialog(true)}
-                />
+          {/* Table card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                <Package className="h-4 w-4 text-blue-500" />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Processing Orders</h2>
+                <p className="text-xs text-slate-400">{totalOrders.toLocaleString()} orders</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <OrdersTable
+                orders={orders}
+                loading={loading}
+                onEdit={handleEditOrder}
+                onDelete={handleDeleteOrder}
+                onUpdateStatus={handleUpdateStatus}
+                onRefresh={fetchOrders}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalOrders={totalOrders}
+                onExportAll={handleExportAll}
+                onEmailReport={() => setShowEmailDialog(true)}
+              />
+            </div>
+          </div>
 
-          {/* Dialogs */}
           <CreateOrderDialog
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}

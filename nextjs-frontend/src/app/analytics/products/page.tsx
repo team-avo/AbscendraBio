@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { toast } from "sonner";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarPrimitive } from "@/components/ui/calendar";
@@ -11,7 +10,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
-import { Download, Package, Mail } from "lucide-react";
+import { Download, Package, Mail, BarChart2, PieChart as PieChartIcon, List } from "lucide-react";
 import { api, formatCurrency, resolveImageUrl } from "@/lib/api";
 import logger from "@/lib/logger";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -42,15 +41,13 @@ export default function ProductPerformancePage() {
   const [data, setData] = useState<any>({ top: [] });
   const isMobile = useIsMobile();
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [rankingTab, setRankingTab] = useState("revenue"); // "revenue" or "units"
+  const [rankingTab, setRankingTab] = useState("revenue");
 
   const PRODUCTS_PAGE_SIZE = 10;
 
-  // Pagination state for each tab
   const [revenuePage, setRevenuePage] = useState(1);
   const [unitsPage, setUnitsPage] = useState(1);
 
-  // Sorted arrays
   const sortedByRevenue = useMemo(
     () => [...(data.top || [])].sort((a: any, b: any) => (Number(b.revenue) || 0) - (Number(a.revenue) || 0)),
     [data.top]
@@ -60,7 +57,6 @@ export default function ProductPerformancePage() {
     [data.top]
   );
 
-  // Pagination computed values - Revenue
   const totalRevenuePages = useMemo(
     () => Math.max(1, Math.ceil(sortedByRevenue.length / PRODUCTS_PAGE_SIZE)),
     [sortedByRevenue.length]
@@ -70,7 +66,6 @@ export default function ProductPerformancePage() {
     [sortedByRevenue, revenuePage]
   );
 
-  // Pagination computed values - Units
   const totalUnitsPages = useMemo(
     () => Math.max(1, Math.ceil(sortedByUnits.length / PRODUCTS_PAGE_SIZE)),
     [sortedByUnits.length]
@@ -80,7 +75,6 @@ export default function ProductPerformancePage() {
     [sortedByUnits, unitsPage]
   );
 
-  // Reset pages on data change
   useEffect(() => { setRevenuePage(1); setUnitsPage(1); }, [data]);
   useEffect(() => { if (rankingTab === 'revenue') setRevenuePage(1); else setUnitsPage(1); }, [rankingTab]);
 
@@ -92,7 +86,6 @@ export default function ProductPerformancePage() {
         let fromToSend = from;
         let toToSend = to;
 
-        // Handle "1 Day" filter - 16:30 previous to 16:30 selected
         if (range === 'day' && from) {
           rangeToSend = 'custom';
           fromToSend = from;
@@ -161,7 +154,7 @@ export default function ProductPerformancePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-5 px-2 sm:px-0">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Product Performance</h1>
@@ -180,11 +173,11 @@ export default function ProductPerformancePage() {
             />
             <div className="flex items-center gap-2 w-full md:w-auto">
               {!isMobile && (
-                <Button variant="outline" onClick={downloadCsv} disabled={loading || (data.top || []).length === 0} className="flex-1 md:w-auto">
+                <Button onClick={downloadCsv} disabled={loading || (data.top || []).length === 0} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 md:w-auto">
                   <Download className="h-4 w-4 mr-2" /> Export
                 </Button>
               )}
-              <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 md:w-auto">
+              <Button onClick={() => setShowEmailDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 md:w-auto">
                 <Mail className="h-4 w-4 mr-2" /> {isMobile ? "Email Report" : "Email"}
               </Button>
             </div>
@@ -199,13 +192,19 @@ export default function ProductPerformancePage() {
           description="Enter your email to receive the product performance report as an Excel file."
         />
 
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-3">
-          <Card className="col-span-1 lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Revenue by Product</CardTitle>
-              <CardDescription>Top {top10.length} products by revenue</CardDescription>
-            </CardHeader>
-            <CardContent>
+        {/* Charts row */}
+        <div className="grid gap-5 grid-cols-1 lg:grid-cols-3">
+          <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                <BarChart2 className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Revenue by Product</p>
+                <p className="text-xs text-slate-500">Top {top10.length} products by revenue</p>
+              </div>
+            </div>
+            <div className="p-4 sm:p-6">
               <div className="h-[280px]">
                 {loading ? (
                   <Skeleton className="w-full h-full" />
@@ -232,15 +231,20 @@ export default function ProductPerformancePage() {
                   </ResponsiveContainer>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Revenue Share</CardTitle>
-              <CardDescription>Top products share of total</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-violet-50">
+                <PieChartIcon className="h-4 w-4 text-violet-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Revenue Share</p>
+                <p className="text-xs text-slate-500">Top products share of total</p>
+              </div>
+            </div>
+            <div className="p-4 sm:p-6">
               <div className="h-[280px]">
                 {loading ? (
                   <div className="flex items-center justify-center h-full">
@@ -264,16 +268,22 @@ export default function ProductPerformancePage() {
                   </ResponsiveContainer>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Units Sold by Product</CardTitle>
-            <CardDescription>Top {top10.length} products by units</CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* Units Sold chart */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-50">
+              <Package className="h-4 w-4 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Units Sold by Product</p>
+              <p className="text-xs text-slate-500">Top {top10.length} products by units</p>
+            </div>
+          </div>
+          <div className="p-4 sm:p-6">
             <div className="h-[260px]">
               {loading ? (
                 <Skeleton className="w-full h-full" />
@@ -299,15 +309,21 @@ export default function ProductPerformancePage() {
                 </ResponsiveContainer>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>Top Products</CardTitle>
-            <CardDescription>View products ranked by revenue or units sold</CardDescription>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
+        {/* Top Products table */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-amber-50">
+              <List className="h-4 w-4 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Top Products</p>
+              <p className="text-xs text-slate-500">View products ranked by revenue or units sold</p>
+            </div>
+          </div>
+          <div className="p-4 sm:p-6 overflow-x-auto">
             <Tabs value={rankingTab} onValueChange={setRankingTab} className="w-full">
               <div className="w-full overflow-x-auto scrollbar-hide">
                 <TabsList className="flex items-center justify-start w-max h-auto p-1 bg-muted gap-1 min-h-[40px] mb-4">
@@ -454,11 +470,9 @@ export default function ProductPerformancePage() {
                 </div>
               </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
 }
-
-

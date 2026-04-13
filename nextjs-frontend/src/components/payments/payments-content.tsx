@@ -62,105 +62,6 @@ import logger from '@/lib/logger';
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { SendReportDialog } from "@/components/shared/send-report-dialog";
 
-// Mock data for transactions
-const transactions = [
-    {
-        id: "TXN-001",
-        orderId: "ORD-1234",
-        customer: "Dr. Sarah Wilson",
-        amount: 299.99,
-        currency: "USD",
-        method: "Credit Card",
-        status: "Completed",
-        gateway: "Stripe",
-        transactionId: "pi_1234567890",
-        createdAt: "2024-06-16T10:30:00Z",
-        completedAt: "2024-06-16T10:30:15Z",
-    },
-    {
-        id: "TXN-002",
-        orderId: "ORD-1235",
-        customer: "Prof. Michael Chen",
-        amount: 156.50,
-        currency: "USD",
-        method: "PayPal",
-        status: "Completed",
-        gateway: "PayPal",
-        transactionId: "PAYID-ABC123",
-        createdAt: "2024-06-16T09:15:00Z",
-        completedAt: "2024-06-16T09:15:08Z",
-    },
-    {
-        id: "TXN-003",
-        orderId: "ORD-1236",
-        customer: "Dr. Emily Rodriguez",
-        amount: 445.00,
-        currency: "USD",
-        method: "Bank Transfer",
-        status: "Pending",
-        gateway: "Manual",
-        transactionId: "BT-789012",
-        createdAt: "2024-06-16T08:45:00Z",
-        completedAt: null,
-    },
-    {
-        id: "TXN-004",
-        orderId: "ORD-1237",
-        customer: "Dr. James Parker",
-        amount: 89.99,
-        currency: "USD",
-        method: "Credit Card",
-        status: "Failed",
-        gateway: "Stripe",
-        transactionId: "pi_failed123",
-        createdAt: "2024-06-16T07:20:00Z",
-        completedAt: null,
-    },
-];
-
-// Mock data for payment methods
-const paymentMethods = [
-    {
-        id: 1,
-        name: "Stripe",
-        type: "Credit Cards",
-        isActive: true,
-        status: "Connected",
-        fees: "2.9% + $0.30",
-        lastSync: "2024-06-16T12:00:00Z",
-        totalProcessed: 45620.50,
-    },
-    {
-        id: 2,
-        name: "PayPal",
-        type: "Digital Wallet",
-        isActive: true,
-        status: "Connected",
-        fees: "3.49% + $0.49",
-        lastSync: "2024-06-16T11:45:00Z",
-        totalProcessed: 12450.75,
-    },
-    {
-        id: 3,
-        name: "Bank Transfer",
-        type: "Direct Transfer",
-        isActive: true,
-        status: "Manual",
-        fees: "$2.50 flat",
-        lastSync: null,
-        totalProcessed: 8900.00,
-    },
-    {
-        id: 4,
-        name: "Apple Pay",
-        type: "Mobile Payment",
-        isActive: false,
-        status: "Not Connected",
-        fees: "2.9% + $0.30",
-        lastSync: null,
-        totalProcessed: 0,
-    },
-];
 
 const StatusBadge = ({ status }: { status: string }) => {
     const norm = (status || '').toString().trim();
@@ -714,6 +615,8 @@ export function PaymentsContent() {
                             setStats(res.stats);
                         }
                     }
+                    setLoading(false);
+                }).catch(() => {
                     setLoading(false);
                 });
             } else {

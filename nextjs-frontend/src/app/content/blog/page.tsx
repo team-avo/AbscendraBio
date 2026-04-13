@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
 import { api } from "@/lib/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,18 +58,21 @@ export default function BlogManagerPage() {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Blog</h1>
               <p className="text-sm sm:text-base text-muted-foreground">Manage blog posts</p>
             </div>
-            <Button onClick={() => router.push('/content/blog/new')} className="w-full sm:w-auto">
+            <Button
+              onClick={() => router.push('/content/blog/new')}
+              className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+            >
               <Plus className="h-4 w-4 mr-2" /> New Post
             </Button>
           </div>
 
-          <Tabs defaultValue="posts" className="space-y-6">
+          <Tabs defaultValue="posts" className="space-y-5">
             <div className="w-full overflow-x-auto pb-2">
               <TabsList>
                 <TabsTrigger value="posts">Posts</TabsTrigger>
@@ -79,32 +81,39 @@ export default function BlogManagerPage() {
             </div>
 
             <TabsContent value="posts">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Posts</CardTitle>
-                  <CardDescription>Search, filter and edit posts</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center">
-                    <div className="relative w-full sm:w-auto">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Search posts..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-full sm:w-72" />
-                    </div>
-                    <Select value={statusFilter || undefined} onValueChange={(v) => setStatusFilter(v === 'ALL_STATUS' ? '' : v)}>
-                      <SelectTrigger className="w-full sm:w-40">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL_STATUS">All Status</SelectItem>
-                        <SelectItem value="PUBLISHED">Published</SelectItem>
-                        <SelectItem value="DRAFT">Draft</SelectItem>
-                        <SelectItem value="ARCHIVED">Archived</SelectItem>
-                        <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <div className="space-y-4">
+                {/* Filter Bar */}
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+                  <div className="relative w-full sm:w-72">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Search posts..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 w-full" />
                   </div>
+                  <Select value={statusFilter || undefined} onValueChange={(v) => setStatusFilter(v === 'ALL_STATUS' ? '' : v)}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL_STATUS">All Status</SelectItem>
+                      <SelectItem value="PUBLISHED">Published</SelectItem>
+                      <SelectItem value="DRAFT">Draft</SelectItem>
+                      <SelectItem value="ARCHIVED">Archived</SelectItem>
+                      <SelectItem value="SCHEDULED">Scheduled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="overflow-x-auto -mx-6 sm:mx-0">
+                {/* Table Card */}
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
+                      <Globe className="h-4 w-4 text-blue-500" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-slate-800">Blog Posts</p>
+                      <p className="text-xs text-slate-500">{rows.length} posts</p>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
                     <Table className="min-w-[700px]">
                       <TableHeader>
                         <TableRow>
@@ -162,20 +171,25 @@ export default function BlogManagerPage() {
                       </TableBody>
                     </Table>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="analytics">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5" /> Blog Analytics</CardTitle>
-                  <CardDescription>Views over time and top posts</CardDescription>
-                </CardHeader>
-                <CardContent>
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
+                    <BarChart3 className="h-4 w-4 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm text-slate-800">Blog Analytics</p>
+                    <p className="text-xs text-slate-500">Views over time and top posts</p>
+                  </div>
+                </div>
+                <div className="p-5">
                   <BlogAnalyticsPanel />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
@@ -319,4 +333,3 @@ function BlogAnalyticsPanel() {
     </div>
   );
 }
-

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, XCircle } from 'lucide-react';
 import { api, Customer } from '@/lib/api';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -127,57 +127,52 @@ export default function RejectedCustomersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Rejected Accounts</h1>
-              <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">View and manage rejected customer accounts</p>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Rejected Accounts</h1>
+              <p className="text-sm text-slate-500 mt-0.5">View and manage deactivated customer accounts</p>
             </div>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search and filter rejected customers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search customers by name, email, or mobile..."
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search customers by name, email, or mobile..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 items-center">
+              <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {/* Customers Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Rejected Accounts List</CardTitle>
-              <CardDescription>
-                {loading ? 'Loading...' : `Showing ${customers.length} of ${totalCustomers} rejected accounts`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-red-50 flex items-center justify-center">
+                <XCircle className="h-4 w-4 text-red-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Rejected Accounts</h2>
+                <p className="text-xs text-slate-400">{totalCustomers.toLocaleString()} customers</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
               <CustomersTable
                 customers={customers}
                 loading={loading}
@@ -204,8 +199,8 @@ export default function RejectedCustomersPage() {
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <Dialog open={!!selectedCustomer} onOpenChange={(o) => { if (!o) setSelectedCustomer(null); }}>
             <DialogContent className="max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-4 sm:p-6">
@@ -236,7 +231,9 @@ export default function RejectedCustomersPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="B2C">Wholesale</SelectItem>
-                          <SelectItem value="ENTERPRISE_1">Enterprise</SelectItem>
+                          <SelectItem value="B2B">Wholesale (B2B)</SelectItem>
+                          <SelectItem value="ENTERPRISE_1">Enterprise Tier 1</SelectItem>
+                          <SelectItem value="ENTERPRISE_2">Enterprise Tier 2</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

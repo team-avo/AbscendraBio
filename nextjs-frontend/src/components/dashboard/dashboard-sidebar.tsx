@@ -19,14 +19,11 @@ import {
     CreditCard,
     FileText,
     FlaskConical,
-    Bell,
     ChevronDown,
     ChevronRight,
-    Home,
     Tag,
     Warehouse,
     MessageSquare,
-    Mail,
     X,
     Clock,
     TrendingUp,
@@ -34,13 +31,11 @@ import {
     XCircle,
     UserPlus,
     Building,
-    Link2,
     Crown,
     Shield,
     LogOut,
     Search as SearchIcon,
     User as UserIcon,
-    Plus,
     Heart,
     ArrowLeft
 } from "lucide-react";
@@ -63,7 +58,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     {
         title: "Dashboard",
-        href: "/",
+        href: "/admin-dashboard",
         icon: LayoutDashboard,
     },
     {
@@ -291,25 +286,25 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
         const isChildActive = hasChildren && item.children?.some(child => pathname === child.href);
 
         return (
-            <div key={item.title} className="space-y-1">
+            <div key={item.title} className="space-y-0.5">
                 <div className="flex items-center">
                     <Link
                         href={item.href}
                         className={cn(
-                            "flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-medium transition-all duration-300",
-                            "w-full text-left font-heading tracking-wide",
-                            level > 0 && "ml-8 text-muted-foreground/80 font-sans",
-                            isActive && !isChildActive && "bg-[#3A6FA0] text-white shadow-lg shadow-[#3A6FA0]/30 scale-[1.02]",
-                            isChildActive && "bg-sidebar-accent/50 text-[#1B2D4F] font-bold",
-                            !isActive && "text-muted-foreground hover:bg-sidebar-accent hover:text-[#1B2D4F]"
+                            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+                            "w-full text-left",
+                            level > 0 && "ml-6 text-xs",
+                            isActive && !isChildActive && "bg-[#3A6FA0]/15 text-white border-l-2 border-[#3A6FA0]",
+                            isChildActive && "text-white/90 font-semibold",
+                            !isActive && "text-slate-400 hover:bg-white/5 hover:text-white"
                         )}
                         aria-current={isActive ? "page" : undefined}
                     >
                         <item.icon className={cn(
-                            "h-[18px] w-[18px]",
-                            isActive && !isChildActive ? "text-white" : "text-[#3A6FA0]/70"
+                            "h-[18px] w-[18px] flex-shrink-0",
+                            isActive && !isChildActive ? "text-[#3A6FA0]" : "text-current opacity-70"
                         )} />
-                        <span className="flex-1">{item.title}</span>
+                        <span className="flex-1 truncate">{item.title}</span>
                         {item.badge && (
                             <Badge variant="secondary" className="ml-auto">
                                 {item.badge}
@@ -320,7 +315,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 ml-2"
+                            className="h-8 w-8 p-0 ml-1 text-white/30 hover:text-white/60 hover:bg-transparent flex-shrink-0"
                             onClick={() => toggleExpanded(item.title)}
                             tabIndex={-1}
                         >
@@ -333,7 +328,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                     )}
                 </div>
                 {hasChildren && isExpanded && (
-                    <div className="space-y-1">
+                    <div className="ml-4 pl-4 border-l border-white/10 space-y-0.5 mt-0.5">
                         {item.children?.map(child => renderNavItem(child, level + 1))}
                     </div>
                 )}
@@ -342,60 +337,49 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
     };
 
     return (
-        <>
-            <div className={cn(
-                "fixed inset-y-0 left-0 z-50 w-72 transition-all duration-500 ease-in-out",
-                open ? "translate-x-0" : "-translate-x-full",
-                "lg:translate-x-0 p-4" // Floating margin
-            )}>
-                <div className="flex h-full flex-col bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden">
-                    {/* Brand Header */}
-                    <div className="p-8 flex items-center justify-between border-b border-gray-100/50">
-                        <Link href="/" className="flex items-center gap-2 group transition-all">
-                            <Image
-                                src="/logo.png"
-                                alt="Abscendra Bio"
-                                width={140}
-                                height={40}
-                                className="w-auto h-8 group-hover:scale-105 transition-transform"
-                            />
-                        </Link>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="lg:hidden hover:bg-gray-100 rounded-full h-8 w-8 p-0"
-                            onClick={() => onOpenChange(false)}
-                        >
-                            <X className="h-5 w-5 text-gray-500" />
-                        </Button>
-                    </div>
+        <div className={cn(
+            "fixed inset-y-0 left-0 z-50 w-72 transition-all duration-300",
+            open ? "translate-x-0" : "-translate-x-full",
+            "lg:translate-x-0"
+        )}>
+            <div className="flex h-full flex-col bg-[#0F1A2E]">
+                {/* Logo Header */}
+                <div className="px-6 py-5 flex items-center justify-between border-b border-white/10 flex-shrink-0">
+                    <Link href="/">
+                        <Image
+                            src="/logo.png"
+                            alt="Ascendra Bio"
+                            width={130}
+                            height={36}
+                            className="h-8 w-auto brightness-0 invert"
+                        />
+                    </Link>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="lg:hidden h-8 w-8 p-0 text-white/50 hover:text-white hover:bg-white/10 rounded-lg"
+                        onClick={() => onOpenChange(false)}
+                    >
+                        <X className="h-5 w-5" />
+                    </Button>
+                </div>
 
-                    {/* Integrated Quick Tools (Search & Notifs) */}
-                    <div className="px-6 pt-4 space-y-3">
-                        <div className="relative group">
-                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-[#3A6FA0] transition-colors" />
-                            <input 
-                                type="text"
-                                placeholder="Universal Search..."
-                                className="w-full bg-gray-50/50 border border-gray-100 rounded-full py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A6FA0]/10 transition-all font-medium"
-                            />
-                        </div>
-                        <div className="flex items-center gap-2">
-                             <Button variant="outline" className="flex-1 rounded-full text-[11px] font-bold h-9 border-gray-100 bg-white/50 hover:bg-white">
-                                <Plus className="w-3 h-3 mr-1.5 text-[#3A6FA0]" />
-                                Quick Action
-                             </Button>
-                             <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-gray-100 bg-white/50 hover:bg-white relative">
-                                <Bell className="w-4 h-4 text-gray-500" />
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                             </Button>
-                        </div>
+                {/* Search */}
+                <div className="px-4 pt-4 pb-2 flex-shrink-0">
+                    <div className="relative">
+                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full bg-white/[0.08] border border-white/10 rounded-lg py-2.5 pl-9 pr-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#3A6FA0]/60 transition-all"
+                        />
                     </div>
+                </div>
 
-                    {/* Navigation */}
-                    <div className="flex-1 min-h-0">
-                        <ScrollArea className="h-full px-4" scrollHideDelay={100}>
-                            <nav className="space-y-1.5 py-6">
+                {/* Navigation */}
+                <div className="flex-1 min-h-0">
+                    <ScrollArea className="h-full px-3" scrollHideDelay={100}>
+                        <nav className="space-y-0.5 py-3">
                             {(
                                 navItems
                                     .filter(item => {
@@ -420,51 +404,32 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                                     })
                             ).map(item => renderNavItem(item))}
                         </nav>
-                        </ScrollArea>
-                    </div>
+                    </ScrollArea>
+                </div>
 
-                    {/* User Profile & Footer */}
-                    <div className="p-4 border-t border-gray-100/50 bg-gray-50/30">
-                        <div className="flex items-center gap-3 p-3 bg-white/80 rounded-3xl border border-white shadow-sm">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                {user?.email?.[0].toUpperCase() || 'A'}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-[#1B2D4F] truncate uppercase tracking-tighter">
-                                    {user?.role?.replace('_', ' ') || 'Admin'}
-                                </p>
-                                <p className="text-[10px] text-gray-400 truncate">
-                                    {user?.email}
-                                </p>
-                            </div>
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => logout()}
-                                className="h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
-                            >
-                                <LogOut className="h-4 w-4" />
-                            </Button>
+                {/* User Footer */}
+                <div className="p-4 border-t border-white/10 flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {user?.email?.[0].toUpperCase() || 'A'}
                         </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-white truncate">
+                                {user?.role?.replace('_', ' ') || 'Admin'}
+                            </p>
+                            <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => logout()}
+                            className="h-8 w-8 p-0 rounded-lg hover:bg-red-500/20 hover:text-red-400 text-white/40 transition-colors"
+                        >
+                            <LogOut className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
             </div>
-            
-            <style jsx global>{`
-                [data-slot="scroll-area-viewport"]::-webkit-scrollbar {
-                    width: 4px;
-                }
-                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-thumb {
-                    background: rgba(0, 0, 0, 0.05);
-                    border-radius: 10px;
-                }
-                [data-slot="scroll-area-viewport"]::-webkit-scrollbar-thumb:hover {
-                    background: rgba(0, 0, 0, 0.1);
-                }
-            `}</style>
-        </>
+        </div>
     );
 }

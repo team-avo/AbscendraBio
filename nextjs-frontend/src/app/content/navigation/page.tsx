@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -412,75 +411,87 @@ export default function NavigationManagerPage() {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Navigation</h1>
               <p className="text-sm sm:text-base text-muted-foreground">Manage site menus</p>
             </div>
-            <Button onClick={openNew} className="w-full sm:w-auto">
+            <Button
+              onClick={openNew}
+              className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+            >
               <Plus className="h-4 w-4 mr-2" /> New Menu
             </Button>
           </div>
 
-          {/* Menus overview with Type column */}
-          <Card>
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg">Menus</CardTitle>
-              <CardDescription className="text-sm">Overview of navigation menus</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0 sm:p-6 sm:pt-0">
-              <div className="overflow-x-auto">
-                <Table className="min-w-[500px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Items</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(menus || []).map((m) => (
-                      <TableRow key={m.id}>
-                        <TableCell className="font-medium">{m.name}</TableCell>
-                        <TableCell>{m.location === 'main' ? 'Main Navigation' : m.location === 'footer' ? 'Footer Navigation' : m.location}</TableCell>
-                        <TableCell>{m.items?.length ?? 0}</TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => openEdit(m)}>
-                                <Edit3 className="h-4 w-4 mr-2" />
-                                Edit Menu
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600" onClick={() => requestDelete(m.id)}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Menu
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+          {/* Navigation Menus overview */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100">
+                <LinkIcon className="h-4 w-4 text-slate-500" />
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="font-semibold text-sm text-slate-800">Navigation Menus</p>
+                <p className="text-xs text-slate-500">Overview of navigation menus</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <Table className="min-w-[500px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(menus || []).map((m) => (
+                    <TableRow key={m.id}>
+                      <TableCell className="font-medium">{m.name}</TableCell>
+                      <TableCell>{m.location === 'main' ? 'Main Navigation' : m.location === 'footer' ? 'Footer Navigation' : m.location}</TableCell>
+                      <TableCell>{m.items?.length ?? 0}</TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openEdit(m)}>
+                              <Edit3 className="h-4 w-4 mr-2" />
+                              Edit Menu
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600" onClick={() => requestDelete(m.id)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Menu
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg">Main Navigation</CardTitle>
-                <CardDescription className="text-sm">Configure your website's main navigation menu</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 sm:pt-0">
+          <div className="grid gap-5 md:grid-cols-2">
+            {/* Main Navigation */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100">
+                  <LinkIcon className="h-4 w-4 text-slate-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-800">Main Navigation</p>
+                  <p className="text-xs text-slate-500">Configure your website's main navigation menu</p>
+                </div>
+              </div>
+              <div className="p-4 sm:p-5">
                 <div className="space-y-2">
                   {(mainMenu?.items || []).sort((a: any, b: any) => a.order - b.order).map((it: any) => (
                     <div key={it.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg gap-2">
@@ -504,15 +515,21 @@ export default function NavigationManagerPage() {
                   <Plus className="h-4 w-4 mr-2" />
                   Add Menu Item
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg">Footer Navigation</CardTitle>
-                <CardDescription className="text-sm">Configure your website's footer links</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 sm:pt-0">
+            {/* Footer Navigation */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100">
+                  <LinkIcon className="h-4 w-4 text-slate-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-slate-800">Footer Navigation</p>
+                  <p className="text-xs text-slate-500">Configure your website's footer links</p>
+                </div>
+              </div>
+              <div className="p-4 sm:p-5">
                 <div className="space-y-2">
                   {(footerMenu?.items || []).sort((a: any, b: any) => a.order - b.order).map((it: any) => (
                     <div key={it.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg gap-2">
@@ -535,21 +552,26 @@ export default function NavigationManagerPage() {
                     Add Link
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Footer: Store Overview and Contact cards removed per request */}
 
           {/* Other Menus */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2">
             {(menus || []).filter(m => m.location !== 'main' && m.location !== 'footer').map((menu) => (
-              <Card key={menu.id}>
-                <CardHeader>
-                  <CardTitle>{menu.name}</CardTitle>
-                  <CardDescription>Type: {menu.location}</CardDescription>
-                </CardHeader>
-                <CardContent>
+              <div key={menu.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100">
+                    <LinkIcon className="h-4 w-4 text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm text-slate-800">{menu.name}</p>
+                    <p className="text-xs text-slate-500">Type: {menu.location}</p>
+                  </div>
+                </div>
+                <div className="p-4 sm:p-5">
                   <div className="space-y-2">
                     {(menu.items || []).sort((a: any, b: any) => a.order - b.order).map((it: any) => (
                       <div key={it.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -569,8 +591,8 @@ export default function NavigationManagerPage() {
                     <Plus className="h-4 w-4 mr-2" />
                     Add Menu Item
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -838,5 +860,3 @@ export default function NavigationManagerPage() {
     </ProtectedRoute>
   );
 }
-
-

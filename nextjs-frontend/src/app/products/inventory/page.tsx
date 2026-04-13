@@ -6,7 +6,6 @@ import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, PackageCheck, PackageX, ArrowUpDown, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { api } from '@/lib/api';
@@ -219,120 +218,111 @@ export default function InventoryPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Inventory Management</h1>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Inventory Management</h1>
+              <p className="text-sm text-slate-500 mt-0.5">
                 Manage product inventory levels and stock movements
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
-              <Button onClick={() => setShowLocationsDialog(true)} variant="secondary" size="sm" className="sm:size-default">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={() => setShowLocationsDialog(true)}
+                variant="outline"
+                className="h-9 px-4 rounded-xl text-sm"
+              >
                 Manage Locations
               </Button>
-              <Button onClick={() => setShowMovementDialog(true)} size="sm" className="sm:size-default">
+              <Button
+                onClick={() => setShowMovementDialog(true)}
+                className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+              >
                 <ArrowUpDown className="mr-2 h-4 w-4" />
                 Record Movement
               </Button>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 w-full">
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Total Variants</CardTitle>
-                <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg lg:text-2xl font-bold">{stats.total}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">In Stock</CardTitle>
-                <PackageCheck className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg lg:text-2xl font-bold text-green-600">{stats.inStock}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Low Stock</CardTitle>
-                <Package className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg lg:text-2xl font-bold text-yellow-600">{stats.lowStock}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Out of Stock</CardTitle>
-                <PackageX className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-xl sm:text-2xl font-bold text-red-600">{stats.outOfStock}</div>
-              </CardContent>
-            </Card>
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Total Variants */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                <Package className="h-5 w-5 text-slate-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total Variants</p>
+                <p className="text-xl font-bold text-slate-900">{stats.total}</p>
+              </div>
+            </div>
+
+            {/* In Stock */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                <PackageCheck className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">In Stock</p>
+                <p className="text-xl font-bold text-emerald-600">{stats.inStock}</p>
+              </div>
+            </div>
+
+            {/* Low Stock */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <Package className="h-5 w-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Low Stock</p>
+                <p className="text-xl font-bold text-amber-600">{stats.lowStock}</p>
+              </div>
+            </div>
+
+            {/* Out of Stock — dark navy hero chip */}
+            <div className="relative flex items-center gap-3 bg-[#1B2D4F] rounded-2xl shadow-sm px-5 py-4 overflow-hidden">
+              <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
+              <div className="absolute -bottom-6 -left-2 h-16 w-16 rounded-full bg-white/5" />
+              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative">
+                <PackageX className="h-5 w-5 text-red-400" />
+              </div>
+              <div className="relative">
+                <p className="text-xs text-slate-400 font-medium">Out of Stock</p>
+                <p className="text-2xl font-bold text-white">{stats.outOfStock}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search and filter inventory</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1 w-full min-w-0">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search items..."
-                      className="pl-10 text-sm w-full"
-                      value={searchTerm}
-                      onChange={(e) => handleSearch(e.target.value)}
-                    />
-                  </div>
-                </div>
-                {/* <div className="w-[200px]">
-                  <Select value={locationFilter} onValueChange={handleLocationFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Locations</SelectItem>
-                      {locations.map((location: any) => (
-                        <SelectItem key={location.id} value={location.id}>
-                          {location.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div> */}
-                <div className="w-full sm:w-[200px]">
-                  <Select
-                    value={outOfStockOnly ? 'out' : (lowStockFilter ? 'low' : 'all')}
-                    onValueChange={(value) => handleLowStockFilter(value as any)}
-                  >
-                    <SelectTrigger className="text-sm">
-                      <SelectValue placeholder="Stock level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Stock Levels</SelectItem>
-                      <SelectItem value="low">Low Stock Only</SelectItem>
-                      <SelectItem value="out">Out of Stock Only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search items..."
+                className="pl-10 w-full"
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Select
+                value={outOfStockOnly ? 'out' : (lowStockFilter ? 'low' : 'all')}
+                onValueChange={(value) => handleLowStockFilter(value as any)}
+              >
+                <SelectTrigger className="w-full sm:w-[200px] text-sm">
+                  <SelectValue placeholder="Stock level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stock Levels</SelectItem>
+                  <SelectItem value="low">Low Stock Only</SelectItem>
+                  <SelectItem value="out">Out of Stock Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {/* Inventory Table */}
+          {/* Inventory Table (has its own card styling internally) */}
           <InventoryTable
             inventory={inventory}
             loading={loading}
@@ -382,4 +372,4 @@ export default function InventoryPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
-} 
+}

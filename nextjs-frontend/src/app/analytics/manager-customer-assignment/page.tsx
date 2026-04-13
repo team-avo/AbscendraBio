@@ -5,7 +5,6 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, UserPlus, Users, CheckCircle } from 'lucide-react';
@@ -55,7 +54,6 @@ export default function ManagerSelfAssignmentPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, pagination.page]);
 
-    // Debounce search to reset page
     useEffect(() => {
         setPagination(prev => ({ ...prev, page: 1 }));
     }, [search]);
@@ -90,7 +88,7 @@ export default function ManagerSelfAssignmentPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="p-6 space-y-6">
+                <div className="space-y-5 px-2 sm:px-0">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold">Manage Customer Portfolio</h1>
@@ -100,17 +98,20 @@ export default function ManagerSelfAssignmentPage() {
                         </div>
                     </div>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Users className="h-5 w-5" />
-                                Customer Assignment
-                            </CardTitle>
-                            <CardDescription>
-                                List of all customers. You can assign unassigned customers or reassign those already managed.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Users className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <div>
+                                <span className="font-semibold text-slate-800">Customer Assignment</span>
+                                <p className="text-xs text-muted-foreground">
+                                    List of all customers. You can assign unassigned customers or reassign those already managed.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="p-5">
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="relative flex-1 max-w-sm">
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -122,7 +123,11 @@ export default function ManagerSelfAssignmentPage() {
                                         className="pl-10"
                                     />
                                 </div>
-                                <Button onClick={() => fetchCustomers(search)} disabled={loading}>
+                                <Button
+                                    className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                    onClick={() => fetchCustomers(search)}
+                                    disabled={loading}
+                                >
                                     {loading ? <LoadingSpinner size={16} className="mr-2" /> : <Search className="h-4 w-4 mr-2" />}
                                     Search
                                 </Button>
@@ -263,8 +268,8 @@ export default function ManagerSelfAssignmentPage() {
                                     )}
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             </DashboardLayout>
         </ProtectedRoute>

@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardSidebar } from "./dashboard-sidebar";
+import { DashboardHeader } from "./dashboard-header";
 import { cn } from "@/lib/utils";
 import { useDashboard } from "@/contexts/dashboard-context";
 
@@ -12,17 +13,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     const { isSidebarOpen, setSidebarOpen } = useDashboard();
 
     return (
-        <div className="min-h-screen bg-gray-50/30 flex overflow-x-hidden">
+        <div className="min-h-screen bg-slate-50 flex overflow-x-hidden">
             {/* Sidebar */}
             <DashboardSidebar open={isSidebarOpen} onOpenChange={setSidebarOpen} />
 
-            {/* Main content */}
+            {/* Main column */}
             <div className={cn(
-                "flex-1 flex flex-col transition-all duration-300 ease-in-out max-w-full",
-                "lg:pl-72" // Wider Sidebar
+                "flex-1 flex flex-col min-h-screen max-w-full transition-all duration-300 ease-in-out",
+                "lg:pl-72"
             )}>
+                {/* Sticky top header */}
+                <DashboardHeader />
+
                 {/* Page content */}
-                <main className="flex-1 p-4 sm:p-8 min-h-0 w-full max-w-full overflow-x-hidden">
+                <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-full overflow-x-hidden">
                     {children}
                 </main>
             </div>

@@ -2,20 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import { StockAlerts } from "./stock-alerts";
 import { SalesRepDashboard } from "./sales-rep-dashboard";
 import { useAuth } from "@/contexts/auth-context";
@@ -32,21 +21,17 @@ import {
     Pie,
     Cell,
     AreaChart,
-    Area
+    Area,
+    ComposedChart
 } from "recharts";
 import { ChartContainer, ChartTooltip as RechartsTooltipWrapper, ChartTooltipContent } from "@/components/ui/chart";
 import {
     TrendingUp,
     TrendingDown,
-    DollarSign,
     ShoppingCart,
-    Users,
-    Package,
-    Eye,
-    MoreHorizontal,
-    ArrowUpRight,
-    ArrowDownRight
+    ChevronRight
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { api, formatCurrency, formatCompactCurrency } from "@/lib/api";
 import { CreateCustomerDialog } from "@/components/customers/create-customer-dialog";
 import { CreateOrderDialog } from "@/components/orders/create-order-dialog";
@@ -409,383 +394,276 @@ export function DashboardContent() {
         return <SalesRepDashboard />;
     }
 
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const formattedDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    const getOrderStatusClasses = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return 'bg-amber-50 text-amber-700 border-amber-200';
+            case 'processing':
+                return 'bg-blue-50 text-blue-700 border-blue-200';
+            case 'shipped':
+                return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+            case 'delivered':
+            case 'completed':
+                return 'bg-green-50 text-green-700 border-green-200';
+            case 'cancelled':
+            case 'refunded':
+                return 'bg-red-50 text-red-700 border-red-200';
+            default:
+                return 'bg-slate-50 text-slate-700 border-slate-200';
+        }
+    };
+
     return (
-        <div className="space-y-4 sm:space-y-6">
-            {/* Welcome Section */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-4">
+
+            {/* ── GREETING ─────────────────────────────────────── */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground text-sm sm:text-base">
-                        Welcome back! Here&apos;s what&apos;s happening with your store today.
-                    </p>
+                    <h1 className="text-xl font-bold text-slate-900">
+                        {greeting}{user?.firstName ? `, ${user.firstName}` : ''}!
+                    </h1>
+                    <p className="text-sm text-slate-400 mt-0.5">{formattedDate}</p>
                 </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <Button variant={isMobile ? "default" : "outline"} className="w-full sm:w-auto" onClick={() => setShowEmailDialog(true)}>
-                        <Mail className="h-4 w-4 mr-2" /> Email Report
-                    </Button>
-                    {!isMobile && (
-                        <Button variant="outline" className="w-full sm:w-auto" onClick={handleDownloadReport}>
-                            Download Report
-                        </Button>
-                    )}
-                    <Button variant="outline" onClick={handleViewStore} className="w-full sm:w-auto">
-                        <Eye className="h-4 w-4 mr-2" />
+                <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" className="text-xs h-8 px-3 border-slate-200 text-slate-600 hover:bg-slate-50" onClick={handleViewStore}>
                         View Store
                     </Button>
+                    <Button size="sm" variant="outline" className="text-xs h-8 px-3 border-slate-200 text-slate-600 hover:bg-slate-50" onClick={handleAddCustomer}>
+                        + Customer
+                    </Button>
+                    <Button size="sm" className="text-xs h-8 px-3 bg-[#1B2D4F] hover:bg-[#16243f] text-white" onClick={handleCreateOrder}>
+                        + New Order
+                    </Button>
                 </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
-                <Card className="py-2 gap-0 sm:py-2.5 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{formatCompactCurrency(dashboardData.totalRevenue)}</div>
-                        <div className="flex flex-wrap items-center text-[10px] sm:text-xs text-muted-foreground sm:mt-1">
-                            {dashboardData.revenueChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500 shrink-0" />
-                            ) : (
-                                <TrendingDown className="h-3 w-3 mr-1 text-red-500 shrink-0" />
-                            )}
-                            <span className="hidden sm:inline break-words">{dashboardData.revenueChange >= 0 ? '+' : ''}{dashboardData.revenueChange}% from last month</span>
-                            <span className="sm:hidden break-words">{dashboardData.revenueChange >= 0 ? '+' : ''}{dashboardData.revenueChange}%</span>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* ── BENTO ROW 1 ──────────────────────────────────── */}
+            <div className="grid grid-cols-12 gap-4">
 
-                <Card className="py-2 gap-0 sm:py-2.5 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Orders</CardTitle>
-                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">+{dashboardData.totalOrders.toLocaleString()}</div>
-                        <div className="flex flex-wrap items-center text-[10px] sm:text-xs text-muted-foreground sm:mt-1">
-                            {dashboardData.orderChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500 shrink-0" />
-                            ) : (
-                                <TrendingDown className="h-3 w-3 mr-1 text-red-500 shrink-0" />
-                            )}
-                            <span className="hidden sm:inline break-words">{dashboardData.orderChange >= 0 ? '+' : ''}{dashboardData.orderChange}% from last month</span>
-                            <span className="sm:hidden break-words">{dashboardData.orderChange >= 0 ? '+' : ''}{dashboardData.orderChange}%</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* Revenue Hero — dark tile, col-span-5 */}
+                <div className="col-span-12 md:col-span-5 bg-[#1B2D4F] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+                    {/* Decorative blobs */}
+                    <div className="absolute -top-10 -right-10 w-44 h-44 bg-[#3A6FA0]/20 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
 
-                <Card className="py-2 gap-0 sm:py-2.5 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Customers</CardTitle>
-                        <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">+{dashboardData.totalCustomers.toLocaleString()}</div>
-                        <div className="flex flex-wrap items-center text-[10px] sm:text-xs text-muted-foreground sm:mt-1">
-                            {dashboardData.customerChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500 shrink-0" />
-                            ) : (
-                                <TrendingDown className="h-3 w-3 mr-1 text-red-500 shrink-0" />
-                            )}
-                            <span className="hidden sm:inline break-words">{dashboardData.customerChange >= 0 ? '+' : ''}{dashboardData.customerChange}% from last month</span>
-                            <span className="sm:hidden break-words">{dashboardData.customerChange >= 0 ? '+' : ''}{dashboardData.customerChange}%</span>
+                    <div className="relative z-10">
+                        <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Total Revenue</p>
+                        <p className="text-5xl font-extrabold text-white mt-3 tracking-tight leading-none">
+                            {formatCompactCurrency(dashboardData.totalRevenue)}
+                        </p>
+                        <div className={cn(
+                            "flex items-center gap-1.5 mt-3 text-sm font-medium",
+                            dashboardData.revenueChange >= 0 ? "text-emerald-400" : "text-red-400"
+                        )}>
+                            {dashboardData.revenueChange >= 0
+                                ? <TrendingUp className="h-4 w-4" />
+                                : <TrendingDown className="h-4 w-4" />}
+                            <span>{dashboardData.revenueChange >= 0 ? "+" : ""}{dashboardData.revenueChange}% vs last month</span>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
 
-                <Card className="py-2 gap-0 sm:py-2.5 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Active Products</CardTitle>
-                        <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{dashboardData.activeProducts.toLocaleString()}</div>
-                        <div className="flex flex-wrap items-center text-[10px] sm:text-xs text-muted-foreground sm:mt-1">
-                            {dashboardData.productChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500 shrink-0" />
-                            ) : (
-                                <TrendingDown className="h-3 w-3 mr-1 text-red-500 shrink-0" />
-                            )}
-                            <span className="hidden sm:inline break-words">{dashboardData.productChange >= 0 ? '+' : ''}{dashboardData.productChange}% from last month</span>
-                            <span className="sm:hidden break-words">{dashboardData.productChange >= 0 ? '+' : ''}{dashboardData.productChange}%</span>
+                    {/* Mini sparkline */}
+                    <div className="relative z-10 h-16 mt-4 -mx-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={normalizedSalesData} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="heroSparkGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3A6FA0" stopOpacity={0.5} />
+                                        <stop offset="100%" stopColor="#3A6FA0" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <Area type="monotone" dataKey="revenue" stroke="#3A6FA0" strokeWidth={2} fill="url(#heroSparkGrad)" dot={false} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Right side — 3 mini stats + chart, col-span-7 */}
+                <div className="col-span-12 md:col-span-7 flex flex-col gap-4">
+
+                    {/* Three mini stat tiles */}
+                    <div className="grid grid-cols-3 gap-4">
+                        {/* Orders */}
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-sm transition-shadow">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Orders</p>
+                            <p className="text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">{dashboardData.totalOrders.toLocaleString()}</p>
+                            <div className={cn("flex items-center gap-1 mt-2 text-xs font-semibold", dashboardData.orderChange >= 0 ? "text-emerald-500" : "text-red-500")}>
+                                {dashboardData.orderChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                                <span>{dashboardData.orderChange >= 0 ? "+" : ""}{dashboardData.orderChange}%</span>
+                            </div>
                         </div>
-                    </CardContent>
-                </Card>
+
+                        {/* Customers */}
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-sm transition-shadow">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Customers</p>
+                            <p className="text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">{dashboardData.totalCustomers.toLocaleString()}</p>
+                            <div className={cn("flex items-center gap-1 mt-2 text-xs font-semibold", dashboardData.customerChange >= 0 ? "text-emerald-500" : "text-red-500")}>
+                                {dashboardData.customerChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                                <span>{dashboardData.customerChange >= 0 ? "+" : ""}{dashboardData.customerChange}%</span>
+                            </div>
+                        </div>
+
+                        {/* Products */}
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-sm transition-shadow">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Products</p>
+                            <p className="text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">{dashboardData.activeProducts.toLocaleString()}</p>
+                            <div className={cn("flex items-center gap-1 mt-2 text-xs font-semibold", dashboardData.productChange >= 0 ? "text-emerald-500" : "text-red-500")}>
+                                {dashboardData.productChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                                <span>{dashboardData.productChange >= 0 ? "+" : ""}{dashboardData.productChange}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Revenue Trend chart tile */}
+                    <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 className="text-sm font-semibold text-slate-800">Revenue Trend</h3>
+                                <p className="text-xs text-slate-400">Last 6 months</p>
+                            </div>
+                            <Button size="sm" variant="ghost" onClick={handleDownloadReport} className="text-xs h-7 text-slate-400 hover:text-slate-700 hover:bg-slate-50 px-2">
+                                Export ↓
+                            </Button>
+                        </div>
+                        <div className="h-[110px]">
+                            <ChartContainer
+                                id="trend-chart"
+                                config={{ revenue: { label: "Revenue", color: "#1B2D4F" }, orders: { label: "Orders", color: "#3A6FA0" } }}
+                                className="h-full w-full"
+                            >
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <ComposedChart data={normalizedSalesData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                        <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                                        <YAxis yAxisId="revenue" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={44} tickFormatter={(v) => formatCompactCurrency(v)} />
+                                        <YAxis yAxisId="orders" orientation="right" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={28} />
+                                        <RechartsTooltipWrapper content={<ChartTooltipContent />} />
+                                        <Bar yAxisId="revenue" dataKey="revenue" fill="#1B2D4F" radius={[3, 3, 0, 0]} maxBarSize={32} name="Revenue" />
+                                        <Line yAxisId="orders" dataKey="orders" stroke="#3A6FA0" strokeWidth={2} dot={{ fill: '#3A6FA0', r: 2.5 }} name="Orders" />
+                                    </ComposedChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Charts and Tables */}
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-7">
-                {/* Revenue Chart */}
-                <Card className="col-span-1 md:col-span-4">
-                    <CardHeader>
-                        <CardTitle>Revenue Overview</CardTitle>
-                        <CardDescription>
-                            Monthly revenue and order trends
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer id="revenue-overview" config={{ revenue: { label: "Revenue", color: "hsl(var(--primary))" }, orders: { label: "Orders", color: "hsl(var(--secondary))" } }} className="aspect-auto h-[250px] sm:h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={normalizedSalesData} margin={{ top: 20, right: 10, left: 10, bottom: 10 }}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                                    <YAxis yAxisId="revenue" tick={{ fontSize: 12 }} width={55} tickFormatter={(value) => formatCompactCurrency(value)} />
-                                    <YAxis yAxisId="orders" orientation="right" tick={{ fontSize: 12 }} width={35} hide />
-                                    <RechartsTooltipWrapper content={
-                                        <ChartTooltipContent
-                                            formatter={(value, name) => (
-                                                <div className="flex flex-1 justify-between items-center leading-none gap-4">
-                                                    <span className="text-muted-foreground">{name}</span>
-                                                    <span className="text-foreground font-mono font-medium tabular-nums">
-                                                        {name === "Revenue" ? formatCompactCurrency(Number(value)) : value.toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        />
-                                    } />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="revenue"
-                                        yAxisId="revenue"
-                                        stroke="hsl(var(--primary))"
-                                        fill="hsl(var(--primary))"
-                                        fillOpacity={0.2}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="orders"
-                                        yAxisId="orders"
-                                        stroke="hsl(var(--secondary))"
-                                        strokeWidth={2}
-                                        dot={false}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+            {/* ── BENTO ROW 2 ──────────────────────────────────── */}
+            <div className="grid grid-cols-12 gap-4">
 
-                {/* Customer Distribution */}
-                <Card className="col-span-1 md:col-span-3">
-                    <CardHeader>
-                        <CardTitle>Customer Distribution</CardTitle>
-                        <CardDescription>
-                            Breakdown by customer type
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer id="customer-distribution" config={{}} className="aspect-auto h-[250px] sm:h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={dashboardData.customerTypeData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={50}
-                                        outerRadius={85}
-                                        dataKey="value"
-                                        label={false}
-                                    >
-                                        {dashboardData.customerTypeData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <RechartsTooltipWrapper
-                                        content={({ active, payload }) => {
-                                            if (active && payload && payload.length) {
-                                                const data = payload[0].payload;
-                                                return (
-                                                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                                        <div className="flex flex-col gap-1">
-                                                            <span className="text-sm font-medium">{data.name}</span>
-                                                            <span className="text-sm text-muted-foreground">
-                                                                {data.count || 0} customers ({data.value}%)
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </ChartContainer>
-                        <div className="flex flex-col gap-2 mt-4">
-                            {dashboardData.customerTypeData.map((item) => (
-                                <div key={item.name} className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div
-                                            className="w-3 h-3 rounded-full"
-                                            style={{ backgroundColor: item.color }}
-                                        />
-                                        <span className="text-sm">{item.name}</span>
-                                    </div>
-                                    <span className="text-sm font-medium">{item.value}%</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Tables Section */}
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
-                {/* Top Products */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Top Products</CardTitle>
-                        <CardDescription>
-                            Best performing products this month
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {dashboardData.topProducts.map((product) => (
-                                <div key={product.id} className="flex items-center gap-3 sm:gap-4 overflow-hidden w-full">
-                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 shrink-0">
-                                        <AvatarFallback>{product.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1 space-y-1 min-w-0 w-full overflow-hidden">
-                                        <div className="flex items-center justify-between gap-2 w-full">
-                                            <p className="text-sm font-medium truncate">{product.name}</p>
-                                            {product.trend === "up" ? (
-                                                <ArrowUpRight className="h-4 w-4 text-green-500 flex-shrink-0" />
-                                            ) : (
-                                                <ArrowDownRight className="h-4 w-4 text-red-500 flex-shrink-0" />
-                                            )}
-                                        </div>
-                                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                            <span>{product.sales} sales</span>
-                                            <span>{formatCurrency(product.revenue)}</span>
-                                        </div>
+                {/* Customer Breakdown — col-span-4 */}
+                <div className="col-span-12 md:col-span-4 bg-white rounded-2xl border border-slate-100 p-5">
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-sm font-semibold text-slate-800">Customers</h3>
+                        <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{dashboardData.totalCustomers} total</span>
+                    </div>
+                    <div className="space-y-4">
+                        {dashboardData.customerTypeData.length > 0 ? (
+                            dashboardData.customerTypeData.map((item) => (
+                                <div key={item.name}>
+                                    <div className="flex items-center justify-between mb-1.5">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs text-muted-foreground">Stock:</span>
-                                            <div className="flex-1">
-                                                <Progress value={(product.stock / 100) * 100} className="h-1" />
-                                            </div>
-                                            <span className="text-xs text-muted-foreground">{product.stock}</span>
+                                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                                            <span className="text-xs text-slate-600 font-medium">{item.name}</span>
                                         </div>
+                                        <span className="text-xs font-bold text-slate-800">{item.value}%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full rounded-full"
+                                            style={{ width: `${item.value}%`, backgroundColor: item.color }}
+                                        />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-xs text-slate-400 text-center py-8">No customer data yet</p>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => router.push('/analytics/customers')}
+                        className="mt-5 text-xs text-[#3A6FA0] hover:text-[#1B2D4F] font-semibold transition-colors"
+                    >
+                        View insights →
+                    </button>
+                </div>
+
+                {/* Recent Orders — col-span-8 */}
+                <div className="col-span-12 md:col-span-8 bg-white rounded-2xl border border-slate-100 p-5">
+                    <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-sm font-semibold text-slate-800">Recent Orders</h3>
+                        <button
+                            onClick={() => router.push('/orders')}
+                            className="text-xs text-[#3A6FA0] hover:text-[#1B2D4F] font-semibold transition-colors"
+                        >
+                            View all →
+                        </button>
+                    </div>
+
+                    {dashboardData.recentOrders.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-3">
+                                <ShoppingCart className="h-5 w-5 text-slate-300" />
+                            </div>
+                            <p className="text-sm font-medium text-slate-400">No orders yet</p>
+                            <p className="text-xs text-slate-300 mt-1">Orders will appear here once placed</p>
+                            <Button size="sm" className="mt-4 text-xs h-8 bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-lg" onClick={handleCreateOrder}>
+                                Create first order
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-1">
+                            {dashboardData.recentOrders.map((order) => (
+                                <div key={order.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                                    <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                        {order.customer?.[0]?.toUpperCase() ?? '?'}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-slate-800 truncate">{order.customer}</p>
+                                        <p className="text-xs text-slate-400">#{order.id.slice(-8).toUpperCase()}</p>
+                                    </div>
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="text-sm font-bold text-slate-900">{formatCurrency(order.amount)}</p>
+                                        <span className={cn(
+                                            "text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize",
+                                            order.status === 'delivered' || order.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                                            order.status === 'shipped' ? 'bg-indigo-50 text-indigo-600' :
+                                            order.status === 'processing' ? 'bg-blue-50 text-blue-600' :
+                                            order.status === 'pending' ? 'bg-amber-50 text-amber-600' :
+                                            order.status === 'cancelled' ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-500'
+                                        )}>
+                                            {order.status}
+                                        </span>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </CardContent>
-                </Card>
-
-                {/* Recent Orders */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Orders</CardTitle>
-                        <CardDescription>
-                            Latest orders from your customers
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="overflow-x-auto -mx-2 px-2">
-                            <Table className="min-w-[500px]">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="text-xs sm:text-sm">Order</TableHead>
-                                        <TableHead className="text-xs sm:text-sm">Customer</TableHead>
-                                        <TableHead className="text-xs sm:text-sm">Amount</TableHead>
-                                        <TableHead className="text-xs sm:text-sm">Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {dashboardData.recentOrders.map((order) => (
-                                        <TableRow key={order.id}>
-                                            <TableCell className="font-medium text-xs sm:text-sm">{order.id}</TableCell>
-                                            <TableCell>
-                                                <div className="min-w-0">
-                                                    <div className="font-medium text-xs sm:text-sm truncate">{order.customer}</div>
-                                                    <div className="text-xs text-muted-foreground truncate">{order.email}</div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-xs sm:text-sm">{formatCurrency(order.amount)}</TableCell>
-                                            <TableCell>
-                                                <StatusBadge status={order.status} />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
+                    )}
+                </div>
             </div>
 
-            {/* Quick Actions and Alerts */}
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
-                        <CardDescription>
-                            Common tasks and shortcuts to help you manage your store
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-3 sm:gap-4 grid-cols-2">
-                            <Button
-                                variant="outline"
-                                className="h-16 sm:h-20 flex-col gap-2"
-                                onClick={handleAddProduct}
-                            >
-                                <Package className="h-5 w-5 sm:h-6 sm:w-6" />
-                                <span className="text-sm sm:text-base">Add Product</span>
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="h-16 sm:h-20 flex-col gap-2"
-                                onClick={handleAddCustomer}
-                            >
-                                <Users className="h-5 w-5 sm:h-6 sm:w-6" />
-                                <span className="text-sm sm:text-base">Add Customer</span>
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="h-16 sm:h-20 flex-col gap-2"
-                                onClick={handleCreateOrder}
-                            >
-                                <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
-                                <span className="text-sm sm:text-base">Create Order</span>
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="h-16 sm:h-20 flex-col gap-2"
-                                onClick={handleViewReports}
-                            >
-                                <MoreHorizontal className="h-5 w-5 sm:h-6 sm:w-6" />
-                                <span className="text-sm sm:text-base">View Reports</span>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* ── STOCK ALERTS ─────────────────────────────────── */}
+            <StockAlerts />
 
-                {/* Stock Alerts */}
-                <StockAlerts />
-            </div>
-
-            {/* Dialogs */}
+            {/* ── DIALOGS ──────────────────────────────────────── */}
             <CreateCustomerDialog
                 open={showCreateCustomerDialog}
                 onOpenChange={setShowCreateCustomerDialog}
                 onSuccess={handleCustomerCreated}
             />
-
             <CreateOrderDialog
                 open={showCreateOrderDialog}
                 onOpenChange={setShowCreateOrderDialog}
                 onSuccess={handleOrderCreated}
             />
-
             <SendReportDialog
                 open={showEmailDialog}
                 onOpenChange={setShowEmailDialog}
                 onSend={handleSendEmailReport}
-                title="Send Dashboard Report"
-                description="Enter the email address where you want to receive the 30-day performance report."
             />
         </div>
     );

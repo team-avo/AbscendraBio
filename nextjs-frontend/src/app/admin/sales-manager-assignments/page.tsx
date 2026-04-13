@@ -6,13 +6,12 @@ import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 import logger from '@/lib/logger';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Users } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -33,7 +32,6 @@ export default function AdminSalesManagerAssignmentsPage() {
 
     const canAccess = hasRole('ADMIN');
 
-    // Load managers
     useEffect(() => {
         if (!canAccess) return;
         (async () => {
@@ -52,7 +50,6 @@ export default function AdminSalesManagerAssignmentsPage() {
         })();
     }, [canAccess]);
 
-    // Fetch customers
     useEffect(() => {
         if (!canAccess) return;
         (async () => {
@@ -64,7 +61,6 @@ export default function AdminSalesManagerAssignmentsPage() {
                 let currentPage = 1;
                 const limit = 100;
 
-                // Fetch up to 2000 customers for the selection UI
                 while (currentPage <= 20) {
                     const res = await api.getCustomers({ page: currentPage, limit });
                     if (res.success && res.data) {
@@ -89,7 +85,6 @@ export default function AdminSalesManagerAssignmentsPage() {
         managers.find(m => m.user?.id === selectedManagerId || m.userId === selectedManagerId) || null,
         [managers, selectedManagerId]);
 
-    // Filter managers based on search
     const filteredManagers = useMemo(() => {
         if (!managerSearchValue) return managers;
         const searchLower = managerSearchValue.toLowerCase();
@@ -102,16 +97,13 @@ export default function AdminSalesManagerAssignmentsPage() {
         });
     }, [managers, managerSearchValue]);
 
-    // Get selected manager display name
     const selectedManagerDisplay = useMemo(() => {
         if (!selectedManager || !selectedManager.user) return 'Choose sales manager';
         return `${selectedManager.user.firstName} ${selectedManager.user.lastName} (${selectedManager.user.email})`;
     }, [selectedManager]);
 
-    // Load existing assignments when manager is selected
     useEffect(() => {
         if (selectedManager) {
-            // Need full manager details for assignments
             (async () => {
                 try {
                     const res = await api.getSalesManager(selectedManager.id);
@@ -134,7 +126,6 @@ export default function AdminSalesManagerAssignmentsPage() {
             const res = await api.salesManagerAssignCustomers(selectedManager.id, selectedCustomers);
             if (res.success) {
                 toast.success('Assignments saved successfully');
-                // Refresh managers list to get updated counts
                 const refreshRes = await api.getSalesManagers();
                 if (refreshRes.success && refreshRes.data) {
                     setManagers(refreshRes.data);
@@ -153,16 +144,20 @@ export default function AdminSalesManagerAssignmentsPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="p-4 space-y-6">
+                <div className="space-y-5 px-2 sm:px-0">
                     <div className="flex items-center justify-between">
                         <h1 className="text-2xl font-bold tracking-tight">Assign Customers to Sales Managers</h1>
                     </div>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Sales Manager Selection</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Users className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <span className="font-semibold text-slate-800">Sales Manager Selection</span>
+                        </div>
+
+                        <div className="p-5 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                                 <div>
                                     <Label>Select Sales Manager</Label>
@@ -224,7 +219,11 @@ export default function AdminSalesManagerAssignmentsPage() {
                                     </Popover>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button variant="default" disabled={!selectedManagerId || loading} onClick={handleSaveAssignments}>
+                                    <Button
+                                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                        disabled={!selectedManagerId || loading}
+                                        onClick={handleSaveAssignments}
+                                    >
                                         {loading ? <LoadingSpinner size={16} className="mr-2" /> : null}
                                         {loading ? 'Saving...' : 'Save Assignments'}
                                     </Button>
@@ -349,8 +348,8 @@ export default function AdminSalesManagerAssignmentsPage() {
                                     </div>
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             </DashboardLayout>
         </ProtectedRoute>

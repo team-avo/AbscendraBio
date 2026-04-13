@@ -7,13 +7,12 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
@@ -31,7 +30,6 @@ export default function AssignCustomersPage() {
     const [selectedUserId, setSelectedUserId] = useState<string>('');
     const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
-    // Pagination state
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 10000,
@@ -43,7 +41,6 @@ export default function AssignCustomersPage() {
 
     const canAccess = hasRole('ADMIN') || hasRole('SALES_MANAGER');
 
-    // Load reps (Admin sees all, Manager sees specific)
     useEffect(() => {
         if (!canAccess) return;
         (async () => {
@@ -63,7 +60,6 @@ export default function AssignCustomersPage() {
         })();
     }, [canAccess]);
 
-    // Fetch customers with pagination/search
     const fetchCustomers = async () => {
         if (!canAccess) return;
         setIsFetchingCustomers(true);
@@ -72,7 +68,7 @@ export default function AssignCustomersPage() {
                 page: pagination.page,
                 limit: pagination.limit,
                 search: allCustomersSearch || undefined,
-                isActive: true // Generally we assign active customers
+                isActive: true
             });
 
             if (res.success && res.data) {
@@ -94,23 +90,20 @@ export default function AssignCustomersPage() {
         }
     };
 
-    // Initial fetch and on page/search change
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             fetchCustomers();
-        }, 500); // 500ms debounce for search
+        }, 500);
         return () => clearTimeout(timeoutId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [canAccess, pagination.page, allCustomersSearch]);
 
-    // Reset page on search change
     useEffect(() => {
         setPagination(prev => ({ ...prev, page: 1 }));
     }, [allCustomersSearch]);
 
     const selectedRep = useMemo(() => reps.find(r => r.user?.id === selectedUserId || r.userId === selectedUserId) || null, [reps, selectedUserId]);
 
-    // Filter reps based on search
     const filteredReps = useMemo(() => {
         if (!repSearchValue) return reps;
         const searchLower = repSearchValue.toLowerCase();
@@ -123,7 +116,6 @@ export default function AssignCustomersPage() {
         });
     }, [reps, repSearchValue]);
 
-    // Get selected rep display name
     const selectedRepDisplay = useMemo(() => {
         if (!selectedRep || !selectedRep.user) return 'Choose sales rep';
         return `${selectedRep.user?.firstName || ''} ${selectedRep.user?.lastName || ''} (${selectedRep.user?.email || ''})`;
@@ -144,14 +136,12 @@ export default function AssignCustomersPage() {
         try {
             await api.put(`/sales-reps/${rep.id}/assignments`, { customerIds: selectedCustomers });
 
-            // Refresh reps list to get updated assignments
             const repsRes = await api.get('/sales-reps');
             if (repsRes.success) {
                 const data = (repsRes as any).data;
                 setReps(Array.isArray(data) ? data : (data?.salesReps ?? []));
             }
 
-            // Allow time for backend to update before fetching list again
             setTimeout(() => {
                 fetchCustomers();
             }, 500);
@@ -168,13 +158,20 @@ export default function AssignCustomersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-2 sm:px-0 mt-2 sm:mt-0">
+                <div className="space-y-5 px-2 sm:px-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Assign Customers to Sales Reps</h1>
                     </div>
 
-                    <Card className="shadow-sm border-muted-foreground/10">
-                        <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+                            <div className="p-1.5 bg-slate-100 rounded-lg">
+                                <Users className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <span className="font-semibold text-slate-800">Customer Assignment</span>
+                        </div>
+
+                        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                             <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
                                 <div className="flex-1 space-y-2">
                                     <Label className="text-xs sm:text-sm font-medium">Select Sales Rep</Label>
@@ -237,10 +234,9 @@ export default function AssignCustomersPage() {
                                 </div>
                                 <div className="flex gap-2 w-full lg:w-auto">
                                     <Button
-                                        variant="default"
+                                        className="w-full lg:w-auto h-10 sm:h-11 shadow-sm h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
                                         disabled={!selectedUserId || loading}
                                         onClick={handleSaveAssignments}
-                                        className="w-full lg:w-auto h-10 sm:h-11 shadow-sm"
                                     >
                                         {loading ? 'Saving...' : 'Save Assignments'}
                                     </Button>
@@ -370,27 +366,23 @@ export default function AssignCustomersPage() {
                                         </div>
                                         <div className="flex-1 border rounded-md overflow-hidden">
                                             <div className="h-full overflow-y-auto p-2 space-y-1">
-                                                {/* 
+                                                {/*
                                                     Note: This list is currently built from `selectedCustomers` IDs.
                                                     We might not have the full customer objects for all IDs if we paginated.
                                                     Ideally, we should fetch details for assigned customers if missing.
                                                     For now, we filter from `allCustomers` + `reps` assignments cache, which might be incomplete.
-                                                    Improving this would require a separate fetch for selected IDs. 
+                                                    Improving this would require a separate fetch for selected IDs.
                                                     Currently, sticking to simple filtering for speed.
                                                 */}
-                                                {/* For display, we need to try to find the customer info in our known lists */}
                                                 {selectedCustomers.length > 0 && selectedCustomers.map(id => {
-                                                    // Try to find in loaded customers
                                                     let c = allCustomers.find(cx => cx.id === id);
-                                                    // Or in the original rep assignments
                                                     if (!c && selectedRep?.assignments) {
                                                         const assignment = selectedRep.assignments.find((a: any) => a.customerId === id);
                                                         if (assignment && assignment.customer) c = assignment.customer;
                                                     }
 
-                                                    if (!c) return null; // If we can't find details, skip (or show skeleton)
+                                                    if (!c) return null;
 
-                                                    // Filter logic
                                                     if (assignedCustomersSearch) {
                                                         const searchLower = assignedCustomersSearch.toLowerCase();
                                                         const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
@@ -425,8 +417,8 @@ export default function AssignCustomersPage() {
                                     </div>
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             </DashboardLayout>
         </ProtectedRoute>

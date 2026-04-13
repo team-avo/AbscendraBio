@@ -2,11 +2,10 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
-import { Search, ArrowUpDown, Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { Search, ArrowUpDown, Calendar, TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
 import { api } from "@/lib/api";
 import logger from "@/lib/logger";
 import { toast } from "sonner";
@@ -70,12 +69,10 @@ export default function SkuAnalyticsPage() {
     const [search, setSearch] = useState("");
     const [sortConfig, setSortConfig] = useState<{ key: keyof SkuPerformance; direction: 'asc' | 'desc' } | null>(null);
 
-    // Filter states
     const [range, setRange] = useState("6_months");
     const [customFrom, setCustomFrom] = useState<Date | undefined>(undefined);
     const [customTo, setCustomTo] = useState<Date | undefined>(undefined);
 
-    // Dialog states
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedSku, setSelectedSku] = useState<SkuPerformance | null>(null);
     const [comparisonData, setComparisonData] = useState<SkuComparisonData | null>(null);
@@ -84,7 +81,6 @@ export default function SkuAnalyticsPage() {
     const [historyData, setHistoryData] = useState<SkuPerformanceHistory | null>(null);
     const [historyLoading, setHistoryLoading] = useState(false);
 
-    // Pagination
     const SKU_PAGE_SIZE = 10;
     const [skuPage, setSkuPage] = useState(1);
 
@@ -114,7 +110,6 @@ export default function SkuAnalyticsPage() {
         fetchData();
     }, [range, customFrom, customTo]);
 
-    // Fetch comparison data when dialog opens or period changes
     useEffect(() => {
         if (dialogOpen && selectedSku) {
             const fetchComparison = async () => {
@@ -175,9 +170,7 @@ export default function SkuAnalyticsPage() {
                 const bValue = b[sortConfig.key];
 
                 if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    return sortConfig.direction === 'asc'
-                        ? aValue.localeCompare(bValue)
-                        : bValue.localeCompare(aValue);
+                    return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
                 }
 
                 if (typeof aValue === 'number' && typeof bValue === 'number') {
@@ -191,7 +184,6 @@ export default function SkuAnalyticsPage() {
         return result;
     }, [data, search, sortConfig]);
 
-    // Paginate filtered data (search works across ALL data, then we paginate the results)
     const totalSkuPages = useMemo(
         () => Math.max(1, Math.ceil(filteredData.length / SKU_PAGE_SIZE)),
         [filteredData.length]
@@ -201,7 +193,6 @@ export default function SkuAnalyticsPage() {
         [filteredData, skuPage]
     );
 
-    // Reset page when search, data, or sort changes
     useEffect(() => { setSkuPage(1); }, [search, data, sortConfig]);
 
     const handleSort = (key: keyof SkuPerformance) => {
@@ -227,9 +218,7 @@ export default function SkuAnalyticsPage() {
     };
 
     const getTimeSpan = () => {
-        if (range === "all_time") {
-            return "All Time";
-        }
+        if (range === "all_time") return "All Time";
         if (data.length > 0 && data[0].startDate && data[0].endDate) {
             const start = new Date(data[0].startDate);
             const end = new Date(data[0].endDate);
@@ -238,7 +227,6 @@ export default function SkuAnalyticsPage() {
         return getRangeLabel();
     };
 
-    // Prepare chart data
     const chartData = useMemo(() => {
         if (!comparisonData) return [];
 
@@ -254,7 +242,6 @@ export default function SkuAnalyticsPage() {
                 const d = new Date(currentItem.date);
                 xAxisLabel = comparisonPeriod === 'week' ? format(d, 'EEE') : format(d, 'MMM d');
             } else if (previousItem) {
-                // Approximate relative date based on previous item if current is missing at this index
                 const d = new Date(previousItem.date);
                 xAxisLabel = comparisonPeriod === 'week' ? format(d, 'EEE') : format(d, 'MMM d');
             }
@@ -277,7 +264,7 @@ export default function SkuAnalyticsPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-6">
+            <div className="space-y-5 px-2 sm:px-0">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">SKU Analytics</h1>
@@ -287,153 +274,137 @@ export default function SkuAnalyticsPage() {
                     </div>
                 </div>
 
-                <Card>
-                    <CardHeader>
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                            <div className="space-y-1">
-                                <CardTitle className="text-lg sm:text-xl">Product Outflow</CardTitle>
-                                <CardDescription className="text-xs sm:text-sm">
+                {/* Product Outflow table */}
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                                <BarChart2 className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-800">Product Outflow</p>
+                                <p className="text-xs text-slate-500">
                                     Showing {filteredData.length} SKU{filteredData.length !== 1 ? 's' : ''} for {getTimeSpan().toLowerCase()}.
-                                </CardDescription>
-                            </div>
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                                <div className="relative w-full lg:w-64">
-                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Search SKU or Product..."
-                                        className="pl-8 w-full"
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                    />
-                                </div>
-                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
-                                    <Select value={range} onValueChange={setRange}>
-                                        <SelectTrigger className="w-full sm:w-40 lg:w-48">
-                                            <SelectValue placeholder="Period" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="7_days">Last 7 Days</SelectItem>
-                                            <SelectItem value="1_month">Last Month</SelectItem>
-                                            <SelectItem value="3_months">Last 3 Months</SelectItem>
-                                            <SelectItem value="6_months">Last 6 Months</SelectItem>
-                                            <SelectItem value="12_months">Last 12 Months</SelectItem>
-                                            <SelectItem value="all_time">All Time</SelectItem>
-                                            <SelectItem value="custom">Custom Range</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {range === "custom" && (
-                                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button variant="outline" className="w-full sm:w-32 justify-start text-xs font-normal">
-                                                        <Calendar className="mr-2 h-3.5 w-3.5" />
-                                                        {customFrom ? format(customFrom, "MMM d, yyyy") : "From"}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <CalendarComponent
-                                                        mode="single"
-                                                        selected={customFrom}
-                                                        onSelect={setCustomFrom}
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button variant="outline" className="w-full sm:w-32 justify-start text-xs font-normal">
-                                                        <Calendar className="mr-2 h-3.5 w-3.5" />
-                                                        {customTo ? format(customTo, "MMM d, yyyy") : "To"}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <CalendarComponent
-                                                        mode="single"
-                                                        selected={customTo}
-                                                        onSelect={setCustomTo}
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                        </div>
-                                    )}
-                                </div>
+                                </p>
                             </div>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="rounded-md border overflow-x-auto">
-                            <Table className="min-w-[700px]">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="cursor-pointer" onClick={() => handleSort('sku')}>
-                                            SKU <ArrowUpDown className="inline h-3 w-3 ml-1" />
-                                        </TableHead>
-                                        <TableHead className="cursor-pointer" onClick={() => handleSort('name')}>
-                                            Variant Name <ArrowUpDown className="inline h-3 w-3 ml-1" />
-                                        </TableHead>
-                                        <TableHead className="text-center">
-                                            Time Span
-                                        </TableHead>
-                                        <TableHead className="cursor-pointer text-center" onClick={() => handleSort('totalSold')}>
-                                            Total Outflow <ArrowUpDown className="inline h-3 w-3 ml-1" />
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {loading ? (
-                                        Array.from({ length: 5 }).map((_, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                                                <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                                                <TableCell className="text-center"><Skeleton className="h-4 w-32 mx-auto" /></TableCell>
-                                                <TableCell className="text-center"><Skeleton className="h-4 w-10 mx-auto" /></TableCell>
-                                            </TableRow>
-                                        ))
-                                    ) : filteredData.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={4} className="h-24 text-center">
-                                                No results found for this period.
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        paginatedSkus.map((item) => (
-                                            <TableRow
-                                                key={item.id}
-                                                className="cursor-pointer hover:bg-muted/50"
-                                                onClick={() => handleRowClick(item)}
-                                            >
-                                                <TableCell className="font-mono text-xs font-semibold">{item.sku}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium">{item.name}</span>
-                                                        <span className="text-xs text-muted-foreground">{item.productName}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="text-center text-sm text-muted-foreground">
-                                                    {getTimeSpan()}
-                                                </TableCell>
-                                                <TableCell className="text-center font-bold text-lg">{item.totalSold}</TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                        {totalSkuPages > 1 && (
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t">
-                                <div className="text-sm text-muted-foreground">
-                                    Page {skuPage} of {totalSkuPages} ({filteredData.length} SKUs)
-                                </div>
-                                <Pagination
-                                    currentPage={skuPage}
-                                    totalPages={totalSkuPages}
-                                    onPageChange={setSkuPage}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                            <div className="relative w-full lg:w-64">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search SKU or Product..."
+                                    className="pl-8 w-full"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
                                 />
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+                                <Select value={range} onValueChange={setRange}>
+                                    <SelectTrigger className="w-full sm:w-40 lg:w-48">
+                                        <SelectValue placeholder="Period" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="7_days">Last 7 Days</SelectItem>
+                                        <SelectItem value="1_month">Last Month</SelectItem>
+                                        <SelectItem value="3_months">Last 3 Months</SelectItem>
+                                        <SelectItem value="6_months">Last 6 Months</SelectItem>
+                                        <SelectItem value="12_months">Last 12 Months</SelectItem>
+                                        <SelectItem value="all_time">All Time</SelectItem>
+                                        <SelectItem value="custom">Custom Range</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {range === "custom" && (
+                                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="outline" className="w-full sm:w-32 justify-start text-xs font-normal">
+                                                    <Calendar className="mr-2 h-3.5 w-3.5" />
+                                                    {customFrom ? format(customFrom, "MMM d, yyyy") : "From"}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <CalendarComponent mode="single" selected={customFrom} onSelect={setCustomFrom} initialFocus />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="outline" className="w-full sm:w-32 justify-start text-xs font-normal">
+                                                    <Calendar className="mr-2 h-3.5 w-3.5" />
+                                                    {customTo ? format(customTo, "MMM d, yyyy") : "To"}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <CalendarComponent mode="single" selected={customTo} onSelect={setCustomTo} initialFocus />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <Table className="min-w-[700px]">
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="cursor-pointer" onClick={() => handleSort('sku')}>
+                                        SKU <ArrowUpDown className="inline h-3 w-3 ml-1" />
+                                    </TableHead>
+                                    <TableHead className="cursor-pointer" onClick={() => handleSort('name')}>
+                                        Variant Name <ArrowUpDown className="inline h-3 w-3 ml-1" />
+                                    </TableHead>
+                                    <TableHead className="text-center">Time Span</TableHead>
+                                    <TableHead className="cursor-pointer text-center" onClick={() => handleSort('totalSold')}>
+                                        Total Outflow <ArrowUpDown className="inline h-3 w-3 ml-1" />
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    Array.from({ length: 5 }).map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                                            <TableCell className="text-center"><Skeleton className="h-4 w-32 mx-auto" /></TableCell>
+                                            <TableCell className="text-center"><Skeleton className="h-4 w-10 mx-auto" /></TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : filteredData.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="h-24 text-center">
+                                            No results found for this period.
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    paginatedSkus.map((item) => (
+                                        <TableRow
+                                            key={item.id}
+                                            className="cursor-pointer hover:bg-muted/50"
+                                            onClick={() => handleRowClick(item)}
+                                        >
+                                            <TableCell className="font-mono text-xs font-semibold">{item.sku}</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{item.name}</span>
+                                                    <span className="text-xs text-muted-foreground">{item.productName}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-center text-sm text-muted-foreground">{getTimeSpan()}</TableCell>
+                                            <TableCell className="text-center font-bold text-lg">{item.totalSold}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    {totalSkuPages > 1 && (
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t">
+                            <div className="text-sm text-muted-foreground">
+                                Page {skuPage} of {totalSkuPages} ({filteredData.length} SKUs)
+                            </div>
+                            <Pagination currentPage={skuPage} totalPages={totalSkuPages} onPageChange={setSkuPage} />
+                        </div>
+                    )}
+                </div>
 
                 {/* SKU Detail Dialog */}
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -442,47 +413,35 @@ export default function SkuAnalyticsPage() {
                             <DialogTitle className="flex items-center justify-between">
                                 <div className="pr-4 min-w-0 w-full flex flex-col items-start text-left">
                                     <div className="flex flex-wrap items-start sm:items-center gap-x-2 gap-y-1 min-w-0">
-                                        <span className="font-mono text-[10px] sm:text-sm text-muted-foreground break-all">
-                                            {selectedSku?.sku}
-                                        </span>
+                                        <span className="font-mono text-[10px] sm:text-sm text-muted-foreground break-all">{selectedSku?.sku}</span>
                                         <span className="hidden sm:inline text-muted-foreground self-center">•</span>
-                                        <span className="text-sm sm:text-lg lg:text-xl font-bold break-words">
-                                            {selectedSku?.name}
-                                        </span>
+                                        <span className="text-sm sm:text-lg lg:text-xl font-bold break-words">{selectedSku?.name}</span>
                                     </div>
-                                    <div className="text-[10px] sm:text-sm text-muted-foreground font-normal mt-1 break-words text-left">
-                                        {selectedSku?.productName}
-                                    </div>
+                                    <div className="text-[10px] sm:text-sm text-muted-foreground font-normal mt-1 break-words text-left">{selectedSku?.productName}</div>
                                 </div>
                             </DialogTitle>
                         </DialogHeader>
 
                         {comparisonLoading ? (
                             <div className="space-y-6">
-                                <Card>
-                                    <CardContent className="pt-6">
-                                        <Skeleton className="h-8 w-24 mb-2" />
-                                        <Skeleton className="h-4 w-32" />
-                                    </CardContent>
-                                </Card>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Card><CardContent className="pt-6"><Skeleton className="h-16 w-full" /></CardContent></Card>
-                                    <Card><CardContent className="pt-6"><Skeleton className="h-16 w-full" /></CardContent></Card>
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+                                    <Skeleton className="h-8 w-24 mb-2" />
+                                    <Skeleton className="h-4 w-32" />
                                 </div>
-                                <Card><CardContent className="pt-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
+                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
+                                </div>
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-[300px] w-full" /></div>
                             </div>
                         ) : comparisonData ? (
-                            <div className="space-y-6">
-                                {/* Total Outflow Card */}
-                                <Card>
-                                    <CardHeader className="pb-3">
-                                        <CardTitle className="text-sm font-medium">Total Outflow (All Time)</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-3 sm:p-6">
-                                        <div className="text-2xl sm:text-3xl font-bold">{comparisonData.totalOutflow}</div>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Total units sold</p>
-                                    </CardContent>
-                                </Card>
+                            <div className="space-y-5">
+                                {/* Total Outflow */}
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <p className="text-xs text-slate-500 font-medium mb-1">Total Outflow (All Time)</p>
+                                    <div className="text-2xl sm:text-3xl font-bold">{comparisonData.totalOutflow}</div>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Total units sold</p>
+                                </div>
 
                                 {/* Period Selector */}
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 px-1">
@@ -498,64 +457,56 @@ export default function SkuAnalyticsPage() {
                                     </Select>
                                 </div>
 
-                                {/* Comparison Cards */}
+                                {/* Comparison chips */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {/* Current Period */}
-                                    <Card>
-                                        <CardHeader className="pb-3">
-                                            <CardTitle className="text-sm font-medium">{comparisonData.comparison.current.label}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-3 sm:p-6">
-                                            <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.current.total}</div>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                {(() => {
-                                                    const change = calculateChange(
-                                                        comparisonData.comparison.current.total,
-                                                        comparisonData.comparison.previous.total
-                                                    );
-                                                    return (
-                                                        <>
-                                                            {change > 0 ? (
-                                                                <TrendingUp className="h-4 w-4 text-green-600" />
-                                                            ) : change < 0 ? (
-                                                                <TrendingDown className="h-4 w-4 text-red-600" />
-                                                            ) : null}
-                                                            <span className={`text-[10px] sm:text-xs font-medium whitespace-nowrap ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-muted-foreground'
-                                                                }`}>
-                                                                {change > 0 ? '+' : ''}{change.toFixed(1)}% vs {comparisonData.comparison.previous.label.toLowerCase()}
-                                                            </span>
-                                                        </>
-                                                    );
-                                                })()}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                        <p className="text-xs text-slate-500 font-medium mb-1">{comparisonData.comparison.current.label}</p>
+                                        <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.current.total}</div>
+                                        <div className="flex items-center gap-2 mt-2">
+                                            {(() => {
+                                                const change = calculateChange(
+                                                    comparisonData.comparison.current.total,
+                                                    comparisonData.comparison.previous.total
+                                                );
+                                                return (
+                                                    <>
+                                                        {change > 0 ? (
+                                                            <TrendingUp className="h-4 w-4 text-green-600" />
+                                                        ) : change < 0 ? (
+                                                            <TrendingDown className="h-4 w-4 text-red-600" />
+                                                        ) : null}
+                                                        <span className={`text-[10px] sm:text-xs font-medium whitespace-nowrap ${change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
+                                                            {change > 0 ? '+' : ''}{change.toFixed(1)}% vs {comparisonData.comparison.previous.label.toLowerCase()}
+                                                        </span>
+                                                    </>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
 
-                                    {/* Previous Period */}
-                                    <Card>
-                                        <CardHeader className="pb-3">
-                                            <CardTitle className="text-sm font-medium">{comparisonData.comparison.previous.label}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-3 sm:p-6">
-                                            <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.previous.total}</div>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Units sold</p>
-                                        </CardContent>
-                                    </Card>
+                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                        <p className="text-xs text-slate-500 font-medium mb-1">{comparisonData.comparison.previous.label}</p>
+                                        <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.previous.total}</div>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Units sold</p>
+                                    </div>
                                 </div>
 
                                 {/* Performance Table */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-sm font-medium">
-                                            {comparisonPeriod === 'week' ? 'Weekly' : 'Monthly'} Performance
-                                        </CardTitle>
-                                        {historyData && (
-                                            <CardDescription className="text-xs font-semibold text-blue-600">
-                                                {historyData.summary.label}
-                                            </CardDescription>
-                                        )}
-                                    </CardHeader>
-                                    <CardContent className="p-1 sm:p-6">
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                                            <BarChart2 className="h-4 w-4 text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-slate-800">
+                                                {comparisonPeriod === 'week' ? 'Weekly' : 'Monthly'} Performance
+                                            </p>
+                                            {historyData && (
+                                                <p className="text-xs font-semibold text-blue-600">{historyData.summary.label}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="p-1 sm:p-4">
                                         <div className="rounded-md border overflow-x-auto">
                                             <Table className="min-w-[300px]">
                                                 <TableHeader>
@@ -576,9 +527,7 @@ export default function SkuAnalyticsPage() {
                                                         ))
                                                     ) : historyData?.weeks.length === 0 ? (
                                                         <TableRow>
-                                                            <TableCell colSpan={3} className="h-24 text-center">
-                                                                No historical data found.
-                                                            </TableCell>
+                                                            <TableCell colSpan={3} className="h-24 text-center">No historical data found.</TableCell>
                                                         </TableRow>
                                                     ) : (
                                                         historyData?.weeks.map((week, idx) => (
@@ -593,8 +542,7 @@ export default function SkuAnalyticsPage() {
                                                                             ) : week.delta < 0 ? (
                                                                                 <TrendingDown className="h-3 w-3 text-red-600" />
                                                                             ) : null}
-                                                                            <span className={`text-[11px] sm:text-xs font-semibold whitespace-nowrap ${week.delta > 0 ? 'text-green-600' : week.delta < 0 ? 'text-red-600' : 'text-muted-foreground'
-                                                                                }`}>
+                                                                            <span className={`text-[11px] sm:text-xs font-semibold whitespace-nowrap ${week.delta > 0 ? 'text-green-600' : week.delta < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
                                                                                 {week.delta > 0 ? '+' : ''}{week.delta.toFixed(1)}%
                                                                             </span>
                                                                         </div>
@@ -608,31 +556,24 @@ export default function SkuAnalyticsPage() {
                                                 </TableBody>
                                             </Table>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
-                                {/* Chart */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-sm font-medium">Sales Trend</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-0 sm:p-6">
-                                        <div className="h-[200px] sm:h-[300px] w-full mt-4">
+                                {/* Sales Trend Chart */}
+                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-50">
+                                            <BarChart2 className="h-4 w-4 text-emerald-600" />
+                                        </div>
+                                        <p className="text-sm font-semibold text-slate-800">Sales Trend</p>
+                                    </div>
+                                    <div className="p-4 sm:p-6">
+                                        <div className="h-[200px] sm:h-[300px] w-full">
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <LineChart data={chartData}>
                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                    <XAxis
-                                                        dataKey="xAxisLabel"
-                                                        fontSize={10}
-                                                        tickLine={false}
-                                                        axisLine={false}
-                                                    />
-                                                    <YAxis
-                                                        fontSize={10}
-                                                        tickLine={false}
-                                                        axisLine={false}
-                                                        tickFormatter={(value) => `${value}`}
-                                                    />
+                                                    <XAxis dataKey="xAxisLabel" fontSize={10} tickLine={false} axisLine={false} />
+                                                    <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
                                                     <Tooltip
                                                         content={({ active, payload, label }) => {
                                                             if (active && payload && payload.length) {
@@ -681,8 +622,8 @@ export default function SkuAnalyticsPage() {
                                                 </LineChart>
                                             </ResponsiveContainer>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             </div>
                         ) : null}
                     </DialogContent>

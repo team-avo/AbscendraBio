@@ -5,7 +5,6 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 import logger from '@/lib/logger';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -82,12 +81,10 @@ export default function SalesManagerRecruitmentPage() {
         return (
             <DashboardLayout>
                 <div className="p-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Access Denied</CardTitle>
-                        </CardHeader>
-                        <CardContent>You do not have permission to view this page.</CardContent>
-                    </Card>
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                        <h3 className="text-base font-semibold mb-1">Access Denied</h3>
+                        <p className="text-sm text-muted-foreground">You do not have permission to view this page.</p>
+                    </div>
                 </div>
             </DashboardLayout>
         );
@@ -101,7 +98,8 @@ export default function SalesManagerRecruitmentPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-5 px-2 sm:px-0">
+                {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Assign Sales Representatives</h1>
@@ -109,40 +107,51 @@ export default function SalesManagerRecruitmentPage() {
                             Browse sales representatives who are not currently assigned to a manager and assign them to your team
                         </p>
                     </div>
-                    <Button onClick={() => setIsCreateOpen(true)}>
+                    <Button
+                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                        onClick={() => setIsCreateOpen(true)}
+                    >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Sales Rep
                     </Button>
                 </div>
 
                 {/* Search Filter */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Search Available Reps</CardTitle>
-                        <CardDescription>Find sales representatives by name or email</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search by name or email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                            <Search className="h-4 w-4 text-slate-600" />
                         </div>
-                    </CardContent>
-                </Card>
+                        <div>
+                            <h2 className="text-sm font-semibold text-slate-900">Search Available Reps</h2>
+                            <p className="text-xs text-muted-foreground">Find sales representatives by name or email</p>
+                        </div>
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search by name or email..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                </div>
 
                 {/* Sales Reps Table */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Available Representatives</CardTitle>
-                        <CardDescription>
-                            {loading ? 'Loading...' : `Showing ${filteredReps.length} of ${salesReps.length} available representatives`}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                            <Users className="h-4 w-4 text-slate-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-sm font-semibold text-slate-900">Available Representatives</h2>
+                            <p className="text-xs text-muted-foreground">
+                                {loading ? 'Loading...' : `Showing ${filteredReps.length} of ${salesReps.length} available representatives`}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="p-5">
                         {loading ? (
                             <div className="text-center py-8 text-muted-foreground">Loading...</div>
                         ) : filteredReps.length === 0 ? (
@@ -176,7 +185,7 @@ export default function SalesManagerRecruitmentPage() {
                                                     <Button
                                                         size="sm"
                                                         onClick={() => handleRecruit(rep)}
-                                                        className="bg-primary hover:bg-primary/90"
+                                                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
                                                     >
                                                         <UserPlus className="mr-2 h-4 w-4" />
                                                         Assign to My Team
@@ -188,8 +197,8 @@ export default function SalesManagerRecruitmentPage() {
                                 </Table>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
 
             <SalesRepManagerDialogs
@@ -203,7 +212,7 @@ export default function SalesManagerRecruitmentPage() {
                 setIsDeleteOpen={() => { }}
                 editingRep={null}
                 refreshData={() => {
-                    // No need to refresh the unassigned list if we just created a new rep 
+                    // No need to refresh the unassigned list if we just created a new rep
                     // (the creation logic automatically assigns them to the manager)
                     // But we could refresh just in case
                     fetchUnassignedReps();

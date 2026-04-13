@@ -169,9 +169,9 @@ export default function CustomerApprovalsPage() {
   const getCustomerTypeBadge = (type: string) => {
     const variants: { [key: string]: { variant: "default" | "secondary" | "destructive" | "outline", label: string, icon: any } } = {
       B2C: { variant: "outline", label: "Wholesale", icon: Building },
-      B2B: { variant: "secondary", label: "Wholesale", icon: Building },
-      ENTERPRISE_1: { variant: "default", label: "Enterprise", icon: Crown },
-      ENTERPRISE_2: { variant: "default", label: "Enterprise", icon: Crown },
+      B2B: { variant: "secondary", label: "Wholesale (B2B)", icon: Building },
+      ENTERPRISE_1: { variant: "default", label: "Enterprise T1", icon: Crown },
+      ENTERPRISE_2: { variant: "default", label: "Enterprise T2", icon: Crown },
     };
 
     const config = variants[type] || { variant: "outline", label: type, icon: User };
@@ -212,89 +212,97 @@ export default function CustomerApprovalsPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-2 sm:px-0">
+        <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Customer Account Approvals</h1>
-              <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-                Review and approve pending customer account registrations
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customer Approvals</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Review and approve pending customer registrations</p>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 w-full">
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Pending Approvals</CardTitle>
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-yellow-600">{stats.pending}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Approved Accounts</CardTitle>
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-green-600">{stats.approved}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Rejected Accounts</CardTitle>
-                <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold text-red-600">{stats.rejected}</div>
-              </CardContent>
-            </Card>
-            <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                <CardTitle className="text-[10px] sm:text-xs font-medium">Total Approvals</CardTitle>
-                <User className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                <div className="text-base sm:text-lg 2xl:text-2xl font-bold">{totalItems}</div>
-              </CardContent>
-            </Card>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Pending Approvals */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <Clock className="h-5 w-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Pending Approvals</p>
+                <p className="text-2xl font-bold text-amber-600 leading-tight">{stats.pending}</p>
+              </div>
+            </div>
+            {/* Approved */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                <CheckCircle className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Approved</p>
+                <p className="text-2xl font-bold text-emerald-600 leading-tight">{stats.approved}</p>
+              </div>
+            </div>
+            {/* Rejected */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
+                <XCircle className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Rejected</p>
+                <p className="text-2xl font-bold text-red-600 leading-tight">{stats.rejected}</p>
+              </div>
+            </div>
+            {/* Total */}
+            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
+              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                <User className="h-5 w-5 text-slate-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total</p>
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{totalItems}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-              <CardDescription>Search and filter pending approvals</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by name, email, or mobile..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Filter Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search by name, email, or mobile..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 items-center">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          {/* Pending Approvals Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Approvals List</CardTitle>
-              <CardDescription>
-                {loading ? 'Loading...' : `Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1} to ${Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} of ${totalItems} ${statusFilter} records`}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Table Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Clock className="h-4 w-4 text-amber-500" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Approvals List</h2>
+                <p className="text-xs text-slate-400">{totalItems.toLocaleString()} records</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -391,18 +399,20 @@ export default function CustomerApprovalsPage() {
                                 {!customer.isApproved && (
                                   <>
                                     <DropdownMenuItem
-                                      onClick={() => setSelectedCustomer(customer)}
+                                      onClick={() => handleApproval(customer.id, true)}
+                                      disabled={processing === customer.id}
                                       className="text-green-600"
                                     >
                                       <CheckCircle className="mr-2 h-4 w-4" />
-                                      Review & Approve
+                                      Approve
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => setSelectedCustomer(customer)}
+                                      onClick={() => handleApproval(customer.id, false)}
+                                      disabled={processing === customer.id}
                                       className="text-red-600"
                                     >
                                       <XCircle className="mr-2 h-4 w-4" />
-                                      Review & Reject
+                                      Reject
                                     </DropdownMenuItem>
                                   </>
                                 )}
@@ -434,8 +444,8 @@ export default function CustomerApprovalsPage() {
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Customer Details Dialog */}
           <Dialog open={!!selectedCustomer} onOpenChange={(open) => !open && setSelectedCustomer(null)}>
@@ -523,7 +533,9 @@ export default function CustomerApprovalsPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="B2C">Wholesale</SelectItem>
-                          <SelectItem value="ENTERPRISE_1">Enterprise</SelectItem>
+                          <SelectItem value="B2B">Wholesale (B2B)</SelectItem>
+                          <SelectItem value="ENTERPRISE_1">Enterprise Tier 1</SelectItem>
+                          <SelectItem value="ENTERPRISE_2">Enterprise Tier 2</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

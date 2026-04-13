@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute, useAuth } from "@/contexts/auth-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,22 +106,34 @@ export default function MediaLibraryPage() {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-6 px-2 sm:px-0">
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="md:col-span-2">
-              <CardHeader className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-lg sm:text-xl">Media Library</CardTitle>
-                    <CardDescription className="text-sm">Browse your uploaded assets</CardDescription>
+        <div className="space-y-5 px-2 sm:px-0">
+          <div className="grid gap-5 md:grid-cols-3">
+            {/* Media Library — table card style */}
+            <div className="md:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+              {/* Icon header row */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
+                    <ImageIcon className="h-4 w-4 text-slate-600" />
                   </div>
+                  <div>
+                    <p className="font-semibold text-slate-900 text-sm">Media Library</p>
+                    <p className="text-xs text-slate-500">Browse your uploaded assets</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
                   <input ref={headerInputRef} type="file" className="hidden" onChange={onFilePicked} disabled={uploading} />
-                  <Button disabled={uploading} onClick={() => headerInputRef.current?.click()} className="w-full sm:w-auto">
+                  <Button
+                    disabled={uploading}
+                    onClick={() => headerInputRef.current?.click()}
+                    className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                  >
                     <Upload className="h-4 w-4 mr-2" /> {uploading ? "Uploading..." : "Choose Files"}
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+
+              <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {files.map((f) => {
                     const isImage = String(f.mimeType || '').startsWith('image/');
@@ -165,69 +176,73 @@ export default function MediaLibraryPage() {
                     );
                   })}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg">Quick Upload</CardTitle>
-                <CardDescription className="text-sm">Drag and drop files here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className={`border-2 border-dashed ${isDragging ? 'border-primary' : 'border-muted-foreground/25'} rounded-lg p-8 text-center transition-colors`}
-                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={async (e) => { e.preventDefault(); setIsDragging(false); if (!user) return; const file = e.dataTransfer.files?.[0]; if (file) { setSelectedFile(file); } }}
-                >
-                  <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mb-4">Drag files here or click to browse</p>
-                  <input ref={quickInputRef} type="file" className="hidden" onChange={onFilePicked} disabled={uploading} />
-                  <Button variant="outline" disabled={uploading} onClick={() => quickInputRef.current?.click()}>{uploading ? 'Uploading...' : 'Choose Files'}</Button>
-                  {selectedPreviewUrl && (
-                    <div className="mt-4 relative">
-                      <img src={selectedPreviewUrl} alt={selectedFile?.name || 'Selected image'} className="w-full h-32 object-cover rounded" />
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedFile(null); setSelectedPreviewUrl(null); }}
-                        className="absolute -top-2 -right-2 bg-black/70 text-white rounded-full h-7 w-7 flex items-center justify-center shadow hover:bg-black/80"
-                        aria-label="Remove selected image"
-                        title="Remove"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  )}
-                </div>
+            {/* Quick Upload panel */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+              <div className="mb-4">
+                <p className="font-semibold text-slate-900 text-sm">Quick Upload</p>
+                <p className="text-xs text-slate-500 mt-0.5">Drag and drop files here</p>
+              </div>
 
-                <div className="mt-6 space-y-4">
-                  {selectedFile && (
-                    <div className="text-sm text-muted-foreground">Selected: {selectedFile.name}</div>
-                  )}
-                  <div>
-                    <Label htmlFor="alt-text">Alt Text</Label>
-                    <Input id="alt-text" placeholder="Describe the image..." value={altText} onChange={(e) => setAltText(e.target.value)} />
+              <div
+                className={`border-2 border-dashed ${isDragging ? 'border-primary' : 'border-muted-foreground/25'} rounded-lg p-8 text-center transition-colors`}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={async (e) => { e.preventDefault(); setIsDragging(false); if (!user) return; const file = e.dataTransfer.files?.[0]; if (file) { setSelectedFile(file); } }}
+              >
+                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground mb-4">Drag files here or click to browse</p>
+                <input ref={quickInputRef} type="file" className="hidden" onChange={onFilePicked} disabled={uploading} />
+                <Button variant="outline" disabled={uploading} onClick={() => quickInputRef.current?.click()}>{uploading ? 'Uploading...' : 'Choose Files'}</Button>
+                {selectedPreviewUrl && (
+                  <div className="mt-4 relative">
+                    <img src={selectedPreviewUrl} alt={selectedFile?.name || 'Selected image'} className="w-full h-32 object-cover rounded" />
+                    <button
+                      type="button"
+                      onClick={() => { setSelectedFile(null); setSelectedPreviewUrl(null); }}
+                      className="absolute -top-2 -right-2 bg-black/70 text-white rounded-full h-7 w-7 flex items-center justify-center shadow hover:bg-black/80"
+                      aria-label="Remove selected image"
+                      title="Remove"
+                    >
+                      ×
+                    </button>
                   </div>
-                  <div>
-                    <Label htmlFor="caption">Caption</Label>
-                    <Input id="caption" placeholder="Optional caption..." value={caption} onChange={(e) => setCaption(e.target.value)} />
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
-                    <Label htmlFor="public">Make public</Label>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={onCancel} disabled={uploading}>Cancel</Button>
-                    <Button onClick={onSave} disabled={uploading || !selectedFile}>{uploading ? 'Saving...' : 'Save'}</Button>
-                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 space-y-4">
+                {selectedFile && (
+                  <div className="text-sm text-muted-foreground">Selected: {selectedFile.name}</div>
+                )}
+                <div>
+                  <Label htmlFor="alt-text">Alt Text</Label>
+                  <Input id="alt-text" placeholder="Describe the image..." value={altText} onChange={(e) => setAltText(e.target.value)} />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <Label htmlFor="caption">Caption</Label>
+                  <Input id="caption" placeholder="Optional caption..." value={caption} onChange={(e) => setCaption(e.target.value)} />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch id="public" checked={isPublic} onCheckedChange={setIsPublic} />
+                  <Label htmlFor="public">Make public</Label>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={onCancel} disabled={uploading}>Cancel</Button>
+                  <Button
+                    onClick={onSave}
+                    disabled={uploading || !selectedFile}
+                    className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                  >
+                    {uploading ? 'Saving...' : 'Save'}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>
   );
 }
-
-

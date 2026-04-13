@@ -205,41 +205,48 @@ export function AnalyticsContent() {
             toToSend = customFrom;
         }
 
-        const res = await api.getDashboardAnalytics(
-            rangeToSend as any,
-            fromToSend || undefined,
-            toToSend || undefined,
-            salesChannelId,
-            true // usePSTFilter
-        );
-        if (res.success && res.data) {
-            setMetrics(res.data);
-        } else {
+        try {
+            const [res, geoRes] = await Promise.all([
+                api.getDashboardAnalytics(
+                    rangeToSend as any,
+                    fromToSend || undefined,
+                    toToSend || undefined,
+                    salesChannelId,
+                    true // usePSTFilter
+                ),
+                api.getSalesByRegion(
+                    rangeToSend as any,
+                    fromToSend || undefined,
+                    toToSend || undefined,
+                    undefined,
+                    undefined,
+                    salesChannelId
+                )
+            ]);
+
+            if (res.success && res.data) {
+                setMetrics(res.data);
+            } else {
+                setMetrics(null);
+            }
+
+            if (geoRes.success && geoRes.data) {
+                const regions = geoRes.data as any[];
+                const totalGeoRevenue = regions.reduce((sum, r) => sum + (r.revenue || 0), 0) || 1;
+                const rows = regions.map(r => ({
+                    ...r,
+                    percentage: Number(((r.revenue / totalGeoRevenue) * 100).toFixed(1))
+                }));
+                setGeoRows(rows);
+            } else {
+                setGeoRows([]);
+            }
+        } catch (error) {
             setMetrics(null);
-        }
-
-        // Fetch regional data from backend to ensure consistency (PST logic + full dataset)
-        const geoRes = await api.getSalesByRegion(
-            rangeToSend as any,
-            fromToSend || undefined,
-            toToSend || undefined,
-            undefined,
-            undefined,
-            salesChannelId
-        );
-
-        if (geoRes.success && geoRes.data) {
-            const regions = geoRes.data as any[];
-            const totalGeoRevenue = regions.reduce((sum, r) => sum + (r.revenue || 0), 0) || 1;
-            const rows = regions.map(r => ({
-                ...r,
-                percentage: Number(((r.revenue / totalGeoRevenue) * 100).toFixed(1))
-            }));
-            setGeoRows(rows);
-        } else {
             setGeoRows([]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     // load on mount and when filters change

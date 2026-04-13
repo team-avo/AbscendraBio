@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Building } from 'lucide-react';
 import { api, Customer } from '@/lib/api';
 import { SalesRoleFilters } from '@/components/customers/sales-role-filters';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -48,49 +48,44 @@ export default function WholesaleCustomersPage() {
         isLoading: false,
     });
 
-    const ITEMS_PER_PAGE = 10;
+    // Fetch both B2C and B2B with a higher per-type limit so combining stays accurate.
+    // We show up to 20 combined results per page, fetching 20 of each type to cover the combined page.
+    const ITEMS_PER_PAGE = 20;
+    const PER_TYPE_LIMIT = 20;
 
     const fetchCustomers = async () => {
         try {
             setLoading(true);
 
+            const commonParams = {
+                search: searchTerm || undefined,
+                isApproved: true,
+                isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
+                salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
+                salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
+            };
+
             // Fetch both B2C and B2B customers
             const [b2cResponse, b2bResponse] = await Promise.all([
-                api.getCustomers({
-                    page: currentPage,
-                    limit: ITEMS_PER_PAGE,
-                    search: searchTerm || undefined,
-                    customerType: 'B2C',
-                    isApproved: true,
-                    isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
-                    salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
-                    salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
-                }),
-                api.getCustomers({
-                    page: currentPage,
-                    limit: ITEMS_PER_PAGE,
-                    search: searchTerm || undefined,
-                    customerType: 'B2B',
-                    isApproved: true,
-                    isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
-                    salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
-                    salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
-                })
+                api.getCustomers({ ...commonParams, page: currentPage, limit: PER_TYPE_LIMIT, customerType: 'B2C' }),
+                api.getCustomers({ ...commonParams, page: currentPage, limit: PER_TYPE_LIMIT, customerType: 'B2B' }),
             ]);
 
-            // Combine results
-            const allCustomers = [
-                ...(b2cResponse.success && b2cResponse.data ? b2cResponse.data.customers : []),
-                ...(b2bResponse.success && b2bResponse.data ? b2bResponse.data.customers : [])
-            ];
+            const b2cCustomers = b2cResponse.success && b2cResponse.data ? b2cResponse.data.customers : [];
+            const b2bCustomers = b2bResponse.success && b2bResponse.data ? b2bResponse.data.customers : [];
+            const allCustomers = [...b2cCustomers, ...b2bCustomers];
 
             const totalB2C = b2cResponse.success && b2cResponse.data ? b2cResponse.data.pagination.total : 0;
             const totalB2B = b2bResponse.success && b2bResponse.data ? b2bResponse.data.pagination.total : 0;
             const combinedTotal = totalB2C + totalB2B;
 
+            // Total pages = max pages across both types (we always fetch both in parallel per page)
+            const pagesB2C = b2cResponse.success && b2cResponse.data ? b2cResponse.data.pagination.pages : 0;
+            const pagesB2B = b2bResponse.success && b2bResponse.data ? b2bResponse.data.pagination.pages : 0;
+
             setCustomers(allCustomers);
             setTotalCustomers(combinedTotal);
-            setTotalPages(Math.ceil(combinedTotal / ITEMS_PER_PAGE));
+            setTotalPages(Math.max(pagesB2C, pagesB2B));
         } catch (error) {
             logger.error('Failed to fetch customers:', { error });
             toast.error('Failed to load customers');
@@ -270,70 +265,66 @@ export default function WholesaleCustomersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
             <DashboardLayout>
-                <div className="space-y-6">
+                <div className="space-y-5 px-2 sm:px-0">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight">Wholesale Customers</h1>
-                            <p className="text-muted-foreground">
-                                Manage your wholesale customers
-                            </p>
+                            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Wholesale Customers</h1>
+                            <p className="text-sm text-slate-500 mt-0.5">Manage your B2C and B2B wholesale accounts</p>
                         </div>
-                        <Button onClick={() => setShowCreateDialog(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Customer
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200">
+                                <Building className="h-3.5 w-3.5" />Wholesale
+                            </span>
+                            <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                                <Plus className="mr-1.5 h-4 w-4" />Add Customer
+                            </Button>
+                        </div>
                     </div>
 
-                    {/* Filters */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Filters</CardTitle>
-                            <CardDescription>Search and filter wholesale customers</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search customers by name, email, or mobile..."
-                                            value={searchTerm}
-                                            onChange={(e) => handleSearch(e.target.value)}
-                                            className="pl-10"
-                                        />
-                                    </div>
-                                </div>
-                                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                                    <SelectTrigger className="w-full sm:w-[180px]">
-                                        <SelectValue placeholder="Filter by status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                    {/* Filter Bar */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search customers by name, email, or mobile..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-center">
+                            <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                                    <SelectValue placeholder="Filter by status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <SalesRoleFilters
+                                selectedSalesRepId={salesRepFilter}
+                                selectedSalesManagerId={salesManagerFilter}
+                                onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
+                                onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
+                            />
+                        </div>
+                    </div>
 
-                                <SalesRoleFilters
-                                    selectedSalesRepId={salesRepFilter}
-                                    selectedSalesManagerId={salesManagerFilter}
-                                    onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
-                                    onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
-                                />
+                    {/* Table Card */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <Building className="h-4 w-4 text-blue-500" />
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Customers Table */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Wholesale Customers List</CardTitle>
-                            <CardDescription>
-                                {loading ? 'Loading...' : `Showing ${customers.length} of ${totalCustomers} wholesale customers`}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                            <div>
+                                <h2 className="text-sm font-semibold text-slate-800">Wholesale Customers</h2>
+                                <p className="text-xs text-slate-400">{totalCustomers.toLocaleString()} customers</p>
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto">
                             <CustomersTable
                                 customers={customers}
                                 loading={loading}
@@ -346,9 +337,10 @@ export default function WholesaleCustomersPage() {
                                 onPageChange={setCurrentPage}
                                 onExportAll={handleExportAll}
                                 onEmailReport={() => setShowEmailDialog(true)}
+                                onRefresh={fetchCustomers}
                             />
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     {/* Dialogs */}
                     <CreateCustomerDialog

@@ -8,7 +8,6 @@ import logger from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Mail, ShoppingCart, RefreshCw } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -130,7 +129,8 @@ export default function AbandonedCartsPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'SUPER_ADMIN', 'STAFF']}>
             <DashboardLayout>
-                <div className="space-y-3 sm:space-y-4 lg:space-y-6 px-2 sm:px-0">
+                <div className="space-y-5 px-2 sm:px-0">
+                    {/* Header */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
                             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Abandoned Carts</h1>
@@ -142,26 +142,35 @@ export default function AbandonedCartsPage() {
                             <Button
                                 onClick={handleSendAllClick}
                                 disabled={loading || sendingAll || carts.length === 0}
-                                variant="outline"
-                                className="gap-2"
+                                className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium disabled:opacity-50 gap-2"
                             >
                                 {sendingAll ? <LoadingSpinner size={16} /> : <Mail className="h-4 w-4" />}
                                 Send for All
                             </Button>
-                            <Button onClick={fetchAbandonedCarts} disabled={loading} variant="outline" size="icon">
+                            <Button
+                                onClick={fetchAbandonedCarts}
+                                disabled={loading}
+                                variant="outline"
+                                size="icon"
+                                className="rounded-xl"
+                            >
                                 {loading ? <LoadingSpinner size={16} /> : <RefreshCw className="h-4 w-4" />}
                             </Button>
                         </div>
                     </div>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Customer Carts</CardTitle>
-                            <CardDescription>
-                                List of carts inactive.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                    {/* Table Card */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                                <ShoppingCart className="h-4 w-4 text-orange-500" />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-semibold text-slate-900">Customer Carts</h2>
+                                <p className="text-xs text-slate-500">List of inactive carts</p>
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto">
                             {loading ? (
                                 <div className="flex justify-center p-8">
                                     <LoadingSpinner size={32} className="text-muted-foreground" />
@@ -235,7 +244,7 @@ export default function AbandonedCartsPage() {
 
                             {/* Pagination Controls */}
                             {carts.length > 0 && totalPages > 1 && (
-                                <div className="mt-4 pt-4 border-t">
+                                <div className="mt-4 pt-4 border-t px-6 pb-4">
                                     <Pagination
                                         currentPage={page}
                                         totalPages={totalPages}
@@ -243,8 +252,8 @@ export default function AbandonedCartsPage() {
                                     />
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     <ConfirmationDialog
                         open={showSendAllConfirm}

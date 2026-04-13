@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Crown } from 'lucide-react';
 import { api, Customer } from '@/lib/api';
 import { SalesRoleFilters } from '@/components/customers/sales-role-filters';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -48,49 +48,40 @@ export default function EnterpriseCustomersPage() {
         isLoading: false,
     });
 
-    const ITEMS_PER_PAGE = 10;
+    const PER_TYPE_LIMIT = 20;
 
     const fetchCustomers = async () => {
         try {
             setLoading(true);
 
-            // Fetch both Enterprise 1 and Enterprise 2 customers
+            const commonParams = {
+                search: searchTerm || undefined,
+                isApproved: true,
+                isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
+                salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
+                salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
+            };
+
+            // Fetch both Enterprise 1 and Enterprise 2 customers in parallel
             const [ent1Response, ent2Response] = await Promise.all([
-                api.getCustomers({
-                    page: currentPage,
-                    limit: ITEMS_PER_PAGE,
-                    search: searchTerm || undefined,
-                    customerType: 'ENTERPRISE_1',
-                    isApproved: true,
-                    isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
-                    salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
-                    salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
-                }),
-                api.getCustomers({
-                    page: currentPage,
-                    limit: ITEMS_PER_PAGE,
-                    search: searchTerm || undefined,
-                    customerType: 'ENTERPRISE_2',
-                    isApproved: true,
-                    isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
-                    salesRepId: salesRepFilter === 'all' ? undefined : salesRepFilter,
-                    salesManagerId: salesManagerFilter === 'all' ? undefined : salesManagerFilter,
-                })
+                api.getCustomers({ ...commonParams, page: currentPage, limit: PER_TYPE_LIMIT, customerType: 'ENTERPRISE_1' }),
+                api.getCustomers({ ...commonParams, page: currentPage, limit: PER_TYPE_LIMIT, customerType: 'ENTERPRISE_2' }),
             ]);
 
-            // Combine results
-            const allCustomers = [
-                ...(ent1Response.success && ent1Response.data ? ent1Response.data.customers : []),
-                ...(ent2Response.success && ent2Response.data ? ent2Response.data.customers : [])
-            ];
+            const ent1Customers = ent1Response.success && ent1Response.data ? ent1Response.data.customers : [];
+            const ent2Customers = ent2Response.success && ent2Response.data ? ent2Response.data.customers : [];
+            const allCustomers = [...ent1Customers, ...ent2Customers];
 
             const totalEnt1 = ent1Response.success && ent1Response.data ? ent1Response.data.pagination.total : 0;
             const totalEnt2 = ent2Response.success && ent2Response.data ? ent2Response.data.pagination.total : 0;
             const combinedTotal = totalEnt1 + totalEnt2;
 
+            const pagesEnt1 = ent1Response.success && ent1Response.data ? ent1Response.data.pagination.pages : 0;
+            const pagesEnt2 = ent2Response.success && ent2Response.data ? ent2Response.data.pagination.pages : 0;
+
             setCustomers(allCustomers);
             setTotalCustomers(combinedTotal);
-            setTotalPages(Math.ceil(combinedTotal / ITEMS_PER_PAGE));
+            setTotalPages(Math.max(pagesEnt1, pagesEnt2));
         } catch (error) {
             logger.error('Failed to fetch customers:', { error });
             toast.error('Failed to load customers');
@@ -270,70 +261,66 @@ export default function EnterpriseCustomersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
             <DashboardLayout>
-                <div className="space-y-6">
+                <div className="space-y-5 px-2 sm:px-0">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight">Enterprise Customers</h1>
-                            <p className="text-muted-foreground">
-                                Manage your Enterprise customers
-                            </p>
+                            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Enterprise Customers</h1>
+                            <p className="text-sm text-slate-500 mt-0.5">Manage your Enterprise Tier 1 and Tier 2 accounts</p>
                         </div>
-                        <Button onClick={() => setShowCreateDialog(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Customer
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200">
+                                <Crown className="h-3.5 w-3.5" />Enterprise
+                            </span>
+                            <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                                <Plus className="mr-1.5 h-4 w-4" />Add Customer
+                            </Button>
+                        </div>
                     </div>
 
-                    {/* Filters */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Filters</CardTitle>
-                            <CardDescription>Search and filter enterprise customers</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search customers by name, email, or mobile..."
-                                            value={searchTerm}
-                                            onChange={(e) => handleSearch(e.target.value)}
-                                            className="pl-10"
-                                        />
-                                    </div>
-                                </div>
-                                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                                    <SelectTrigger className="w-full sm:w-[180px]">
-                                        <SelectValue placeholder="Filter by status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                    {/* Filter Bar */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search customers by name, email, or mobile..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-center">
+                            <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
+                                    <SelectValue placeholder="Filter by status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <SalesRoleFilters
+                                selectedSalesRepId={salesRepFilter}
+                                selectedSalesManagerId={salesManagerFilter}
+                                onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
+                                onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
+                            />
+                        </div>
+                    </div>
 
-                                <SalesRoleFilters
-                                    selectedSalesRepId={salesRepFilter}
-                                    selectedSalesManagerId={salesManagerFilter}
-                                    onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
-                                    onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
-                                />
+                    {/* Table Card */}
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                                <Crown className="h-4 w-4 text-amber-500" />
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Customers Table */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Enterprise Customers List</CardTitle>
-                            <CardDescription>
-                                {loading ? 'Loading...' : `Showing ${customers.length} of ${totalCustomers} enterprise customers`}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                            <div>
+                                <h2 className="text-sm font-semibold text-slate-800">Enterprise Customers</h2>
+                                <p className="text-xs text-slate-400">{totalCustomers.toLocaleString()} customers</p>
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto">
                             <CustomersTable
                                 customers={customers}
                                 loading={loading}
@@ -346,9 +333,10 @@ export default function EnterpriseCustomersPage() {
                                 onPageChange={setCurrentPage}
                                 onExportAll={handleExportAll}
                                 onEmailReport={() => setShowEmailDialog(true)}
+                                onRefresh={fetchCustomers}
                             />
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     {/* Dialogs */}
                     <CreateCustomerDialog

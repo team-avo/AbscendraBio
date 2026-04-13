@@ -41,8 +41,9 @@ import logger from '@/lib/logger';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { SendReportDialog } from '@/components/shared/send-report-dialog';
 import { Mail } from 'lucide-react';
+import { toast } from 'sonner';
 
-function ProductDetail({ product }: { product: Product }) {
+function ProductDetail({ product, onEdit }: { product: Product; onEdit?: () => void }) {
   const primaryImage = product.images?.[0];
   const variants = product.variants || [];
   const origin = (process.env.FRONTEND_URL || (typeof window !== 'undefined' ? window.location.origin : '')) as string;
@@ -99,29 +100,35 @@ function ProductDetail({ product }: { product: Product }) {
           </a>
           <Button variant="outline" size="sm" onClick={handleCopy}>Copy link</Button>
           {copied && <span className="text-xs text-green-600">Copied</span>}
+          {onEdit && (
+            <Button variant="outline" size="sm" onClick={onEdit}>
+              <Edit className="h-4 w-4 mr-1" />
+              Edit Product
+            </Button>
+          )}
         </div>
       </div>
       <div>
         <div className="font-medium mb-2">Variants ({variants.length})</div>
-        <div className="rounded-md border">
-          <Table className="table-fixed w-full">
+        <div className="rounded-md border overflow-x-auto">
+          <Table className="w-full min-w-[420px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-48 sm:w-56">SKU</TableHead>
-                <TableHead className="w-48 sm:w-56">ShipStation SKU</TableHead>
-                <TableHead className="">Name</TableHead>
-                <TableHead className="text-right w-24 sm:w-28">Price</TableHead>
+                <TableHead className="w-32 min-w-[120px]">SKU</TableHead>
+                <TableHead className="w-28 min-w-[100px]">SS SKU</TableHead>
+                <TableHead className="min-w-[120px]">Name</TableHead>
+                <TableHead className="text-right w-20 min-w-[72px]">Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {variants.map(v => (
                 <TableRow key={v.id}>
-                  <TableCell className="break-all whitespace-normal text-xs sm:text-sm leading-snug">{v.sku}</TableCell>
-                  <TableCell className="break-all whitespace-normal text-xs sm:text-sm leading-snug text-muted-foreground">
+                  <TableCell className="font-mono break-all text-xs leading-snug align-top py-2">{v.sku}</TableCell>
+                  <TableCell className="break-all text-xs leading-snug text-muted-foreground align-top py-2">
                     {v.shipstationSku || '-'}
                   </TableCell>
-                  <TableCell className="break-words whitespace-normal text-xs sm:text-sm leading-snug">{v.name}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(v.salePrice || v.regularPrice)}</TableCell>
+                  <TableCell className="text-xs sm:text-sm leading-snug align-top py-2 whitespace-normal">{v.name}</TableCell>
+                  <TableCell className="text-right text-sm font-medium align-top py-2">{formatCurrency(v.salePrice || v.regularPrice)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -193,8 +200,23 @@ export function ProductsTable({
   const isMobile = useIsMobile();
 
   const openViewProduct = async (productId: string) => {
-    // Navigate to product edit page
-    window.location.href = `/products/edit/${productId}`;
+    setViewLoading(true);
+    setViewDialogOpen(true);
+    try {
+      const response = await api.getProduct(productId);
+      if (response.success && response.data) {
+        setViewProduct(response.data);
+      } else {
+        toast.error('Failed to load product');
+        setViewDialogOpen(false);
+      }
+    } catch (error) {
+      logger.error('Failed to load product', { error });
+      toast.error('Failed to load product');
+      setViewDialogOpen(false);
+    } finally {
+      setViewLoading(false);
+    }
   };
 
   const openPricingDialog = (product: Product) => {
@@ -722,7 +744,7 @@ export function ProductsTable({
 
       {/* View Product Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="w-[96vw] sm:w-[640px] overflow-visible">
+        <DialogContent className="w-[96vw] sm:max-w-[680px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Product Details</DialogTitle>
             <DialogDescription>Full product information</DialogDescription>
@@ -730,7 +752,7 @@ export function ProductsTable({
           {viewLoading ? (
             <div className="py-8 text-center text-muted-foreground">Loading...</div>
           ) : viewProduct ? (
-            <ProductDetail product={viewProduct} />
+            <ProductDetail product={viewProduct} onEdit={() => { setViewDialogOpen(false); onEdit(viewProduct); }} />
           ) : (
             <div className="py-8 text-center text-red-600">Failed to load product.</div>
           )}
