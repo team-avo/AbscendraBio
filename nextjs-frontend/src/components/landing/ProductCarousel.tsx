@@ -1,18 +1,13 @@
 "use client";
 
-import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { api } from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { Barlow } from "next/font/google";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import ProductDetailView from "@/components/products/ProductDetailView";
 import { ProductCard } from "@/components/products/ProductCard";
-
-const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
 
 export function ProductCarousel() {
@@ -21,7 +16,6 @@ export function ProductCarousel() {
   const [items, setItems] = useState<any[]>([]);
   const [quickViewId, setQuickViewId] = useState<string | null>(null);
   const { user } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     let active = true;
@@ -74,14 +68,8 @@ export function ProductCarousel() {
   }
 
   return (
-    <section className="py-20 bg-[#F9FBFF] relative overflow-hidden" suppressHydrationWarning>
-      <div className="absolute inset-0 opacity-0" />
-
+    <div className="bg-white relative" suppressHydrationWarning>
       <div className="max-w-7xl mx-auto px-6">
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-16">
-          <h2 className={`text-5xl font-bold text-[#070B14] tracking-tight mb-4 ${barlow.className}`}>Popular Peptides</h2>
-          <p className="text-xl text-gray-500 font-medium max-w-2xl mx-auto">Some of the most adored peptides for your practice</p>
-        </motion.div>
 
         {/* Mobile: auto-advancing carousel (all items) */}
         <div className="md:hidden overflow-hidden relative">
@@ -143,7 +131,7 @@ export function ProductCarousel() {
           </DialogContent>
         </Dialog>
       )}
-    </section>
+    </div>
   );
 }
 

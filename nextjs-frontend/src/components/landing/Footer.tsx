@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { ArrowRight, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -15,8 +14,8 @@ const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700",
 
 export function Footer() {
   const pathname = usePathname();
-  const isDashboardRoute = pathname?.startsWith('/admin') || 
-                          pathname?.startsWith('/dashboard') || 
+  const isDashboardRoute = pathname?.startsWith('/admin') ||
+                          pathname?.startsWith('/dashboard') ||
                           pathname?.startsWith('/account') ||
                           pathname?.startsWith('/inventory') ||
                           pathname?.startsWith('/orders') ||
@@ -81,108 +80,128 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#F9FBFF] overflow-hidden border-t border-blue-50">
-      <section className="relative py-20">
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="text-center">
-            <div className="bg-white border border-blue-50 shadow-[0_8px_30px_rgba(27,45,79,0.04)] rounded-[3rem] p-12 mb-12">
-              <motion.h2 className={`text-5xl sm:text-6xl font-black text-[#070B14] tracking-tight mb-6 ${barlow.className}`}>Contact Us - Inquire Today</motion.h2>
-              <p className="text-xl text-gray-500 font-medium mb-8 max-w-2xl mx-auto">Join leading research facilities and clinics across the country partnering for superior outcomes.</p>
-              <motion.div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto mb-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-                <Input
-                  placeholder="Enter your email"
-                  className="bg-white border border-blue-100 text-[#070B14] placeholder:text-gray-400 rounded-2xl px-6 py-3 backdrop-blur-sm shadow-sm h-14"
-                  value={inquiryEmail}
-                  onChange={(e) => setInquiryEmail(e.target.value)}
-                  type="email"
-                />
-                <Button
-                  size="lg"
-                  className="bg-[#1B2D4F] text-white hover:bg-primary border-0 rounded-2xl px-8 h-14 shadow-xl shadow-primary/10 transition-all duration-300 group"
-                  onClick={handleInquiry}
-                  disabled={isSendingInquiry}
-                >
-                  <span className="flex items-center gap-2 font-bold uppercase tracking-widest text-xs">
-                    {isSendingInquiry ? 'Sending...' : 'Get Started'}
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+    <footer className={`relative bg-[#070B14] text-white overflow-hidden ${barlow.className}`}>
 
-      <div className="border-t border-blue-100/30 py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-            <div className="space-y-6">
-              <h3 className={`text-2xl font-black text-[#070B14] tracking-tighter ${barlow.className}`}>{footerSettings?.siteTitle || 'ASCENDRA BIO'}</h3>
-              <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-xs">
-                {footerSettings?.siteDescription || 'Uncompromising standards for 99%+ pure research peptides. Supporting cutting-edge clinical discovery nationwide.'}
+      {/* ── CTA Banner ── */}
+      <div className="relative border-b border-white/[0.06]">
+        <div className="max-w-7xl mx-auto px-6 py-16 sm:py-20">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+            <div className="max-w-lg text-center lg:text-left">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3">
+                Ready to elevate your research?
+              </h2>
+              <p className="text-sm text-gray-400 font-medium leading-relaxed">
+                Join leading clinics and research facilities partnering with Ascendra Bio for superior outcomes.
               </p>
             </div>
-
-            <div>
-              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-[#070B14] mb-6 ${barlow.className}`}>{footerSettings?.sections?.[0]?.title || 'Products'}</h4>
-              <ul className="space-y-4">
-                {topProducts.length > 0 ? (
-                  topProducts.map((product) => (
-                    <li key={product.id}>
-                      <Link href={`/landing/products/${product.id}`} className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">
-                        {product.name}
-                      </Link>
-                    </li>
-                  ))
-                ) : (
-                  ['BPC-157', 'Semaglutide', 'Tirzepatide', 'AOD-9604'].map((name) => (
-                    <li key={name}>
-                      <Link href="/landing/products" className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">
-                        {name}
-                      </Link>
-                    </li>
-                  ))
-                )}
-                <li>
-                  <Link href="/landing/products" className="text-primary font-black text-sm uppercase tracking-widest hover:underline decoration-2 underline-offset-4">
-                    View Catalog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-[#070B14] mb-6 ${barlow.className}`}>Support</h4>
-              <ul className="space-y-3">
-                {[
-                  { title: 'Research Hub', href: '/landing/third-party-testing' },
-                  { title: 'Quality Analysis', href: '/landing/third-party-testing' },
-                  { title: 'Clinical Inquiry', href: '#' },
-                  { title: 'About Our Lab', href: '#' },
-                ].map((lnk, i) => (
-                  <li key={i}>
-                    <Link href={lnk.href} className="text-gray-500 font-bold text-sm hover:text-primary transition-colors">{lnk.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-primary/[0.03] border-l-4 border-primary p-6 rounded-2xl">
-              <h4 className={`text-sm font-black uppercase tracking-[0.2em] text-primary mb-3 ${barlow.className}`}>Regulatory Notice</h4>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium italic">
-                Products sold on this website are intended for <strong>PROFESSIONAL USE ONLY</strong>. Not for human consumption. Use exclusively in a laboratory or clinical research setting by licensed researchers.
-              </p>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-md">
+              <Input
+                placeholder="Enter your email"
+                className="bg-white/[0.06] border-white/[0.08] text-white placeholder:text-gray-500 rounded-xl px-5 h-12 text-sm focus:ring-1 focus:ring-white/20 focus:border-white/20"
+                value={inquiryEmail}
+                onChange={(e) => setInquiryEmail(e.target.value)}
+                type="email"
+              />
+              <Button
+                onClick={handleInquiry}
+                disabled={isSendingInquiry}
+                className="bg-[#4D7DF2] hover:bg-[#3D6DE2] text-white border-0 rounded-xl px-6 h-12 text-sm font-bold tracking-wide transition-all duration-200 shrink-0"
+              >
+                {isSendingInquiry ? 'Sending...' : 'Get Started'}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-blue-100/20 py-8 bg-white/50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-              © {new Date().getFullYear()} ASCENDRA BIO SCIENCES. ALL RIGHTS RESERVED.
+      {/* ── Main Grid ── */}
+      <div className="max-w-7xl mx-auto px-6 py-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-16">
+
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-1 space-y-5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#4D7DF2]/10 flex items-center justify-center">
+                <FlaskConical className="w-4 h-4 text-[#4D7DF2]" />
+              </div>
+              <span className="text-lg font-bold tracking-tight">{footerSettings?.siteTitle || 'ASCENDRA BIO'}</span>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed max-w-[240px]">
+              {footerSettings?.siteDescription || '99%+ purity research peptides. COA-verified, GMP manufactured, trusted by researchers nationwide.'}
             </p>
+          </div>
+
+          {/* Products */}
+          <div>
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-5">
+              {footerSettings?.sections?.[0]?.title || 'Products'}
+            </h4>
+            <ul className="space-y-3">
+              {topProducts.length > 0 ? (
+                topProducts.map((product) => (
+                  <li key={product.id}>
+                    <Link href={`/landing/products/${product.id}`} className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
+                      {product.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                ['BPC-157', 'Semaglutide', 'Tirzepatide', 'AOD-9604'].map((name) => (
+                  <li key={name}>
+                    <Link href="/landing/products" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
+                      {name}
+                    </Link>
+                  </li>
+                ))
+              )}
+              <li>
+                <Link href="/landing/products" className="text-sm text-[#4D7DF2] font-semibold hover:text-[#6D9BFF] transition-colors duration-200">
+                  View All &rarr;
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-5">Resources</h4>
+            <ul className="space-y-3">
+              {[
+                { title: 'Lab Reports', href: '/landing/third-party-testing' },
+                { title: 'Quality Analysis', href: '/landing/third-party-testing' },
+                { title: 'Clinical Inquiry', href: '#' },
+                { title: 'About Us', href: '#' },
+              ].map((lnk, i) => (
+                <li key={i}>
+                  <Link href={lnk.href} className="text-sm text-gray-400 hover:text-white transition-colors duration-200">{lnk.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Regulatory */}
+          <div>
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-5">Regulatory</h4>
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                Products are intended for <strong className="text-gray-300">professional use only</strong>. Not for human consumption. Use exclusively in laboratory or clinical research settings by licensed researchers.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Bottom Bar ── */}
+      <div className="border-t border-white/[0.06]">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-[11px] text-gray-600 tracking-wide">
+            &copy; {new Date().getFullYear()} Ascendra Bio Sciences. All rights reserved.
+          </p>
+          <div className="flex items-center gap-5">
+            <Link href="#" className="text-[11px] text-gray-600 hover:text-gray-400 transition-colors">Privacy</Link>
+            <Link href="#" className="text-[11px] text-gray-600 hover:text-gray-400 transition-colors">Terms</Link>
           </div>
         </div>
       </div>
@@ -191,5 +210,3 @@ export function Footer() {
 }
 
 export default Footer;
-
-
