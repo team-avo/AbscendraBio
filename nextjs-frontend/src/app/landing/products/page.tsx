@@ -1,16 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Barlow } from "next/font/google";
 import { useAuth } from "@/contexts/auth-context";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-
-const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
+import { ShieldCheck, FlaskConical, Award } from "lucide-react";
 import ProductsClient from "./products-client";
 import { api, type Product, resolveImageUrl } from "@/lib/api";
 import logger from '@/lib/logger';
+
+const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
+
+const trustBadges = [
+  { icon: ShieldCheck, label: "COA Verified", sub: "Every batch tested" },
+  { icon: FlaskConical, label: "99%+ Purity", sub: "HPLC confirmed" },
+  { icon: Award, label: "GMP Manufactured", sub: "Certified facilities" },
+];
 
 export default function LandingProductsPage() {
   const { user, isAuthenticated } = useAuth();
@@ -23,8 +27,6 @@ export default function LandingProductsPage() {
 
   useEffect(() => {
     const fetchFirstPage = async () => {
-      // Allow fetching products without authentication for landing page visibility
-
       try {
         const limit = 24;
         const response = await api.getStorefrontProducts({ page: 1, limit });
@@ -38,10 +40,9 @@ export default function LandingProductsPage() {
           const firstImage = resolveImageUrl(firstImageRaw);
           const price = firstVariant?.salePrice && firstVariant.salePrice > 0 ? firstVariant.salePrice : firstVariant?.regularPrice ?? 0;
           const originalPrice = firstVariant?.salePrice && firstVariant.salePrice > 0 ? firstVariant?.regularPrice ?? null : null;
-          // Product is in stock if ANY variant has available inventory or OOS selling enabled
           const inStock = (p.variants || []).some((v) => (v.inventory || []).some((inv: any) => inv.sellWhenOutOfStock || (inv.quantity - (inv.reservedQty || 0)) > 0));
           const concentrations = (p.variants || []).map((v) => v.name).filter(Boolean);
-          const rating = p._count?.reviews ? Math.min(5, 4 + (p._count.reviews % 10) / 10) : 4.6; // placeholder until ratings implemented
+          const rating = p._count?.reviews ? Math.min(5, 4 + (p._count.reviews % 10) / 10) : 4.6;
           const reviews = p._count?.reviews ?? 0;
           const category = p.categories && p.categories.length > 0 ? p.categories[0].name : "Assayed Research Peptides";
 
@@ -60,10 +61,8 @@ export default function LandingProductsPage() {
             purity: "99%+",
             concentrations,
             description: p.description || "",
-            // Enrich for client add-to-cart
             _firstVariantId: firstVariant?.id,
             _firstVariantName: firstVariant?.name,
-            // Enrich with variant pricing for customer-type pricing on client
             _variantsPricing: (p.variants || []).map((v) => ({
               id: v.id,
               name: v.name,
@@ -79,7 +78,6 @@ export default function LandingProductsPage() {
         setTotalPages(dataBlock?.pagination?.pages || 1);
       } catch (error) {
         logger.error("Failed to fetch products:", { error: error });
-        // Set empty array on error to prevent crashes
         setProducts([]);
       } finally {
         setLoading(false);
@@ -148,17 +146,13 @@ export default function LandingProductsPage() {
     }
   };
 
-  // Infinite scroll: observe sentinel
+  // Infinite scroll
   useEffect(() => {
-    // Allow infinite scroll for public users too
     const node = sentinelRef.current;
     if (!node) return;
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting) {
-          // Load next page when sentinel is visible
-          loadMore();
-        }
+        if (entry.isIntersecting) loadMore();
       }
     }, { root: null, rootMargin: '200px', threshold: 0 });
     observer.observe(node);
@@ -166,25 +160,73 @@ export default function LandingProductsPage() {
   }, [isAuthenticated, page, totalPages, loadingMore]);
 
   return (
-    <div className="force-light min-h-screen bg-white text-black">
+    <div className={`force-light min-h-screen bg-[#F7F9FC] ${barlow.className}`}>
 
+      {/* ── Hero Banner ── */}
+      <div className="relative bg-[#070B14] overflow-hidden">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+        {/* Blue glow */}
+        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#4D7DF2]/10 rounded-full blur-[120px] pointer-events-none" />
 
+        <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-14">
+          <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
 
-
-      {/* Client list */}
-      <div className="px-4 sm:px-6 lg:px-8">
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading products...</p>
+            {/* Left — Title */}
+            <div>
+              <span className="inline-block text-[10px] font-black uppercase tracking-[0.3em] text-[#4D7DF2] mb-5">
+                Research Catalog
+              </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-white">
+                Premium Peptide
+              </h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight leading-none text-gray-400 mt-1">
+                Products
+              </h1>
+              <p className="mt-5 text-sm text-gray-500 max-w-md leading-relaxed">
+                High-purity research peptides with third-party verified certificates. Available to licensed researchers and clinics.
+              </p>
             </div>
+
+            {/* Right — Trust badges */}
+            <div className="flex flex-row lg:flex-col gap-4 lg:gap-3 pb-1">
+              {trustBadges.map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#4D7DF2]/10 border border-[#4D7DF2]/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-3.5 h-3.5 text-[#4D7DF2]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-white leading-none">{label}</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">{sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom fade into page bg */}
+        <div className="h-8 bg-gradient-to-b from-[#070B14] to-[#F7F9FC]" />
+      </div>
+
+      {/* ── Products Content ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <div className="w-12 h-12 rounded-full border-2 border-[#4D7DF2]/20 border-t-[#4D7DF2] animate-spin" />
+            <p className="text-sm text-gray-400 font-medium">Loading products…</p>
           </div>
         ) : (
           <>
             <ProductsClient products={products} />
             {page < totalPages && (
-              <div ref={sentinelRef} className="py-8 text-center text-sm text-gray-500">Loading more…</div>
+              <div ref={sentinelRef} className="py-10 flex justify-center">
+                <div className="flex items-center gap-3 text-sm text-gray-400">
+                  <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-[#4D7DF2] animate-spin" />
+                  Loading more products…
+                </div>
+              </div>
             )}
           </>
         )}
@@ -192,5 +234,3 @@ export default function LandingProductsPage() {
     </div>
   );
 }
-
-

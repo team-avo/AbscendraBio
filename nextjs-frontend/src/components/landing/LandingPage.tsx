@@ -78,95 +78,80 @@ export default function LandingPage() {
     <div className={`flex flex-col min-h-screen bg-white text-[#070B14] relative overflow-hidden ${barlow.className}`}>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* HERO                                        */}
+      {/* HERO — FULL-WIDTH PRODUCT BANNER            */}
       {/* ═══════════════════════════════════════════ */}
-      <main className="relative z-20 flex items-center min-h-[85vh] w-full px-8 lg:px-20 pt-28 pb-16 bg-white overflow-hidden">
+      <main className="relative z-20 min-h-[92vh] w-full overflow-hidden bg-[#070B14]">
 
-        {/* Ambient Background */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-[#F9FBFF]">
+        {/* Background: product image fills the right / bottom */}
+        <div className="absolute inset-0 z-0">
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#070B14] via-[#070B14] to-transparent" style={{ backgroundSize: '100% 100%', backgroundImage: 'linear-gradient(to right, #070B14 0%, #070B14 42%, transparent 72%)' }} />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#070B14] via-transparent to-[#070B14]/40 lg:hidden" />
+
+          {/* Product image */}
           <motion.div
-            animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 opacity-25 blur-[120px]"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute right-0 top-0 h-full w-full lg:w-[60%]"
+          >
+            <Image
+              src="/hero-vials.png"
+              alt="Ascendra Bio Research Grade Peptides"
+              fill
+              className="object-cover object-center lg:object-right"
+              priority
+            />
+          </motion.div>
+
+          {/* Subtle ambient glow */}
+          <div
+            className="absolute inset-0 z-[5] opacity-30 blur-[100px] pointer-events-none"
             style={{
-              background: "radial-gradient(circle at 10% 20%, #4D7DF2 0%, transparent 50%), radial-gradient(circle at 90% 80%, #7EB3D8 0%, transparent 50%)",
-              backgroundSize: "150% 150%"
+              background: "radial-gradient(circle at 20% 50%, #4D7DF2 0%, transparent 50%), radial-gradient(circle at 80% 30%, #7EB3D8 0%, transparent 40%)",
             }}
           />
-
-          {/* Subtle Molecular Particles */}
-          {isMounted && [...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{
-                x: Math.random() * 100 + "%",
-                y: Math.random() * 100 + "%",
-                opacity: 0
-              }}
-              animate={{
-                x: [null, Math.random() * 100 + "%"],
-                y: [null, Math.random() * 100 + "%"],
-                opacity: [0, 0.12, 0],
-                rotate: [0, 360],
-                scale: [0.5, 1.5, 0.5]
-              }}
-              transition={{
-                duration: 30 + Math.random() * 20,
-                repeat: Infinity,
-                ease: "linear",
-                delay: i * 1.5
-              }}
-              className="absolute w-24 h-24 sm:w-48 sm:h-48"
-            >
-              <svg viewBox="0 0 100 100" className="w-full h-full text-blue-500/10 fill-current">
-                <circle cx="50" cy="30" r="8" />
-                <circle cx="30" cy="70" r="8" />
-                <circle cx="70" cy="70" r="8" />
-                <path d="M50 30 L30 70 M50 30 L70 70 M30 70 L70 70" stroke="currentColor" strokeWidth="1" fill="none" />
-              </svg>
-            </motion.div>
-          ))}
         </div>
 
-        <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-16 relative z-10">
-
-          <div className="flex-1 flex flex-col items-start text-left order-2 lg:order-1">
+        {/* Content */}
+        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-16 h-full flex items-center pt-36 sm:pt-40 pb-20 min-h-[92vh]">
+          <div className="max-w-lg lg:max-w-[40%]">
             {/* Eyebrow */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="flex items-center gap-4 mb-8"
+              className="flex items-center gap-3 mb-6"
             >
-              <span className="w-12 h-[1px] bg-[#4D7DF2]/40" />
-              <span className="text-[10px] sm:text-xs font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">
+              <span className="w-8 h-[1px] bg-[#4D7DF2]" />
+              <span className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-[#4D7DF2] uppercase">
                 {branding.eyebrow}
               </span>
             </motion.div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-[#070B14]">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-white">
               <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
                 className="block"
               >
                 Advanced
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
                 className="block text-[#4D7DF2]"
               >
                 Bio-Research
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.3 }}
-                className="block font-extralight text-gray-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="block font-extralight text-white/30"
               >
                 Purity Redefined.
               </motion.span>
@@ -176,83 +161,58 @@ export default function LandingPage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="mt-8 text-base sm:text-lg text-gray-500 max-w-lg leading-relaxed font-medium"
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="mt-6 text-base sm:text-lg text-gray-400 max-w-md leading-relaxed font-medium"
             >
-              Industry-leading synthesis protocols ensuring 99.9% purity for clinical and academic research standards.
+              Industry-leading synthesis protocols ensuring 99.9% purity for clinical and academic research.
             </motion.p>
 
             {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.7 }}
-              className="mt-10 flex flex-col sm:flex-row items-center gap-8"
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="mt-10 flex flex-col sm:flex-row items-start gap-4"
             >
-              <motion.button
-                whileHover={{ scale: 1.05, x: 5 }}
+              <button
                 onClick={() => setIsContactOpen(true)}
-                className="flex items-center gap-4 text-base font-bold text-[#070B14] group"
+                className="flex items-center gap-3 bg-[#4D7DF2] hover:bg-[#3D6DE2] text-white px-7 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 shadow-lg shadow-[#4D7DF2]/20"
               >
-                <span className="w-14 h-14 rounded-full border-2 border-[#4D7DF2] bg-[#4D7DF2]/5 flex items-center justify-center transition-all shadow-md group-hover:bg-[#4D7DF2] group-hover:text-white">
-                  <ArrowRight className="w-5 h-5" />
-                </span>
                 Start Research
-              </motion.button>
+                <ArrowRight className="w-4 h-4" />
+              </button>
 
               <Link
                 href="/landing/third-party-testing"
-                className="text-base font-bold text-gray-400 hover:text-[#070B14] transition-colors border-b-2 border-transparent hover:border-[#4D7DF2] pb-1"
+                className="flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white px-7 py-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-200"
               >
                 Review Lab Reports
               </Link>
             </motion.div>
-          </div>
 
-          {/* Product Visualization */}
-          <div className="flex-1 relative order-1 lg:order-2 flex justify-center items-center">
+            {/* Inline trust stats */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-              className="relative z-10 w-full max-w-[700px] mix-blend-multiply filter saturate-[1.2]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1 }}
+              className="mt-14 flex flex-wrap gap-8"
             >
-              <Image
-                src="/vials-row.png"
-                alt="Ascendra Bio Research Grade Peptides"
-                width={700}
-                height={525}
-                className="object-contain"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-transparent to-transparent pointer-events-none" />
-            </motion.div>
-
-            {/* Floating Badges */}
-            <div className="absolute inset-0 z-20 pointer-events-none">
-              <motion.div
-                animate={{ y: [-15, 15, -15] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[20%] right-[10%] bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-blue-100/60 shadow-md"
-              >
-                <p className="text-[9px] font-bold text-[#4D7DF2] uppercase tracking-widest">Purity Matrix</p>
-                <h3 className="text-lg font-black text-[#070B14]">99.8%+</h3>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [15, -15, 15] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute bottom-[20%] left-[10%] bg-[#070B14]/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-lg"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <p className="text-[9px] font-bold text-white uppercase tracking-widest">GMP Certified</p>
+              {[
+                { value: '99%+', label: 'Purity' },
+                { value: '24hr', label: 'Shipping' },
+                { value: '30+', label: 'Peptides' },
+              ].map((stat, i) => (
+                <div key={i} className="flex items-baseline gap-2">
+                  <span className="text-xl font-black text-white tracking-tight">{stat.value}</span>
+                  <span className="text-xs font-bold text-white/30 uppercase tracking-widest">{stat.label}</span>
                 </div>
-              </motion.div>
-            </div>
+              ))}
+            </motion.div>
           </div>
-
         </div>
+
+        {/* Bottom fade to white for seamless transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent z-30" />
       </main>
 
       {/* ═══════════════════════════════════════════ */}

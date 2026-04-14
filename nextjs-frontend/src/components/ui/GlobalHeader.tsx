@@ -73,8 +73,9 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
   
   // Context detection
   const isAccountPage = pathname?.startsWith("/account");
-  const isLandingPage = pathname?.startsWith("/landing") || pathname === "/";
-  const isAdminPage = !isLandingPage && !isAccountPage && (
+  const isLandingPage = pathname === "/";
+  const isLandingRoute = pathname?.startsWith("/landing") || pathname === "/";
+  const isAdminPage = !isLandingRoute && !isAccountPage && (
     pathname === "/admin-dashboard" || 
     pathname?.startsWith("/admin") || 
     pathname?.startsWith("/orders") || 
@@ -225,7 +226,9 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
             backdrop-blur-xl border
             ${scrolled
               ? 'h-14 bg-white/80 border-[#070B14]/[0.05] shadow-[0_8px_32px_rgba(0,0,0,0.05)]'
-              : 'h-16 bg-white/[0.05] border-[#070B14]/[0.03]'
+              : isLandingPage
+                ? 'h-16 bg-[#070B14]/70 border-white/[0.12]'
+                : 'h-16 bg-white/[0.05] border-[#070B14]/[0.03]'
             }`}
         >
           {/* Logo & Admin Sidebar Trigger */}
@@ -246,7 +249,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 alt="Abscendra Bio"
                 width={140}
                 height={32}
-                className={`w-auto group-hover:opacity-80 transition-all duration-300 ${scrolled ? 'h-5 sm:h-6' : 'h-6 sm:h-7'}`}
+                className={`w-auto group-hover:opacity-80 transition-all duration-300 ${scrolled ? 'h-5 sm:h-6' : 'h-6 sm:h-7'} ${isLandingPage && !scrolled ? 'brightness-0 invert' : ''}`}
                 priority
               />
             </Link>
@@ -256,17 +259,17 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
           {isProducts ? (
             <div className="flex-1 max-w-2xl mx-4 hidden md:flex items-center gap-3">
               <div className="flex items-center gap-1.5 mr-2">
-                {['All', 'Assayed Research Peptides'].map((cat) => (
+                {[{ label: 'All', value: 'All' }, { label: 'Peptides', value: 'Assayed Research Peptides' }].map(({ label, value }) => (
                   <button
-                    key={cat}
-                    onClick={() => updateStoreParams({ cat: cat === 'All' ? null : cat })}
+                    key={value}
+                    onClick={() => updateStoreParams({ cat: value === 'All' ? null : value })}
                     className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${
-                      (searchParams.get('cat') || 'All') === cat
+                      (searchParams.get('cat') || 'All') === value
                         ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105'
                         : 'bg-black/[0.03] text-primary/40 hover:text-primary hover:bg-black/5'
                     }`}
                   >
-                    {cat}
+                    {label}
                   </button>
                 ))}
               </div>
@@ -274,7 +277,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
               <div className="relative flex-1 group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/30 group-focus-within:text-primary transition-colors w-3.5 h-3.5" />
                 <Input
-                  placeholder="Identification..."
+                  placeholder="Search products..."
                   value={storeSearch}
                   onChange={(e) => updateStoreParams({ q: e.target.value })}
                   className="pl-10 h-10 bg-black/[0.03] border-transparent rounded-full focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all text-xs font-bold"
@@ -291,54 +294,52 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                   <SelectItem value="price-high">Price: High-Low</SelectItem>
                 </SelectContent>
               </Select>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => updateStoreParams({ filters: 'open' })}
-                className="h-10 px-4 rounded-full bg-black/[0.03] text-primary/60 hover:text-primary transition-all text-[9px] font-black uppercase tracking-widest"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5 mr-2" />
-                Filters
-              </Button>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-1">
-              <nav className="flex items-center space-x-1 lg:space-x-2 px-4">
-                {isLandingPage ? (
-                  <>
-                    <Link href="/landing/products" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                      Products
-                    </Link>
-                    <Link href="/landing/third-party-testing" className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                      3rd Party Testing
-                    </Link>
-                    <button onClick={() => setOpenContact(true)} className="px-4 py-2 text-[13px] font-semibold text-gray-600 hover:text-[#1B2D4F] rounded-full hover:bg-gray-50 transition-all">
-                      Contact
-                    </button>
-                  </>
-                ) : isAdminPage ? (
-                  <>
-                    <Link href="/admin-dashboard" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/admin-dashboard" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                      Dashboard
-                    </Link>
-                    <Link href="/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                      Orders
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/account" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/account" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                      Profile
-                    </Link>
-                    <Link href="/account/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/account/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
-                      My Orders
-                    </Link>
-                  </>
-                )}
-              </nav>
-            </div>
+            <div className="flex-1" />
           )}
-            <div className="w-[1px] h-4 bg-gray-200 mx-3 hidden lg:block" />
+
+            {/* ───── NAV LINKS (right-aligned, beside actions) ───── */}
+            {!isProducts && (
+              <div className="hidden md:flex items-center">
+                <nav className="flex items-center space-x-1 lg:space-x-2 mr-2">
+                  {isLandingRoute ? (
+                    <>
+                      {isAuthenticated && (
+                        <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                          Products
+                        </Link>
+                      )}
+                      <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                        3rd Party Testing
+                      </Link>
+                      <button onClick={() => setOpenContact(true)} className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                        Contact
+                      </button>
+                    </>
+                  ) : isAdminPage ? (
+                    <>
+                      <Link href="/admin-dashboard" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/admin-dashboard" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                        Dashboard
+                      </Link>
+                      <Link href="/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                        Orders
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/account" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname === "/account" ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                        Profile
+                      </Link>
+                      <Link href="/account/orders" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${pathname?.startsWith("/account/orders") ? "bg-gray-100 text-[#1B2D4F]" : "text-gray-600 hover:bg-gray-50"}`}>
+                        My Orders
+                      </Link>
+                    </>
+                  )}
+                </nav>
+              </div>
+            )}
+            <div className={`w-[1px] h-4 mx-3 hidden lg:block ${isLandingPage && !scrolled ? 'bg-white/20' : 'bg-gray-200'}`} />
 
             {/* Actions Section */}
             <div className="flex items-center space-x-2">
@@ -374,13 +375,13 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 </div>
               )}
 
-              {!isAdminPage && (
+              {!isAdminPage && isAuthenticated && (
                 <CartSidebar
                   trigger={
-                    <Button variant="ghost" size="icon" className="relative rounded-full h-10 w-10 hover:bg-black/5 transition-all active:scale-95">
+                    <Button variant="ghost" size="icon" className={`relative rounded-full h-10 w-10 transition-all active:scale-95 ${isLandingPage && !scrolled ? 'hover:bg-white/10 text-white/80' : 'hover:bg-black/5'}`}>
                       <ShoppingCart className="h-5 w-5" />
                       {items.length > 0 && (
-                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full bg-[#1B2D4F] text-white border-2 border-white">
+                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full bg-[#4D7DF2] text-white border-2 border-white/20">
                           {items.reduce((sum, it) => sum + it.quantity, 0)}
                         </Badge>
                       )}
@@ -394,13 +395,13 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                   {/* Standard Profile Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex items-center space-x-2 rounded-full border border-black/5 bg-gray-50/50 p-1 pr-3 transition-all hover:bg-gray-100 active:scale-95">
-                        <Avatar className="h-8 w-8 border-2 border-white">
-                          <AvatarFallback className="bg-[#1B2D4F] text-white font-bold text-[9px] uppercase">
+                      <button className={`flex items-center space-x-2 rounded-full p-1 pr-3 transition-all active:scale-95 ${isLandingPage && !scrolled ? 'border border-white/10 bg-white/[0.06] hover:bg-white/10' : 'border border-black/5 bg-gray-50/50 hover:bg-gray-100'}`}>
+                        <Avatar className="h-8 w-8 border-2 border-white/20">
+                          <AvatarFallback className="bg-[#4D7DF2] text-white font-bold text-[9px] uppercase">
                             {`${(user?.firstName?.[0] || user?.email?.[0] || 'A').toUpperCase()}${(user?.lastName?.[0] || '').toUpperCase()}`}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#1B2D4F]">{user?.firstName}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${isLandingPage && !scrolled ? 'text-white' : 'text-[#1B2D4F]'}`}>{user?.firstName}</span>
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="min-w-[200px] rounded-[1.25rem] p-3 shadow-2xl border-white/40 backdrop-blur-xl bg-white/95 mt-4">
@@ -429,10 +430,10 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                     </Link>
                   ) : (
                     <>
-                      <button onClick={() => openLoginModal('customer')} className="px-4 py-2 text-[13px] font-semibold text-gray-500 hover:text-[#070B14] rounded-full hover:bg-gray-50 transition-all">
+                      <button onClick={() => openLoginModal('customer')} className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-500 hover:text-[#070B14] hover:bg-gray-50'}`}>
                         Login
                       </button>
-                      <button onClick={() => setOpenContact(true)} className="px-6 py-2.5 text-[13px] font-bold rounded-full bg-[#070B14] text-white hover:bg-gray-800 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.15)] active:scale-95">
+                      <button onClick={() => setOpenContact(true)} className={`px-6 py-2.5 text-[13px] font-bold rounded-full transition-all active:scale-95 ${isLandingPage && !scrolled ? 'bg-white text-[#070B14] hover:bg-gray-100 shadow-[0_10px_30px_rgba(255,255,255,0.1)]' : 'bg-[#070B14] text-white hover:bg-gray-800 shadow-[0_10px_30px_rgba(0,0,0,0.15)]'}`}>
                         Inquire Now
                       </button>
                     </>
@@ -443,19 +444,19 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
 
           {/* Mobile Trigger */}
           <div className="md:hidden flex items-center gap-2">
-             {!isAdminPage && (
+             {!isAdminPage && isAuthenticated && (
                 <CartSidebar
                   trigger={
-                    <Button variant="ghost" size="icon" className="relative rounded-full h-10 w-10">
+                    <Button variant="ghost" size="icon" className={`relative rounded-full h-10 w-10 ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : ''}`}>
                       <ShoppingCart className="h-5 w-5" />
-                      {items.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-[#1B2D4F] rounded-full" />}
+                      {items.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-[#4D7DF2] rounded-full" />}
                     </Button>
                   }
                 />
              )}
              <Sheet>
                <SheetTrigger asChild>
-                 <Button variant="ghost" size="icon" className="rounded-full">
+                 <Button variant="ghost" size="icon" className={`rounded-full ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : ''}`}>
                     <Menu className="h-6 w-6" />
                  </Button>
                </SheetTrigger>

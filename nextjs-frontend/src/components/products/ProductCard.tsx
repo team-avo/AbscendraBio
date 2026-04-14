@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Heart, ShoppingCart, Check, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ShoppingCart, Minus, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import { useCart } from '@/contexts/cart-context';
@@ -44,23 +43,24 @@ export function ProductCard({
   className = ""
 }: ProductCardProps) {
   const { isAuthenticated, user, openLoginModal } = useAuth();
-  const { add, items } = useCart();
-  
-  const [addingId, setAddingId] = useState<string | number | null>(null);
+  const { add, items, update } = useCart();
+
+  const [addingToCart, setAddingToCart] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
-  // Pricing Logic
+  // Pricing
   const customerType = (user?.customer?.customerType || (user?.role === 'CUSTOMER' ? 'B2C' : undefined)) as CustomerType | undefined;
   const pricing = priceForCustomerType(product, customerType);
 
-  // Cart Logic
+  // Cart qty for this variant
   const variantId = product._firstVariantId || (product.variants && product.variants[0]?.id);
-  const currentQty = variantId ? (items.find(it => it.variantId === variantId)?.quantity || 0) : 0;
+  const cartItem = variantId ? items.find(it => it.variantId === variantId) : undefined;
+  const currentQty = cartItem?.quantity || 0;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isAuthenticated) {
-      toast.info('Please sign in to shop');
+      toast.info('Sign in to add items to your cart');
       openLoginModal('customer');
       return;
     }
@@ -68,21 +68,27 @@ export function ProductCard({
       toast.error('Product variation not found');
       return;
     }
-
-    setAddingId(product.id);
+    setAddingToCart(true);
     try {
       await add(variantId, 1, pricing.price);
       setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 1200);
+      setTimeout(() => setJustAdded(false), 1000);
     } catch (error: any) {
       toast.error(error.message || 'Failed to add to cart');
     } finally {
-      setAddingId(null);
+      setAddingToCart(false);
     }
   };
 
-  // Generate a pseudo-scientific serial ID based on product ID
-  const serialId = `REF-${String(product.id).slice(0, 4).toUpperCase()}-${(index + 101).toString()}`;
+  const handleQtyChange = async (e: React.MouseEvent, newQty: number) => {
+    e.stopPropagation();
+    if (!variantId) return;
+    try {
+      await update(variantId, Math.max(0, newQty));
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update quantity');
+    }
+  };
 
   return (
     <motion.div
@@ -90,101 +96,113 @@ export function ProductCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.6, delay: index * 0.04, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.5, delay: index * 0.04, ease: [0.23, 1, 0.32, 1] }}
       className={`h-full ${className}`}
     >
-      <Card 
-        className="group relative bg-white border border-gray-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_32px_64px_rgba(27,45,79,0.12)] transition-all duration-700 rounded-[2rem] cursor-pointer h-full flex flex-col group/card overflow-hidden"
+      <Card
+        className="group relative bg-white border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(7,11,20,0.1)] transition-all duration-500 rounded-[1.75rem] cursor-pointer h-full flex flex-col overflow-hidden"
         onClick={() => onQuickView(product.id)}
       >
-        {/* Subtle Background Grain/Texture (Optional via CSS) */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+        <CardContent className="p-2 flex flex-col h-full">
 
-        <CardContent className="p-2 flex flex-col h-full relative z-10">
-          {/* ──── SPECIMEN CONTAINER (COMPACT) ──── */}
-          <div className="relative aspect-square overflow-hidden rounded-[1.2rem] bg-gray-50/50 border border-white/80 isolate shadow-inner">
+          {/* ── Image ── */}
+          <div className="relative aspect-square overflow-hidden rounded-[1.25rem] bg-gray-50 border border-white/80 isolate">
             <ProductCardImage
               src={product.image || (product.images && product.images[0]?.url)}
               alt={product.name}
-              className="object-cover w-full h-full group-hover/card:scale-105 transition-transform duration-[1.5s] ease-out mix-blend-multiply"
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-[1.2s] ease-out mix-blend-multiply"
             />
-            
-            {/* Frosted Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-primary/5 opacity-40 mix-blend-overlay" />
-            
-            {/* Floating 'Lab Tag' Price */}
-            <div className="absolute top-3 right-3 z-20">
-              <div className="bg-primary/90 text-white backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/20 shadow-xl transform-gpu group-hover/card:-translate-y-0.5 transition-transform duration-500">
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-[#070B14]/5 opacity-50" />
+
+            {/* Price badge */}
+            <div className="absolute top-2.5 right-2.5 z-20">
+              <div className="bg-[#070B14]/90 text-white backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-lg min-w-[52px] flex items-center justify-center">
                 {isAuthenticated ? (
-                  <div className="flex flex-col items-end leading-none">
-                    <span className="text-[10px] font-black tracking-tighter">
-                      ${pricing.price.toFixed(2)}
-                    </span>
-                  </div>
+                  <span className="text-[11px] font-black tabular-nums leading-none">${pricing.price.toFixed(2)}</span>
                 ) : (
-                  <span className="text-[7px] font-black uppercase tracking-widest opacity-90">Locked</span>
+                  <span className="text-[8px] font-black uppercase tracking-wider opacity-60 leading-none">Login</span>
                 )}
               </div>
             </div>
 
-            {/* Purity Badge (Smaller) */}
-            <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover/card:opacity-100 translate-y-1 group-hover/card:translate-y-0 transition-all duration-500">
-               <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <div className="w-0.5 h-0.5 rounded-full bg-emerald-500" />
-                  <span className="text-[7px] font-bold uppercase tracking-widest text-emerald-600">99%+ pure</span>
-               </div>
+            {/* Purity badge — shows on hover */}
+            <div className="absolute bottom-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-400">
+              <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                <span className="text-[7px] font-bold uppercase tracking-widest text-emerald-600">99%+ pure</span>
+              </div>
             </div>
 
-            {/* Out of Stock Overlay */}
+            {/* Out of stock overlay */}
             {product.inStock === false && (
-              <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px] flex items-center justify-center z-30">
-                <span className="text-[7px] font-black uppercase tracking-widest text-white border border-white/20 px-3 py-1.5 rounded-lg bg-primary/40 backdrop-blur-md">Depleted</span>
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-30">
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 border border-gray-200 px-3 py-1.5 rounded-full bg-white/80">
+                  Out of Stock
+                </span>
               </div>
             )}
           </div>
 
-          {/* ──── TECHNICAL DATA AREA ──── */}
-          <div className="px-1.5 pt-3 mb-1 flex flex-col flex-1 relative">
-             {/* Vertical Serial ID (Monospace) - Even smaller */}
-             <div className="absolute -right-0.5 top-4 rotate-90 origin-right translate-x-1 pointer-events-none opacity-20">
-               <span className="text-[6px] font-medium font-mono text-primary uppercase tracking-[0.3em] whitespace-nowrap">{serialId}</span>
-             </div>
+          {/* ── Info ── */}
+          <div className="px-2 pt-3 pb-1 flex flex-col flex-1">
+            <span className="text-[8px] font-bold uppercase tracking-widest text-gray-400 leading-none block mb-1">
+              {product.category || 'Research Peptide'}
+            </span>
+            <h3 className={`text-[13px] font-extrabold text-[#070B14] leading-tight tracking-tight line-clamp-2 uppercase flex-1 ${barlow.className}`}>
+              {product.name}
+            </h3>
 
-            <div className="flex-1 space-y-1.5 pr-6">
-              <span className="text-[7px] font-black uppercase tracking-widest text-primary/30 leading-none block">{product.category || 'High Purity Specimen'}</span>
-              <h3 className={`text-sm font-extrabold text-primary leading-tight tracking-tight line-clamp-2 uppercase ${barlow.className}`}>
-                {product.name}
-              </h3>
-            </div>
-
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex flex-col gap-0.5">
-                 <div className="flex items-center gap-1 bg-emerald-500/5 px-1.5 py-0.5 rounded-md border border-emerald-500/10">
-                    <div className="w-0.5 h-0.5 rounded-full bg-emerald-500" />
-                    <span className="text-[6px] font-black uppercase tracking-widest text-emerald-600">Verified</span>
-                 </div>
+            <div className="mt-3 flex items-center justify-between">
+              {/* Verified badge */}
+              <div className="flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
+                <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                <span className="text-[7px] font-black uppercase tracking-widest text-emerald-600">Verified</span>
               </div>
-              
-              <Button
-                size="icon"
-                disabled={product.inStock === false || addingId === product.id}
-                className={`w-9 h-9 rounded-xl transition-all duration-500 shrink-0 transform-gpu active:scale-90 ${
-                  currentQty > 0 || justAdded
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                    : 'bg-primary text-white shadow-xl shadow-primary/10 hover:bg-primary/90 hover:-translate-y-0.5'
-                }`}
-                onClick={handleAddToCart}
-              >
-                {addingId === product.id ? (
-                  <span className="animate-spin w-3 h-3 border-2 border-white/20 border-t-white rounded-full" />
-                ) : justAdded || currentQty > 0 ? (
-                  <Check className="w-4 h-4 stroke-[3px]" />
-                ) : (
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                )}
-              </Button>
+
+              {/* Cart controls */}
+              {currentQty > 0 ? (
+                /* ── Quantity stepper ── */
+                <div
+                  className="flex items-center gap-0.5 bg-[#070B14] rounded-xl p-0.5"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={(e) => handleQtyChange(e, currentQty - 1)}
+                    className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  >
+                    <Minus className="w-3 h-3 text-white" />
+                  </button>
+                  <span className="w-6 text-center text-[11px] font-black text-white">{currentQty}</span>
+                  <button
+                    onClick={(e) => handleQtyChange(e, currentQty + 1)}
+                    className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  >
+                    <Plus className="w-3 h-3 text-white" />
+                  </button>
+                </div>
+              ) : (
+                /* ── Add to cart ── */
+                <button
+                  disabled={product.inStock === false || addingToCart}
+                  onClick={handleAddToCart}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed
+                    ${justAdded
+                      ? 'bg-emerald-500 shadow-lg shadow-emerald-500/20'
+                      : 'bg-[#070B14] hover:bg-[#1a2540] shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                    }`}
+                >
+                  {addingToCart ? (
+                    <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <ShoppingCart className="w-3.5 h-3.5 text-white" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
+
         </CardContent>
       </Card>
     </motion.div>

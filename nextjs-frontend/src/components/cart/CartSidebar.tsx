@@ -1,10 +1,10 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
-import { Copy, Check, Tag } from "lucide-react";
+import React, { ReactNode } from "react";
 import Link from "next/link";
+import { X, ShoppingBag, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/cart-context";
 import { resolveImageUrl } from "@/lib/api";
@@ -14,7 +14,9 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { formatCurrency, formatDiscountPercentage } from "@/utils/discount";
 import { toast } from "sonner";
 import { getPricingCustomerType } from "@/utils/pricingMapper";
-import logger from '@/lib/logger';
+import { Barlow } from "next/font/google";
+
+const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
 interface CartSidebarProps {
   trigger: ReactNode;
@@ -28,313 +30,212 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
   const customerType = (user as any)?.customer?.customerType as 'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined;
   const router = useRouter();
   const [authOpen, setAuthOpen] = React.useState(false);
-  const [couponCopied, setCouponCopied] = React.useState(false);
+
+  const getItemPrice = (it: any) => {
+    const pricingType = getPricingCustomerType(customerType);
+    let price = 0;
+    let isBulkPrice = false;
+
+    if (it?.variant?.bulkPrices && Array.isArray(it.variant.bulkPrices)) {
+      const applicableBulk = it.variant.bulkPrices.find((bp: any) => {
+        const minQty = Number(bp.minQty);
+        const maxQty = bp.maxQty ? Number(bp.maxQty) : Infinity;
+        return it.quantity >= minQty && it.quantity <= maxQty;
+      });
+      if (applicableBulk) { price = Number(applicableBulk.price); isBulkPrice = true; }
+    }
+
+    if (!isBulkPrice && pricingType && it?.variant?.segmentPrices) {
+      const seg = it?.variant?.segmentPrices?.find?.((sp: any) => sp.customerType === pricingType);
+      if (seg) price = Number(seg.salePrice > 0 ? seg.salePrice : seg.regularPrice ?? 0);
+      else price = Number(it.variant?.regularPrice ?? 0);
+    } else if (!isBulkPrice && it?.variant) {
+      const salePrice = Number(it?.variant?.salePrice ?? 0);
+      const variantRegularPrice = Number(it?.variant?.regularPrice ?? 0);
+      price = salePrice > 0 ? salePrice : variantRegularPrice;
+    } else if (!isBulkPrice && it.unitPrice) {
+      price = Number(it.unitPrice);
+    }
+
+    const regularPrice = Number(it.variant?.regularPrice || 0);
+    const savings = regularPrice - price;
+    return { price, isBulkPrice, regularPrice, savings };
+  };
+
+  const getStock = (it: any) => {
+    const canSellOutOfStock = it?.variant?.inventory?.some((inv: any) => inv.sellWhenOutOfStock) || false;
+    const totalAvailable = it?.variant?.inventory?.reduce((sum: number, inv: any) => {
+      return sum + Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
+    }, 0) || 0;
+    return { canSellOutOfStock, totalAvailable, isOutOfStock: totalAvailable < it.quantity && !canSellOutOfStock };
+  };
+
+  const hasOutOfStockItems = items.some(it => getStock(it).isOutOfStock);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetTrigger asChild>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
         {trigger}
-      </SheetTrigger>
-      <SheetContent side="right" className="force-light w-[100vw] max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl p-0 h-dvh overflow-hidden bg-background text-foreground">
-        <div className="flex h-full flex-col">
-          <div className="px-6 py-5 border-b border-primary/5">
-            <SheetHeader>
-              <SheetTitle className="text-2xl font-black uppercase tracking-widest text-primary italic">Clinical Cart</SheetTitle>
-            </SheetHeader>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Items</span>
-              <span>{items.length}</span>
+      </DialogTrigger>
+      <DialogContent className={`force-light p-0 rounded-3xl overflow-hidden max-h-[85vh] flex flex-col w-full max-w-md border-0 shadow-2xl gap-0 ${barlow.className}`}>
+        <DialogTitle className="sr-only">Your Cart</DialogTitle>
+        <DialogDescription className="sr-only">Review items in your cart</DialogDescription>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-[#070B14] flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4 text-white" />
             </div>
-            {loading ? (
-              <div className="flex items-center justify-center py-10">
-                <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-transparent" />
+            <div>
+              <h2 className="text-base font-black text-[#070B14]">Your Cart</h2>
+              <p className="text-[10px] text-gray-400 font-medium">{items.length} {items.length === 1 ? 'item' : 'items'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Items */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#4D7DF2] animate-spin" />
+            </div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
+                <ShoppingBag className="w-7 h-7 text-gray-300" />
               </div>
-            ) : items.length === 0 ? (
-              <div className="text-sm text-muted-foreground text-center py-10">Your cart is empty.</div>
-            ) : (
-              <div className="space-y-3">
-                {items.map((it) => (
-                  <div key={it.variantId} className="flex items-center gap-3 p-3 border rounded-md">
-                    <div className="w-14 h-14 bg-gray-50 rounded border overflow-hidden">
-                      <img src={resolveImageUrl(it.variant?.product?.images?.[0]?.url || '/products/peptide-1.jpg')} alt={it.variant?.product?.name || 'Product'} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-sm line-clamp-1">{it.variant?.product?.name ?? 'Product'}</div>
-                      <div className="text-xs text-muted-foreground line-clamp-1">{it.variant?.name}</div>
-                      <div className="text-xs text-muted-foreground">SKU: {it.variant?.sku}</div>
-                      <div className="text-sm font-semibold mt-1">
-                        {(() => {
-                          logger.info("=== CART ITEM PRICING DEBUG ===");
-                          logger.info("User:", { data: user });
-                          logger.info("Customer Type:", { data: customerType });
-                          logger.info("Item:", { data: it });
-                          logger.info("Variant:", { data: it.variant });
-                          logger.info("Segment Prices:", { data: (it as any)?.variant?.segmentPrices });
+              <div className="text-center">
+                <p className="text-sm font-bold text-gray-700">Your cart is empty</p>
+                <p className="text-xs text-gray-400 mt-1">Add some products to get started</p>
+              </div>
+            </div>
+          ) : (
+            items.map((it) => {
+              const { price, isBulkPrice, savings } = getItemPrice(it);
+              const { totalAvailable, canSellOutOfStock, isOutOfStock } = getStock(it);
 
-                          let price = 0;
-                          let regularPrice = Number(it.variant?.regularPrice || 0);
-                          let isBulkPrice = false;
+              return (
+                <div key={it.variantId} className="flex gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                  {/* Image */}
+                  <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 overflow-hidden shrink-0">
+                    <img
+                      src={resolveImageUrl(it.variant?.product?.images?.[0]?.url || '/products/peptide-1.jpg')}
+                      alt={it.variant?.product?.name || 'Product'}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-                          // Map customer type to pricing tier (B2B->B2C, ENTERPRISE_2->ENTERPRISE_1)
-                          const pricingType = getPricingCustomerType(customerType);
-                          logger.info("Pricing Type (mapped):", { data: pricingType });
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-[#070B14] line-clamp-1 uppercase tracking-tight">
+                      {it.variant?.product?.name ?? 'Product'}
+                    </p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{it.variant?.name}</p>
 
-                          // Check for bulk pricing first
-                          if ((it as any)?.variant?.bulkPrices && Array.isArray((it as any).variant.bulkPrices)) {
-                            const bulkPrices = (it as any).variant.bulkPrices;
-                            const applicableBulk = bulkPrices.find((bp: any) => {
-                              const minQty = Number(bp.minQty);
-                              const maxQty = bp.maxQty ? Number(bp.maxQty) : Infinity;
-                              return it.quantity >= minQty && it.quantity <= maxQty;
-                            });
+                    <div className="flex items-center justify-between mt-2">
+                      {/* Qty stepper */}
+                      <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-xl p-0.5">
+                        <button
+                          onClick={async () => {
+                            try { await update(it.variantId, Math.max(0, it.quantity - 1)) }
+                            catch (e: any) { toast.error(e.message || 'Failed to update') }
+                          }}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                        >
+                          <Minus className="w-3 h-3 text-gray-600" />
+                        </button>
+                        <span className="w-6 text-center text-xs font-black text-[#070B14]">{it.quantity}</span>
+                        <button
+                          onClick={async () => {
+                            try { await update(it.variantId, it.quantity + 1) }
+                            catch (e: any) { toast.error(e.message || 'Failed to update') }
+                          }}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                        >
+                          <Plus className="w-3 h-3 text-gray-600" />
+                        </button>
+                      </div>
 
-                            if (applicableBulk) {
-                              price = Number(applicableBulk.price);
-                              isBulkPrice = true;
-                              logger.info("Using BULK price:", { data: price });
-                            }
-                          }
-
-                          // CRITICAL: Check segment pricing for ALL customer types (including B2C)
-                          if (!isBulkPrice && pricingType && (it as any)?.variant?.segmentPrices) {
-                            logger.info("Checking segment prices for type:", { data: pricingType });
-                            const seg = (it as any)?.variant?.segmentPrices?.find?.((sp: any) => sp.customerType === pricingType);
-                            logger.info("Found segment price:", { data: seg });
-                            if (seg) {
-                              price = Number(seg.salePrice > 0 ? seg.salePrice : seg.regularPrice ?? 0);
-                              logger.info("Using SEGMENT price:", { data: price, salePrice: seg.salePrice, regularPrice: seg.regularPrice });
-                            } else {
-                              // No segment price found, use variant's regular price
-                              price = Number(it.variant?.regularPrice ?? 0);
-                              logger.info("No segment price found, using variant regular price:", { data: price });
-                            }
-                          }
-                          // If no segment pricing and no customer type, use variant's sale price or regular price
-                          else if (!isBulkPrice && (it as any)?.variant) {
-                            const salePrice = Number((it as any)?.variant?.salePrice ?? 0);
-                            const variantRegularPrice = Number((it as any)?.variant?.regularPrice ?? 0);
-                            price = salePrice > 0 ? salePrice : variantRegularPrice;
-                            logger.info("Using VARIANT price (no segment):", { data: price, salePrice, regularPrice: variantRegularPrice });
-                          }
-                          // Fallback: if no variant data, use stored unitPrice (should rarely happen)
-                          else if (!isBulkPrice && it.unitPrice) {
-                            price = Number(it.unitPrice);
-                            logger.info("Using STORED unitPrice (fallback):", { data: price });
-                          }
-
-                          logger.info("FINAL PRICE:", { data: price });
-                          logger.info("=== END DEBUG ===");
-
-                          const savings = regularPrice - price;
-                          const savingsPercent = regularPrice > 0 ? ((savings / regularPrice) * 100).toFixed(0) : 0;
-
-                          return (
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span>${price.toFixed(2)}</span>
-                                {isBulkPrice && (
-                                  <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                                    Bulk Tier
-                                  </span>
-                                )}
-                              </div>
-                              {isBulkPrice && savings > 0 && (
-                                <div className="text-xs text-green-600">
-                                  Save ${savings.toFixed(2)} ({savingsPercent}%)
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
+                      {/* Price + remove */}
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-sm font-black text-[#070B14]">${price.toFixed(2)}</p>
+                          {isBulkPrice && savings > 0 && (
+                            <p className="text-[9px] text-emerald-600 font-bold">Bulk price</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => remove(it.variantId)}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            await update(it.variantId, Math.max(0, it.quantity - 1));
-                          } catch (error: any) {
-                            toast.error(error.message || 'Failed to update quantity');
-                          }
-                        }}
-                      >-</Button>
-                      <input
-                        type="number"
-                        min="1"
-                        max={(() => {
-                          const canSellOutOfStock = (it as any)?.variant?.inventory?.some((inv: any) => inv.sellWhenOutOfStock) || false;
-                          if (canSellOutOfStock) return 9999; // No limit if backorders allowed
 
-                          const totalAvailable = (it as any)?.variant?.inventory?.reduce((sum: number, inv: any) => {
-                            const available = Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
-                            return sum + available;
-                          }, 0) || 0;
-                          return totalAvailable > 0 ? totalAvailable : 9999;
-                        })()}
-                        value={it.quantity}
-                        onChange={async (e) => {
-                          const newQuantity = parseInt(e.target.value) || 1;
-                          const canSellOutOfStock = (it as any)?.variant?.inventory?.some((inv: any) => inv.sellWhenOutOfStock) || false;
-
-                          let finalQuantity = newQuantity;
-                          if (!canSellOutOfStock) {
-                            const maxAvailable = (it as any)?.variant?.inventory?.reduce((sum: number, inv: any) => {
-                              const available = Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
-                              return sum + available;
-                            }, 0) || 0;
-
-                            if (maxAvailable > 0) {
-                              finalQuantity = Math.max(1, Math.min(newQuantity, maxAvailable));
-                            }
-                          }
-
-                          try {
-                            await update(it.variantId, finalQuantity);
-                          } catch (error: any) {
-                            toast.error(error.message || 'Failed to update quantity');
-                          }
-                        }}
-                        className="w-12 h-10 text-center text-sm border-0 bg-primary/5 rounded-xl focus:ring-2 focus:ring-primary/20 focus:outline-none font-bold text-primary"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            await update(it.variantId, it.quantity + 1);
-                          } catch (error: any) {
-                            toast.error(error.message || 'Failed to update quantity');
-                          }
-                        }}
-                      >+</Button>
-                    </div>
-                    {/* Show stock info and out-of-stock warning */}
-                    {(it as any)?.variant?.inventory && (() => {
-                      logger.info("=== INVENTORY DEBUG ===");
-                      logger.info("Variant ID:", { data: it.variantId });
-                      logger.info("Inventory Data:", { data: (it as any).variant.inventory });
-
-                      const totalAvailable = (it as any).variant.inventory.reduce((sum: number, inv: any) => {
-                        const available = Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
-                        logger.info("Inventory Location:", {
-                          data: {
-                            locationId: inv.locationId,
-                            quantity: inv.quantity,
-                            reservedQty: inv.reservedQty,
-                            available: available,
-                            sellWhenOutOfStock: inv.sellWhenOutOfStock
-                          }
-                        });
-                        return sum + available;
-                      }, 0);
-
-                      const canSellOutOfStock = (it as any).variant.inventory.some((inv: any) => inv.sellWhenOutOfStock);
-                      const isOutOfStock = totalAvailable < it.quantity && !canSellOutOfStock;
-
-                      logger.info("Total Available:", { data: totalAvailable });
-                      logger.info("Requested Quantity:", { data: it.quantity });
-                      logger.info("Can Sell Out Of Stock:", { data: canSellOutOfStock });
-                      logger.info("Is Out Of Stock:", { data: isOutOfStock });
-                      logger.info("=== END INVENTORY DEBUG ===");
-
-                      return (
-                        <div className="text-xs mt-1">
-                          {isOutOfStock ? (
-                            <div className="text-destructive font-black uppercase tracking-widest text-[9px]">
-                              ⚠️ Out of Stock (Available: {totalAvailable})
-                            </div>
-                          ) : totalAvailable > 0 ? (
-                            <div className="text-gray-500">
-                              {totalAvailable} left in stock
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })()}
-                    <Button variant="ghost" size="sm" onClick={() => remove(it.variantId)}>Remove</Button>
+                    {isOutOfStock && (
+                      <p className="text-[9px] font-bold text-red-500 mt-1.5 uppercase tracking-widest">
+                        Only {totalAvailable} available
+                      </p>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="border-t p-4 space-y-3">
+                </div>
+              );
+            })
+          )}
+        </div>
 
-
-            <div className="flex items-center justify-between text-sm font-medium">
-              <span>Subtotal</span>
-              <span>{formatCurrency(subtotal)}</span>
+        {/* Footer */}
+        {items.length > 0 && (
+          <div className="border-t border-gray-100 px-6 py-5 space-y-3 bg-white">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500 font-medium">Subtotal</span>
+              <span className="font-black text-[#070B14]">{formatCurrency(subtotal)}</span>
             </div>
-
-
 
             {discount.isEligible && (
               <>
-                <div className="flex items-center justify-between text-sm text-green-600">
-                  <span>High-Value Discount ({formatDiscountPercentage(discount.discountPercentage)})</span>
-                  <span>-{formatCurrency(discount.discountAmount)}</span>
+                <div className="flex items-center justify-between text-sm text-emerald-600">
+                  <span className="font-medium">Discount ({formatDiscountPercentage(discount.discountPercentage)})</span>
+                  <span className="font-bold">-{formatCurrency(discount.discountAmount)}</span>
                 </div>
-                <Separator />
-                <div className="flex items-center justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>{formatCurrency(total)}</span>
+                <Separator className="bg-gray-100" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-black text-[#070B14]">Total</span>
+                  <span className="text-lg font-black text-[#070B14]">{formatCurrency(total)}</span>
                 </div>
               </>
             )}
 
-            {/* Out of stock warning */}
-            {(() => {
-              const hasOutOfStockItems = items.some(it => {
-                const totalAvailable = (it as any)?.variant?.inventory?.reduce((sum: number, inv: any) => {
-                  const available = Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
-                  return sum + available;
-                }, 0) || 0;
-                const canSellOutOfStock = (it as any)?.variant?.inventory?.some((inv: any) => inv.sellWhenOutOfStock) || false;
-                return totalAvailable < it.quantity && !canSellOutOfStock;
-              });
-
-              if (hasOutOfStockItems) {
-                return (
-                  <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 text-[10px] font-black uppercase tracking-widest text-destructive">
-                    ⚠️ Allocation Issue: Some items are out of stock. Please adjust quantities.
-                  </div>
-                );
-              }
-              return null;
-            })()}
+            {hasOutOfStockItems && (
+              <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-xs font-medium text-red-600">
+                Some items in your cart are out of stock. Please adjust quantities.
+              </div>
+            )}
 
             <Button
-              className="w-full h-14 rounded-2xl bg-primary hover:bg-ring text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.02]"
-              disabled={
-                items.length === 0 ||
-                items.some(it => {
-                  const totalAvailable = (it as any)?.variant?.inventory?.reduce((sum: number, inv: any) => {
-                    const available = Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0));
-                    return sum + available;
-                  }, 0) || 0;
-                  const canSellOutOfStock = (it as any)?.variant?.inventory?.some((inv: any) => inv.sellWhenOutOfStock) || false;
-                  return totalAvailable < it.quantity && !canSellOutOfStock;
-                })
-              }
+              className="w-full h-12 rounded-2xl bg-[#070B14] hover:bg-[#1a2540] text-white font-black uppercase tracking-widest text-[10px] shadow-lg transition-all duration-300"
+              disabled={items.length === 0 || hasOutOfStockItems}
               onClick={() => {
                 if (!isAuthenticated) { setAuthOpen(true); return; }
                 router.push('/landing/checkout');
               }}
             >
-              {discount.isEligible ? `Secure Checkout - ${formatCurrency(total)}` : `Secure Checkout - ${formatCurrency(subtotal)}`}
+              {discount.isEligible
+                ? `Checkout — ${formatCurrency(total)}`
+                : `Checkout — ${formatCurrency(subtotal)}`}
             </Button>
+
             <Link href="/landing/products" className="block">
-              <Button variant="outline" className="w-full">Continue Shopping</Button>
+              <Button variant="ghost" className="w-full h-10 rounded-2xl text-gray-400 hover:text-gray-600 text-xs font-bold">
+                Continue Shopping
+              </Button>
             </Link>
           </div>
-        </div>
-      </SheetContent>
+        )}
+      </DialogContent>
       <AuthModal isOpen={authOpen} onOpenChange={setAuthOpen} />
-    </Sheet>
+    </Dialog>
   );
 }
-
-
