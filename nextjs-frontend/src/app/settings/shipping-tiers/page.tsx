@@ -98,35 +98,41 @@ export default function ShippingTiersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Shipping Tiers</h1>
-                            <p className="text-sm sm:text-base text-muted-foreground">
-                                Configure dynamic shipping rates based on order subtotal ranges.
-                            </p>
+                <div className="space-y-0">
+
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Shipping Tiers</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Configure dynamic shipping rates based on order subtotal ranges</p>
+                                </div>
+                                <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <Truck className="h-4 w-4 text-[#4D7DF2]" />
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Tiers</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight">{tiers.length}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowDialog(true)}
+                                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Add Tier
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <Button
-                            className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-                            onClick={() => setShowDialog(true)}
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Tier
-                        </Button>
                     </div>
 
-                    {/* Tiers Table */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
-                                <Truck className="h-4 w-4 text-blue-500" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-slate-800">Configured Tiers</p>
-                                <p className="text-xs text-slate-500">Define shipping costs for different order value ranges</p>
-                            </div>
-                        </div>
+                    {/* ════════ TABLE ════════ */}
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0 mt-4">
                         <ShippingTiersTable
                             tiers={tiers}
                             loading={loading}

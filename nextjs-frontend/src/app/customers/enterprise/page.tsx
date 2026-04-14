@@ -10,7 +10,6 @@ import { CustomerAddressDialog } from '@/components/customers/customer-address-d
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Search, Crown } from 'lucide-react';
 import { api, Customer } from '@/lib/api';
 import { SalesRoleFilters } from '@/components/customers/sales-role-filters';
@@ -19,8 +18,6 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import logger from '@/lib/logger';
 import { SendReportDialog } from '@/components/shared/send-report-dialog';
-import { Mail } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-is-mobile';
 
 export default function EnterpriseCustomersPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
@@ -261,65 +258,106 @@ export default function EnterpriseCustomersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Enterprise Customers</h1>
-                            <p className="text-sm text-slate-500 mt-0.5">Manage your Enterprise Tier 1 and Tier 2 accounts</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200">
-                                <Crown className="h-3.5 w-3.5" />Enterprise
-                            </span>
-                            <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
-                                <Plus className="mr-1.5 h-4 w-4" />Add Customer
-                            </Button>
+                <div className="space-y-0">
+
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/20">
+                                            Enterprise
+                                        </span>
+                                    </div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Enterprise Customers</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Tier 1 and Tier 2 enterprise accounts</p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <Crown className="h-4 w-4 text-amber-400" />
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight">{totalCustomers.toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                    <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                                        <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Customer
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Status pills */}
+                            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                                {[
+                                    { key: 'all',      label: 'All',      color: null },
+                                    { key: 'active',   label: 'Active',   color: 'emerald' },
+                                    { key: 'inactive', label: 'Inactive', color: 'red' },
+                                ].map((pill) => {
+                                    const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                                        emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+                                        red:     { bg: 'bg-red-500/15',     text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+                                    };
+                                    const c = pill.color ? colorStyles[pill.color] : null;
+                                    const isAll = pill.key === 'all';
+                                    const isActive = isAll ? statusFilter === 'all' : statusFilter === pill.key;
+                                    return (
+                                        <button
+                                            key={pill.key}
+                                            onClick={() => handleStatusFilter(pill.key)}
+                                            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                                                isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                                                : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                                                : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                                            }`}
+                                        >
+                                            {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                                            <span>{pill.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Filter Bar */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                            <Input
-                                placeholder="Search customers by name, email, or mobile..."
-                                value={searchTerm}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-2 items-center">
-                            <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <SalesRoleFilters
-                                selectedSalesRepId={salesRepFilter}
-                                selectedSalesManagerId={salesManagerFilter}
-                                onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
-                                onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
-                            />
+                    {/* ════════ COMPACT FILTER ROW ════════ */}
+                    <div className="px-1 sm:px-0 py-4 space-y-3">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="relative flex-1 sm:max-w-sm">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                                <Input
+                                    placeholder="Search enterprise customers…"
+                                    value={searchTerm}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                                />
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                                    <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[120px]">
+                                        <SelectValue placeholder="Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Status</SelectItem>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <SalesRoleFilters
+                                    selectedSalesRepId={salesRepFilter}
+                                    selectedSalesManagerId={salesManagerFilter}
+                                    onSalesRepChange={(id) => { setSalesRepFilter(id); setCurrentPage(1); }}
+                                    onSalesManagerChange={(id) => { setSalesManagerFilter(id); setCurrentPage(1); }}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Table Card */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
-                                <Crown className="h-4 w-4 text-amber-500" />
-                            </div>
-                            <div>
-                                <h2 className="text-sm font-semibold text-slate-800">Enterprise Customers</h2>
-                                <p className="text-xs text-slate-400">{totalCustomers.toLocaleString()} customers</p>
-                            </div>
-                        </div>
+                    {/* ════════ TABLE ════════ */}
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
                         <div className="overflow-x-auto">
                             <CustomersTable
                                 customers={customers}
@@ -338,45 +376,27 @@ export default function EnterpriseCustomersPage() {
                         </div>
                     </div>
 
-                    {/* Dialogs */}
-                    <CreateCustomerDialog
-                        open={showCreateDialog}
-                        onOpenChange={setShowCreateDialog}
-                        onSuccess={handleCustomerCreated}
-                    />
-
-                    <EditCustomerDialog
-                        customer={editingCustomer}
-                        open={!!editingCustomer}
-                        onOpenChange={(open) => !open && setEditingCustomer(null)}
-                        onSuccess={handleCustomerUpdated}
-                    />
-
-                    <CustomerAddressDialog
-                        customer={addressCustomer}
-                        open={!!addressCustomer}
-                        onOpenChange={(open) => !open && setAddressCustomer(null)}
-                        onSuccess={handleAddressesUpdated}
-                    />
-
+                    {/* ════════ DIALOGS ════════ */}
+                    <CreateCustomerDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} onSuccess={handleCustomerCreated} />
+                    <EditCustomerDialog customer={editingCustomer} open={!!editingCustomer} onOpenChange={(open) => !open && setEditingCustomer(null)} onSuccess={handleCustomerUpdated} />
+                    <CustomerAddressDialog customer={addressCustomer} open={!!addressCustomer} onOpenChange={(open) => !open && setAddressCustomer(null)} onSuccess={handleAddressesUpdated} />
                     <ConfirmationDialog
                         open={deleteDialog.open}
                         onOpenChange={(open) => setDeleteDialog(prev => ({ ...prev, open }))}
                         onConfirm={confirmDeleteCustomer}
                         title="Delete Customer"
-                        description={`Are you sure you want to permanently delete ${deleteDialog.customerName}? This action cannot be undone and will remove all customer data including addresses, reviews, and favorites.`}
+                        description={`Are you sure you want to permanently delete ${deleteDialog.customerName}? This action cannot be undone.`}
                         confirmText="Delete Customer"
                         cancelText="Cancel"
                         variant="destructive"
                         isLoading={deleteDialog.isLoading}
                     />
-
                     <SendReportDialog
                         open={showEmailDialog}
                         onOpenChange={setShowEmailDialog}
                         onSend={handleSendEmailReport}
                         title="Send Enterprise Customers Report"
-                        description="Enter the email address where you want to receive the filtered enterprise customers report."
+                        description="Enter the email address where you want to receive the enterprise customers report."
                     />
                 </div>
             </DashboardLayout>

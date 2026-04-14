@@ -158,17 +158,32 @@ export default function AssignCustomersPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN']}>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Assign Customers to Sales Reps</h1>
+                <div className="space-y-0">
+
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Assign Customers</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Assign customers to sales representatives</p>
+                                </div>
+                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <Users className="h-4 w-4 text-[#4D7DF2]" />
+                                    <div>
+                                        <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Customers</p>
+                                        <p className="text-base font-black text-white tabular-nums leading-tight">{pagination.total.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
-                            <div className="p-1.5 bg-slate-100 rounded-lg">
-                                <Users className="h-4 w-4 text-slate-600" />
-                            </div>
-                            <span className="font-semibold text-slate-800">Customer Assignment</span>
+                    <div className="mt-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+                        <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
+                            <span className="font-semibold text-gray-900 text-sm">Customer Assignment</span>
                         </div>
 
                         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">

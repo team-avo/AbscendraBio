@@ -266,45 +266,50 @@ function SalesPersonAnalyticsContent() {
         : 0;
 
     return (
-        <div className="space-y-5 px-2 sm:px-0">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="icon" onClick={() => window.history.back()} className="rounded-full">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                            <UserCircle className="h-6 w-6 text-primary" />
-                            {data.personName} Analytics
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            {managerId ? 'Sales Manager' : 'Sales Representative'} • Detailed Performance Report
-                        </p>
-                    </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <OrderDateFilter
-                        range={range}
-                        setRange={setRange}
-                        from={from}
-                        setFrom={setFrom}
-                        to={to}
-                        setTo={setTo}
-                        showSalesChannel={true}
-                        salesChannelId={salesChannelId}
-                        setSalesChannelId={setSalesChannelId}
-                    />
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        {!isMobile && (
-                            <Button variant="outline" onClick={handleExport} disabled={loading} className="flex-1 sm:flex-none shadow-sm h-9 sm:h-10 text-xs sm:text-sm">
-                                <Download className="mr-2 h-4 w-4" />
-                                Export
+        <div className="space-y-0">
+            {/* ════════ DARK HERO STRIP ════════ */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <Button variant="ghost" size="icon" onClick={() => window.history.back()} className="rounded-full text-white hover:bg-white/10">
+                                <ArrowLeft className="h-5 w-5" />
                             </Button>
-                        )}
-                        <Button variant={isMobile ? "default" : "outline"} onClick={() => setShowEmailDialog(true)} className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm">
-                            <Mail className="h-4 w-4 mr-2" />
-                            {isMobile ? "Email Report" : "Email"}
-                        </Button>
+                            <div>
+                                <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                                    <UserCircle className="h-5 w-5 text-[#4D7DF2]" />
+                                    {data.personName} Analytics
+                                </h1>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    {managerId ? 'Sales Manager' : 'Sales Representative'} • Detailed Performance Report
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <OrderDateFilter
+                                range={range}
+                                setRange={setRange}
+                                from={from}
+                                setFrom={setFrom}
+                                to={to}
+                                setTo={setTo}
+                                showSalesChannel={true}
+                                salesChannelId={salesChannelId}
+                                setSalesChannelId={setSalesChannelId}
+                            />
+                            {!isMobile && (
+                                <button onClick={handleExport} disabled={loading} className="flex items-center gap-1.5 h-9 px-3 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors disabled:opacity-50">
+                                    <Download className="h-3.5 w-3.5" />
+                                    Export
+                                </button>
+                            )}
+                            <button onClick={() => setShowEmailDialog(true)} className="flex items-center gap-1.5 h-9 px-3 bg-white/[0.06] border border-white/[0.08] rounded-xl text-xs font-bold text-gray-300 hover:bg-white/[0.12] hover:text-white transition-colors">
+                                <Mail className="h-3.5 w-3.5" />
+                                {isMobile ? "Email Report" : "Email"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -319,7 +324,7 @@ function SalesPersonAnalyticsContent() {
 
             {/* Stat chips */}
             <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl border border-gray-200/80 shadow-sm p-3 sm:p-4">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-[10px] sm:text-sm font-medium text-slate-600">Total Revenue</span>
                         <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
@@ -328,7 +333,7 @@ function SalesPersonAnalyticsContent() {
                     <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Gross sales in range</p>
                 </div>
 
-                <div className="bg-slate-50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                <div className="bg-slate-50 rounded-2xl border border-gray-200/80 shadow-sm p-3 sm:p-4">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-[10px] sm:text-sm font-medium text-slate-600">Total Orders</span>
                         <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
@@ -337,7 +342,7 @@ function SalesPersonAnalyticsContent() {
                     <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Successful purchases</p>
                 </div>
 
-                <div className="bg-emerald-50/50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                <div className="bg-emerald-50/50 rounded-2xl border border-gray-200/80 shadow-sm p-3 sm:p-4">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-[10px] sm:text-sm font-medium text-slate-600">First-time</span>
                         <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600" />
@@ -351,7 +356,7 @@ function SalesPersonAnalyticsContent() {
                     </div>
                 </div>
 
-                <div className="bg-blue-50/50 rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
+                <div className="bg-blue-50/50 rounded-2xl border border-gray-200/80 shadow-sm p-3 sm:p-4">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-[10px] sm:text-sm font-medium text-slate-600">Repeat</span>
                         <Repeat className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
@@ -381,8 +386,8 @@ function SalesPersonAnalyticsContent() {
                 <TabsContent value="analytics" className="space-y-5 mt-0">
                     <div className="grid gap-5 md:grid-cols-3">
                         {/* Revenue Trend chart */}
-                        <div className="md:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                        <div className="md:col-span-2 bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                                 <div className="flex items-center gap-2">
                                     <div className="p-1.5 bg-slate-100 rounded-lg">
                                         <BarChart2 className="h-4 w-4 text-slate-600" />
@@ -444,8 +449,8 @@ function SalesPersonAnalyticsContent() {
                         </div>
 
                         {/* Purchase Breakdown chart */}
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
                                 <div className="p-1.5 bg-slate-100 rounded-lg">
                                     <PieChartIcon className="h-4 w-4 text-slate-600" />
                                 </div>
@@ -506,8 +511,8 @@ function SalesPersonAnalyticsContent() {
                 </TabsContent>
 
                 <TabsContent value="orders" className="mt-0">
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
                             <div className="p-1.5 bg-slate-100 rounded-lg">
                                 <List className="h-4 w-4 text-slate-600" />
                             </div>

@@ -282,102 +282,40 @@ export function MarketingContent() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Marketing</h1>
-                    <p className="text-muted-foreground">
-                        Manage your marketing campaigns, promotions, and customer engagement.
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto" variant="outline" onClick={() => setOpenCalendar(true)}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Campaign Calendar
-                    </Button>
-                    <Button className="w-full sm:w-auto" onClick={() => setOpenCreateCampaign(true)}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Campaign
-                    </Button>
+        <div className="space-y-0">
+            {/* ════════ DARK HERO STRIP ════════ */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Marketing</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage your marketing campaigns, promotions, and customer engagement</p>
+                        </div>
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                            <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                <MessageSquare className="h-4 w-4 text-[#4D7DF2]" />
+                                <div>
+                                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Campaigns</p>
+                                    <p className="text-base font-black text-white tabular-nums leading-tight">{dashboardData.activeCampaigns}</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setOpenCalendar(true)} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-xs font-bold text-gray-300 hover:bg-white/10 transition-colors">
+                                <Calendar className="h-3.5 w-3.5" />
+                                Calendar
+                            </button>
+                            <button onClick={() => setOpenCreateCampaign(true)} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors">
+                                <Plus className="h-3.5 w-3.5" />
+                                Create Campaign
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
-                        <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{dashboardData.activeCampaigns}</div>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            {dashboardData.activeCampaignsChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                            ) : (
-                                <TrendingUp className="h-3 w-3 mr-1 text-red-500 rotate-180" />
-                            )}
-                            {dashboardData.activeCampaignsChange >= 0 ? '+' : ''}{dashboardData.activeCampaignsChange.toFixed(1)}% from last month
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{dashboardData.totalReach.toLocaleString()}</div>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            {dashboardData.totalReachChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                            ) : (
-                                <TrendingUp className="h-3 w-3 mr-1 text-red-500 rotate-180" />
-                            )}
-                            {dashboardData.totalReachChange >= 0 ? '+' : ''}{dashboardData.totalReachChange.toFixed(1)}% from last month
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Click-through Rate</CardTitle>
-                        <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{dashboardData.clickThroughRate.toFixed(1)}%</div>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            {dashboardData.clickThroughRateChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                            ) : (
-                                <TrendingUp className="h-3 w-3 mr-1 text-red-500 rotate-180" />
-                            )}
-                            {dashboardData.clickThroughRateChange >= 0 ? '+' : ''}{dashboardData.clickThroughRateChange.toFixed(1)}% from last month
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Marketing Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{formatCurrency(dashboardData.marketingRevenue)}</div>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                            {dashboardData.marketingRevenueChange >= 0 ? (
-                                <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
-                            ) : (
-                                <TrendingUp className="h-3 w-3 mr-1 text-red-500 rotate-180" />
-                            )}
-                            {dashboardData.marketingRevenueChange >= 0 ? '+' : ''}{dashboardData.marketingRevenueChange.toFixed(1)}% from last month
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
+            <div className="mt-4">
             {/* Tabs */}
             <Tabs defaultValue="campaigns" className="space-y-6">
                 <TabsList>
@@ -823,6 +761,7 @@ export function MarketingContent() {
                     </div>
                 </TabsContent>
             </Tabs>
+            </div>
 
             {/* Campaign Calendar Dialog */}
             <Dialog open={openCalendar} onOpenChange={setOpenCalendar}>

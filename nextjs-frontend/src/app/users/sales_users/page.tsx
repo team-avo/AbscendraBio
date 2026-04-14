@@ -7,13 +7,12 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
@@ -183,12 +182,47 @@ export default function SalesUsersPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-2 sm:px-0 mt-2 sm:mt-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Sales Users Management</h1>
+      <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-5">
+
+        {/* Dark Hero Strip */}
+        <div
+          className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
+          style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+        >
+          {/* Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="relative px-5 py-5 sm:px-7 sm:py-6 space-y-4">
+            {/* Top row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Sales Users</h1>
+                <p className="text-sm text-blue-200/70 mt-0.5">Manage sales representatives and managers</p>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Stat chip */}
+                <div className="flex items-center gap-2 bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                  <Users className="h-4 w-4 text-blue-400" />
+                  <span className="text-white font-semibold text-sm">{reps.length}</span>
+                  <span className="text-blue-200/70 text-xs">users</span>
+                </div>
+                {selectedRep && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white text-[#070B14] border-white hover:bg-white/90 font-semibold rounded-xl h-9 px-4 text-sm"
+                    onClick={() => window.location.href = `/analytics/person?salesRepId=${selectedRep.id}`}
+                  >
+                    View Analytics
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+        {/* Assignment card */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
           <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
               <div className="flex-1 space-y-2">
@@ -265,15 +299,6 @@ export default function SalesUsersPage() {
                 >
                   Save Assignments
                 </Button>
-                {selectedRep && (
-                  <Button
-                    variant="outline"
-                    className="w-full lg:w-auto h-10 sm:h-11 shadow-sm"
-                    onClick={() => window.location.href = `/analytics/person?salesRepId=${selectedRep.id}`}
-                  >
-                    View Analytics
-                  </Button>
-                )}
               </div>
             </div>
 
@@ -444,5 +469,3 @@ export default function SalesUsersPage() {
     </DashboardLayout>
   );
 }
-
-

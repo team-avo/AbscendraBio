@@ -342,34 +342,43 @@ export default function SalesReportsPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-5 px-2 sm:px-0">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sales Reports</h1>
-                        <p className="text-muted-foreground text-sm sm:text-base">Revenue and order trends</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="space-y-0">
+                {/* ════════ DARK HERO STRIP ════════ */}
+                <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                  <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <h1 className="text-xl font-black text-white tracking-tight">Sales Reports</h1>
+                        <p className="text-xs text-gray-500 mt-0.5">Revenue and order trends</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
                         <OrderDateFilter
-                            range={range}
-                            setRange={setRange}
-                            from={from || undefined}
-                            setFrom={(d) => setFrom(d || null)}
-                            to={to || undefined}
-                            setTo={(d) => setTo(d || null)}
-                            salesChannelId={salesChannelId}
-                            onSalesChannelChange={setSalesChannelId}
+                          range={range}
+                          setRange={setRange}
+                          from={from || undefined}
+                          setFrom={(d) => setFrom(d || null)}
+                          to={to || undefined}
+                          setTo={(d) => setTo(d || null)}
+                          salesChannelId={salesChannelId}
+                          onSalesChannelChange={setSalesChannelId}
                         />
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                            {!isMobile && (
-                                <Button onClick={handleExportAll} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
-                                    <FileSpreadsheet className="h-4 w-4 mr-2" /> Export
-                                </Button>
-                            )}
-                            <Button onClick={() => setShowEmailDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
-                                <Mail className="h-4 w-4 mr-2" /> {isMobile ? "Email Report" : "Email"}
-                            </Button>
+                        <div className="flex items-center gap-2">
+                          {!isMobile && (
+                            <button onClick={handleExportAll} className="flex items-center gap-1.5 h-9 px-3 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
+                              <FileSpreadsheet className="h-3.5 w-3.5" />
+                              Export
+                            </button>
+                          )}
+                          <button onClick={() => setShowEmailDialog(true)} className="flex items-center gap-1.5 h-9 px-3 bg-white/[0.06] border border-white/[0.08] rounded-xl text-xs font-bold text-gray-300 hover:bg-white/[0.12] hover:text-white transition-colors">
+                            <Mail className="h-3.5 w-3.5" />
+                            Email
+                          </button>
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
 
                 <Tabs defaultValue="overview" className="space-y-5">
@@ -385,7 +394,7 @@ export default function SalesReportsPage() {
                     <TabsContent value="overview" className="space-y-5">
                         {/* Stat chips */}
                         <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
-                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-emerald-50 shrink-0">
                                     <DollarSign className="h-5 w-5 text-emerald-600" />
                                 </div>
@@ -399,7 +408,7 @@ export default function SalesReportsPage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                            <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-50 shrink-0">
                                     <ShoppingCart className="h-5 w-5 text-blue-600" />
                                 </div>
@@ -415,8 +424,8 @@ export default function SalesReportsPage() {
                         </div>
 
                         {/* Revenue Trend chart */}
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                 <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                                     <LineChartIcon className="h-4 w-4 text-blue-600" />
                                 </div>
@@ -465,8 +474,8 @@ export default function SalesReportsPage() {
                         </div>
 
                         {/* Orders per Day chart */}
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                 <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-violet-50">
                                     <BarChart2 className="h-4 w-4 text-violet-600" />
                                 </div>
@@ -496,8 +505,8 @@ export default function SalesReportsPage() {
                         </div>
 
                         {/* Daily Breakdown table */}
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                 <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-amber-50">
                                     <ClipboardList className="h-4 w-4 text-amber-600" />
                                 </div>
@@ -592,7 +601,7 @@ export default function SalesReportsPage() {
 
                     <TabsContent value="regional" className="space-y-5">
                         {/* Filter bar */}
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 space-y-3">
                             <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3">
                                 <div className="w-full sm:w-[200px]">
                                     <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity("ALL"); }}>
@@ -620,8 +629,8 @@ export default function SalesReportsPage() {
                         </div>
 
                         <div className="grid gap-5 lg:grid-cols-2">
-                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                                         <MapPin className="h-4 w-4 text-blue-600" />
                                     </div>
@@ -652,8 +661,8 @@ export default function SalesReportsPage() {
                                     )}
                                 </div>
                             </div>
-                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                                <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-50">
                                         <ClipboardList className="h-4 w-4 text-emerald-600" />
                                     </div>

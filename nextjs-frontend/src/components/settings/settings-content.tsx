@@ -351,25 +351,32 @@ export function SettingsContent() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-2 sm:px-0">
-                <div>
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Settings</h1>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                        Manage your store configuration and preferences
-                    </p>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                    <Button className="w-full sm:w-auto h-10 sm:h-11 shadow-sm">
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Changes
-                    </Button>
+        <div className="space-y-0">
+
+            {/* ════════ DARK HERO STRIP ════════ */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Settings</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage your store configuration and preferences</p>
+                        </div>
+                        <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                            <Settings className="h-4 w-4 text-[#4D7DF2]" />
+                            <div>
+                                <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Config</p>
+                                <p className="text-xs font-black text-white leading-tight">Store Settings</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Settings Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-2">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
                 <div className="w-full overflow-x-auto no-scrollbar pb-1">
                     <TabsList className="inline-flex w-full sm:w-auto h-10 sm:h-11 p-1 bg-muted/50 border">
                         <TabsTrigger value="general" className="px-4 py-1.5 text-xs sm:text-sm whitespace-nowrap">General</TabsTrigger>

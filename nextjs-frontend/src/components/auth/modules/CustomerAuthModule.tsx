@@ -6,12 +6,8 @@ import { useAuth } from '@/contexts/auth-context';
 import { api } from '@/lib/api';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Image from 'next/image';
 
 // Import refactored components
 import { SignInForm } from '@/components/auth/login/SignInForm';
@@ -360,80 +356,59 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
 
   return (
     <div className="w-full">
+      {/* Approval modal */}
       <Dialog open={showApprovalModal} onOpenChange={setShowApprovalModal}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader><DialogTitle className="text-center">Email Verification Required</DialogTitle></DialogHeader>
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-center text-sm text-gray-600">A verification email has been sent to your registered email address. Please verify your email to continue.</p>
-            <Button className="w-full" onClick={() => setShowApprovalModal(false)}>Close</Button>
+        <DialogContent className="sm:max-w-[420px] rounded-3xl">
+          <DialogHeader><DialogTitle className="text-center">Check your email</DialogTitle></DialogHeader>
+          <div className="flex flex-col items-center space-y-4 pb-2">
+            <p className="text-center text-sm text-gray-500">We sent a verification link to <strong>{email}</strong>. Please verify your email to continue.</p>
+            <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowApprovalModal(false)}>Got it</Button>
           </div>
         </DialogContent>
       </Dialog>
 
+      {/* Email verification modal */}
       <Dialog open={showEmailVerificationModal} onOpenChange={setShowEmailVerificationModal}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader><DialogTitle className="text-center">Verify Your Email</DialogTitle></DialogHeader>
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-center text-sm text-gray-600">A verification email has been sent to your registered email address. Please check your inbox and verify to continue.</p>
-            <Button className="w-full" onClick={() => setShowEmailVerificationModal(false)}>Close</Button>
+        <DialogContent className="sm:max-w-[420px] rounded-3xl">
+          <DialogHeader><DialogTitle className="text-center">Verify your email</DialogTitle></DialogHeader>
+          <div className="flex flex-col items-center space-y-4 pb-2">
+            <p className="text-center text-sm text-gray-500">A verification link has been sent to your inbox. Please check your email to continue.</p>
+            <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowEmailVerificationModal(false)}>Got it</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {!isModal && (
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center">
-            <Image src="/Centre-Labs-logo-sm.png" alt="Logo" width={160} height={160} priority />
-          </div>
-        </div>
+      {/* Sign in / Sign up pill tabs */}
+      <div className="flex items-center gap-1.5 bg-gray-100 rounded-2xl p-1.5 mb-8">
+        <button
+          onClick={() => { setTab('signin'); setErrors({}); if (portalMismatch) setPortalMismatch(null); }}
+          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signin' ? 'bg-white text-[#070B14] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          Sign In
+        </button>
+        <button
+          onClick={() => { setTab('signup'); setErrors({}); if (portalMismatch) setPortalMismatch(null); }}
+          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signup' ? 'bg-white text-[#070B14] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          Create Account
+        </button>
+      </div>
+
+      {tab === 'signin' ? (
+        otpMode ? (
+          <OtpVerification email={email} setEmail={setEmail} otpSent={otpSent} otpCode={otpCode} setOtpCode={setOtpCode} resendCountdown={resendCountdown} isSubmitting={isSubmitting} errors={errors} onBackToPassword={handleBackToPassword} onRequestOtp={handleRequestOtp} onVerifyOtp={handleVerifyOtp} onResendOtp={handleResendOtp} />
+        ) : (
+          <SignInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} showPassword={showPassword} setShowPassword={setShowPassword} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} portalMismatch={portalMismatch} setPortalMismatch={setPortalMismatch} onSubmit={handleSubmit} onForgotPassword={handleForgotPassword} onSwitchToOtp={handleSwitchToOtpMode} clearErrors={(field) => setErrors(prev => ({ ...prev, [field]: undefined }))} />
+        )
+      ) : (
+        <SignUpForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} firstName={firstName} setFirstName={setFirstName} lastName={lastName} setLastName={setLastName} mobile={mobile} setMobile={setMobile} companyName={companyName} setCompanyName={setCompanyName} licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber} city={city} setCity={setCity} zip={zip} setZip={setZip} showPassword={showPassword} setShowPassword={setShowPassword} setShowPasswordValidation={setShowPasswordValidation} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} onSubmit={handleSubmit} onSwitchToOtp={() => { setTab('signin'); handleSwitchToOtpMode(); }} />
       )}
 
-      <Card className={`border-none shadow-none bg-transparent  ${!isModal ? 'bg-white/80 backdrop-blur-2xl border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] p-4 sm:p-6 rounded-[2rem]' : ''}`}>
-        <CardHeader className={isModal ? "px-0 pt-0" : ""}>
-          <CardTitle className="text-center text-2xl mb-2">Sign in or create an account</CardTitle>
-        </CardHeader>
-        <CardContent className={isModal ? "px-0 pb-0" : ""}>
-          <Tabs value={tab} onValueChange={(v) => { setTab(v as any); setErrors({}); if (portalMismatch) setPortalMismatch(null); }}>
-            <TabsList className="grid grid-cols-2 w-full mb-4">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
+      <ForgotPasswordDialog open={forgotOpen} onOpenChange={setForgotOpen} email={forgotEmail} setEmail={setForgotEmail} loading={forgotLoading} onReset={handlePasswordReset} />
 
-            <TabsContent value="signin">
-              {otpMode ? (
-                <OtpVerification email={email} setEmail={setEmail} otpSent={otpSent} otpCode={otpCode} setOtpCode={setOtpCode} resendCountdown={resendCountdown} isSubmitting={isSubmitting} errors={errors} onBackToPassword={handleBackToPassword} onRequestOtp={handleRequestOtp} onVerifyOtp={handleVerifyOtp} onResendOtp={handleResendOtp} />
-              ) : (
-                <SignInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} showPassword={showPassword} setShowPassword={setShowPassword} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} portalMismatch={portalMismatch} setPortalMismatch={setPortalMismatch} onSubmit={handleSubmit} onForgotPassword={handleForgotPassword} onSwitchToOtp={handleSwitchToOtpMode} clearErrors={(field) => setErrors(prev => ({ ...prev, [field]: undefined }))} />
-              )}
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <SignUpForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} firstName={firstName} setFirstName={setFirstName} lastName={lastName} setLastName={setLastName} mobile={mobile} setMobile={setMobile} companyName={companyName} setCompanyName={setCompanyName} licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber} city={city} setCity={setCity} zip={zip} setZip={setZip} showPassword={showPassword} setShowPassword={setShowPassword} setShowPasswordValidation={setShowPasswordValidation} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} onSubmit={handleSubmit} onSwitchToOtp={() => { setTab('signin'); handleSwitchToOtpMode(); }} />
-            </TabsContent>
-          </Tabs>
-
-          <ForgotPasswordDialog open={forgotOpen} onOpenChange={setForgotOpen} email={forgotEmail} setEmail={setForgotEmail} loading={forgotLoading} onReset={handlePasswordReset} />
-        </CardContent>
-      </Card>
-
-      <div className="flex flex-col gap-4 mt-6">
-        <div className="text-center text-sm font-medium">
-          {onSwitchToAdmin ? (
-            <button type="button" onClick={onSwitchToAdmin} className="text-gray-500 hover:text-[#070B14] transition-colors">
-              Are you an administrator? <span className="text-[#3A6FA0] underline-offset-4 hover:underline ml-1">Admin Login &rarr;</span>
-            </button>
-          ) : (
-            <a href="/admin/login" className="text-gray-500 hover:text-[#070B14] transition-colors">
-              Are you an administrator? <span className="text-[#3A6FA0] underline-offset-4 hover:underline ml-1">Admin Login &rarr;</span>
-            </a>
-          )}
-        </div>
-        {!isModal && (
-          <div className="text-center">
-            <p className="text-xs text-gray-500">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
-          </div>
-        )}
-      </div>
+      {!isModal && (
+        <p className="text-center text-xs text-gray-400 mt-8">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
+      )}
     </div>
   );
 }

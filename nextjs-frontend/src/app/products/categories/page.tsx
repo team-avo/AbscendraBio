@@ -50,7 +50,6 @@ export default function CategoriesPage() {
         setTotalItems(response.data.pagination.total);
         setTotalPages(response.data.pagination.pages);
       } else {
-        // Handle API error
         toast.error(response.error || 'Failed to load categories');
         setCategories([]);
         setTotalItems(0);
@@ -106,59 +105,54 @@ export default function CategoriesPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']} requiredPermissions={[{ module: 'PRODUCTS', action: 'READ' }]}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Categories</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
-                Manage product categories and classifications
-              </p>
+        <div className="space-y-0">
+
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Categories</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Manage product categories</p>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                    <Tag className="h-4 w-4 text-[#4D7DF2]" />
+                    <div>
+                      <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total</p>
+                      <p className="text-base font-black text-white tabular-nums leading-tight">{totalItems.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setShowCreateDialog(true)}
+                    className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest"
+                  >
+                    <Plus className="mr-1.5 h-3.5 w-3.5" /> Create Category
+                  </Button>
+                </div>
+              </div>
             </div>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Category
-            </Button>
           </div>
 
-          {/* Single stat chip */}
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4 w-fit">
-            <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <Tag className="h-5 w-5 text-slate-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Total Categories</p>
-              <p className="text-xl font-bold text-slate-900">{totalItems}</p>
-            </div>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* ════════ COMPACT FILTER ROW ════════ */}
+          <div className="px-1 sm:px-0 py-4">
+            <div className="relative max-w-sm">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
               <Input
                 placeholder="Search by category name..."
-                className="pl-10 w-full"
+                className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           </div>
 
-          {/* Categories Table Card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-100">
-                <Tag className="h-4 w-4 text-slate-500" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-800">Categories List</h2>
-                <p className="text-xs text-slate-400">{totalItems} categories</p>
-              </div>
-            </div>
+          {/* ════════ TABLE ════════ */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
             <CategoriesTable
               categories={categories}
               loading={loading}

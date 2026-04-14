@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,20 +22,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     Search,
-    Filter,
     Download,
     Eye,
     Edit,
     MoreHorizontal,
     Plus,
-    Package,
-    DollarSign,
-    TrendingUp,
-    TrendingDown,
-    AlertTriangle,
     Grid3X3,
-    List,
-    Star
 } from "lucide-react";
 import { CreateCollectionDialog } from "./create-collection-dialog";
 import { EditCollectionDialog } from "./edit-collection-dialog";
@@ -189,136 +180,133 @@ export function CollectionsContent() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Collections</h1>
-                    <p className="text-muted-foreground">
-                        Manage your product collections and featured sets
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <Button variant="outline" onClick={downloadCsv} disabled={loading || collections.length === 0} className="w-full sm:w-auto">
-                        <Download className="h-4 w-4 mr-2" />
-                        Export
-                    </Button>
-                    <Button onClick={() => setShowCreateDialog(true)} className="w-full sm:w-auto">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Collection
-                    </Button>
-                </div>
-            </div>
+        <div className="space-y-0">
 
-            {/* Statistics Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 w-full">
-                <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-xs font-medium">Total Collections</CardTitle>
-                        <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{collectionStats.total}</div>
-                    </CardContent>
-                </Card>
+            {/* ════════ DARK HERO STRIP ════════ */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
 
-                <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-xs font-medium">Active Collections</CardTitle>
-                        <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                        <div className="text-base sm:text-lg lg:text-2xl font-bold text-green-600">{collectionStats.active}</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0.5 gap-0 sm:py-3 sm:gap-1 col-span-2 md:col-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-1">
-                        <CardTitle className="text-[10px] sm:text-xs font-medium">Total Products</CardTitle>
-                        <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 sm:p-3 sm:pt-0">
-                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{collectionStats.totalProducts}</div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Collections Management */}
-            <Card>
-                <CardHeader>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <CardTitle>Collections List</CardTitle>
-                            <CardDescription>
-                                View and manage your product collections
-                            </CardDescription>
+                            <h1 className="text-xl font-black text-white tracking-tight">Collections</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage your product collections and featured sets</p>
                         </div>
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                            <div className="relative w-full sm:w-64">
-                                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search collections..."
-                                    className="pl-8 w-full"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                <Grid3X3 className="h-4 w-4 text-[#4D7DF2]" />
+                                <div>
+                                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Collections</p>
+                                    <p className="text-base font-black text-white tabular-nums leading-tight">{collectionStats.total}</p>
+                                </div>
+                            </div>
+                            <button onClick={downloadCsv} disabled={loading || collections.length === 0} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-xs font-bold text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-40">
+                                <Download className="h-3.5 w-3.5" />
+                                Export
+                            </button>
+                            <button onClick={() => setShowCreateDialog(true)} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors">
+                                <Plus className="h-3.5 w-3.5" />
+                                Add Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ════════ COMPACT FILTER ROW ════════ */}
+            <div className="px-1 sm:px-0 py-4">
+                <div className="relative max-w-sm">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                    <Input
+                        placeholder="Search collections…"
+                        className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {/* ════════ TABLE ════════ */}
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+                <div className="overflow-x-auto">
+                    {loading ? (
+                        <div className="flex justify-center items-center py-16">
+                            <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                        </div>
+                    ) : collections.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center">
+                                <Grid3X3 className="h-6 w-6 text-gray-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-gray-700">No collections found</p>
+                                <p className="text-xs text-gray-400 mt-0.5">{searchTerm ? 'Try adjusting your search' : 'Create your first collection'}</p>
                             </div>
                         </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="overflow-x-auto">
-                        <Table className="min-w-[800px]">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Products</TableHead>
-                                    <TableHead>Created</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {collections.map((collection) => (
-                                    <TableRow key={collection.id}>
-                                        <TableCell className="font-medium whitespace-nowrap">{collection.name}</TableCell>
-                                        <TableCell className="max-w-[300px] truncate">{collection.description || "-"}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={collection.isActive ? "default" : "secondary"}>
-                                                {collection.isActive ? "Active" : "Inactive"}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-center">{collection._count?.products || 0}</TableCell>
-                                        <TableCell className="whitespace-nowrap">{new Date(collection.createdAt).toLocaleDateString()}</TableCell>
-                                        <TableCell className="text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => handleViewProducts(collection)}>
-                                                        <Eye className="h-4 w-4 mr-2" />
-                                                        View Products
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleEdit(collection)}>
-                                                        <Edit className="h-4 w-4 mr-2" />
-                                                        Edit Collection
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
+                    ) : (
+                        <>
+                            <Table className="min-w-[800px]">
+                                <TableHeader>
+                                    <TableRow className="bg-gray-50/50 border-b border-gray-100">
+                                        <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Name</TableHead>
+                                        <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Description</TableHead>
+                                        <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status</TableHead>
+                                        <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Products</TableHead>
+                                        <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Created</TableHead>
+                                        <TableHead className="text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </CardContent>
-            </Card>
+                                </TableHeader>
+                                <TableBody>
+                                    {collections.map((collection) => (
+                                        <TableRow key={collection.id} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50">
+                                            <TableCell className="font-medium whitespace-nowrap">{collection.name}</TableCell>
+                                            <TableCell className="max-w-[300px] truncate">{collection.description || "-"}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={collection.isActive ? "default" : "secondary"}>
+                                                    {collection.isActive ? "Active" : "Inactive"}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-center">{collection._count?.products || 0}</TableCell>
+                                            <TableCell className="whitespace-nowrap">{new Date(collection.createdAt).toLocaleDateString()}</TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => handleViewProducts(collection)}>
+                                                            <Eye className="h-4 w-4 mr-2" />
+                                                            View Products
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEdit(collection)}>
+                                                            <Edit className="h-4 w-4 mr-2" />
+                                                            Edit Collection
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                            {totalPages > 1 && (
+                                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                                    <p className="text-xs text-gray-400">Page {page} of {totalPages}</p>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="h-8 px-3 rounded-xl text-xs">Previous</Button>
+                                        <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="h-8 px-3 rounded-xl text-xs">Next</Button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
 
             {/* Dialogs */}
             <CreateCollectionDialog

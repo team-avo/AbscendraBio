@@ -11,8 +11,7 @@ import { EditUserDialog } from '@/components/users/edit-user-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Users, UserCheck, UserX, Shield } from 'lucide-react';
+import { Plus, Search, Users } from 'lucide-react';
 import { api, User } from '@/lib/api';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
@@ -120,125 +119,128 @@ export default function UsersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Users</h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Manage user accounts and permissions
-              </p>
-            </div>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium w-full sm:w-auto"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add User
-            </Button>
-          </div>
+        <div className="space-y-0">
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* Total Users */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                <Users className="h-5 w-5 text-slate-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total Users</p>
-                <p className="text-xl font-bold text-slate-900">{stats.total}</p>
-              </div>
-            </div>
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
 
-            {/* Active */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <UserCheck className="h-5 w-5 text-emerald-500" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Users</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Manage user accounts and permissions</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                    <Users className="h-4 w-4 text-[#4D7DF2]" />
+                    <div>
+                      <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total</p>
+                      <p className="text-base font-black text-white tabular-nums leading-tight">{stats.total.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                    <Plus className="mr-1.5 h-3.5 w-3.5" /> Add User
+                  </Button>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Active</p>
-                <p className="text-xl font-bold text-emerald-600">{stats.active}</p>
-              </div>
-            </div>
 
-            {/* Inactive */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                <UserX className="h-5 w-5 text-red-500" />
+              {/* Role + status pills */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                {[
+                  { rKey: 'all',          sKey: 'all',      label: 'All',         count: stats.total,    color: null },
+                  { rKey: 'all',          sKey: 'active',   label: 'Active',      count: stats.active,   color: 'emerald' },
+                  { rKey: 'all',          sKey: 'inactive', label: 'Inactive',    count: stats.inactive, color: 'red' },
+                  { rKey: 'ADMIN',        sKey: 'all',      label: 'Admins',      count: stats.admins,   color: 'blue' },
+                  { rKey: 'MANAGER',      sKey: 'all',      label: 'Managers',    count: null,           color: 'purple' },
+                  { rKey: 'STAFF',        sKey: 'all',      label: 'Staff',       count: null,           color: 'amber' },
+                  { rKey: 'SALES_REP',    sKey: 'all',      label: 'Sales Reps',  count: null,           color: 'cyan' },
+                ].map((pill) => {
+                  const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                    emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+                    red:     { bg: 'bg-red-500/15',     text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+                    blue:    { bg: 'bg-blue-500/15',    text: 'text-blue-400',    ring: 'ring-blue-500/30',    dot: 'bg-blue-400' },
+                    purple:  { bg: 'bg-purple-500/15',  text: 'text-purple-400',  ring: 'ring-purple-500/30',  dot: 'bg-purple-400' },
+                    amber:   { bg: 'bg-amber-500/15',   text: 'text-amber-400',   ring: 'ring-amber-500/30',   dot: 'bg-amber-400' },
+                    cyan:    { bg: 'bg-cyan-500/15',    text: 'text-cyan-400',    ring: 'ring-cyan-500/30',    dot: 'bg-cyan-400' },
+                  };
+                  const c = pill.color ? colorStyles[pill.color] : null;
+                  const isAll = pill.rKey === 'all' && pill.sKey === 'all';
+                  const isActive = isAll
+                    ? roleFilter === 'all' && statusFilter === 'all'
+                    : roleFilter === pill.rKey && statusFilter === pill.sKey;
+                  return (
+                    <button
+                      key={`${pill.rKey}-${pill.sKey}`}
+                      onClick={() => { setRoleFilter(pill.rKey); setStatusFilter(pill.sKey); setCurrentPage(1); }}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                        : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                        : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                      }`}
+                    >
+                      {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                      <span>{pill.label}</span>
+                      {pill.count !== null && (
+                        <span className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${
+                          isAll && isActive ? 'bg-white/20 text-white'
+                          : isActive && c ? `${c.bg} ${c.text}`
+                          : 'bg-white/[0.06] text-gray-500'
+                        }`}>
+                          {pill.count.toLocaleString()}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Inactive</p>
-                <p className="text-xl font-bold text-red-600">{stats.inactive}</p>
-              </div>
-            </div>
-
-            {/* Admins — dark navy hero chip */}
-            <div className="relative flex items-center gap-3 bg-[#1B2D4F] rounded-2xl shadow-sm px-5 py-4 overflow-hidden">
-              <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                <Shield className="h-5 w-5 text-blue-300" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Admins</p>
-                <p className="text-2xl font-bold text-white">{stats.admins}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-9 w-full"
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Select value={roleFilter} onValueChange={handleRoleFilter}>
-                <SelectTrigger className="w-full sm:w-[160px]">
-                  <SelectValue placeholder="Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="MANAGER">Manager</SelectItem>
-                  <SelectItem value="STAFF">Staff</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[140px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
-          {/* Table Card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-                <Users className="h-4 w-4 text-slate-500" />
+          {/* ════════ COMPACT FILTER ROW ════════ */}
+          <div className="px-1 sm:px-0 py-4 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 sm:max-w-sm">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Input
+                  placeholder="Search users by name or email…"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                />
               </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-900">Users List</h2>
-                <p className="text-xs text-slate-500">
-                  {loading
-                    ? 'Loading...'
-                    : totalUsers === 0
-                      ? 'Showing 0 users'
-                      : `Showing ${startIndex}-${endIndex} of ${totalUsers} users`}
-                </p>
+              <div className="flex flex-wrap gap-2">
+                <Select value={roleFilter} onValueChange={handleRoleFilter}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[120px]">
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="MANAGER">Manager</SelectItem>
+                    <SelectItem value="STAFF">Staff</SelectItem>
+                    <SelectItem value="SALES_REP">Sales Rep</SelectItem>
+                    <SelectItem value="SALES_MANAGER">Sales Manager</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[120px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+          </div>
+
+          {/* ════════ TABLE ════════ */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
             <UsersTable
               users={users}
               loading={loading}
@@ -251,19 +253,9 @@ export default function UsersPage() {
             />
           </div>
 
-          {/* Dialogs */}
-          <CreateUserDialog
-            open={showCreateDialog}
-            onOpenChange={setShowCreateDialog}
-            onSuccess={handleUserCreated}
-          />
-
-          <EditUserDialog
-            user={editingUser}
-            open={!!editingUser}
-            onOpenChange={(open) => !open && setEditingUser(null)}
-            onSuccess={handleUserUpdated}
-          />
+          {/* ════════ DIALOGS ════════ */}
+          <CreateUserDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} onSuccess={handleUserCreated} />
+          <EditUserDialog user={editingUser} open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)} onSuccess={handleUserUpdated} />
         </div>
       </DashboardLayout>
     </ProtectedRoute>

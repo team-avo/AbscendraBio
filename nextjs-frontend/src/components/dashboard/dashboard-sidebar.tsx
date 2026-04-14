@@ -152,11 +152,11 @@ const navItems: NavItem[] = [
     //         { title: "Promotions", href: "/coupons", icon: Gift },
     //     ]
     // },
-    {
-        title: "Customer Comments",
-        href: "/admin/comments",
-        icon: MessageSquare,
-    },
+    // {
+    //     title: "Customer Comments",
+    //     href: "/admin/comments",
+    //     icon: MessageSquare,
+    // },
     // Customer specific items
     {
         title: "Personal",

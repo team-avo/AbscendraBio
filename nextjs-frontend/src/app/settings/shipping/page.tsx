@@ -11,16 +11,25 @@ export default function ShippingSettingsPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="space-y-4 sm:space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Shipping Settings</h1>
-              <p className="text-muted-foreground text-sm sm:text-base">Configure shipping rates and options for your store</p>
+        <div className="space-y-0">
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Shipping Settings</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Configure shipping rates and options for your store</p>
+                </div>
+                <button className="flex items-center gap-1.5 h-9 px-4 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
+                  Save Changes
+                </button>
+              </div>
             </div>
-            <Button className="w-full sm:w-auto">Save Changes</Button>
           </div>
 
-          <Card>
+          <Card className="mt-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Truck className="h-5 w-5" />
@@ -58,7 +67,7 @@ export default function ShippingSettingsPage() {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 mt-4">
             <Card>
               <CardHeader>
                 <CardTitle>Shipping Options</CardTitle>

@@ -15,8 +15,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Package, Check, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, Package, Check, ChevronLeft, ChevronRight, ExternalLink, BarChart2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -27,13 +26,6 @@ import {
 import { api, resolveImageUrl } from "@/lib/api";
 import logger from "@/lib/logger";
 import { toast } from "sonner";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 
 type FilterTab = "all" | "low-stock" | "out-of-stock";
 
@@ -280,53 +272,75 @@ export default function InventoryPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
             <DashboardLayout>
-                <div className="space-y-6">
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Inventory</h1>
-                            <p className="text-sm sm:text-base text-muted-foreground">Manage your product inventory and stock levels</p>
-                        </div>
-                    </div>
+                <div className="space-y-0">
+                    {/* Dark hero strip */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            {/* Title row + stat chip */}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                <div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Inventory</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Stock levels, variants, and reorder management</p>
+                                </div>
+                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <BarChart2 className="h-4 w-4 text-blue-400" />
+                                    <div>
+                                        <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total SKUs</p>
+                                        <p className="text-base font-black text-white tabular-nums leading-tight">{totalCounts.all.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                    {/* Filters and Search */}
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterTab)} className="w-full lg:w-auto">
-                            <TabsList className="w-full lg:w-auto flex flex-wrap h-auto p-1">
-                                <TabsTrigger value="all" className="flex-1 lg:flex-none">
-                                    All
-                                    <Badge variant="secondary" className="ml-2">
-                                        {totalCounts.all}
-                                    </Badge>
-                                </TabsTrigger>
-                                <TabsTrigger value="low-stock" className="flex-1 lg:flex-none">
-                                    Low Stock
-                                    <Badge variant="secondary" className="ml-2">
-                                        {totalCounts.lowStock}
-                                    </Badge>
-                                </TabsTrigger>
-                                <TabsTrigger value="out-of-stock" className="flex-1 lg:flex-none">
-                                    Out of Stock
-                                    <Badge variant="destructive" className="ml-2">
-                                        {totalCounts.outOfStock}
-                                    </Badge>
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
+                            {/* Status pills + search row */}
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                                    {[
+                                        { key: 'all',          label: 'All',          count: totalCounts.all,        color: null },
+                                        { key: 'low-stock',    label: 'Low Stock',    count: totalCounts.lowStock,   color: 'amber' },
+                                        { key: 'out-of-stock', label: 'Out of Stock', count: totalCounts.outOfStock, color: 'red' },
+                                    ].map((pill) => {
+                                        const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                                            amber: { bg: 'bg-amber-500/15', text: 'text-amber-400', ring: 'ring-amber-500/30', dot: 'bg-amber-400' },
+                                            red:   { bg: 'bg-red-500/15',   text: 'text-red-400',   ring: 'ring-red-500/30',   dot: 'bg-red-400' },
+                                        };
+                                        const c = pill.color ? colorStyles[pill.color] : null;
+                                        const isActive = activeFilter === pill.key;
+                                        return (
+                                            <button
+                                                key={pill.key}
+                                                onClick={() => setActiveFilter(pill.key as FilterTab)}
+                                                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                                                    pill.key === 'all' && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                                                    : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                                                    : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                                                }`}
+                                            >
+                                                {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                                                <span>{pill.label}</span>
+                                                <span className={`text-[10px] font-black tabular-nums ${isActive && pill.key !== 'all' && c ? c.text : isActive ? 'text-white' : 'text-gray-600'}`}>{pill.count}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
 
-                        <div className="relative w-full lg:w-96">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input
-                                placeholder="Search items..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 h-10"
-                            />
+                                <div className="relative w-full sm:w-72">
+                                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+                                    <Input
+                                        placeholder="Search items..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 h-9 bg-white/[0.06] border-white/[0.08] text-white placeholder:text-gray-500 rounded-xl text-xs focus:bg-white/[0.08] focus:border-white/20"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Inventory Table */}
-                    <div className="rounded-md border overflow-x-auto">
+                    <div className="mt-4 bg-white rounded-2xl border border-gray-200/80 overflow-hidden">
+                    <div className="overflow-x-auto">
                         <Table className="min-w-[800px]">
                             <TableHeader>
                                 <TableRow>
@@ -473,7 +487,7 @@ export default function InventoryPage() {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-t">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-4 border-t border-gray-200/80">
                             <div className="text-sm text-muted-foreground font-medium order-2 sm:order-1">
                                 Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} of {totalItems} products
                             </div>
@@ -525,6 +539,7 @@ export default function InventoryPage() {
                             </div>
                         </div>
                     )}
+                    </div>{/* end bg-white card */}
                 </div>
 
                 {/* Committed Orders Dialog */}

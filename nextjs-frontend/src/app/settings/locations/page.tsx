@@ -388,26 +388,42 @@ export default function LocationsManagementPage() {
     return (
         <ProtectedRoute>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Manage Locations</h1>
-                            <p className="text-sm sm:text-base text-muted-foreground mt-1">
-                                Manage countries, states, and cities for customer addresses
-                            </p>
+                <div className="space-y-0">
+
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Manage Locations</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Manage countries, states, and cities for customer addresses</p>
+                                </div>
+                                <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <MapPin className="h-4 w-4 text-[#4D7DF2]" />
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Locations</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight">{locations.length}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={openAddDialog}
+                                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Add Location
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <Button
-                            className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-                            onClick={openAddDialog}
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Location
-                        </Button>
                     </div>
 
-                    {/* Filters */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                    {/* ════════ COMPACT FILTERS ════════ */}
+                    <div className="px-1 sm:px-0 py-4">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div className="sm:col-span-2">
                                 <div className="relative">
@@ -452,6 +468,7 @@ export default function LocationsManagementPage() {
                                     <SelectItem value="inactive">Inactive Only</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
                         </div>
                     </div>
 

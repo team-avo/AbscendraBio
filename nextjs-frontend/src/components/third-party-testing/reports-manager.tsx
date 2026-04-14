@@ -496,58 +496,64 @@ export function ThirdPartyReportsManager(props: {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          {props.backHref && (
-            <Link
-              href={props.backHref}
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-1"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Link>
-          )}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{pageTitle}</h1>
-            <Badge variant="secondary" className="w-fit">{categoryBadge}</Badge>
+    <div className="space-y-0">
+
+      {/* ════════ DARK HERO STRIP ════════ */}
+      <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              {props.backHref && (
+                <Link href={props.backHref} className="inline-flex items-center gap-1.5 text-[10px] text-gray-500 hover:text-gray-300 mb-2 transition-colors">
+                  <ArrowLeft className="h-3 w-3" />
+                  Back
+                </Link>
+              )}
+              <h1 className="text-xl font-black text-white tracking-tight">{pageTitle}</h1>
+              <p className="text-xs text-gray-500 mt-0.5">{pageDescription}</p>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                <FileUp className="h-4 w-4 text-[#4D7DF2]" />
+                <div>
+                  <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Reports</p>
+                  <p className="text-base font-black text-white tabular-nums leading-tight">{reports.length}</p>
+                </div>
+              </div>
+              <button onClick={fetchReports} disabled={loading} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-xs font-bold text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-40">
+                <RefreshCcw className="h-3.5 w-3.5" />
+                Refresh
+              </button>
+              <button
+                onClick={() => { resetCreateForm(); setCreateOpen(true); }}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add Report
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">{pageDescription}</p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" onClick={fetchReports} disabled={loading} className="w-full sm:w-auto order-2 sm:order-1">
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button
-            className="w-full sm:w-auto order-1 sm:order-2"
-            onClick={() => {
-              resetCreateForm();
-              setCreateOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Report
-          </Button>
         </div>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search reports by name..."
-          className="pl-9 bg-background"
-          value={reportSearchTerm}
-          onChange={(e) => setReportSearchTerm(e.target.value)}
-        />
+      {/* ════════ COMPACT FILTER ROW ════════ */}
+      <div className="px-1 sm:px-0 py-4">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+          <Input
+            placeholder="Search reports by name…"
+            className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+            value={reportSearchTerm}
+            onChange={(e) => setReportSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
-      <Card>
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-lg sm:text-xl">Reports</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">{pageDescription}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* ════════ REPORTS GRID ════════ */}
+      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0 p-6">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-muted-foreground">
               <Loader2 className="h-5 w-5 mr-2 animate-spin" />
@@ -732,8 +738,7 @@ export function ThirdPartyReportsManager(props: {
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
 
       <Dialog
         open={createOpen}

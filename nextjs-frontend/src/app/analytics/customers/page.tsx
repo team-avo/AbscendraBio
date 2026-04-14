@@ -272,32 +272,41 @@ export default function CustomerInsightsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-5 px-2 sm:px-0">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Customer Insights</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Segments, value, and top customers</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <OrderDateFilter
-              range={range}
-              setRange={setRange}
-              from={from || undefined}
-              setFrom={(d) => setFrom(d || null)}
-              to={to || undefined}
-              setTo={(d) => setTo(d || null)}
-              salesChannelId={salesChannelId}
-              onSalesChannelChange={(id) => setSalesChannelId(id)}
-            />
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              {!isMobile && (
-                <Button onClick={downloadCsv} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto" disabled={loading || (data.topCustomers || []).length === 0}>
-                  <Download className="h-4 w-4 mr-2" /> Export
-                </Button>
-              )}
-              <Button onClick={() => setShowEmailDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium flex-1 sm:w-auto">
-                <Mail className="h-4 w-4 mr-2" /> {isMobile ? "Email Report" : "Email"}
-              </Button>
+      <div className="space-y-0">
+        {/* ════════ DARK HERO STRIP ════════ */}
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-xl font-black text-white tracking-tight">Customer Insights</h1>
+                <p className="text-xs text-gray-500 mt-0.5">Segments, value, and top customers</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <OrderDateFilter
+                  range={range}
+                  setRange={setRange}
+                  from={from || undefined}
+                  setFrom={(d) => setFrom(d || null)}
+                  to={to || undefined}
+                  setTo={(d) => setTo(d || null)}
+                  salesChannelId={salesChannelId}
+                  onSalesChannelChange={(id) => setSalesChannelId(id)}
+                />
+                <div className="flex items-center gap-2">
+                  {!isMobile && (
+                    <button onClick={downloadCsv} disabled={loading || (data.topCustomers || []).length === 0} className="flex items-center gap-1.5 h-9 px-3 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors disabled:opacity-50">
+                      <Download className="h-3.5 w-3.5" />
+                      Export
+                    </button>
+                  )}
+                  <button onClick={() => setShowEmailDialog(true)} className="flex items-center gap-1.5 h-9 px-3 bg-white/[0.06] border border-white/[0.08] rounded-xl text-xs font-bold text-gray-300 hover:bg-white/[0.12] hover:text-white transition-colors">
+                    <Mail className="h-3.5 w-3.5" />
+                    Email
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -320,8 +329,8 @@ export default function CustomerInsightsPage() {
 
           <TabsContent value="overview" className="mt-0 outline-none space-y-5">
             {/* Top Customers table */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                     <Users className="h-4 w-4 text-blue-600" />
@@ -419,8 +428,8 @@ export default function CustomerInsightsPage() {
             </div>
 
             {/* Customer Segments */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-violet-50">
                   <PieChartIcon className="h-4 w-4 text-violet-600" />
                 </div>
@@ -494,7 +503,7 @@ export default function CustomerInsightsPage() {
 
             {/* Stat chips */}
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-50 shrink-0">
                   <Users className="h-5 w-5 text-blue-600" />
                 </div>
@@ -513,7 +522,7 @@ export default function CustomerInsightsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-slate-100 shrink-0">
                   <Users className="h-5 w-5 text-slate-500" />
                 </div>
@@ -530,7 +539,7 @@ export default function CustomerInsightsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-amber-50 shrink-0">
                   <Users className="h-5 w-5 text-amber-600" />
                 </div>
@@ -547,7 +556,7 @@ export default function CustomerInsightsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+              <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                 <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-emerald-50 shrink-0">
                   <TrendingUp className="h-5 w-5 text-emerald-600" />
                 </div>
@@ -566,8 +575,8 @@ export default function CustomerInsightsPage() {
             </div>
 
             {/* Customer Orders table */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">

@@ -423,279 +423,218 @@ function OrdersPageContent() {
     );
   }
 
+  const pipelineSteps = [
+    { key: 'PENDING', label: 'Pending', count: stats.pending ?? 0, color: 'amber' },
+    { key: 'PROCESSING', label: 'Processing', count: stats.processing ?? 0, color: 'blue' },
+    { key: 'LABEL_CREATED', label: 'Label Printed', count: stats.labelCreated ?? 0, color: 'cyan' },
+    { key: 'SHIPPED', label: 'Shipped', count: stats.shipped ?? 0, color: 'purple' },
+    { key: 'DELIVERED', label: 'Delivered', count: stats.delivered ?? 0, color: 'emerald' },
+    { key: 'CANCELLED', label: 'Cancelled', count: stats.cancelled ?? 0, color: 'red' },
+  ];
+
+  const colorMap: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+    amber:   { bg: 'bg-amber-500/15',   text: 'text-amber-400',   ring: 'ring-amber-500/30',   dot: 'bg-amber-400' },
+    blue:    { bg: 'bg-blue-500/15',     text: 'text-blue-400',    ring: 'ring-blue-500/30',    dot: 'bg-blue-400' },
+    cyan:    { bg: 'bg-cyan-500/15',     text: 'text-cyan-400',    ring: 'ring-cyan-500/30',    dot: 'bg-cyan-400' },
+    purple:  { bg: 'bg-purple-500/15',   text: 'text-purple-400',  ring: 'ring-purple-500/30',  dot: 'bg-purple-400' },
+    emerald: { bg: 'bg-emerald-500/15',  text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+    red:     { bg: 'bg-red-500/15',      text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-5 px-2 sm:px-0">
+      <div className="space-y-0">
 
-        {/* ── Page header ── */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Orders</h1>
-            <p className="text-sm text-slate-500 mt-0.5">Manage and track your fulfillment pipeline</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select value={salesChannelFilter} onValueChange={(val) => { setSalesChannelFilter(val); setCurrentPage(1); }}>
-              <SelectTrigger className="w-[180px] h-9 text-sm border-slate-200 rounded-xl">
-                <SelectValue placeholder="Filter by source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Orders</SelectItem>
-                <SelectItem value="research">Ascendra Bio orders</SelectItem>
-                <SelectItem value="channels">All Sales Channels</SelectItem>
-                {salesChannels.length > 0 && <SelectSeparator />}
-                {salesChannels.map((channel) => (
-                  <SelectItem key={channel.id} value={channel.id}>{channel.companyName}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-            >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Create Order
-            </Button>
+        {/* ════════ DARK HERO STRIP ════════ */}
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          {/* Texture + glow */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+            {/* Top row: title + revenue + create */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-xl font-black text-white tracking-tight">Orders</h1>
+                <p className="text-xs text-gray-500 mt-0.5">Fulfillment pipeline &amp; order management</p>
+              </div>
+              <div className="flex items-center gap-4">
+                {/* Revenue chip */}
+                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                  <DollarSign className="h-4 w-4 text-emerald-400" />
+                  <div>
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Revenue</p>
+                    <p className="text-base font-black text-white tabular-nums leading-tight">
+                      ${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    </p>
+                  </div>
+                </div>
+                <Select value={salesChannelFilter} onValueChange={(val) => { setSalesChannelFilter(val); setCurrentPage(1); }}>
+                  <SelectTrigger className="h-9 w-[160px] text-xs border-white/10 bg-white/[0.06] text-gray-300 rounded-xl">
+                    <SelectValue placeholder="All Orders" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Orders</SelectItem>
+                    <SelectItem value="research">Ascendra Bio</SelectItem>
+                    <SelectItem value="channels">All Channels</SelectItem>
+                    {salesChannels.length > 0 && <SelectSeparator />}
+                    {salesChannels.map((ch) => (
+                      <SelectItem key={ch.id} value={ch.id}>{ch.companyName}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                  <Plus className="mr-1.5 h-3.5 w-3.5" /> New Order
+                </Button>
+              </div>
+            </div>
+
+            {/* Pipeline status pills */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+              {/* "All" pill */}
+              <button
+                onClick={() => { handleStatusFilter('all'); }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  statusFilter === 'all'
+                    ? 'bg-white/15 text-white ring-1 ring-white/20'
+                    : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                }`}
+              >
+                <ShoppingCart className="h-3.5 w-3.5" />
+                <span>All</span>
+                <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${statusFilter === 'all' ? 'bg-white/20 text-white' : 'bg-white/[0.06] text-gray-500'}`}>
+                  {(stats.total ?? 0).toLocaleString()}
+                </span>
+              </button>
+
+              {/* Connector line */}
+              <div className="w-4 h-px bg-white/10 shrink-0 hidden sm:block" />
+
+              {pipelineSteps.map((step, i) => {
+                const c = colorMap[step.color];
+                const isActive = statusFilter === step.key;
+                return (
+                  <React.Fragment key={step.key}>
+                    <button
+                      onClick={() => handleStatusFilter(isActive ? 'all' : step.key)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        isActive
+                          ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                          : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />
+                      <span>{step.label}</span>
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${isActive ? `${c.bg} ${c.text}` : 'bg-white/[0.06] text-gray-500'}`}>
+                        {step.count}
+                      </span>
+                    </button>
+                    {i < pipelineSteps.length - 1 && (
+                      <div className="w-3 h-px bg-white/10 shrink-0 hidden sm:block" />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* ── Stats grid (2 × 4 bento) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {/* ════════ COMPACT FILTER ROW ════════ */}
+        <div className="px-1 sm:px-0 py-4 space-y-3">
+          <div className="flex flex-col sm:flex-row gap-2">
+            {/* Search */}
+            <div className="relative flex-1 sm:max-w-sm">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+              <Input
+                placeholder="Search orders, customers, products…"
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+              />
+            </div>
 
-          {/* Row 1 */}
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <ShoppingCart className="h-5 w-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Total Orders</p>
-              <p className="text-2xl font-bold text-slate-900 leading-tight">{(stats.total ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
+            {/* Filter dropdowns */}
+            <div className="flex flex-wrap gap-2 items-center">
+              <OrderDateFilter
+                range={dateRangeType}
+                setRange={handleDateRangeTypeChange}
+                from={dateRange.from}
+                setFrom={handleFromDateChange}
+                to={dateRange.to}
+                setTo={handleToDateChange}
+                className=""
+              />
 
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-              <Clock className="h-5 w-5 text-amber-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Pending</p>
-              <p className="text-2xl font-bold text-amber-600 leading-tight">{(stats.pending ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
+              <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
+                <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[120px]">
+                  <SelectValue placeholder="Customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Customers</SelectItem>
+                  <SelectItem value="wholesale">Wholesale</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-              <Package className="h-5 w-5 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Processing</p>
-              <p className="text-2xl font-bold text-blue-600 leading-tight">{(stats.processing ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
+              <Select value={paymentMethodFilter} onValueChange={handlePaymentMethodFilter}>
+                <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[140px]">
+                  <SelectValue placeholder="Payment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Payments</SelectItem>
+                  <SelectItem value="ZELLE">Zelle</SelectItem>
+                  <SelectItem value="BANK_WIRE">Bank Wire</SelectItem>
+                  <SelectItem value="AUTHORIZE_NET">Authorize.Net</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-cyan-50 flex items-center justify-center shrink-0">
-              <FileSpreadsheet className="h-5 w-5 text-cyan-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Label Printed</p>
-              <p className="text-2xl font-bold text-cyan-600 leading-tight">{(stats.labelCreated ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
-
-          {/* Row 2 */}
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
-              <Truck className="h-5 w-5 text-purple-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Shipped</p>
-              <p className="text-2xl font-bold text-purple-600 leading-tight">{(stats.shipped ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-              <CheckCircle className="h-5 w-5 text-emerald-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Delivered</p>
-              <p className="text-2xl font-bold text-emerald-600 leading-tight">{(stats.delivered ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
-              <XCircle className="h-5 w-5 text-red-500" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium">Cancelled</p>
-              <p className="text-2xl font-bold text-red-600 leading-tight">{(stats.cancelled ?? 0).toLocaleString()}</p>
-            </div>
-          </div>
-
-          {/* Revenue — dark navy hero */}
-          <div className="flex items-center gap-3 bg-[#1B2D4F] rounded-2xl px-5 py-4 shadow-sm relative overflow-hidden">
-            <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/5" />
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/40 to-transparent" />
-            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative z-10">
-              <DollarSign className="h-5 w-5 text-emerald-400" />
-            </div>
-            <div className="relative z-10 min-w-0">
-              <p className="text-xs text-slate-400 font-medium">Total Revenue</p>
-              <p className="text-2xl font-bold text-white leading-tight truncate" title={`$${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}>
-                ${Number(stats.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        {/* ── Filters bar ── */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Search by order ID, customer or product…"
-              value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
-            />
-          </div>
-
-          {/* Filter pills row */}
-          <div className="flex flex-wrap gap-2 items-center">
-            <Select value={statusFilter} onValueChange={handleStatusFilter}>
-              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[130px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="PROCESSING">Processing</SelectItem>
-                <SelectItem value="LABEL_CREATED">Label Printed</SelectItem>
-                <SelectItem value="SHIPPED">Shipped</SelectItem>
-                <SelectItem value="DELIVERED">Delivered</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                <SelectItem value="REFUNDED">Refunded</SelectItem>
-                <SelectItem value="ON_HOLD">On Hold</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <OrderDateFilter
-              range={dateRangeType}
-              setRange={handleDateRangeTypeChange}
-              from={dateRange.from}
-              setFrom={handleFromDateChange}
-              to={dateRange.to}
-              setTo={handleToDateChange}
-              className=""
-            />
-
-            <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
-              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
-                <SelectValue placeholder="Customer type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Customer</SelectItem>
-                <SelectItem value="wholesale">Wholesale</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={paymentMethodFilter} onValueChange={handlePaymentMethodFilter}>
-              <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[170px]">
-                <SelectValue placeholder="Payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Payment Methods</SelectItem>
-                <SelectItem value="ZELLE">Zelle</SelectItem>
-                <SelectItem value="BANK_WIRE">Bank Wire</SelectItem>
-                <SelectItem value="AUTHORIZE_NET">Authorize.Net</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Popover open={salesRepPopoverOpen} onOpenChange={setSalesRepPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 justify-between font-normal text-slate-700 min-w-[130px]"
-                >
-                  <span className="truncate">
-                    {salesRepFilter === 'all'
-                      ? 'All Reps'
-                      : (() => {
-                          const rep = salesReps.find((r: any) => r?.id === salesRepFilter);
+              <Popover open={salesRepPopoverOpen} onOpenChange={setSalesRepPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white justify-between font-normal min-w-[120px]">
+                    <span className="truncate">
+                      {salesRepFilter === 'all'
+                        ? 'All Reps'
+                        : (() => {
+                            const rep = salesReps.find((r: any) => r?.id === salesRepFilter);
+                            const user = rep?.user;
+                            return user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user?.email : salesRepFilter;
+                          })()}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 z-50 w-[var(--radix-popover-trigger-width)]" side="bottom" align="start" sideOffset={4}>
+                  <Command shouldFilter={true} className="w-full">
+                    <CommandInput placeholder="Search sales rep..." />
+                    <CommandList className="max-h-[300px] w-full overflow-y-auto overflow-x-hidden pointer-events-auto">
+                      <CommandEmpty>No sales rep found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem value="all reps" onSelect={() => { handleSalesRepFilter('all'); setSalesRepPopoverOpen(false); }}>
+                          <Check className={cn("mr-2 h-4 w-4", salesRepFilter === 'all' ? "opacity-100" : "opacity-0")} />
+                          All Reps
+                        </CommandItem>
+                        {salesReps.map((rep: any) => {
                           const user = rep?.user;
                           const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
-                          return name || user?.email || salesRepFilter;
-                        })()}
-                  </span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="p-0 z-50 w-[var(--radix-popover-trigger-width)]"
-                side="bottom"
-                align="start"
-                sideOffset={4}
-              >
-                <Command shouldFilter={true} className="w-full">
-                  <CommandInput placeholder="Search sales rep..." />
-                  <CommandList className="max-h-[300px] w-full overflow-y-auto overflow-x-hidden pointer-events-auto">
-                    <CommandEmpty>No sales rep found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        value="all reps"
-                        onSelect={() => {
-                          handleSalesRepFilter('all');
-                          setSalesRepPopoverOpen(false);
-                        }}
-                      >
-                        <Check className={cn("mr-2 h-4 w-4", salesRepFilter === 'all' ? "opacity-100" : "opacity-0")} />
-                        All Reps
-                      </CommandItem>
-                      {salesReps.map((rep: any) => {
-                        const user = rep?.user;
-                        const name = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '';
-                        const label = name || user?.email || rep.id;
-                        return (
-                          <CommandItem
-                            key={rep.id}
-                            value={`${label} ${user?.email || ''}`}
-                            onSelect={() => {
-                              handleSalesRepFilter(rep.id);
-                              setSalesRepPopoverOpen(false);
-                            }}
-                          >
-                            <Check className={cn("mr-2 h-4 w-4", rep.id === salesRepFilter ? "opacity-100" : "opacity-0")} />
-                            {label}
-                          </CommandItem>
-                        );
-                      })}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                          const label = name || user?.email || rep.id;
+                          return (
+                            <CommandItem key={rep.id} value={`${label} ${user?.email || ''}`} onSelect={() => { handleSalesRepFilter(rep.id); setSalesRepPopoverOpen(false); }}>
+                              <Check className={cn("mr-2 h-4 w-4", rep.id === salesRepFilter ? "opacity-100" : "opacity-0")} />
+                              {label}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </div>
 
-        {/* ── Orders table ── */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          {/* Table header */}
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-[#1B2D4F]/8 flex items-center justify-center">
-                <ShoppingCart className="h-4 w-4 text-[#1B2D4F]" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-800">Orders List</h2>
-                <p className="text-xs text-slate-400">{totalOrders.toLocaleString()} total orders</p>
-              </div>
-            </div>
-          </div>
+        {/* ════════ ORDERS TABLE ════════ */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
           <div className="overflow-x-auto">
             <OrdersTable
               orders={orders}

@@ -2,10 +2,9 @@
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +26,7 @@ import {
   Clock,
   Star,
   RefreshCw,
-  Filter,
-  Search
+  Search,
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Input } from "@/components/ui/input";
@@ -181,122 +179,90 @@ export default function TierUpgradesPage() {
     return matchesSearch && matchesFilter;
   });
 
-  if (loading) {
-    return (
-      <ProtectedRoute requiredRoles={["SALES_REP"]}>
-        <DashboardLayout>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">Tier Upgrade Notifications</h1>
-                <p className="text-muted-foreground">Loading your assigned customers...</p>
-              </div>
-            </div>
-            <div className="text-center py-8 text-muted-foreground">
-              Loading tier upgrade notifications...
-            </div>
-          </div>
-        </DashboardLayout>
-      </ProtectedRoute>
-    );
-  }
+  const filterPills: { label: string; value: string }[] = [
+    { label: "All", value: "all" },
+    { label: "Unread", value: "unread" },
+    { label: "Read", value: "read" },
+    { label: "High", value: "high" },
+    { label: "Urgent", value: "urgent" },
+  ];
 
   return (
     <ProtectedRoute requiredRoles={["SALES_REP"]}>
       <DashboardLayout>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Tier Upgrade Notifications</h1>
-              <p className="text-muted-foreground">Manage tier upgrades for your assigned customers</p>
-            </div>
-            <Button variant="outline" onClick={fetchNotifications} disabled={loading}>
-              {loading ? <LoadingSpinner size={16} className="mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-              Refresh
-            </Button>
-          </div>
+        <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-5">
 
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search customers..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
+          {/* Dark Hero Strip */}
+          <div
+            className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
+            style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+          >
+            {/* Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative px-5 py-5 sm:px-7 sm:py-6 space-y-4">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Tier Upgrades</h1>
+                  <p className="text-sm text-blue-200/70 mt-0.5">Customers requesting account tier upgrades</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Stat chip */}
+                  <div className="flex items-center gap-2 bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                    <TrendingUp className="h-4 w-4 text-blue-400" />
+                    <span className="text-white font-semibold text-sm">{notifications.filter(n => !n.isRead).length}</span>
+                    <span className="text-blue-200/70 text-xs">pending</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fetchNotifications}
+                    disabled={loading}
+                    className="bg-white text-[#070B14] border-white hover:bg-white/90 font-semibold rounded-xl h-9 px-4 text-sm"
+                  >
+                    {loading ? <LoadingSpinner size={14} className="mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+                    Refresh
+                  </Button>
+                </div>
+              </div>
+
+              {/* Filter pills */}
+              <div className="flex flex-wrap gap-2">
+                {filterPills.map((pill) => (
+                  <button
+                    key={pill.value}
+                    onClick={() => setFilter(pill.value)}
+                    className={[
+                      "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+                      filter === pill.value
+                        ? "bg-blue-500 text-white"
+                        : "bg-white/10 text-blue-100 hover:bg-white/20",
+                    ].join(" ")}
+                  >
+                    {pill.label}
+                  </button>
+                ))}
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={filter} onValueChange={setFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Notifications</SelectItem>
-                  <SelectItem value="unread">Unread Only</SelectItem>
-                  <SelectItem value="read">Read Only</SelectItem>
-                  <SelectItem value="high">High Priority</SelectItem>
-                  <SelectItem value="urgent">Urgent Priority</SelectItem>
-                </SelectContent>
-              </Select>
+          </div>
+
+          {/* Compact filter row */}
+          <div className="flex flex-col sm:flex-row gap-3 mx-1 sm:mx-0">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search customers..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 h-9 text-sm"
+              />
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Notifications</CardTitle>
-                <Bell className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{notifications.length}</div>
-                <p className="text-xs text-muted-foreground">All tier upgrade notifications</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Unread</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{notifications.filter(n => !n.isRead).length}</div>
-                <p className="text-xs text-muted-foreground">Pending your action</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">High Priority</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{notifications.filter(n => n.priority === 'HIGH' || n.priority === 'URGENT').length}</div>
-                <p className="text-xs text-muted-foreground">Requires immediate attention</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Notifications List */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Tier Upgrade Notifications
-                <Badge variant="secondary" className="ml-2">
-                  {filteredNotifications.length}
-                </Badge>
-              </CardTitle>
-              <CardDescription>
-                Your assigned customers eligible for tier upgrades based on their spending
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Notifications list */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+            <div className="p-4 sm:p-6 space-y-4">
               {filteredNotifications.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -419,8 +385,8 @@ export default function TierUpgradesPage() {
                   </div>
                 ))
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>

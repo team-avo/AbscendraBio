@@ -69,20 +69,35 @@ export default function ProductsBulkUploadPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0 w-full max-w-[100vw] overflow-x-hidden">
-          {/* Back button row */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2 max-w-full">
-              <Button variant="ghost" onClick={() => router.push('/products')}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Products
-              </Button>
+        <div className="space-y-0 w-full max-w-[100vw] overflow-x-hidden">
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <button onClick={() => router.push('/products')} className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors text-xs mb-1.5">
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Back to Products
+                  </button>
+                  <h1 className="text-xl font-black text-white tracking-tight">Bulk Upload Products</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Upload Excel file and preview data before importing</p>
+                </div>
+                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                  <Upload className="h-4 w-4 text-[#4D7DF2]" />
+                  <div>
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Products</p>
+                    <p className="text-xs font-bold text-white leading-tight mt-0.5">Bulk Import</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Main card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-x-hidden mt-4 mx-1 sm:mx-0">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                 <Upload className="h-4 w-4 text-blue-500" />
               </div>

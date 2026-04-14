@@ -1,27 +1,15 @@
-"use strict";
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   Download,
   Eye,
   FileText,
   Loader2,
   Search,
-  Plus,
-  Beaker,
-  ShieldCheck,
-  Activity,
-  Filter,
-  MoreVertical,
-  Pencil,
-  Trash2,
-  ExternalLink,
+  FlaskConical,
   ChevronRight,
-  Link2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,23 +18,6 @@ import { ProtectedRoute } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { api, ThirdPartyReport, ThirdPartyReportCategory } from "@/lib/api";
 
 const CATEGORY_LABELS: Record<ThirdPartyReportCategory, string> = {
@@ -77,11 +48,13 @@ const downloadFromApi = async (id: string, url?: string | null) => {
   }
 };
 
+type TypeFilter = "ALL" | ThirdPartyReportCategory;
+
 const ThirdPartyTestingOverviewPage = () => {
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState<ThirdPartyReport[]>([]);
-  const [working, setWorking] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("ALL");
 
   const grouped = useMemo(() => {
     const base: Record<ThirdPartyReportCategory, ThirdPartyReport[]> = {
@@ -97,7 +70,6 @@ const ThirdPartyTestingOverviewPage = () => {
     for (const r of filteredReports) {
       if (r?.category && base[r.category]) base[r.category].push(r);
     }
-    // Sort each category alphabetically
     Object.keys(base).forEach((cat) => {
       base[cat as ThirdPartyReportCategory].sort((a, b) =>
         (a.name || "").localeCompare(b.name || "")
@@ -106,13 +78,13 @@ const ThirdPartyTestingOverviewPage = () => {
     return base;
   }, [reports, searchTerm]);
 
-  const counts = useMemo(() => {
-    return {
-      PURITY: grouped.PURITY.length,
-      ENDOTOXICITY: grouped.ENDOTOXICITY.length,
-      STERILITY: grouped.STERILITY.length,
-    };
-  }, [grouped]);
+  const counts = useMemo(() => ({
+    PURITY: grouped.PURITY.length,
+    ENDOTOXICITY: grouped.ENDOTOXICITY.length,
+    STERILITY: grouped.STERILITY.length,
+  }), [grouped]);
+
+  const totalCount = counts.PURITY + counts.ENDOTOXICITY + counts.STERILITY;
 
   const openInNewTab = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -131,60 +103,102 @@ const ThirdPartyTestingOverviewPage = () => {
         setLoading(false);
       }
     };
-
     run();
   }, []);
 
   const cards: Array<{ category: ThirdPartyReportCategory; href: string; title: string }> = [
-    {
-      category: "PURITY",
-      href: "/third-party-testing/purity",
-      title: "Purity & Net Peptide Content",
-    },
-    {
-      category: "ENDOTOXICITY",
-      href: "/third-party-testing/endotoxicity",
-      title: "Endotoxicity",
-    },
-    {
-      category: "STERILITY",
-      href: "/third-party-testing/sterility",
-      title: "Sterility",
-    },
+    { category: "PURITY", href: "/third-party-testing/purity", title: "Purity & Net Peptide Content" },
+    { category: "ENDOTOXICITY", href: "/third-party-testing/endotoxicity", title: "Endotoxicity" },
+    { category: "STERILITY", href: "/third-party-testing/sterility", title: "Sterility" },
   ];
+
+  const typePills: Array<{ label: string; value: TypeFilter }> = [
+    { label: "All", value: "ALL" },
+    { label: "Purity", value: "PURITY" },
+    { label: "Endotoxicity", value: "ENDOTOXICITY" },
+    { label: "Sterility", value: "STERILITY" },
+  ];
+
+  const visibleCategories = (
+    ["PURITY", "ENDOTOXICITY", "STERILITY"] as ThirdPartyReportCategory[]
+  ).filter((cat) => typeFilter === "ALL" || typeFilter === cat);
 
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">3rd Party Testing</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Manage third-party testing reports by category. Files can be previewed and downloaded.
-              </p>
+        <div className="space-y-5">
+          {/* Dark hero strip */}
+          <div className="bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
+            {/* Grid texture */}
+            <div
+              className="absolute inset-0 opacity-[0.07]"
+              style={{
+                backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+                backgroundSize: "32px 32px",
+              }}
+            />
+            {/* Blue glow */}
+            <div className="absolute top-0 left-1/4 w-72 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative px-5 pt-5 pb-4 space-y-3">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h1 className="text-xl font-bold text-white tracking-tight">3rd Party Testing</h1>
+                  <p className="text-blue-200/60 text-xs mt-0.5">Lab certifications and purity verification reports</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 bg-blue-500/10 border border-blue-400/20 rounded-full px-3 py-1.5">
+                    <FlaskConical className="h-3.5 w-3.5 text-blue-400" />
+                    <span className="text-xs font-semibold text-blue-300">
+                      {loading ? "—" : `${reports.length} Report${reports.length !== 1 ? "s" : ""}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Type filter pills */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {typePills.map((pill) => (
+                  <button
+                    key={pill.value}
+                    onClick={() => setTypeFilter(pill.value)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      typeFilter === pill.value
+                        ? "bg-blue-500 text-white"
+                        : "bg-white/8 text-blue-200/70 hover:bg-white/15 hover:text-white border border-white/10"
+                    }`}
+                  >
+                    {pill.label}
+                    {pill.value !== "ALL" && !loading && (
+                      <span className="ml-1 opacity-70">
+                        {counts[pill.value as ThirdPartyReportCategory]}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search filter row */}
+              <div className="pb-1">
+                <div className="relative w-full sm:max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-blue-300/50" />
+                  <Input
+                    placeholder="Search reports by name..."
+                    className="pl-8 h-8 text-sm bg-white/5 border-white/15 text-white placeholder:text-blue-200/40 focus-visible:ring-blue-400/30 rounded-xl"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Filter bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search reports by name..."
-                className="pl-9 bg-background w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Stat chips */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {/* Category navigation cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mx-1 sm:mx-0">
             {cards.map((c) => (
               <Link key={c.category} href={c.href} className="block group">
-                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4 hover:border-slate-300 transition-colors">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4 hover:border-gray-300 transition-colors">
                   <div className="min-w-0 flex-1">
                     <div className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                       {c.title}
@@ -192,11 +206,7 @@ const ThirdPartyTestingOverviewPage = () => {
                     </div>
                     <div className="flex items-baseline gap-2 mt-1">
                       <div className="text-2xl sm:text-3xl font-bold tracking-tight">
-                        {loading ? (
-                          <span className="text-muted-foreground">—</span>
-                        ) : (
-                          counts[c.category]
-                        )}
+                        {loading ? <span className="text-muted-foreground">—</span> : counts[c.category]}
                       </div>
                       <div className="text-xs sm:text-sm text-muted-foreground">Reports</div>
                     </div>
@@ -206,9 +216,9 @@ const ThirdPartyTestingOverviewPage = () => {
             ))}
           </div>
 
-          {/* All Reports section */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+          {/* All Reports table panel */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
               <FileText className="h-5 w-5 text-slate-500" />
               <div>
                 <div className="font-semibold text-slate-900">All Reports</div>
@@ -230,9 +240,7 @@ const ThirdPartyTestingOverviewPage = () => {
                 </div>
               ) : (
                 <div className="space-y-8">
-                  {(
-                    ["PURITY", "ENDOTOXICITY", "STERILITY"] as ThirdPartyReportCategory[]
-                  ).map((cat) => {
+                  {visibleCategories.map((cat) => {
                     const items = grouped[cat];
                     if (items.length === 0) return null;
                     return (
@@ -250,7 +258,7 @@ const ThirdPartyTestingOverviewPage = () => {
                             return (
                               <div
                                 key={r.id}
-                                className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 overflow-hidden"
+                                className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5 overflow-hidden"
                               >
                                 <div className="flex items-start justify-between gap-3 mb-3">
                                   <div className="min-w-0">
@@ -262,9 +270,7 @@ const ThirdPartyTestingOverviewPage = () => {
                                         {r.description}
                                       </div>
                                     ) : (
-                                      <div className="mt-1 text-sm text-muted-foreground">
-                                        No description
-                                      </div>
+                                      <div className="mt-1 text-sm text-muted-foreground">No description</div>
                                     )}
                                   </div>
                                   <Badge variant="secondary" className="shrink-0">

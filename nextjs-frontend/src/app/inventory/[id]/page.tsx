@@ -16,7 +16,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Table,
     TableBody,
@@ -283,199 +282,206 @@ export default function InventoryDetailPage() {
     return (
         <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
             <DashboardLayout>
-                <div className="space-y-6 max-w-5xl">
-                    {/* Header */}
-                    <div className="flex flex-row items-start gap-4 pb-6 border-b">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push("/inventory")}
-                            className="flex-shrink-0 -ml-2"
-                        >
-                            <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-                        </Button>
-
-                        <div className="flex flex-row items-start gap-4 w-full text-left">
-                            {product.productImage && (
-                                <div className="h-16 w-16 sm:h-24 sm:w-24 rounded-lg border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
-                                    <img
-                                        src={resolveImageUrl(product.productImage)}
-                                        alt={product.productName}
-                                        className="w-full h-full object-cover"
-                                    />
+                <div className="space-y-0">
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                    {product.productImage && (
+                                        <div className="h-14 w-14 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            <img src={resolveImageUrl(product.productImage)} alt={product.productName} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <button onClick={() => router.push("/inventory")} className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors text-xs mb-1.5">
+                                            <ArrowLeft className="h-3.5 w-3.5" />
+                                            Back to Inventory
+                                        </button>
+                                        <h1 className="text-xl font-black text-white tracking-tight">{product.productName}</h1>
+                                        {product.variantName && (
+                                            <p className="text-xs text-gray-400 mt-0.5">{product.variantName}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
-
-                            <div className="flex-1 space-y-0.5 sm:space-y-1">
-                                <h1 className="text-lg sm:text-2xl font-bold tracking-tight">{product.productName}</h1>
-                                {product.variantName && (
-                                    <p className="text-sm sm:text-lg text-muted-foreground">{product.variantName}</p>
-                                )}
-                                <p className="text-[10px] sm:text-sm text-muted-foreground">Inventory details and settings</p>
+                                <div className="flex items-center gap-2.5 flex-wrap">
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Committed</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight cursor-pointer hover:text-[#4D7DF2] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Available</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight">{product.available}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                        <Package className="h-4 w-4 text-[#4D7DF2]" />
+                                        <div>
+                                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">On Hand</p>
+                                            <p className="text-base font-black text-white tabular-nums leading-tight">{product.onHand}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Inventory Section with Pricing */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Inventory</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
+                    {/* ════════ INVENTORY CARD ════════ */}
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm mt-4 mx-1 sm:mx-0">
+                        <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
+                                <Package className="h-4 w-4 text-blue-500" />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-semibold text-slate-800">Inventory</h2>
+                                <p className="text-xs text-slate-400">Stock levels and pricing</p>
+                            </div>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Stock Alert Banners */}
+                            {product.available === 0 && (
+                                <div className="flex items-start gap-3 p-4 border border-red-200 bg-red-50 rounded-xl">
+                                    <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-sm font-semibold text-red-900">Out of Stock</p>
+                                        <p className="text-xs text-red-700 mt-0.5">Consider restocking or enable "Continue selling when out of stock" for backorders.</p>
+                                    </div>
+                                </div>
+                            )}
+                            {product.available > 0 && product.available <= product.lowStockThreshold && (
+                                <div className="flex items-start gap-3 p-4 border border-amber-200 bg-amber-50 rounded-xl">
+                                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-sm font-semibold text-amber-900">Low Stock Warning</p>
+                                        <p className="text-xs text-amber-700 mt-0.5">Only {product.available} units remaining. Consider restocking soon.</p>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Inventory Numbers */}
-                            <div className="grid grid-cols-3 gap-2 sm:gap-6">
-                                <div className="space-y-1 text-left">
-                                    <p className="text-[10px] sm:text-sm text-muted-foreground font-medium">Committed</p>
-                                    <p
-                                        className="text-2xl sm:text-4xl font-bold underline cursor-pointer hover:text-primary transition-colors"
-                                        onClick={handleCommittedClick}
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-left">
+                                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-2">Committed</p>
+                                    <p className="text-3xl font-black text-gray-800 tabular-nums underline cursor-pointer hover:text-[#1B2D4F] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
+                                    <p className="text-xs text-gray-400 mt-1">In orders</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-left">
+                                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-2">Available</p>
+                                    <p className="text-3xl font-black text-gray-800 tabular-nums">{product.available}</p>
+                                    <p className="text-xs text-gray-400 mt-1">Ready to sell</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-left">
+                                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-2">On Hand</p>
+                                    <p className="text-3xl font-black text-gray-800 tabular-nums">{product.onHand}</p>
+                                    <p className="text-xs text-gray-400 mt-1">Total stock</p>
+                                </div>
+                            </div>
+
+                            {/* Price + SKU */}
+                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                                <div>
+                                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-1.5">Regular Price</p>
+                                    <p className="text-lg font-black text-gray-800">${product.regularPrice.toFixed(2)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-1.5">SKU</p>
+                                    <p className="text-sm font-bold font-mono text-gray-700 truncate">{product.sku}</p>
+                                </div>
+                            </div>
+
+                            {/* Barcode */}
+                            <div className="pt-4 border-t border-gray-100">
+                                {!showBarcodeSection ? (
+                                    <button
+                                        onClick={() => setShowBarcodeSection(true)}
+                                        className="flex items-center gap-1.5 h-8 px-3 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
                                     >
-                                        {product.committed}
-                                    </p>
-                                    <p className="text-[8px] sm:text-xs text-muted-foreground leading-tight">In orders</p>
-                                </div>
-                                <div className="space-y-1 text-left">
-                                    <p className="text-[10px] sm:text-sm text-muted-foreground font-medium">Available</p>
-                                    <p className="text-2xl sm:text-4xl font-bold">{product.available}</p>
-                                    <p className="text-[8px] sm:text-xs text-muted-foreground leading-tight">Ready to sell</p>
-                                </div>
-                                <div className="space-y-1 text-left">
-                                    <p className="text-[10px] sm:text-sm text-muted-foreground font-medium">On Hand</p>
-                                    <p className="text-2xl sm:text-4xl font-bold">{product.onHand}</p>
-                                    <p className="text-[8px] sm:text-xs text-muted-foreground leading-tight">Total stock</p>
-                                </div>
-                            </div>
-
-                            {/* Details Grid */}
-                            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                                <div className="space-y-0.5 text-left">
-                                    <p className="text-[10px] sm:text-sm font-medium text-muted-foreground">Regular Price</p>
-                                    <p className="text-sm sm:text-lg font-semibold">${product.regularPrice.toFixed(2)}</p>
-                                </div>
-                                <div className="space-y-0.5 text-left">
-                                    <p className="text-[10px] sm:text-sm font-medium text-muted-foreground">SKU</p>
-                                    <p className="text-sm sm:text-lg font-medium font-mono truncate">{product.sku}</p>
-                                </div>
-                            </div>
-
-                            {/* Barcode - Collapsible */}
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    {!showBarcodeSection ? (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setShowBarcodeSection(true)}
-                                            className="gap-2"
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                            Add Barcode
-                                        </Button>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <label className="text-sm font-medium">Barcode (Optional)</label>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setShowBarcodeSection(false)}
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    value={detailsEdited.barcode ?? product.barcode ?? ""}
-                                                    placeholder="Enter barcode"
-                                                    onChange={(e) => handleDetailChange('barcode', e.target.value)}
-                                                    className="bg-background"
-                                                />
-                                                {detailsEdited.barcode !== undefined && (
-                                                    <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails}>
-                                                        Save
-                                                    </Button>
-                                                )}
-                                            </div>
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Add Barcode
+                                    </button>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-semibold text-gray-600 uppercase tracking-widest">Barcode (Optional)</label>
+                                            <button onClick={() => setShowBarcodeSection(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                                <X className="h-4 w-4" />
+                                            </button>
                                         </div>
-                                    )}
-                                </div>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={detailsEdited.barcode ?? product.barcode ?? ""}
+                                                placeholder="Enter barcode"
+                                                onChange={(e) => handleDetailChange('barcode', e.target.value)}
+                                                className="bg-background"
+                                            />
+                                            {detailsEdited.barcode !== undefined && (
+                                                <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                                                    {savingDetails ? 'Saving...' : 'Save'}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Sell When Out of Stock */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <div className="flex flex-col space-y-4 p-4 rounded-lg bg-muted/30">
+                            <div className="pt-4 border-t border-gray-100">
+                                <div className="flex flex-col space-y-3 p-4 rounded-xl bg-gray-50 border border-gray-100">
                                     <div className="flex items-start space-x-3">
                                         <Checkbox
                                             id="sell-out-of-stock"
                                             checked={detailsEdited.sellWhenOutOfStock ?? product.sellWhenOutOfStock ?? false}
                                             onCheckedChange={(checked) => handleDetailChange('sellWhenOutOfStock', checked)}
-                                            className="mt-1"
+                                            className="mt-0.5"
                                         />
                                         <div className="flex-1">
-                                            <label
-                                                htmlFor="sell-out-of-stock"
-                                                className="text-sm font-medium leading-none cursor-pointer"
-                                            >
+                                            <label htmlFor="sell-out-of-stock" className="text-sm font-semibold text-gray-800 cursor-pointer">
                                                 Continue selling when out of stock
                                             </label>
-                                            <p className="text-sm text-muted-foreground mt-1.5">
+                                            <p className="text-xs text-gray-500 mt-1">
                                                 Allow customers to purchase this product even when inventory is 0.
                                             </p>
                                         </div>
                                     </div>
                                     {detailsEdited.sellWhenOutOfStock !== undefined && (
                                         <div className="flex justify-end">
-                                            <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails}>
-                                                Save Changes
+                                            <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                                                {savingDetails ? 'Saving...' : 'Save Changes'}
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            {/* Stock Status Alerts */}
-                            {product.available === 0 && (
-                                <div className="flex items-start gap-3 p-4 border border-red-200 bg-red-50 rounded-lg">
-                                    <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-red-900">Out of Stock</p>
-                                        <p className="text-xs text-red-700 mt-1">
-                                            This product is currently unavailable. Consider restocking soon or enable "Continue selling when out of stock" if you accept backorders.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {product.available > 0 && product.available <= product.lowStockThreshold && (
-                                <div className="flex items-start gap-3 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
-                                    <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-yellow-900">Low Stock Warning</p>
-                                        <p className="text-xs text-yellow-700 mt-1">
-                                            Only {product.available} units remaining. Consider restocking to avoid running out.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Location Inventory Breakdown - Editable */}
+                    {/* ════════ INVENTORY BY LOCATION ════════ */}
                     {product.locationInventory && product.locationInventory.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Inventory by Location</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="rounded-md border overflow-x-auto">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm mt-4 mx-1 sm:mx-0">
+                            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+                                <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-100">
+                                    <Package className="h-4 w-4 text-slate-600" />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-semibold text-slate-800">Inventory by Location</h2>
+                                    <p className="text-xs text-slate-400">Edit on-hand quantities per warehouse</p>
+                                </div>
+                            </div>
+                            <div className="p-5">
+                                <div className="rounded-xl border border-gray-200 overflow-x-auto">
                                     <Table className="min-w-[600px]">
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Location</TableHead>
-                                                <TableHead className="text-right">Committed</TableHead>
-                                                <TableHead className="text-right">Available</TableHead>
-                                                <TableHead className="text-right">On Hand</TableHead>
-                                                <TableHead className="text-right"></TableHead>
+                                            <TableRow className="bg-gray-50/80">
+                                                <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</TableHead>
+                                                <TableHead className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Committed</TableHead>
+                                                <TableHead className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Available</TableHead>
+                                                <TableHead className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">On Hand</TableHead>
+                                                <TableHead className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide"></TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -485,38 +491,23 @@ export default function InventoryDetailPage() {
                                                 const currentAvailable = Math.max(0, currentOnHand - currentCommitted);
 
                                                 return (
-                                                    <TableRow key={location.locationId}>
+                                                    <TableRow key={location.locationId} className="hover:bg-gray-50/60">
                                                         <TableCell>
-                                                            <div>
-                                                                <div className="font-medium">{location.locationName}</div>
-                                                                {(location.locationCity || location.locationState) && (
-                                                                    <div className="text-sm text-muted-foreground">
-                                                                        {[location.locationCity, location.locationState]
-                                                                            .filter(Boolean)
-                                                                            .join(", ")}
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                            <div className="font-semibold text-sm text-gray-800">{location.locationName}</div>
+                                                            {(location.locationCity || location.locationState) && (
+                                                                <div className="text-xs text-gray-400 mt-0.5">
+                                                                    {[location.locationCity, location.locationState].filter(Boolean).join(", ")}
+                                                                </div>
+                                                            )}
                                                         </TableCell>
-
-                                                        {/* Committed */}
                                                         <TableCell className="text-right">
-                                                            <span
-                                                                className="underline cursor-pointer hover:text-primary transition-colors"
-                                                                onClick={handleCommittedClick}
-                                                            >
+                                                            <span className="text-sm font-bold text-gray-700 underline cursor-pointer hover:text-[#1B2D4F] transition-colors" onClick={handleCommittedClick}>
                                                                 {currentCommitted}
                                                             </span>
                                                         </TableCell>
-
-                                                        {/* Available (calculated) */}
                                                         <TableCell className="text-right">
-                                                            <span className="underline cursor-pointer font-medium">
-                                                                {currentAvailable}
-                                                            </span>
+                                                            <span className="text-sm font-bold text-gray-700">{currentAvailable}</span>
                                                         </TableCell>
-
-                                                        {/* On Hand Input */}
                                                         <TableCell className="text-right">
                                                             <Input
                                                                 type="number"
@@ -527,26 +518,13 @@ export default function InventoryDetailPage() {
                                                                 className="w-24 ml-auto text-right"
                                                             />
                                                         </TableCell>
-
-                                                        {/* Save/Cancel Buttons */}
                                                         <TableCell className="text-right">
                                                             {hasLocationChanges(location.locationId) && (
                                                                 <div className="flex items-center justify-end gap-2">
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        size="sm"
-                                                                        onClick={() => handleLocationCancel(location.locationId)}
-                                                                        disabled={saving === location.locationId}
-                                                                    >
+                                                                    <Button variant="outline" size="sm" onClick={() => handleLocationCancel(location.locationId)} disabled={saving === location.locationId} className="rounded-xl">
                                                                         Cancel
                                                                     </Button>
-                                                                    <Button
-                                                                        variant="default"
-                                                                        size="sm"
-                                                                        onClick={() => handleLocationSave(location)}
-                                                                        disabled={saving === location.locationId}
-                                                                        className="gap-1"
-                                                                    >
+                                                                    <Button size="sm" onClick={() => handleLocationSave(location)} disabled={saving === location.locationId} className="gap-1 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                                                                         <Check className="h-3 w-3" />
                                                                         {saving === location.locationId ? "Saving..." : "Save"}
                                                                     </Button>
@@ -559,17 +537,17 @@ export default function InventoryDetailPage() {
                                         </TableBody>
                                     </Table>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     )}
 
                     {/* Committed Orders Dialog */}
                     <Dialog open={showCommittedDialog} onOpenChange={setShowCommittedDialog}>
-                        <DialogContent className="w-[98vw] sm:max-w-[1000px] max-h-[95vh] overflow-y-auto p-2 sm:p-6">
-                            <DialogHeader className="p-2 sm:p-0">
-                                <DialogTitle className="text-xl">Committed Orders</DialogTitle>
-                                <DialogDescription className="text-sm">
-                                    Orders holding inventory for {product?.productName} - {product?.variantName}
+                        <DialogContent className="w-[98vw] sm:max-w-[1000px] max-h-[95vh] overflow-y-auto p-5">
+                            <DialogHeader>
+                                <DialogTitle className="text-lg font-black text-gray-900">Committed Orders</DialogTitle>
+                                <DialogDescription className="text-xs text-gray-400">
+                                    Orders holding inventory for {product?.productName} — {product?.variantName}
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -578,32 +556,30 @@ export default function InventoryDetailPage() {
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                                 </div>
                             ) : committedOrders.length === 0 ? (
-                                <div className="text-center py-12 text-muted-foreground">
-                                    <Package className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                                    <p>No committed orders found</p>
+                                <div className="text-center py-12">
+                                    <Package className="mx-auto h-10 w-10 text-gray-300 mb-3" />
+                                    <p className="text-sm text-gray-400">No committed orders found</p>
                                 </div>
                             ) : (
-                                <div className="rounded-md border overflow-x-auto">
+                                <div className="rounded-xl border border-gray-200 overflow-x-auto">
                                     <Table className="min-w-[800px]">
                                         <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="px-4 py-3">Order Number</TableHead>
-                                                <TableHead className="px-4 py-3">Customer</TableHead>
-                                                <TableHead className="px-4 py-3 text-center">Status</TableHead>
-                                                <TableHead className="px-4 py-3 text-right">Quantity</TableHead>
-                                                <TableHead className="px-4 py-3">Date</TableHead>
-                                                <TableHead className="px-4 py-3 text-right">Action</TableHead>
+                                            <TableRow className="bg-gray-50/80">
+                                                <TableHead className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Order #</TableHead>
+                                                <TableHead className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</TableHead>
+                                                <TableHead className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</TableHead>
+                                                <TableHead className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Qty</TableHead>
+                                                <TableHead className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</TableHead>
+                                                <TableHead className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {committedOrders.map((order) => (
-                                                <TableRow key={order.id} className="hover:bg-muted/50">
-                                                    <TableCell className="font-medium px-4 py-3">{order.orderNumber}</TableCell>
+                                                <TableRow key={order.id} className="hover:bg-gray-50/60">
+                                                    <TableCell className="font-bold px-4 py-3 text-gray-800">{order.orderNumber}</TableCell>
                                                     <TableCell className="px-4 py-3">
-                                                        <div className="flex flex-col">
-                                                            <span className="font-medium text-sm">{order.customerName}</span>
-                                                            <span className="text-xs text-muted-foreground">{order.customerEmail}</span>
-                                                        </div>
+                                                        <div className="font-semibold text-sm text-gray-800">{order.customerName}</div>
+                                                        <div className="text-xs text-gray-400">{order.customerEmail}</div>
                                                     </TableCell>
                                                     <TableCell className="px-4 py-3 text-center">
                                                         <Badge
@@ -618,8 +594,8 @@ export default function InventoryDetailPage() {
                                                             {order.status.replace('_', ' ')}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="text-right font-bold px-4 py-3">{order.quantity}</TableCell>
-                                                    <TableCell className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="text-right font-black px-4 py-3 text-gray-800">{order.quantity}</TableCell>
+                                                    <TableCell className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                                                     <TableCell className="text-right px-4 py-3">
                                                         <Button
                                                             variant="ghost"
@@ -627,8 +603,8 @@ export default function InventoryDetailPage() {
                                                             onClick={() => router.push(`/orders/${order.id}`)}
                                                             className="h-8 group"
                                                         >
-                                                            <span className="hidden sm:inline mr-1">View</span>
-                                                            <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                                            <span className="hidden sm:inline mr-1 text-xs font-semibold">View</span>
+                                                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#1B2D4F] transition-colors" />
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>

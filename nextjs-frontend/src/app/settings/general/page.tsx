@@ -1,28 +1,43 @@
+'use client';
+
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ProtectedRoute } from "@/contexts/auth-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe, Store, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Globe, Store, Upload, Settings } from "lucide-react";
 
 export default function GeneralSettingsPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">General Settings</h1>
-              <p className="text-muted-foreground">Basic information about your store</p>
+        <div className="space-y-0">
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">General Settings</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Configure your store name, address, and branding</p>
+                </div>
+                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                  <Settings className="h-4 w-4 text-[#4D7DF2]" />
+                  <div>
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Store Config</p>
+                    <p className="text-xs font-bold text-white leading-tight mt-0.5">General</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Button>Save Changes</Button>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 mt-4 mx-1 sm:mx-0">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

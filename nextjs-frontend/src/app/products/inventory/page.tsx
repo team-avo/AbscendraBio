@@ -142,6 +142,7 @@ export default function InventoryPage() {
 
   // Calculate stats across all filtered items (not paginated)
   const [stats, setStats] = useState({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0 });
+
   const fetchAllForExport = async (): Promise<any[]> => {
     let page = 1;
     const limit = 100;
@@ -211,133 +212,139 @@ export default function InventoryPage() {
   };
 
   const handleExportAll = async () => {
-    // For now, same as filtered because listing is already filtered by UI
     await handleExportFiltered();
   };
+
+  // Derive active status pill key
+  const activeStockPill = outOfStockOnly ? 'out' : (lowStockFilter ? 'low' : 'all');
 
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Inventory Management</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
-                Manage product inventory levels and stock movements
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => setShowLocationsDialog(true)}
-                variant="outline"
-                className="h-9 px-4 rounded-xl text-sm"
-              >
-                Manage Locations
-              </Button>
-              <Button
-                onClick={() => setShowMovementDialog(true)}
-                className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-              >
-                <ArrowUpDown className="mr-2 h-4 w-4" />
-                Record Movement
-              </Button>
+        <div className="space-y-0">
+
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Inventory</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Monitor stock levels and reorder points</p>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                    <Package className="h-4 w-4 text-[#4D7DF2]" />
+                    <div>
+                      <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total</p>
+                      <p className="text-base font-black text-white tabular-nums leading-tight">{stats.total.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setShowLocationsDialog(true)}
+                    className="h-9 px-4 border border-white/10 bg-white/[0.06] text-gray-300 hover:bg-white/[0.12] hover:text-white rounded-xl text-xs font-bold"
+                  >
+                    Manage Locations
+                  </Button>
+                  <Button
+                    onClick={() => setShowMovementDialog(true)}
+                    className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest"
+                  >
+                    <ArrowUpDown className="mr-1.5 h-3.5 w-3.5" /> Record Movement
+                  </Button>
+                </div>
+              </div>
+
+              {/* Status pills */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                {[
+                  { key: 'all', label: 'All',          count: stats.total,       color: null,      icon: null },
+                  { key: 'in',  label: 'In Stock',     count: stats.inStock,     color: 'emerald', icon: <PackageCheck className="h-3 w-3" /> },
+                  { key: 'low', label: 'Low Stock',    count: stats.lowStock,    color: 'amber',   icon: null },
+                  { key: 'out', label: 'Out of Stock', count: stats.outOfStock,  color: 'red',     icon: <PackageX className="h-3 w-3" /> },
+                ].map((pill) => {
+                  const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                    emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+                    amber:   { bg: 'bg-amber-500/15',   text: 'text-amber-400',   ring: 'ring-amber-500/30',   dot: 'bg-amber-400' },
+                    red:     { bg: 'bg-red-500/15',     text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+                  };
+                  const c = pill.color ? colorStyles[pill.color] : null;
+                  const isAll = pill.key === 'all';
+                  const isActive = isAll ? activeStockPill === 'all' : activeStockPill === pill.key;
+                  return (
+                    <button
+                      key={pill.key}
+                      onClick={() => handleLowStockFilter(pill.key === 'in' ? 'all' : pill.key as any)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                        : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                        : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                      }`}
+                    >
+                      {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                      <span>{pill.label}</span>
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${
+                        isAll && isActive ? 'bg-white/20 text-white'
+                        : isActive && c ? `${c.bg} ${c.text}`
+                        : 'bg-white/[0.06] text-gray-500'
+                      }`}>
+                        {(pill.count ?? 0).toLocaleString()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* Total Variants */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5 text-slate-500" />
+          {/* ════════ COMPACT FILTER ROW ════════ */}
+          <div className="px-1 sm:px-0 py-4 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 sm:max-w-sm">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Input
+                  placeholder="Search items..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                />
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total Variants</p>
-                <p className="text-xl font-bold text-slate-900">{stats.total}</p>
-              </div>
-            </div>
-
-            {/* In Stock */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <PackageCheck className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">In Stock</p>
-                <p className="text-xl font-bold text-emerald-600">{stats.inStock}</p>
-              </div>
-            </div>
-
-            {/* Low Stock */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Low Stock</p>
-                <p className="text-xl font-bold text-amber-600">{stats.lowStock}</p>
-              </div>
-            </div>
-
-            {/* Out of Stock — dark navy hero chip */}
-            <div className="relative flex items-center gap-3 bg-[#1B2D4F] rounded-2xl shadow-sm px-5 py-4 overflow-hidden">
-              <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
-              <div className="absolute -bottom-6 -left-2 h-16 w-16 rounded-full bg-white/5" />
-              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative">
-                <PackageX className="h-5 w-5 text-red-400" />
-              </div>
-              <div className="relative">
-                <p className="text-xs text-slate-400 font-medium">Out of Stock</p>
-                <p className="text-2xl font-bold text-white">{stats.outOfStock}</p>
+              <div className="flex flex-wrap gap-2">
+                <Select value={activeStockPill} onValueChange={(value) => handleLowStockFilter(value as any)}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[160px]">
+                    <SelectValue placeholder="Stock level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Stock Levels</SelectItem>
+                    <SelectItem value="low">Low Stock Only</SelectItem>
+                    <SelectItem value="out">Out of Stock Only</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
 
-          {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search items..."
-                className="pl-10 w-full"
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Select
-                value={outOfStockOnly ? 'out' : (lowStockFilter ? 'low' : 'all')}
-                onValueChange={(value) => handleLowStockFilter(value as any)}
-              >
-                <SelectTrigger className="w-full sm:w-[200px] text-sm">
-                  <SelectValue placeholder="Stock level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Stock Levels</SelectItem>
-                  <SelectItem value="low">Low Stock Only</SelectItem>
-                  <SelectItem value="out">Out of Stock Only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* ════════ TABLE ════════ */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+            <InventoryTable
+              inventory={inventory}
+              loading={loading}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={setCurrentPage}
+              onAdjustInventory={handleAdjustInventory}
+              onCreateMovement={handleCreateMovement}
+              onRefresh={fetchInventory}
+              onExportFiltered={handleExportFiltered}
+              onExportAll={handleExportAll}
+              filtersApplied={Boolean(searchTerm || (locationFilter !== 'all') || lowStockFilter || outOfStockOnly)}
+            />
           </div>
-
-          {/* Inventory Table (has its own card styling internally) */}
-          <InventoryTable
-            inventory={inventory}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={setCurrentPage}
-            onAdjustInventory={handleAdjustInventory}
-            onCreateMovement={handleCreateMovement}
-            onRefresh={fetchInventory}
-            onExportFiltered={handleExportFiltered}
-            onExportAll={handleExportAll}
-            filtersApplied={Boolean(searchTerm || (locationFilter !== 'all') || lowStockFilter || outOfStockOnly)}
-          />
 
           {/* Dialogs */}
           {showAdjustDialog && selectedInventory && (
@@ -359,7 +366,6 @@ export default function InventoryPage() {
             />
           )}
 
-          {/* Locations Management Dialog */}
           {showLocationsDialog && (
             <ManageLocationsDialog
               open={showLocationsDialog}

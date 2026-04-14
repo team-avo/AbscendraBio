@@ -33,7 +33,6 @@ import { toast } from 'sonner';
 import {
     MessageSquare,
     Search,
-    Filter,
     Trash2,
     ExternalLink,
     User,
@@ -131,208 +130,222 @@ export default function AdminCommentsPage() {
     };
 
     return (
-        <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
+        <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">System Comments</h1>
-                            <p className="text-muted-foreground">
-                                Manage all internal notes and staff feedback across orders and customers.
-                            </p>
+                <div className="space-y-0">
+
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                <div>
+                                    <h1 className="text-xl font-black text-white tracking-tight">Customer Comments</h1>
+                                    <p className="text-xs text-gray-500 mt-0.5">Manage and moderate customer feedback</p>
+                                </div>
+                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <MessageSquare className="h-4 w-4 text-[#4D7DF2]" />
+                                    <div>
+                                        <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Comments</p>
+                                        <p className="text-base font-black text-white tabular-nums leading-tight">{comments.length.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Type pills */}
+                            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                                {[
+                                    { key: 'all',     label: 'All',          color: null },
+                                    { key: 'ORDER',    label: 'Order',    color: 'amber' },
+                                    { key: 'CUSTOMER', label: 'Customer', color: 'blue' },
+                                ].map((pill) => {
+                                    const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                                        blue:   { bg: 'bg-blue-500/15',   text: 'text-blue-400',   ring: 'ring-blue-500/30',   dot: 'bg-blue-400' },
+                                        amber:  { bg: 'bg-amber-500/15',  text: 'text-amber-400',  ring: 'ring-amber-500/30',  dot: 'bg-amber-400' },
+                                    };
+                                    const c = pill.color ? colorStyles[pill.color] : null;
+                                    const isAll = pill.key === 'all';
+                                    const isActive = isAll ? typeFilter === 'all' : typeFilter === pill.key;
+                                    return (
+                                        <button
+                                            key={pill.key}
+                                            onClick={() => { setTypeFilter(pill.key); setPage(1); }}
+                                            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                                                isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                                                : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                                                : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                                            }`}
+                                        >
+                                            {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                                            <span>{pill.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Filter Bar */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    {/* ════════ COMPACT FILTER ROW ════════ */}
+                    <div className="px-1 sm:px-0 py-4">
+                        <div className="relative max-w-sm">
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
                             <Input
-                                placeholder="Search by content, author, or target..."
+                                placeholder="Search comments by content or customer…"
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9"
+                                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                                className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
                             />
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Select value={typeFilter} onValueChange={setTypeFilter}>
-                                <SelectTrigger className="w-full sm:w-[200px]">
-                                    <SelectValue placeholder="Filter by type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Types</SelectItem>
-                                    <SelectItem value="ORDER">Orders</SelectItem>
-                                    <SelectItem value="CUSTOMER">Customers</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button
-                                variant="outline"
-                                onClick={() => { setSearchTerm(''); setTypeFilter('all'); setPage(1); }}
-                            >
-                                Reset
-                            </Button>
                         </div>
                     </div>
 
-                    {/* Table Card */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                <MessageSquare className="h-4 w-4 text-blue-500" />
-                            </div>
-                            <div>
-                                <h2 className="text-sm font-semibold text-slate-900">Comments</h2>
-                            </div>
-                        </div>
-                        {loading ? (
-                            <div className="flex justify-center p-12">
-                                <LoadingSpinner size={32} />
-                            </div>
-                        ) : comments.length === 0 ? (
-                            <div className="text-center py-12 text-muted-foreground">
-                                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                                <p>No comments found matching your criteria.</p>
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Author</TableHead>
-                                        <TableHead>Content</TableHead>
-                                        <TableHead>Target</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {comments.map((comment) => (
-                                        <TableRow key={comment.id}>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8">
-                                                        <AvatarFallback className="text-[10px]">
-                                                            {comment.user?.firstName?.[0]}{comment.user?.lastName?.[0]}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-medium">
-                                                            {comment.user?.firstName} {comment.user?.lastName}
-                                                        </span>
-                                                        <Badge variant="outline" className="text-[9px] h-3.5 uppercase px-1 w-fit">
-                                                            {comment.user?.role}
-                                                        </Badge>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="max-w-md">
-                                                <p className="text-sm line-clamp-2">{comment.content}</p>
-                                                {comment.parentId && (
-                                                    <Badge variant="secondary" className="text-[9px] mt-1">Reply</Badge>
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col gap-1">
-                                                    <div className="flex items-center gap-1.5">
-                                                        {comment.type === 'ORDER' ? (
-                                                            <ShoppingBag className="h-3 w-3 text-blue-600" />
-                                                        ) : (
-                                                            <User className="h-3 w-3 text-green-600" />
-                                                        )}
-                                                        <span className="text-xs font-semibold">
-                                                            {comment.type === 'ORDER' ? 'Order' : 'Customer'}
-                                                        </span>
-                                                    </div>
-                                                    <Button
-                                                        variant="link"
-                                                        className="p-0 h-auto text-xs justify-start"
-                                                        onClick={() => router.push(getTargetLink(comment))}
-                                                    >
-                                                        {comment.type === 'ORDER' ?
-                                                            (comment.order?.orderNumber || 'View Order') :
-                                                            (comment.customer?.firstName + ' ' + comment.customer?.lastName || 'View Customer')}
-                                                        <ExternalLink className="h-3 w-3 ml-1" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-xs text-muted-foreground">
-                                                {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleViewComment(comment)}
-                                                    >
-                                                        <MessageSquare className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-red-600"
-                                                        onClick={() => handleDeleteClick(comment.id)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                    {/* ════════ TABLE ════════ */}
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+                        <div className="overflow-x-auto">
+                            {loading ? (
+                                <div className="flex justify-center items-center py-16">
+                                    <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                                </div>
+                            ) : comments.length === 0 ? (
+                                <div className="text-center py-16 text-gray-400 text-sm">No comments found matching your search.</div>
+                            ) : (
+                                <Table className="min-w-[700px]">
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50/50 border-b border-gray-100">
+                                            <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Customer</TableHead>
+                                            <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Comment</TableHead>
+                                            <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Type</TableHead>
+                                            <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Date</TableHead>
+                                            <TableHead className="text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
+                                    </TableHeader>
+                                    <TableBody>
+                                        {comments.map((comment) => (
+                                            <TableRow key={comment.id} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50">
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-8 w-8 rounded-xl">
+                                                            <AvatarFallback className="rounded-xl bg-[#070B14] text-white text-xs font-black">
+                                                                {comment.customer ? `${comment.customer.firstName?.[0]}${comment.customer.lastName?.[0]}`.toUpperCase() : '?'}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">
+                                                                {comment.customer ? `${comment.customer.firstName} ${comment.customer.lastName}` : 'Unknown'}
+                                                            </p>
+                                                            <p className="text-xs text-gray-400">{comment.customer?.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p className="text-sm text-gray-700 max-w-[280px] line-clamp-2">{comment.content}</p>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                                                        comment.type === 'ORDER' ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                                                        : 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                    }`}>
+                                                        {comment.type}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-xs text-gray-400">
+                                                    {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => { setSelectedComment(comment); setDetailsOpen(true); }}
+                                                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                                                        >
+                                                            <ExternalLink className="h-4 w-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setDeleteConfirm({ open: true, commentId: comment.id })}
+                                                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                            {comments.length > 0 && totalPages > 1 && (
+                                <div className="px-6 py-4 border-t border-gray-100">
+                                    <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {totalPages > 1 && (
-                        <div className="mt-4">
-                            <Pagination
-                                currentPage={page}
-                                totalPages={totalPages}
-                                onPageChange={setPage}
-                            />
-                        </div>
+                    {/* Comment Details Dialog */}
+                    {selectedComment && (
+                        <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+                            <DialogContent className="max-w-lg rounded-2xl">
+                                <DialogHeader>
+                                    <DialogTitle className="font-black text-[#070B14]">Comment Details</DialogTitle>
+                                    <DialogDescription>Full comment information</DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-2">
+                                    <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                        <p className="text-sm text-gray-700 leading-relaxed">{selectedComment.content}</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {[
+                                            { label: 'Customer', value: selectedComment.customer ? `${selectedComment.customer.firstName} ${selectedComment.customer.lastName}` : 'Unknown' },
+                                            { label: 'Type', value: selectedComment.type },
+                                            { label: 'Date', value: new Date(selectedComment.createdAt).toLocaleString() },
+                                        ].map(({ label, value }) => (
+                                            <div key={label} className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{label}</p>
+                                                <p className="text-sm font-semibold text-gray-800 mt-0.5">{value}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {selectedComment.orderId && (
+                                        <Button variant="outline" className="w-full rounded-xl text-xs font-bold" onClick={() => router.push(`/orders?id=${selectedComment.orderId}`)}>
+                                            <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />View Order
+                                        </Button>
+                                    )}
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     )}
-                </div>
 
-                <ConfirmationDialog
-                    open={deleteConfirm.open}
-                    onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
-                    onConfirm={confirmDelete}
-                    title="Delete Comment"
-                    description="Are you sure you want to delete this comment? This action cannot be undone and will also delete any replies to this comment."
-                    confirmText="Delete"
-                    cancelText="Cancel"
-                    variant="destructive"
-                    isLoading={deleting}
-                />
-
-                <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                                <MessageSquare className="h-5 w-5 text-blue-600" />
-                                Comment Thread
-                            </DialogTitle>
-                            <DialogDescription>
-                                {selectedComment?.type === 'ORDER'
-                                    ? `Managing thread for Order: ${selectedComment.order?.orderNumber || selectedComment.orderId}`
-                                    : `Managing thread for Customer: ${selectedComment?.customer?.firstName} ${selectedComment?.customer?.lastName}`
+                    {/* Delete Confirmation */}
+                    <ConfirmationDialog
+                        open={deleteConfirm.open}
+                        onOpenChange={(o) => setDeleteConfirm({ open: o, commentId: null })}
+                        onConfirm={async () => {
+                            if (!deleteConfirm.commentId) return;
+                            setDeleting(true);
+                            try {
+                                const response = await api.deleteComment(deleteConfirm.commentId);
+                                if (response.success) {
+                                    toast.success('Comment deleted');
+                                    setDeleteConfirm({ open: false, commentId: null });
+                                    fetchComments();
+                                } else {
+                                    toast.error(response.error || 'Failed to delete comment');
                                 }
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        {selectedComment && (
-                            <div className="mt-4">
-                                <CommentSection
-                                    type={selectedComment.type}
-                                    orderId={selectedComment.orderId || undefined}
-                                    customerId={selectedComment.customerId || undefined}
-                                />
-                            </div>
-                        )}
-                    </DialogContent>
-                </Dialog>
+                            } catch (error) {
+                                logger.error('Error deleting comment:', { error });
+                                toast.error('Failed to delete comment');
+                            } finally {
+                                setDeleting(false);
+                            }
+                        }}
+                        title="Delete Comment"
+                        description="Are you sure you want to permanently delete this comment? This action cannot be undone."
+                        confirmText="Delete"
+                        cancelText="Cancel"
+                        variant="destructive"
+                        isLoading={deleting}
+                    />
+                </div>
             </DashboardLayout>
         </ProtectedRoute>
     );

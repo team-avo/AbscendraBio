@@ -47,7 +47,8 @@ import {
     Settings,
     Shield,
     Zap,
-    Search
+    Search,
+    BarChart2
 } from "lucide-react";
 import { api, Order } from "@/lib/api";
 import { EditOrderDialog } from "@/components/orders/edit-order-dialog";
@@ -630,82 +631,45 @@ export function PaymentsContent() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 sm:px-0">
-                <div>
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Payments</h1>
-                    <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
-                        Manage payment processing, transactions, and gateway settings.
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                    <Button onClick={() => setRecordDialogOpen(true)} className="w-full sm:w-auto">
-                        <Plus className="h-4 w-4 mr-2" /> Record Payment
-                    </Button>
+        <div className="space-y-0">
+            {/* Dark hero strip */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                                    <BarChart2 className="h-3 w-3" /> Payments
+                                </span>
+                            </div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Payments</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage payment processing, transactions, and gateway settings</p>
+                        </div>
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                            <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                <DollarSign className="h-4 w-4 text-[#4D7DF2]" />
+                                <div>
+                                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Revenue</p>
+                                    <p className="text-base font-black text-white tabular-nums leading-tight">${totalRevenue.toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={() => setRecordDialogOpen(true)}
+                                className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest self-start sm:self-auto"
+                            >
+                                <Plus className="mr-1.5 h-3.5 w-3.5" /> Record Payment
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full px-2 sm:px-0">
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">${totalRevenue.toLocaleString()}</div>
-                        <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            <TrendingUp className="h-2 w-2 sm:h-3 sm:w-3 mr-1 text-green-500" />
-                            +12.5%
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Pending Payments</CardTitle>
-                        <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">${pendingAmount.toLocaleString()}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            Awaiting processing
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Success Rate</CardTitle>
-                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{successRate.toFixed(1)}%</div>
-                        <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            <TrendingUp className="h-2 w-2 sm:h-3 sm:w-3 mr-1 text-green-500" />
-                            +2.1%
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Failed Transactions</CardTitle>
-                        <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{failedCount}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                            Requiring attention
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
+            <div className="space-y-6 mt-4">
 
             {/* Transactions Section */}
             <div>
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight px-2 sm:px-0 mb-4">Transactions</h2>
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
@@ -1147,6 +1111,7 @@ export function PaymentsContent() {
                 title="Email Transactions Report"
                 description="The transactions report will be generated and sent to your email as an Excel attachment."
             />
+            </div>{/* end space-y-6 mt-4 */}
         </div>
     );
 }

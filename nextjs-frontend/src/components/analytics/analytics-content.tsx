@@ -48,7 +48,8 @@ import {
     Calendar,
     Target,
     Globe,
-    Star
+    Star,
+    BarChart2
 } from "lucide-react";
 import { api, formatCurrency } from "@/lib/api";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -301,7 +302,7 @@ export function AnalyticsContent() {
     const topProductsFromApi = metrics?.topProducts || [];
 
     return (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-0">
             <SendReportDialog
                 open={showEmailDialog}
                 onOpenChange={setShowEmailDialog}
@@ -309,183 +310,84 @@ export function AnalyticsContent() {
                 title="Send Analytics Report"
                 description="Enter the email address where you want to receive the filtered analytics report."
             />
-            {/* Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Analytics</h1>
-                    <p className="text-muted-foreground text-sm sm:text-base mt-1">
-                        Track your store performance and business insights
-                    </p>
+            {/* Dark hero strip */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    {/* Title row + actions */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                                    <BarChart2 className="h-3 w-3" /> Analytics
+                                </span>
+                            </div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Analytics</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Sales performance and business intelligence</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <OrderDateFilter
+                                range={dateRange}
+                                setRange={setDateRange}
+                                from={customFrom || undefined}
+                                setFrom={(d) => setCustomFrom(d || null)}
+                                to={customTo || undefined}
+                                setTo={(d) => setCustomTo(d || null)}
+                                salesChannelId={salesChannelId}
+                                onSalesChannelChange={setSalesChannelId}
+                            />
+                            <Button
+                                onClick={() => setShowEmailDialog(true)}
+                                className="h-9 px-4 bg-white/[0.06] hover:bg-white/[0.10] text-white border border-white/[0.08] rounded-xl text-xs font-bold"
+                                variant="ghost"
+                            >
+                                <Mail className="h-3.5 w-3.5 mr-1.5" />
+                                {isMobile ? "Email Report" : "Email"}
+                            </Button>
+                            {!isMobile && (
+                                <Button
+                                    onClick={downloadCsv}
+                                    className="h-9 px-4 bg-white/[0.06] hover:bg-white/[0.10] text-white border border-white/[0.08] rounded-xl text-xs font-bold"
+                                    variant="ghost"
+                                >
+                                    <Download className="h-3.5 w-3.5 mr-1.5" />
+                                    Export
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Sub-nav pills */}
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                        {[
+                            { key: 'overview',   label: 'Overview' },
+                            { key: 'sales',      label: 'Sales' },
+                            { key: 'products',   label: 'Products' },
+                            { key: 'customers',  label: 'Customers' },
+                            { key: 'geography',  label: 'Geography' },
+                        ].map((pill) => {
+                            const isActive = activeTab === pill.key;
+                            return (
+                                <button
+                                    key={pill.key}
+                                    onClick={() => setActiveTab(pill.key)}
+                                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                                        isActive
+                                            ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30'
+                                            : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                                    }`}
+                                >
+                                    {pill.label}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <OrderDateFilter
-                        range={dateRange}
-                        setRange={setDateRange}
-                        from={customFrom || undefined}
-                        setFrom={(d) => setCustomFrom(d || null)}
-                        to={customTo || undefined}
-                        setTo={(d) => setCustomTo(d || null)}
-                        salesChannelId={salesChannelId}
-                        onSalesChannelChange={setSalesChannelId}
-                    />
-                    <Button variant="outline" onClick={() => setShowEmailDialog(true)} className="w-full sm:w-auto">
-                        <Mail className="h-4 w-4 mr-2" />
-                        {isMobile ? "Email Report" : "Email"}
-                    </Button>
-                    {!isMobile && (
-                        <Button variant="outline" onClick={downloadCsv} className="w-full sm:w-auto">
-                            <Download className="h-4 w-4 mr-2" />
-                            Export
-                        </Button>
-                    )}
-                </div>
-            </div>
-
-            {/* Key Metrics */}
-            <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-                <Card className="p-0 gap-0 shadow-sm border-border/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
-                        {loading ? (
-                            <div className="space-y-2">
-                                <Skeleton className="h-7 sm:h-8 w-24" />
-                                <Skeleton className="h-3 sm:h-4 w-32" />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                    {metrics ? formatCurrency(metrics.totalRevenue || 0) : "$0.00"}
-                                </div>
-                                <div className="flex flex-wrap items-center text-[10px] sm:text-xs">
-                                    <div className={cn(
-                                        "flex items-center font-medium",
-                                        (metrics?.revenueChange ?? 0) >= 0 ? "text-green-600" : "text-red-600"
-                                    )}>
-                                        {(metrics?.revenueChange ?? 0) >= 0 ? (
-                                            <TrendingUp className="h-3 w-3 mr-1 shrink-0" />
-                                        ) : (
-                                            <TrendingDown className="h-3 w-3 mr-1 shrink-0" />
-                                        )}
-                                        <span className="hidden sm:inline">{(metrics?.revenueChange ?? 0) >= 0 ? "+" : ""}{(metrics?.revenueChange ?? 0).toFixed(1)}%</span>
-                                        <span className="sm:hidden">{(metrics?.revenueChange ?? 0) >= 0 ? "+" : ""}{(metrics?.revenueChange ?? 0).toFixed(1)}%</span>
-                                    </div>
-                                    <span className="text-muted-foreground ml-1 hidden sm:inline">from last month</span>
-                                </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card className="p-0 gap-0 shadow-sm border-border/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Orders</CardTitle>
-                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
-                        {loading ? (
-                            <div className="space-y-2">
-                                <Skeleton className="h-7 sm:h-8 w-16" />
-                                <Skeleton className="h-3 sm:h-4 w-32" />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                    {(metrics?.totalOrders ?? 0).toLocaleString()}
-                                </div>
-                                <div className="flex flex-wrap items-center text-[10px] sm:text-xs">
-                                    <div className={cn(
-                                        "flex items-center font-medium",
-                                        (metrics?.orderChange ?? 0) >= 0 ? "text-green-600" : "text-red-600"
-                                    )}>
-                                        {(metrics?.orderChange ?? 0) >= 0 ? (
-                                            <TrendingUp className="h-3 w-3 mr-1 shrink-0" />
-                                        ) : (
-                                            <TrendingDown className="h-3 w-3 mr-1 shrink-0" />
-                                        )}
-                                        <span className="hidden sm:inline">{(metrics?.orderChange ?? 0) >= 0 ? "+" : ""}{(metrics?.orderChange ?? 0).toFixed(1)}%</span>
-                                        <span className="sm:hidden">{(metrics?.orderChange ?? 0) >= 0 ? "+" : ""}{(metrics?.orderChange ?? 0).toFixed(1)}%</span>
-                                    </div>
-                                    <span className="text-muted-foreground ml-1 hidden sm:inline">from last month</span>
-                                </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card className="p-0 gap-0 shadow-sm border-border/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Conversion Rate</CardTitle>
-                        <Target className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
-                        {loading ? (
-                            <div className="space-y-2">
-                                <Skeleton className="h-7 sm:h-8 w-16" />
-                                <Skeleton className="h-3 sm:h-4 w-32" />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                    {metrics ? `${Math.max(0, Math.min(100, (metrics.totalOrders || 0) / Math.max(1, (metrics.activeProducts || 1)) * 10)).toFixed(1)}%` : "0.0%"}
-                                </div>
-                                <div className="flex flex-wrap items-center text-[10px] sm:text-xs">
-                                    <div className="flex items-center font-medium text-muted-foreground">
-                                        <span className="mr-1">—</span>
-                                    </div>
-                                    <span className="text-muted-foreground ml-1 hidden sm:inline">from last month</span>
-                                </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card className="p-0 gap-0 shadow-sm border-border/50">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-3 sm:pb-0.5">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Avg. Order Value</CardTitle>
-                        <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0.5 pb-2 sm:p-3 sm:pt-1 sm:pb-3">
-                        {loading ? (
-                            <div className="space-y-2">
-                                <Skeleton className="h-7 sm:h-8 w-24" />
-                                <Skeleton className="h-3 sm:h-4 w-32" />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="text-base sm:text-2xl font-bold truncate leading-tight">
-                                    {metrics ? (() => {
-                                        const orders = (metrics.recentOrders || []);
-                                        const avg = orders.length ? (orders.reduce((sum: number, o: any) => sum + Number(o.amount || 0), 0) / orders.length) : 0;
-                                        return formatCurrency(avg);
-                                    })() : "$0.00"}
-                                </div>
-                                <div className="flex flex-wrap items-center text-[10px] sm:text-xs">
-                                    <div className="flex items-center font-medium text-green-600">
-                                        <TrendingUp className="h-3 w-3 mr-1 shrink-0" />
-                                        +
-                                    </div>
-                                    <span className="text-muted-foreground ml-1 hidden sm:inline">from last month</span>
-                                </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
             </div>
 
             {/* Analytics Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-                <div className="overflow-x-auto pb-1 sm:pb-0 hide-scrollbar">
-                    <TabsList className="inline-flex w-full sm:w-auto min-w-max sm:min-w-0 bg-muted/50 p-1">
-                        <TabsTrigger value="overview" className="px-4 sm:px-6">Overview</TabsTrigger>
-                        <TabsTrigger value="sales" className="px-4 sm:px-6">Sales</TabsTrigger>
-                        <TabsTrigger value="products" className="px-4 sm:px-6">Products</TabsTrigger>
-                        <TabsTrigger value="customers" className="px-4 sm:px-6">Customers</TabsTrigger>
-                        <TabsTrigger value="geography" className="px-4 sm:px-6">Geography</TabsTrigger>
-                    </TabsList>
-                </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6 mt-4">
 
                 {/* Overview Tab */}
                 <TabsContent value="overview" className="space-y-6">

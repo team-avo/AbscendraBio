@@ -58,18 +58,26 @@ export default function BlogManagerPage() {
   return (
     <ProtectedRoute requiredRoles={["ADMIN", "MANAGER", "STAFF"]}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Blog</h1>
-              <p className="text-sm sm:text-base text-muted-foreground">Manage blog posts</p>
+        <div className="space-y-0 px-2 sm:px-0">
+          {/* Dark Hero Strip */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden mb-5">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Blog</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Manage blog posts</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 bg-white/10 px-2.5 py-1 rounded-lg font-medium">{rows.length} posts</span>
+                  <button onClick={() => router.push('/content/blog/new')} className="flex items-center gap-1.5 h-9 px-4 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
+                    <Plus className="h-3.5 w-3.5" />
+                    New Post
+                  </button>
+                </div>
+              </div>
             </div>
-            <Button
-              onClick={() => router.push('/content/blog/new')}
-              className="w-full sm:w-auto h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-            >
-              <Plus className="h-4 w-4 mr-2" /> New Post
-            </Button>
           </div>
 
           <Tabs defaultValue="posts" className="space-y-5">

@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -110,7 +110,7 @@ export default function SalesManagersPage() {
   useEffect(() => {
     if (!isAdmin) return;
     (async () => {
-      setLoading(true); // Using global loading for initial data fetch
+      setLoading(true);
       try {
         const repsRes = await api.get('/sales-managers/available/sales-reps');
         if (repsRes.success) {
@@ -135,10 +135,9 @@ export default function SalesManagersPage() {
       try {
         const res = await api.getUnassignedCustomersForManager({
           search: unassignedCustomersSearch,
-          limit: 10000 // High limit matching backend capability
+          limit: 10000,
         });
         if (res.success) {
-          // Flatten if needed, though getUnassignedCustomersForManager returns any[]
           setUnassignedCustomers(res.data || []);
         }
       } catch (error) {
@@ -150,14 +149,13 @@ export default function SalesManagersPage() {
 
     const timer = setTimeout(() => {
       fetchCandidates();
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [isAdmin, customersTab, unassignedCustomersSearch]);
 
   const selectedManager = useMemo(() => managers.find(m => m.id === selectedManagerId) || null, [managers, selectedManagerId]);
 
-  // Filter managers based on search
   const filteredManagers = useMemo(() => {
     if (!managerSearchValue) return managers;
     const searchLower = managerSearchValue.toLowerCase();
@@ -170,30 +168,25 @@ export default function SalesManagersPage() {
     });
   }, [managers, managerSearchValue]);
 
-  // Get selected manager display name
   const selectedManagerDisplay = useMemo(() => {
     if (!selectedManager || !selectedManager.user) return 'Choose manager';
     return `${selectedManager.user.firstName} ${selectedManager.user.lastName} (${selectedManager.user.email})`;
   }, [selectedManager]);
 
-  // Merge customers from assignments and candidates to ensure we have details for all selected customers
   const displayAssignedCustomers = useMemo(() => {
     if (!selectedManager) return [];
 
     const assignedFromServer = selectedManager.assignments?.map(a => a.customer) || [];
     const selectedFromCandidates = unassignedCustomers.filter(c => selectedCustomers.includes(c.id));
 
-    // Combine and unique by ID
     const uniqueMap = new Map<string, Customer>();
     assignedFromServer.forEach(c => { if (c) uniqueMap.set(c.id, c); });
     selectedFromCandidates.forEach(c => { if (c) uniqueMap.set(c.id, c); });
 
-    // Filter by selectedCustomers to reflect current state (including removals)
     return Array.from(uniqueMap.values())
       .filter(c => selectedCustomers.includes(c.id));
   }, [selectedManager, unassignedCustomers, selectedCustomers]);
 
-  // Update selected reps and customers when manager changes
   useEffect(() => {
     if (selectedManager) {
       setSelectedReps(selectedManager.salesReps?.map(r => r.id) || []);
@@ -221,19 +214,16 @@ export default function SalesManagersPage() {
     if (!selectedManager) return;
     setLoading(true);
     try {
-      // Save Reps
       const repsResponse = await api.put(`/sales-managers/${selectedManager.id}/sales-reps`, { salesRepIds: selectedReps });
       if (!repsResponse.success) {
         throw new Error(repsResponse.error || 'Failed to update sales representatives');
       }
 
-      // Save Customers
       const customersResponse = await api.put(`/sales-managers/${selectedManager.id}/assignments`, { customerIds: selectedCustomers });
       if (!customersResponse.success) {
         throw new Error(customersResponse.error || 'Failed to update customer assignments');
       }
 
-      // Refresh managers list
       const managersRes = await api.get('/sales-managers');
       if (managersRes.success) {
         const data = (managersRes as any).data;
@@ -252,18 +242,63 @@ export default function SalesManagersPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-5 px-2 sm:px-0">
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          <h2 className="text-lg font-semibold mb-4">Sales Managers Management</h2>
+      <div className="space-y-5">
+        {/* Dark hero strip */}
+        <div className="bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
+          {/* Grid texture */}
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+              backgroundSize: '32px 32px',
+            }}
+          />
+          {/* Blue glow */}
+          <div className="absolute top-0 left-1/4 w-72 h-32 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+          <div className="relative px-5 pt-5 pb-4 space-y-3">
+            {/* Top row: title left, stat chip + CTA right */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <Label>Select Sales Manager</Label>
+                <h1 className="text-xl font-bold text-white tracking-tight">Sales Managers</h1>
+                <p className="text-blue-200/60 text-xs mt-0.5">Manage your sales leadership team</p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Stat chip */}
+                <div className="flex items-center gap-1.5 bg-blue-500/10 border border-blue-400/20 rounded-full px-3 py-1.5">
+                  <Users className="h-3.5 w-3.5 text-blue-400" />
+                  <span className="text-xs font-semibold text-blue-300">
+                    {managers.length} Manager{managers.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                {/* Save button in hero */}
+                <Button
+                  disabled={!selectedManagerId || loading}
+                  onClick={handleSaveAssignments}
+                  className="h-8 px-4 bg-white hover:bg-gray-100 text-[#070B14] rounded-xl text-xs font-semibold"
+                >
+                  Save Assignments
+                </Button>
+                {selectedManagerId && (
+                  <Button
+                    variant="outline"
+                    onClick={() => window.location.href = `/analytics/person?managerId=${selectedManagerId}`}
+                    className="h-8 px-3 text-xs border-white/20 text-white hover:bg-white/10 rounded-xl"
+                  >
+                    View Analytics
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Manager selector row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end pb-1">
+              <div>
+                <Label className="text-blue-200/70 text-xs mb-1 block">Select Sales Manager</Label>
                 {loading ? (
-                  <div className="flex items-center gap-2 p-2 border rounded-md bg-muted">
+                  <div className="flex items-center gap-2 p-2 border border-white/10 rounded-xl bg-white/5">
                     <Progress value={undefined} className="w-full" />
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">Loading managers...</span>
+                    <span className="text-sm text-blue-200/50 whitespace-nowrap">Loading managers...</span>
                   </div>
                 ) : (
                   <Popover open={managerSearchOpen} onOpenChange={setManagerSearchOpen}>
@@ -272,12 +307,10 @@ export default function SalesManagersPage() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={managerSearchOpen}
-                        className="w-full justify-between"
+                        className="w-full justify-between bg-white/5 border-white/15 text-white hover:bg-white/10 hover:text-white rounded-xl h-9 text-sm"
                         disabled={loading}
                       >
-                        <span className="truncate">
-                          {selectedManagerDisplay}
-                        </span>
+                        <span className="truncate">{selectedManagerDisplay}</span>
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -324,25 +357,13 @@ export default function SalesManagersPage() {
                   </Popover>
                 )}
               </div>
-              <div className="flex gap-2">
-                <Button
-                  disabled={!selectedManagerId || loading}
-                  onClick={handleSaveAssignments}
-                  className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-                >
-                  Save Assignments
-                </Button>
-                {selectedManagerId && (
-                  <Button
-                    variant="outline"
-                    onClick={() => window.location.href = `/analytics/person?managerId=${selectedManagerId}`}
-                  >
-                    View Analytics
-                  </Button>
-                )}
-              </div>
             </div>
+          </div>
+        </div>
 
+        {/* Main content panel */}
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+          <div className="p-5">
             {selectedManager && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Side: Sales Representatives */}
@@ -410,10 +431,10 @@ export default function SalesManagersPage() {
                           const email = (r.user.email || '').toLowerCase();
                           return fullName.includes(searchLower) || email.includes(searchLower);
                         }).length === 0 && assignedRepsSearch && (
-                            <div className="text-sm text-muted-foreground text-center py-8">
-                              No assigned reps found matching "{assignedRepsSearch}"
-                            </div>
-                          )}
+                          <div className="text-sm text-muted-foreground text-center py-8">
+                            No assigned reps found matching "{assignedRepsSearch}"
+                          </div>
+                        )}
                       </div>
                     </TabsContent>
 
@@ -434,7 +455,6 @@ export default function SalesManagersPage() {
                         )}
                         {allReps
                           .filter(r => {
-                            // Only show UNASSIGNED when in "add" tab, OR just show all as per current logic but with tabs
                             if (selectedReps.includes(r.id)) return false;
                             if (!allRepsSearch) return true;
                             const searchLower = allRepsSearch.toLowerCase();
@@ -462,7 +482,7 @@ export default function SalesManagersPage() {
                                   variant={isAssignedToOther ? "destructive" : "outline"}
                                   onClick={() => {
                                     setSelectedReps(prev => [...prev, r.id]);
-                                    setRepsTab('assigned'); // Switch to assigned tab
+                                    setRepsTab('assigned');
                                   }}
                                   className={cn(
                                     "h-8 sm:shrink-0 text-xs",
@@ -482,10 +502,10 @@ export default function SalesManagersPage() {
                           const email = (r.user.email || '').toLowerCase();
                           return fullName.includes(searchLower) || email.includes(searchLower);
                         }).length === 0 && (
-                            <div className="text-sm text-muted-foreground text-center py-8">
-                              {allRepsSearch ? `No sales reps found matching "${allRepsSearch}"` : "All available sales reps are already assigned"}
-                            </div>
-                          )}
+                          <div className="text-sm text-muted-foreground text-center py-8">
+                            {allRepsSearch ? `No sales reps found matching "${allRepsSearch}"` : "All available sales reps are already assigned"}
+                          </div>
+                        )}
                       </div>
                     </TabsContent>
                   </Tabs>
@@ -623,7 +643,7 @@ export default function SalesManagersPage() {
                                   variant={currentManager ? "destructive" : "outline"}
                                   onClick={() => {
                                     setSelectedCustomers(prev => [...prev, c.id]);
-                                    setCustomersTab('assigned'); // Switch to assigned tab
+                                    setCustomersTab('assigned');
                                   }}
                                   className={cn(
                                     "h-8 sm:shrink-0 text-xs",
@@ -643,14 +663,20 @@ export default function SalesManagersPage() {
                           const email = (c.email || '').toLowerCase();
                           return fullName.includes(searchLower) || email.includes(searchLower);
                         }).length === 0 && (
-                            <div className="text-sm text-muted-foreground text-center py-8">
-                              {unassignedCustomersSearch ? `No customers found matching "${unassignedCustomersSearch}"` : "No customers available for assignment"}
-                            </div>
-                          )}
+                          <div className="text-sm text-muted-foreground text-center py-8">
+                            {unassignedCustomersSearch ? `No customers found matching "${unassignedCustomersSearch}"` : "No customers available for assignment"}
+                          </div>
+                        )}
                       </div>
                     </TabsContent>
                   </Tabs>
                 </div>
+              </div>
+            )}
+
+            {!selectedManager && !loading && (
+              <div className="text-sm text-muted-foreground text-center py-12 border border-dashed rounded-xl">
+                Select a sales manager above to manage their team assignments.
               </div>
             )}
           </div>

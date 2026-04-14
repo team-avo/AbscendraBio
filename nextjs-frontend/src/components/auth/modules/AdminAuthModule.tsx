@@ -386,24 +386,11 @@ export function AdminAuthModule({ onSwitchToCustomer, onSuccess, isModal = false
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-4 mt-6">
-        <div className="text-center text-sm font-medium">
-          {onSwitchToCustomer ? (
-            <button type="button" onClick={onSwitchToCustomer} className="text-gray-500 hover:text-[#070B14] transition-colors">
-              Looking for the customer portal? <span className="text-[#3A6FA0] underline-offset-4 hover:underline ml-1">Customer Login &rarr;</span>
-            </button>
-          ) : (
-             <a href="/login" className="text-gray-500 hover:text-[#070B14] transition-colors">
-              Looking for the customer portal? <span className="text-[#3A6FA0] underline-offset-4 hover:underline ml-1">Customer Login &rarr;</span>
-            </a>
-          )}
+      {!isModal && (
+        <div className="text-center mt-6">
+          <p className="text-xs text-gray-500">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
         </div>
-        {!isModal && (
-          <div className="text-center">
-             <p className="text-xs text-gray-500">© {new Date().getFullYear()} Ascendra Bio. All rights reserved.</p>
-          </div>
-        )}
-      </div>
+      )}
 
       <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
         <DialogContent className="sm:max-w-[420px]">

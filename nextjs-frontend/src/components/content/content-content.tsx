@@ -212,70 +212,36 @@ export function ContentContent() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 sm:px-0">
-                <div>
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Content Management</h1>
-                    <p className="text-muted-foreground text-xs sm:text-sm">
-                        Manage your website content, pages, and media assets.
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button onClick={onCreatePage} className="w-full sm:w-auto">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Page
-                    </Button>
+        <div className="space-y-0">
+            {/* ════════ DARK HERO STRIP ════════ */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Content Management</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Manage your website content, pages, and media assets</p>
+                        </div>
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                            <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                <FileText className="h-4 w-4 text-[#4D7DF2]" />
+                                <div>
+                                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Pages</p>
+                                    <p className="text-base font-black text-white tabular-nums leading-tight">{totalPages}</p>
+                                </div>
+                            </div>
+                            <button onClick={onCreatePage} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-[#070B14] hover:bg-gray-100 text-xs font-black uppercase tracking-widest transition-colors">
+                                <Plus className="h-3.5 w-3.5" />
+                                Create Page
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full px-2 sm:px-0">
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Pages</CardTitle>
-                        <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{totalPages}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Pages in system</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Published</CardTitle>
-                        <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{publishedPages}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Published pages</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Total Views</CardTitle>
-                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{totalViews.toLocaleString()}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">All-time page views</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="py-0 sm:py-0 gap-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 py-1 pb-0 sm:p-4 sm:py-2 sm:pb-0">
-                        <CardTitle className="text-[10px] sm:text-sm font-medium">Media Files</CardTitle>
-                        <Image className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0 pb-1 sm:p-4 sm:pt-0 sm:pb-2">
-                        <div className="text-base sm:text-2xl font-bold truncate leading-tight">{mediaCount}</div>
-                        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{formatBytes(mediaTotalBytes)} total storage</p>
-                    </CardContent>
-                </Card>
-            </div>
-
+            <div className="mt-4">
             {/* Tabs */}
             <Tabs defaultValue="pages" className="space-y-6">
                 <div className="w-full overflow-x-auto pb-2">
@@ -501,6 +467,7 @@ export function ContentContent() {
                     <SeoSettings />
                 </TabsContent>
             </Tabs>
+            </div>
         </div>
     );
 }

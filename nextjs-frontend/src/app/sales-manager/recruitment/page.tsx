@@ -81,7 +81,7 @@ export default function SalesManagerRecruitmentPage() {
         return (
             <DashboardLayout>
                 <div className="p-6">
-                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
                         <h3 className="text-base font-semibold mb-1">Access Denied</h3>
                         <p className="text-sm text-muted-foreground">You do not have permission to view this page.</p>
                     </div>
@@ -98,26 +98,39 @@ export default function SalesManagerRecruitmentPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-5 px-2 sm:px-0">
-                {/* Header */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Assign Sales Representatives</h1>
-                        <p className="text-muted-foreground text-sm sm:text-base">
-                            Browse sales representatives who are not currently assigned to a manager and assign them to your team
-                        </p>
+            <div className="space-y-0">
+                {/* ════════ DARK HERO STRIP ════════ */}
+                <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                  <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <h1 className="text-xl font-black text-white tracking-tight">Recruitment</h1>
+                        <p className="text-xs text-gray-500 mt-0.5">Assign available sales representatives to your team</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                          <Users className="h-4 w-4 text-[#4D7DF2]" />
+                          <div>
+                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Available</p>
+                            <p className="text-base font-black text-white tabular-nums leading-tight">{salesReps.length}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setIsCreateOpen(true)}
+                          className="flex items-center gap-1.5 h-9 px-3 bg-white text-[#070B14] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                          ADD REP
+                        </button>
+                      </div>
                     </div>
-                    <Button
-                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-                        onClick={() => setIsCreateOpen(true)}
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Sales Rep
-                    </Button>
+                  </div>
                 </div>
 
                 {/* Search Filter */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                <div className="mt-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                             <Search className="h-4 w-4 text-slate-600" />
@@ -139,8 +152,8 @@ export default function SalesManagerRecruitmentPage() {
                 </div>
 
                 {/* Sales Reps Table */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                         <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                             <Users className="h-4 w-4 text-slate-600" />
                         </div>

@@ -56,81 +56,109 @@ function ProductDetail({ product, onEdit }: { product: Product; onEdit?: () => v
       setTimeout(() => setCopied(false), 1500);
     } catch { }
   };
+
+  const statusColor: Record<string, string> = {
+    ACTIVE: 'bg-emerald-500/15 text-emerald-700 border-emerald-200',
+    DRAFT: 'bg-amber-500/15 text-amber-700 border-amber-200',
+    INACTIVE: 'bg-gray-500/15 text-gray-600 border-gray-200',
+    ARCHIVED: 'bg-red-500/15 text-red-700 border-red-200',
+  };
+
   return (
-    <div className="space-y-3 break-words">
-      <div className="flex items-start gap-4">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
-          {primaryImage ? (
-            <img src={resolveImageUrl(primaryImage.url)} alt={primaryImage.altText || product.name} className="w-full h-full object-cover" />
-          ) : (
-            <Package className="h-6 w-6 text-gray-400" />
-          )}
-        </div>
-        <div className="min-w-0">
-          <div className="font-semibold text-sm sm:text-base break-words leading-snug">{product.name}</div>
-          <div className="text-xs sm:text-sm text-muted-foreground break-words line-clamp-3 sm:line-clamp-none leading-snug">{product.description || 'No description'}</div>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {(product.categories || []).slice(0, 4).map((c, i) => (
-              <Badge key={i} variant="outline" className="text-xs">{c.name}</Badge>
-            ))}
+    <div className="space-y-0 -mt-2">
+      {/* Dark Hero Header */}
+      <div className="relative bg-[#070B14] rounded-xl overflow-hidden mb-4">
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        <div className="absolute top-0 right-0 w-[300px] h-[120px] bg-[#4D7DF2]/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="relative z-10 px-5 py-4 flex items-start gap-4">
+          <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {primaryImage ? (
+              <img src={resolveImageUrl(primaryImage.url)} alt={primaryImage.altText || product.name} className="w-full h-full object-cover" />
+            ) : (
+              <Package className="h-6 w-6 text-gray-400" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-black text-white text-base leading-snug break-words">{product.name}</div>
+            <div className="text-xs text-gray-400 mt-0.5 break-words line-clamp-2 leading-snug">{product.description || 'No description'}</div>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {(product.categories || []).slice(0, 4).map((c, i) => (
+                <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-gray-300 font-medium border border-white/10">{c.name}</span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <div>
-          <div className="text-xs text-muted-foreground">Status</div>
-          <div className="mt-1"><Badge variant="secondary">{product.status}</Badge></div>
+
+      {/* Info Grid */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+          <div className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-1.5">Status</div>
+          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold border ${statusColor[product.status] || 'bg-gray-100 text-gray-700 border-gray-200'}`}>
+            {product.status}
+          </span>
         </div>
-        <div>
-          <div className="text-xs text-muted-foreground">Created</div>
-          <div className="mt-1 text-sm">{formatDate(product.createdAt)}</div>
+        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+          <div className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-1.5">Created</div>
+          <div className="text-xs font-semibold text-gray-800">{formatDate(product.createdAt)}</div>
         </div>
-        <div>
-          <div className="text-xs text-muted-foreground">ShipStation SKU</div>
-          <div className="mt-1 text-sm font-mono break-all text-muted-foreground">
-            {product.shipstationSku || '-'}
-          </div>
-        </div>
-      </div>
-      <div>
-        <div className="text-xs text-muted-foreground">Product frontend url</div>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <a href={frontendUrl} target="_blank" rel="noopener noreferrer">
-            <Button size="sm">View product in Frontend</Button>
-          </a>
-          <Button variant="outline" size="sm" onClick={handleCopy}>Copy link</Button>
-          {copied && <span className="text-xs text-green-600">Copied</span>}
-          {onEdit && (
-            <Button variant="outline" size="sm" onClick={onEdit}>
-              <Edit className="h-4 w-4 mr-1" />
-              Edit Product
-            </Button>
-          )}
+        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+          <div className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-1.5">SS SKU</div>
+          <div className="text-xs font-mono font-semibold text-gray-700 break-all">{product.shipstationSku || '—'}</div>
         </div>
       </div>
+
+      {/* Actions */}
+      <div className="flex flex-wrap items-center gap-2 mb-4 pb-4 border-b border-gray-100">
+        <a href={frontendUrl} target="_blank" rel="noopener noreferrer">
+          <button className="flex items-center gap-1.5 h-8 px-3 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-lg text-xs font-semibold transition-colors">
+            <Eye className="h-3.5 w-3.5" />
+            View in Store
+          </button>
+        </a>
+        <button onClick={handleCopy} className="flex items-center gap-1.5 h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-colors border border-gray-200">
+          {copied ? '✓ Copied' : 'Copy Link'}
+        </button>
+        {onEdit && (
+          <button onClick={onEdit} className="flex items-center gap-1.5 h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-colors border border-gray-200">
+            <Edit className="h-3.5 w-3.5" />
+            Edit Product
+          </button>
+        )}
+      </div>
+
+      {/* Variants */}
       <div>
-        <div className="font-medium mb-2">Variants ({variants.length})</div>
-        <div className="rounded-md border overflow-x-auto">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-gray-800">Variants</span>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-xs font-bold text-slate-600">{variants.length}</span>
+        </div>
+        <div className="rounded-xl border border-gray-200 overflow-x-auto">
           <Table className="w-full min-w-[420px]">
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-32 min-w-[120px]">SKU</TableHead>
-                <TableHead className="w-28 min-w-[100px]">SS SKU</TableHead>
-                <TableHead className="min-w-[120px]">Name</TableHead>
-                <TableHead className="text-right w-20 min-w-[72px]">Price</TableHead>
+              <TableRow className="bg-gray-50/80">
+                <TableHead className="w-32 min-w-[120px] text-xs font-semibold text-gray-500 uppercase tracking-wide">SKU</TableHead>
+                <TableHead className="w-28 min-w-[100px] text-xs font-semibold text-gray-500 uppercase tracking-wide">SS SKU</TableHead>
+                <TableHead className="min-w-[120px] text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</TableHead>
+                <TableHead className="text-right w-20 min-w-[72px] text-xs font-semibold text-gray-500 uppercase tracking-wide">Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {variants.map(v => (
-                <TableRow key={v.id}>
-                  <TableCell className="font-mono break-all text-xs leading-snug align-top py-2">{v.sku}</TableCell>
-                  <TableCell className="break-all text-xs leading-snug text-muted-foreground align-top py-2">
-                    {v.shipstationSku || '-'}
+                <TableRow key={v.id} className="hover:bg-gray-50/60">
+                  <TableCell className="font-mono break-all text-xs leading-snug align-top py-2.5 text-gray-700">{v.sku}</TableCell>
+                  <TableCell className="break-all text-xs leading-snug text-gray-400 align-top py-2.5">
+                    {v.shipstationSku || '—'}
                   </TableCell>
-                  <TableCell className="text-xs sm:text-sm leading-snug align-top py-2 whitespace-normal">{v.name}</TableCell>
-                  <TableCell className="text-right text-sm font-medium align-top py-2">{formatCurrency(v.salePrice || v.regularPrice)}</TableCell>
+                  <TableCell className="text-xs leading-snug align-top py-2.5 whitespace-normal text-gray-700">{v.name}</TableCell>
+                  <TableCell className="text-right text-xs font-bold align-top py-2.5 text-gray-800">{formatCurrency(v.salePrice || v.regularPrice)}</TableCell>
                 </TableRow>
               ))}
+              {variants.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-6 text-sm text-gray-400">No variants</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
@@ -744,13 +772,18 @@ export function ProductsTable({
 
       {/* View Product Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="w-[96vw] sm:max-w-[680px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="w-[96vw] sm:max-w-[680px] max-h-[90vh] overflow-y-auto p-5">
+          <DialogHeader className="sr-only">
             <DialogTitle>Product Details</DialogTitle>
             <DialogDescription>Full product information</DialogDescription>
           </DialogHeader>
           {viewLoading ? (
-            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+            <div className="py-12 text-center">
+              <div className="inline-flex items-center gap-2 text-sm text-gray-400">
+                <Package className="h-4 w-4 animate-pulse" />
+                Loading product...
+              </div>
+            </div>
           ) : viewProduct ? (
             <ProductDetail product={viewProduct} onEdit={() => { setViewDialogOpen(false); onEdit(viewProduct); }} />
           ) : (

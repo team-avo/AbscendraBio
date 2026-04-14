@@ -892,30 +892,34 @@ export default function EditProductPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start sm:items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push('/products')}
-                className="mt-1 sm:mt-0"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline"></span>
-              </Button>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Edit Product</h1>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  Update product information and details.
-                </p>
+        <div className="space-y-0">
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <button onClick={() => router.push('/products')} className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors text-xs mb-1.5">
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Back to Products
+                  </button>
+                  <h1 className="text-xl font-black text-white tracking-tight">Edit Product</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">{product.name}</p>
+                </div>
+                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                  <Package className="h-4 w-4 text-[#4D7DF2]" />
+                  <div>
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Product</p>
+                    <p className="text-xs font-bold text-white leading-tight mt-0.5">Edit Mode</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Form */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm mt-4 mx-1 sm:mx-0">
             <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Tabs value={currentTab} onValueChange={(value) => {
@@ -1001,6 +1005,22 @@ export default function EditProductPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, shipstationSku: e.target.value }))}
                         placeholder="Enter ShipStation SKU"
                       />
+                    </div>
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-end pt-4 mt-2 border-t border-gray-100">
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          const newErrors: FormErrors = {};
+                          if (!formData.name.trim()) newErrors.name = 'Product name is required';
+                          if (!formData.description.trim()) newErrors.description = 'Product description is required';
+                          setErrors(newErrors);
+                          if (Object.keys(newErrors).length === 0) setCurrentTab('variants');
+                        }}
+                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                      >
+                        Variants →
+                      </Button>
                     </div>
                   </TabsContent>
 
@@ -1105,6 +1125,15 @@ export default function EditProductPage() {
                           <LoadingSpinner size={24} className="text-blue-500" />
                         </div>
                       )}
+                    </div>
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-100">
+                      <Button type="button" variant="outline" onClick={() => setCurrentTab('variants')} className="h-9 px-4 rounded-xl text-sm font-medium">
+                        ← Variants
+                      </Button>
+                      <Button type="button" onClick={() => setCurrentTab('categories')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                        Categories →
+                      </Button>
                     </div>
                   </TabsContent>
 
@@ -1228,6 +1257,15 @@ export default function EditProductPage() {
                         </div>
                       </div>
                     </div>
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-100">
+                      <Button type="button" variant="outline" onClick={() => setCurrentTab('images')} className="h-9 px-4 rounded-xl text-sm font-medium">
+                        ← Images
+                      </Button>
+                      <Button type="button" onClick={() => setCurrentTab('related')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                        Related →
+                      </Button>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="variants" className="space-y-4">
@@ -1329,6 +1367,15 @@ export default function EditProductPage() {
                         ))}
                       </div>
                     )}
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-100">
+                      <Button type="button" variant="outline" onClick={() => setCurrentTab('basic')} className="h-9 px-4 rounded-xl text-sm font-medium">
+                        ← Basic Info
+                      </Button>
+                      <Button type="button" onClick={() => setCurrentTab('images')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                        Images →
+                      </Button>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="related" className="space-y-4">
@@ -1514,6 +1561,15 @@ export default function EditProductPage() {
                         </div>
                       </div>
                     </div>
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-100">
+                      <Button type="button" variant="outline" onClick={() => setCurrentTab('categories')} className="h-9 px-4 rounded-xl text-sm font-medium">
+                        ← Categories
+                      </Button>
+                      <Button type="button" onClick={() => setCurrentTab('reviews')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                        Reviews →
+                      </Button>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="reviews" className="space-y-4">
@@ -1590,6 +1646,13 @@ export default function EditProductPage() {
                           ))}
                         </div>
                       )}
+                    </div>
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t border-gray-100">
+                      <Button type="button" variant="outline" onClick={() => setCurrentTab('related')} className="h-9 px-4 rounded-xl text-sm font-medium">
+                        ← Related
+                      </Button>
+                      <span className="text-xs text-gray-400">Last tab — use "Update Product" below to save</span>
                     </div>
                   </TabsContent>
                 </Tabs>

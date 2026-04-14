@@ -295,84 +295,85 @@ export default function SalesManagerAnalyticsPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'SALES_MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
+        <div className="space-y-0">
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Sales Manager Performance</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Comprehensive view of your sales managers, their teams, and direct assignments.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
+                    <SelectTrigger className="w-full sm:w-40 h-9 sm:h-10">
+                      <SelectValue placeholder="Select range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RANGE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Sales Manager Performance
-              </h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Comprehensive view of your sales managers, their teams, and direct assignments.
-              </p>
-            </div>
-
-            {/* Filter bar */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
-                  <SelectTrigger className="w-full sm:w-40 h-9 sm:h-10">
-                    <SelectValue placeholder="Select range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RANGE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-
-                {range === 'day' && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full sm:w-44 text-left font-normal h-9 sm:h-10">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} initialFocus />
-                    </PopoverContent>
-                  </Popover>
-                )}
-
-                {range === 'custom' && (
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  {range === 'day' && (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                        <Button variant="outline" className="w-full sm:w-44 text-left font-normal h-9 sm:h-10">
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {customFrom ? customFrom.toLocaleDateString() : 'From date'}
+                          {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} />
+                        <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} initialFocus />
                       </PopoverContent>
                     </Popover>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {customTo ? customTo.toLocaleDateString() : 'To date'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarPicker mode="single" selected={customTo || undefined} onSelect={(d) => setCustomTo(d || null)} />
-                      </PopoverContent>
-                    </Popover>
+                  )}
+
+                  {range === 'custom' && (
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {customFrom ? customFrom.toLocaleDateString() : 'From date'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarPicker mode="single" selected={customFrom || undefined} onSelect={(d) => setCustomFrom(d || null)} />
+                        </PopoverContent>
+                      </Popover>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full sm:w-40 justify-start h-9 sm:h-10 text-xs sm:text-sm">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {customTo ? customTo.toLocaleDateString() : 'To date'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarPicker mode="single" selected={customTo || undefined} onSelect={(d) => setCustomTo(d || null)} />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleRetry}
+                      disabled={loading || (range === 'day' && !customFrom) || (range === 'custom' && (!customFrom || !customTo))}
+                      className="flex items-center gap-1.5 h-9 px-3 bg-white/[0.06] border border-white/[0.08] rounded-xl text-xs font-bold text-gray-300 hover:bg-white/[0.12] hover:text-white transition-colors disabled:opacity-50"
+                    >
+                      Refresh
+                    </button>
                   </div>
-                )}
-
-                <button
-                  onClick={handleRetry}
-                  disabled={loading || (range === 'day' && !customFrom) || (range === 'custom' && (!customFrom || !customTo))}
-                  className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
-                >
-                  Refresh
-                </button>
+                </div>
               </div>
             </div>
           </div>
 
+          <div className="space-y-5 mt-5">
           {loading && !data ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
               <div className="flex items-center justify-center py-16">
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                   <LoadingSpinner size={24} />
@@ -381,8 +382,8 @@ export default function SalesManagerAnalyticsPage() {
               </div>
             </div>
           ) : error ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                 <p className="font-semibold text-red-600">Failed to load analytics</p>
               </div>
               <div className="px-6 py-4 space-y-3">
@@ -396,8 +397,8 @@ export default function SalesManagerAnalyticsPage() {
               </div>
             </div>
           ) : !data || data.managers.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                 <p className="font-semibold">No sales managers found</p>
               </div>
               <div className="px-6 py-4">
@@ -410,7 +411,7 @@ export default function SalesManagerAnalyticsPage() {
             <>
               {/* Summary stat chips */}
               <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-3">
-                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                   <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
                     <DollarSign className="h-4 w-4 text-slate-600" />
                   </div>
@@ -425,7 +426,7 @@ export default function SalesManagerAnalyticsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                   <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
                     <ShoppingCart className="h-4 w-4 text-slate-600" />
                   </div>
@@ -440,7 +441,7 @@ export default function SalesManagerAnalyticsPage() {
 
                 <div className={cn(
                   "flex items-center gap-3 bg-white rounded-2xl border shadow-sm px-5 py-4 col-span-2 lg:col-span-1",
-                  selectedManager ? 'border-primary/20 bg-primary/5' : 'border-slate-200/80'
+                  selectedManager ? 'border-primary/20 bg-primary/5' : 'border-gray-200/80'
                 )}>
                   <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 shrink-0">
                     <Users className="h-4 w-4 text-slate-600" />
@@ -459,8 +460,8 @@ export default function SalesManagerAnalyticsPage() {
 
               {/* Top Performer banner */}
               {filteredSortedManagers[0] && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden group hover:shadow-md transition-all">
-                  <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                  <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                     <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 shrink-0">
                       <Award className="h-4 w-4 sm:h-5 sm:w-5 text-primary transition-transform group-hover:scale-110" />
                     </div>
@@ -477,8 +478,8 @@ export default function SalesManagerAnalyticsPage() {
               )}
 
               {/* Manager Selection Table */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+              <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 shrink-0">
                     <Users className="h-4 w-4 text-slate-600" />
                   </div>
@@ -594,8 +595,8 @@ export default function SalesManagerAnalyticsPage() {
 
               {selectedManager && (
                 <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 shrink-0">
                         <ShoppingCart className="h-4 w-4 text-slate-600" />
                       </div>
@@ -701,6 +702,7 @@ export default function SalesManagerAnalyticsPage() {
               />
             </>
           )}
+          </div>
         </div>
       </DashboardLayout>
     </ProtectedRoute>

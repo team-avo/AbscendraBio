@@ -264,19 +264,24 @@ export default function SkuAnalyticsPage() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-5 px-2 sm:px-0">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">SKU Analytics</h1>
-                        <p className="text-muted-foreground text-xs sm:text-sm md:text-base">
-                            Track product sales by SKU variant over time.
-                        </p>
+            <div className="space-y-0">
+                {/* ════════ DARK HERO STRIP ════════ */}
+                <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                    <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                    <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h1 className="text-xl font-black text-white tracking-tight">SKU Analytics</h1>
+                                <p className="text-xs text-gray-500 mt-0.5">Track product sales by SKU variant over time.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Product Outflow table */}
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                                 <BarChart2 className="h-4 w-4 text-blue-600" />
@@ -424,20 +429,20 @@ export default function SkuAnalyticsPage() {
 
                         {comparisonLoading ? (
                             <div className="space-y-6">
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4">
                                     <Skeleton className="h-8 w-24 mb-2" />
                                     <Skeleton className="h-4 w-32" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
-                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
+                                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
+                                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4"><Skeleton className="h-16 w-full" /></div>
                                 </div>
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4"><Skeleton className="h-[300px] w-full" /></div>
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4"><Skeleton className="h-[300px] w-full" /></div>
                             </div>
                         ) : comparisonData ? (
                             <div className="space-y-5">
                                 {/* Total Outflow */}
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                     <p className="text-xs text-slate-500 font-medium mb-1">Total Outflow (All Time)</p>
                                     <div className="text-2xl sm:text-3xl font-bold">{comparisonData.totalOutflow}</div>
                                     <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Total units sold</p>
@@ -459,7 +464,7 @@ export default function SkuAnalyticsPage() {
 
                                 {/* Comparison chips */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                         <p className="text-xs text-slate-500 font-medium mb-1">{comparisonData.comparison.current.label}</p>
                                         <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.current.total}</div>
                                         <div className="flex items-center gap-2 mt-2">
@@ -484,7 +489,7 @@ export default function SkuAnalyticsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                         <p className="text-xs text-slate-500 font-medium mb-1">{comparisonData.comparison.previous.label}</p>
                                         <div className="text-xl sm:text-2xl font-bold">{comparisonData.comparison.previous.total}</div>
                                         <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Units sold</p>
@@ -492,8 +497,8 @@ export default function SkuAnalyticsPage() {
                                 </div>
 
                                 {/* Performance Table */}
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                                    <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-blue-50">
                                             <BarChart2 className="h-4 w-4 text-blue-600" />
                                         </div>
@@ -560,8 +565,8 @@ export default function SkuAnalyticsPage() {
                                 </div>
 
                                 {/* Sales Trend Chart */}
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                                    <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+                                    <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-50">
                                             <BarChart2 className="h-4 w-4 text-emerald-600" />
                                         </div>

@@ -6,7 +6,6 @@ import { ProtectedRoute } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -28,13 +27,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { api, type BulkQuote, resolveImageUrl } from "@/lib/api";
 import logger from "@/lib/logger";
 import { toast } from "sonner";
@@ -50,7 +42,8 @@ import {
   User,
   MoreHorizontal,
   Phone,
-  Building
+  Building,
+  FileText,
 } from "lucide-react";
 import { formatDate } from "@/lib/api";
 
@@ -219,242 +212,222 @@ export default function BulkQuotesPage() {
     );
   };
 
+  const statusPills: { label: string; value: "all" | "read" | "unread" }[] = [
+    { label: "All", value: "all" },
+    { label: "Unread", value: "unread" },
+    { label: "Read", value: "read" },
+  ];
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Bulk Quote Requests</h1>
-              <p className="text-muted-foreground">
-                Manage bulk quote requests from customers
-              </p>
+        <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-5">
+
+          {/* Dark Hero Strip */}
+          <div
+            className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
+            style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+          >
+            {/* Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative px-5 py-5 sm:px-7 sm:py-6 space-y-4">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Bulk Quote Requests</h1>
+                  <p className="text-sm text-blue-200/70 mt-0.5">Review and respond to bulk pricing inquiries</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Stat chip */}
+                  <div className="flex items-center gap-2 bg-white/10 border border-white/15 rounded-xl px-3 py-1.5">
+                    <FileText className="h-4 w-4 text-blue-400" />
+                    <span className="text-white font-semibold text-sm">{pagination.total}</span>
+                    <span className="text-blue-200/70 text-xs">requests</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status pills */}
+              <div className="flex flex-wrap gap-2">
+                {statusPills.map((pill) => (
+                  <button
+                    key={pill.value}
+                    onClick={() => handleStatusFilter(pill.value)}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+                      statusFilter === pill.value
+                        ? "bg-blue-500 text-white"
+                        : "bg-white/10 text-blue-100 hover:bg-white/20"
+                    )}
+                  >
+                    {pill.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-                <Package className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{pagination.total}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-                <XCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{bulkQuotes.filter(q => !q.isRead).length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Reviewed</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{bulkQuotes.filter(q => q.isRead).length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">This Page</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{bulkQuotes.length}</div>
-              </CardContent>
-            </Card>
+          {/* Compact filter row */}
+          <div className="flex flex-col sm:flex-row gap-3 mx-1 sm:mx-0">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search by customer name, email, or product..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 h-9 text-sm"
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </div>
+            <Button onClick={handleSearch} size="sm" className="h-9 px-4 text-sm">
+              <Search className="w-4 h-4 mr-2" />
+              Search
+            </Button>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search by customer name, email, or product..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                      onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                    />
-                  </div>
-                </div>
-                <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-[200px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="unread">Unread</SelectItem>
-                    <SelectItem value="read">Read</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={handleSearch}>
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
-                </Button>
+          {/* Results table */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : bulkQuotes.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No bulk quote requests found
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Results */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Bulk Quote Requests ({pagination.total})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="text-center py-8">Loading...</div>
-              ) : bulkQuotes.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No bulk quote requests found
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Requested</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {bulkQuotes.map((quote) => (
-                        <TableRow key={quote.id}>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <div className="font-medium">
-                                {quote.customer?.firstName} {quote.customer?.lastName}
-                              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Customer</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Requested</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {bulkQuotes.map((quote) => (
+                      <TableRow key={quote.id}>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="font-medium">
+                              {quote.customer?.firstName} {quote.customer?.lastName}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {quote.customer?.email}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {quote.customer?.mobile}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            {quote.product?.images?.[0] && (
+                              <img
+                                src={resolveImageUrl(quote.product.images[0].url)}
+                                alt={quote.product.name}
+                                className="w-12 h-12 rounded-md object-cover"
+                              />
+                            )}
+                            <div>
+                              <div className="font-medium">{quote.product?.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                {quote.customer?.email}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {quote.customer?.mobile}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-3">
-                              {quote.product?.images?.[0] && (
-                                <img
-                                  src={resolveImageUrl(quote.product.images[0].url)}
-                                  alt={quote.product.name}
-                                  className="w-12 h-12 rounded-md object-cover"
-                                />
-                              )}
-                              <div>
-                                <div className="font-medium">{quote.product?.name}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {quote.customer?.customerType === 'B2C' || quote.customer?.customerType === 'B2B'
-                                    ? 'Wholesale'
-                                    : quote.customer?.customerType === 'ENTERPRISE_1' || quote.customer?.customerType === 'ENTERPRISE_2'
-                                      ? 'Enterprise'
-                                      : quote.customer?.customerType}
-                                </div>
+                                {quote.customer?.customerType === 'B2C' || quote.customer?.customerType === 'B2B'
+                                  ? 'Wholesale'
+                                  : quote.customer?.customerType === 'ENTERPRISE_1' || quote.customer?.customerType === 'ENTERPRISE_2'
+                                    ? 'Enterprise'
+                                    : quote.customer?.customerType}
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-2">
-                              <Package className="w-4 h-4 text-muted-foreground" />
-                              <span className="font-medium">{quote.quantity}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{getStatusBadge(quote.isRead)}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm">
-                                {formatDate(quote.createdAt)}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Package className="w-4 h-4 text-muted-foreground" />
+                            <span className="font-medium">{quote.quantity}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(quote.isRead)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {formatDate(quote.createdAt)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewDetails(quote.id)}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              {quote.isRead ? (
+                                <DropdownMenuItem onClick={() => handleMarkAsUnread(quote.id)}>
+                                  <XCircle className="w-4 h-4 mr-2" />
+                                  Mark as Unread
+                                </DropdownMenuItem>
+                              ) : (
                                 <DropdownMenuItem onClick={() => handleViewDetails(quote.id)}>
-                                  <Eye className="w-4 h-4 mr-2" />
-                                  View Details
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Mark as Read
                                 </DropdownMenuItem>
-                                {quote.isRead ? (
-                                  <DropdownMenuItem onClick={() => handleMarkAsUnread(quote.id)}>
-                                    <XCircle className="w-4 h-4 mr-2" />
-                                    Mark as Unread
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem onClick={() => handleViewDetails(quote.id)}>
-                                    <CheckCircle className="w-4 h-4 mr-2" />
-                                    Mark as Read
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuItem
-                                  onClick={() => { setPendingDeleteId(quote.id); setConfirmOpen(true); }}
-                                  className="text-red-600 focus:text-red-600"
-                                >
-                                  <Trash2 className="w-4 h-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
+                              )}
+                              <DropdownMenuItem
+                                onClick={() => { setPendingDeleteId(quote.id); setConfirmOpen(true); }}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
 
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="flex items-center justify-between mt-6">
-                  <div className="text-sm text-muted-foreground">
-                    Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
-                    {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                    {pagination.total} results
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => loadBulkQuotes(pagination.page - 1, searchTerm, statusFilter)}
-                      disabled={pagination.page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => loadBulkQuotes(pagination.page + 1, searchTerm, statusFilter)}
-                      disabled={pagination.page === pagination.pages}
-                    >
-                      Next
-                    </Button>
-                  </div>
+            {/* Pagination */}
+            {pagination.pages > 1 && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                <div className="text-sm text-muted-foreground">
+                  Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                  {pagination.total} results
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => loadBulkQuotes(pagination.page - 1, searchTerm, statusFilter)}
+                    disabled={pagination.page === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => loadBulkQuotes(pagination.page + 1, searchTerm, statusFilter)}
+                    disabled={pagination.page === pagination.pages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Details Dialog */}
           <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
@@ -626,4 +599,8 @@ export default function BulkQuotesPage() {
       </DashboardLayout>
     </ProtectedRoute>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
 }

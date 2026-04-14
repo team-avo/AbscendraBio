@@ -252,102 +252,104 @@ export default function SalesManagerAnalyticsPage() {
     return (
         <ProtectedRoute requiredRoles={['SALES_MANAGER', 'ADMIN']}>
             <DashboardLayout>
-                <div className="space-y-5 px-2 sm:px-0 pb-10">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                                Team Performance Analytics
-                            </h1>
-                            <p className="text-sm text-muted-foreground md:text-base">
-                                Comprehensive view of your sales team's performance, revenue trends, and customer engagement.
-                            </p>
-                        </div>
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="space-y-0 pb-10">
+                    {/* ════════ DARK HERO STRIP ════════ */}
+                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                      <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                      <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div>
+                            <h1 className="text-xl font-black text-white tracking-tight">Team Analytics</h1>
+                            <p className="text-xs text-gray-500 mt-0.5">Sales team performance, revenue trends, and customer engagement</p>
+                          </div>
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                             <Select
-                                value={range}
-                                onValueChange={(value) => setRange(value as RangeKey)}
+                              value={range}
+                              onValueChange={(value) => setRange(value as RangeKey)}
                             >
-                                <SelectTrigger className="w-full sm:w-40">
-                                    <SelectValue placeholder="Select range" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {RANGE_OPTIONS.map((option) => (
-                                        <SelectItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
+                              <SelectTrigger className="w-full sm:w-36 h-8 bg-white/[0.06] border-white/[0.08] text-gray-300 text-xs rounded-xl">
+                                <SelectValue placeholder="Select range" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {RANGE_OPTIONS.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
                             </Select>
                             {range === 'day' && (
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="w-full justify-start sm:w-44 text-left font-normal"
-                                        >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <CalendarPicker
-                                            mode="single"
-                                            selected={customFrom ?? undefined}
-                                            onSelect={(date) => setCustomFrom(date ?? null)}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className="w-full justify-start sm:w-44 text-left font-normal h-8 bg-white/[0.06] border-white/[0.08] text-gray-300 text-xs rounded-xl hover:bg-white/[0.12]"
+                                  >
+                                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                                    {customFrom ? customFrom.toLocaleDateString() : 'Select date'}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <CalendarPicker
+                                    mode="single"
+                                    selected={customFrom ?? undefined}
+                                    onSelect={(date) => setCustomFrom(date ?? null)}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
                             )}
                             {range === 'custom' && (
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-start sm:w-44">
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {customFrom ? customFrom.toLocaleDateString() : 'From date'}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="p-0" align="start">
-                                            <CalendarPicker
-                                                mode="single"
-                                                selected={customFrom ?? undefined}
-                                                onSelect={(date) => setCustomFrom(date ?? null)}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-start sm:w-44">
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {customTo ? customTo.toLocaleDateString() : 'To date'}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="p-0" align="start">
-                                            <CalendarPicker
-                                                mode="single"
-                                                selected={customTo ?? undefined}
-                                                onSelect={(date) => setCustomTo(date ?? null)}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start sm:w-40 h-8 bg-white/[0.06] border-white/[0.08] text-gray-300 text-xs rounded-xl hover:bg-white/[0.12]">
+                                      <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                                      {customFrom ? customFrom.toLocaleDateString() : 'From date'}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="p-0" align="start">
+                                    <CalendarPicker
+                                      mode="single"
+                                      selected={customFrom ?? undefined}
+                                      onSelect={(date) => setCustomFrom(date ?? null)}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start sm:w-40 h-8 bg-white/[0.06] border-white/[0.08] text-gray-300 text-xs rounded-xl hover:bg-white/[0.12]">
+                                      <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                                      {customTo ? customTo.toLocaleDateString() : 'To date'}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="p-0" align="start">
+                                    <CalendarPicker
+                                      mode="single"
+                                      selected={customTo ?? undefined}
+                                      onSelect={(date) => setCustomTo(date ?? null)}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
                             )}
-                            <Button
-                                variant="outline"
-                                onClick={handleRetry}
-                                disabled={disableRefresh}
+                            <button
+                              onClick={handleRetry}
+                              disabled={disableRefresh}
+                              className="flex items-center gap-1.5 h-8 px-3 bg-white/[0.06] border border-white/[0.08] rounded-xl text-xs font-bold text-gray-300 hover:bg-white/[0.12] hover:text-white transition-colors disabled:opacity-50"
                             >
-                                Refresh
-                            </Button>
+                              Refresh
+                            </button>
+                          </div>
                         </div>
+                      </div>
                     </div>
 
                     {loading ? (
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
                             <div className="flex items-center justify-center py-16">
                                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                                     <LoadingSpinner size={24} />
@@ -356,7 +358,7 @@ export default function SalesManagerAnalyticsPage() {
                             </div>
                         </div>
                     ) : error ? (
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
                             <h3 className="text-base font-semibold text-red-600 mb-1">Failed to load analytics</h3>
                             <p className="text-sm text-muted-foreground mb-4">{error}</p>
                             <Button
@@ -367,7 +369,7 @@ export default function SalesManagerAnalyticsPage() {
                             </Button>
                         </div>
                     ) : !data || data.reps.length === 0 ? (
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
                             <h3 className="text-base font-semibold mb-1">No sales representatives found</h3>
                             <p className="text-sm text-muted-foreground">
                                 You don't have any assigned sales representatives with data for this period.
@@ -377,7 +379,7 @@ export default function SalesManagerAnalyticsPage() {
                         <>
                             {/* Team Overview Stat Chips */}
                             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                     <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
                                         <DollarSign className="h-4 w-4 text-slate-600" />
                                     </div>
@@ -390,7 +392,7 @@ export default function SalesManagerAnalyticsPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                     <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
                                         <ShoppingCart className="h-4 w-4 text-slate-600" />
                                     </div>
@@ -403,7 +405,7 @@ export default function SalesManagerAnalyticsPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
+                                <div className="flex items-center gap-3 bg-white rounded-2xl border border-gray-200/80 shadow-sm px-5 py-4">
                                     <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
                                         <Award className="h-4 w-4 text-slate-600" />
                                     </div>
@@ -416,7 +418,7 @@ export default function SalesManagerAnalyticsPage() {
 
                                 <div className={cn(
                                     "flex items-center gap-3 bg-white rounded-2xl border shadow-sm px-5 py-4",
-                                    selectedRep ? 'border-primary/50 bg-primary/5' : 'border-slate-200/80'
+                                    selectedRep ? 'border-primary/50 bg-primary/5' : 'border-gray-200/80'
                                 )}>
                                     <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100">
                                         <Users className="h-4 w-4 text-slate-600" />
@@ -434,7 +436,7 @@ export default function SalesManagerAnalyticsPage() {
                             </div>
 
                             {/* Sales Reps Performance Table */}
-                            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
                                 <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                                     <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                                         <Users className="h-4 w-4 text-slate-600" />
@@ -569,7 +571,7 @@ export default function SalesManagerAnalyticsPage() {
                             {/* Main Analytics Section */}
                             <div className="grid gap-5 xl:grid-cols-3">
                                 {/* Revenue Trend Chart */}
-                                <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="xl:col-span-2 bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
                                     <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                                         <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                                             <TrendingUp className="h-4 w-4 text-slate-600" />
@@ -632,7 +634,7 @@ export default function SalesManagerAnalyticsPage() {
                                 {/* Top Customers Panel */}
                                 <div className="xl:col-span-1">
                                     {selectedRep ? (
-                                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden h-full flex flex-col">
+                                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden h-full flex flex-col">
                                             <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                                                 <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                                                     <Users className="h-4 w-4 text-slate-600" />
@@ -692,7 +694,7 @@ export default function SalesManagerAnalyticsPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 h-full flex items-center justify-center bg-muted/20">
+                                        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5 h-full flex items-center justify-center bg-muted/20">
                                             <div className="text-center p-6">
                                                 <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                                 <h3 className="text-lg font-semibold mb-2">Select a Sales Rep</h3>
@@ -707,7 +709,7 @@ export default function SalesManagerAnalyticsPage() {
 
                             {/* Orders Breakdown Chart (for selected rep) */}
                             {selectedRep && selectedRep.monthlyPerformance.length > 0 && (
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
                                     <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                                         <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                                             <Package className="h-4 w-4 text-slate-600" />
@@ -769,7 +771,7 @@ export default function SalesManagerAnalyticsPage() {
 
                             {/* Recent Orders for Selected Rep */}
                             {selectedRep && selectedRep.recentOrders && selectedRep.recentOrders.length > 0 && (
-                                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
                                     <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
                                         <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100">
                                             <ShoppingCart className="h-4 w-4 text-slate-600" />

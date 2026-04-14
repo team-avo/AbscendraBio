@@ -198,70 +198,61 @@ export default function FailedPaymentsOrdersPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF', 'SALES_REP', 'SALES_MANAGER']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Failed Payments</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Orders with at least one failed payment attempt</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-rose-50 text-rose-700 border-rose-200">
-                <XCircle className="h-3 w-3" />
-                Failed Payment
-              </span>
-              <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Order
-              </Button>
+        <div className="space-y-0">
+          {/* Dark hero strip */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="relative z-10 px-6 py-6 sm:px-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-red-500/15 flex items-center justify-center">
+                    <XCircle className="h-4 w-4 text-red-400" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-black text-white tracking-tight">Failed Payments Orders</h1>
+                    <p className="text-xs text-gray-500 mt-0.5">Orders with payment failures</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{totalOrders.toLocaleString()} orders</span>
+                  <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                    <Plus className="mr-1.5 h-3.5 w-3.5" /> New Order
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Filter bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search orders by number, customer, or email..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2 items-center">
-              <OrderDateFilter
-                range={dateRangeType}
-                setRange={handleDateRangeTypeChange}
-                from={dateRange.from}
-                setFrom={handleFromDateChange}
-                to={dateRange.to}
-                setTo={handleToDateChange}
-                className="w-full sm:w-auto"
-              />
-              <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
-                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
-                  <SelectValue placeholder="Customer type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Customer</SelectItem>
-                  <SelectItem value="wholesale">Wholesale</SelectItem>
-                  <SelectItem value="enterprise">Enterprise</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Compact filter row */}
+          <div className="px-1 sm:px-0 py-4 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 sm:max-w-sm">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Input
+                  placeholder="Search orders, customers…"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                />
+              </div>
+              <div className="flex flex-wrap gap-2 items-center">
+                <OrderDateFilter range={dateRangeType} setRange={handleDateRangeTypeChange} from={dateRange.from} setFrom={handleFromDateChange} to={dateRange.to} setTo={handleToDateChange} className="" />
+                <Select value={customerTypeFilter} onValueChange={handleCustomerTypeFilter}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[120px]">
+                    <SelectValue placeholder="Customer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Customers</SelectItem>
+                    <SelectItem value="wholesale">Wholesale</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
-          {/* Table card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-rose-50">
-                <XCircle className="h-4 w-4 text-rose-500" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-800">Failed Payments</h2>
-                <p className="text-xs text-slate-400">{totalOrders.toLocaleString()} orders</p>
-              </div>
-            </div>
+          {/* Table */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
             <div className="overflow-x-auto">
               <OrdersTable
                 orders={orders}

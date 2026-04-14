@@ -4,20 +4,11 @@ import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, Clock, User, Mail, Phone, Calendar, Search, Building, Crown, MoreHorizontal, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, User, Mail, Phone, Calendar, Search, Building, Crown, Eye } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Pagination } from '@/components/ui/pagination';
 import logger from '@/lib/logger';
@@ -212,412 +203,253 @@ export default function CustomerApprovalsPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customer Approvals</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Review and approve pending customer registrations</p>
+        <div className="space-y-0">
+
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Customer Approvals</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Review and approve new customer registrations</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                    <Clock className="h-4 w-4 text-amber-400" />
+                    <div>
+                      <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Pending</p>
+                      <p className="text-base font-black text-white tabular-nums leading-tight">{stats.pending.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status pills */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                {[
+                  { key: 'pending',  label: 'Pending',  count: stats.pending,  color: 'amber' },
+                  { key: 'approved', label: 'Approved', count: stats.approved, color: 'emerald' },
+                  { key: 'rejected', label: 'Rejected', count: stats.rejected, color: 'red' },
+                ].map((pill) => {
+                  const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                    amber:   { bg: 'bg-amber-500/15',   text: 'text-amber-400',   ring: 'ring-amber-500/30',   dot: 'bg-amber-400' },
+                    emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+                    red:     { bg: 'bg-red-500/15',     text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+                  };
+                  const c = colorStyles[pill.color];
+                  const isActive = statusFilter === pill.key;
+                  return (
+                    <button
+                      key={pill.key}
+                      onClick={() => setStatusFilter(pill.key)}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        isActive ? `${c.bg} ${c.text} ring-1 ${c.ring}` : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />
+                      <span>{pill.label}</span>
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${
+                        isActive ? `${c.bg} ${c.text}` : 'bg-white/[0.06] text-gray-500'
+                      }`}>
+                        {pill.count.toLocaleString()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* Pending Approvals */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                <Clock className="h-5 w-5 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Pending Approvals</p>
-                <p className="text-2xl font-bold text-amber-600 leading-tight">{stats.pending}</p>
-              </div>
-            </div>
-            {/* Approved */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Approved</p>
-                <p className="text-2xl font-bold text-emerald-600 leading-tight">{stats.approved}</p>
-              </div>
-            </div>
-            {/* Rejected */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-              <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
-                <XCircle className="h-5 w-5 text-red-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Rejected</p>
-                <p className="text-2xl font-bold text-red-600 leading-tight">{stats.rejected}</p>
-              </div>
-            </div>
-            {/* Total */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 px-5 py-4 shadow-sm">
-              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                <User className="h-5 w-5 text-slate-600" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total</p>
-                <p className="text-2xl font-bold text-slate-900 leading-tight">{totalItems}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* ════════ COMPACT FILTER ROW ════════ */}
+          <div className="px-1 sm:px-0 py-4">
+            <div className="relative max-w-sm">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
               <Input
-                placeholder="Search by name, email, or mobile..."
+                placeholder="Search by name or email…"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl text-sm placeholder:text-slate-400"
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
               />
             </div>
-            <div className="flex flex-wrap gap-2 items-center">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="h-9 px-3 text-sm border-slate-200 rounded-xl bg-slate-50 w-auto min-w-[140px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="all">All</SelectItem>
-                </SelectContent>
-              </Select>
+          </div>
+
+          {/* ════════ TABLE ════════ */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
+            <div className="overflow-x-auto">
+              {loading ? (
+                <div className="flex justify-center items-center py-16">
+                  <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                </div>
+              ) : filteredCustomers.length === 0 ? (
+                <div className="text-center py-16 text-gray-400 text-sm">No customers found matching the criteria.</div>
+              ) : (
+                <Table className="min-w-[700px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50/50 border-b border-gray-100">
+                      <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Customer</TableHead>
+                      <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</TableHead>
+                      <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Type</TableHead>
+                      <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Registered</TableHead>
+                      <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status</TableHead>
+                      <TableHead className="text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCustomers.map((customer) => (
+                      <TableRow key={customer.id} className="hover:bg-gray-50/50 transition-colors border-b border-gray-50">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 rounded-xl">
+                              <AvatarFallback className="rounded-xl bg-[#070B14] text-white text-xs font-black">
+                                {getInitials(customer.firstName, customer.lastName)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">{customer.firstName} {customer.lastName}</p>
+                              <p className="text-xs text-gray-400">{customer.email}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Phone className="h-3 w-3" />{customer.mobile || '—'}
+                          </div>
+                        </TableCell>
+                        <TableCell>{getCustomerTypeBadge(customer.customerType)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(customer.createdAt).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {customer.isApproved ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">
+                              <CheckCircle className="h-3 w-3" /> Approved
+                            </span>
+                          ) : !customer.isActive ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-100">
+                              <XCircle className="h-3 w-3" /> Rejected
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 text-xs font-bold border border-amber-100">
+                              <Clock className="h-3 w-3" /> Pending
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleViewDetails(customer)}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            {!customer.isApproved && customer.isActive !== false && (
+                              <>
+                                <button
+                                  onClick={() => handleApproval(customer.id, true)}
+                                  disabled={processing === customer.id}
+                                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors disabled:opacity-50 border border-emerald-100"
+                                >
+                                  <CheckCircle className="h-3.5 w-3.5" />Approve
+                                </button>
+                                <button
+                                  onClick={() => handleApproval(customer.id, false)}
+                                  disabled={processing === customer.id}
+                                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-bold hover:bg-red-100 transition-colors disabled:opacity-50 border border-red-100"
+                                >
+                                  <XCircle className="h-3.5 w-3.5" />Reject
+                                </button>
+                              </>
+                            )}
+                            {customer.isApproved && (
+                              <button
+                                onClick={() => handleApproval(customer.id, false)}
+                                disabled={processing === customer.id}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-bold hover:bg-red-100 transition-colors disabled:opacity-50 border border-red-100"
+                              >
+                                <XCircle className="h-3.5 w-3.5" />Revoke
+                              </button>
+                            )}
+                            {!customer.isActive && !customer.isApproved && (
+                              <button
+                                onClick={() => handleApproval(customer.id, true)}
+                                disabled={processing === customer.id}
+                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors disabled:opacity-50 border border-emerald-100"
+                              >
+                                <CheckCircle className="h-3.5 w-3.5" />Re-approve
+                              </button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+              {filteredCustomers.length > 0 && totalPages > 1 && (
+                <div className="px-6 py-4 border-t border-gray-100">
+                  <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Table Card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
-                <Clock className="h-4 w-4 text-amber-500" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-800">Approvals List</h2>
-                <p className="text-xs text-slate-400">{totalItems.toLocaleString()} records</p>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                </div>
-              ) : filteredCustomers.length === 0 ? (
-                <div className="text-center py-12">
-                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">
-                    {statusFilter === 'all' ? 'No Customers Found' :
-                      statusFilter === 'approved' ? 'No Approved Accounts' :
-                        statusFilter === 'rejected' ? 'No Rejected Accounts' : 'No Pending Approvals'}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {searchTerm || statusFilter !== 'all'
-                      ? "Try adjusting your search or filters"
-                      : statusFilter === 'all' ? "No customer accounts found in the system." :
-                        "All customer accounts have been reviewed and processed."}
-                  </p>
-                </div>
-              ) : (
-                <div className="rounded-md border overflow-x-auto -mx-4 sm:mx-0">
-                  <Table className="min-w-[800px]">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Contact</TableHead>
-                        <TableHead>Registration Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredCustomers.map((customer) => (
-                        <TableRow key={customer.id}>
-                          <TableCell>
-                            <div className="flex items-center space-x-3">
-                              <Avatar>
-                                <AvatarImage src={`/avatars/${customer.id}.jpg`} />
-                                <AvatarFallback>
-                                  {getInitials(customer.firstName, customer.lastName)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="font-medium">
-                                  {[customer.firstName, customer.lastName].filter(Boolean).join(' ')}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  ID: {customer.id}
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <div className="text-sm">{customer.email}</div>
-                              <div className="text-sm text-muted-foreground">{customer.mobile}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm">
-                              {new Date(customer.createdAt).toLocaleDateString()}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              {customer.isApproved ? (
-                                <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-                                  <CheckCircle className="mr-1 h-3 w-3" />
-                                  Approved
-                                </Badge>
-                              ) : (
-                                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                                  <Clock className="mr-1 h-3 w-3" />
-                                  Pending
-                                </Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">Open menu</span>
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => handleViewDetails(customer)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                {!customer.isApproved && (
-                                  <>
-                                    <DropdownMenuItem
-                                      onClick={() => handleApproval(customer.id, true)}
-                                      disabled={processing === customer.id}
-                                      className="text-green-600"
-                                    >
-                                      <CheckCircle className="mr-2 h-4 w-4" />
-                                      Approve
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() => handleApproval(customer.id, false)}
-                                      disabled={processing === customer.id}
-                                      className="text-red-600"
-                                    >
-                                      <XCircle className="mr-2 h-4 w-4" />
-                                      Reject
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                                {customer.isApproved && (
-                                  <DropdownMenuItem
-                                    onClick={() => handleApproval(customer.id, false)}
-                                    disabled={processing === customer.id}
-                                    className="text-red-600"
-                                  >
-                                    <XCircle className="mr-2 h-4 w-4" />
-                                    Revoke Approval
-                                  </DropdownMenuItem>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  {totalPages > 1 && (
-                    <div className="py-4 border-t px-4">
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                      />
+          {/* Detail Dialog */}
+          {selectedCustomer && (
+            <Dialog open={!!selectedCustomer} onOpenChange={(o) => !o && setSelectedCustomer(null)}>
+              <DialogContent className="max-w-lg rounded-2xl">
+                <DialogHeader>
+                  <DialogTitle className="font-black text-[#070B14]">Customer Details</DialogTitle>
+                  <DialogDescription>Review registration information</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 mt-2">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-14 w-14 rounded-2xl">
+                      <AvatarFallback className="rounded-2xl bg-[#070B14] text-white text-lg font-black">
+                        {getInitials(selectedCustomer.firstName, selectedCustomer.lastName)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-black text-gray-900 text-lg">{selectedCustomer.firstName} {selectedCustomer.lastName}</p>
+                      <p className="text-sm text-gray-500">{selectedCustomer.email}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Phone', value: selectedCustomer.mobile || '—' },
+                      { label: 'City', value: selectedCustomer.city || '—' },
+                      { label: 'ZIP', value: selectedCustomer.zip || '—' },
+                      { label: 'Registered', value: new Date(selectedCustomer.createdAt).toLocaleDateString() },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{label}</p>
+                        <p className="text-sm font-semibold text-gray-800 mt-0.5">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Account Type</p>
+                    <div className="mt-1">{getCustomerTypeBadge(selectedCustomer.customerType)}</div>
+                  </div>
+                  {!selectedCustomer.isApproved && selectedCustomer.isActive !== false && (
+                    <div className="flex gap-3 pt-2">
+                      <Button onClick={() => handleApproval(selectedCustomer.id, true)} disabled={!!processing} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-widest">
+                        <CheckCircle className="mr-1.5 h-3.5 w-3.5" />Approve
+                      </Button>
+                      <Button onClick={() => handleApproval(selectedCustomer.id, false)} disabled={!!processing} variant="destructive" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest">
+                        <XCircle className="mr-1.5 h-3.5 w-3.5" />Reject
+                      </Button>
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Customer Details Dialog */}
-          <Dialog open={!!selectedCustomer} onOpenChange={(open) => !open && setSelectedCustomer(null)}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-4 sm:p-6">
-              <DialogHeader>
-                <DialogTitle>Customer Details</DialogTitle>
-                <DialogDescription>
-                  Review customer information before making approval decision
-                </DialogDescription>
-              </DialogHeader>
-              {selectedCustomer && (
-                <div className="space-y-4">
-                  {/** Local state to force Tier 2 (B2B) default in UI */}
-                  {(() => {
-                    // use a ref in closure to inject state without rerender loops
-                    return null;
-                  })()}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                      <p className="text-sm font-medium">{[selectedCustomer.firstName, selectedCustomer.lastName].filter(Boolean).join(' ')}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Customer ID</label>
-                      <p className="text-sm font-mono bg-muted px-2 py-1 rounded break-all">{selectedCustomer.id}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Email</label>
-                      <p className="text-sm">{selectedCustomer.email}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Email Verification</label>
-                      <div className="mt-1">
-                        {selectedCustomer.emailVerified ? (
-                          <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">Verified</Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">Unverified</Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Mobile</label>
-                      <p className="text-sm">{selectedCustomer.mobile}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Customer Type</label>
-                      {/* Bind to actual customer type and allow changing */}
-                      <Select
-                        value={selectedCustomer.customerType}
-                        onValueChange={async (value) => {
-                          try {
-                            setProcessing(selectedCustomer.id);
-
-                            const updateData = {
-                              customerType: value as 'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2',
-                            };
-
-                            const response = await api.updateCustomer(selectedCustomer.id, updateData);
-
-                            if (response.success) {
-                              toast.success('Customer type updated successfully');
-
-                              // Update the selected customer with new data
-                              setSelectedCustomer({
-                                ...selectedCustomer,
-                                customerType: value as 'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2'
-                              });
-
-                              // Refresh the customer list
-                              await fetchPendingCustomers();
-                            } else {
-                              toast.error(response.error || 'Failed to update customer type');
-                            }
-                          } catch (error: any) {
-                            logger.error('Failed to update customer type:', { error });
-                            toast.error(error?.response?.data?.error || error?.message || 'Failed to update customer type');
-                          } finally {
-                            setProcessing(null);
-                          }
-                        }}
-                        disabled={processing === selectedCustomer.id}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select customer tier" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="B2C">Wholesale</SelectItem>
-                          <SelectItem value="B2B">Wholesale (B2B)</SelectItem>
-                          <SelectItem value="ENTERPRISE_1">Enterprise Tier 1</SelectItem>
-                          <SelectItem value="ENTERPRISE_2">Enterprise Tier 2</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Status</label>
-                      <div className="mt-1">
-                        {selectedCustomer.isApproved ? (
-                          <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-                            <CheckCircle className="mr-1 h-3 w-3" />
-                            Approved
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                            <Clock className="mr-1 h-3 w-3" />
-                            Pending Approval
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Registration Date</label>
-                      <p className="text-sm">{new Date(selectedCustomer.createdAt).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Account Active</label>
-                      <p className="text-sm">
-                        {selectedCustomer.isActive ? (
-                          <span className="text-green-600 font-medium">✓ Active</span>
-                        ) : (
-                          <span className="text-red-600 font-medium">✗ Inactive</span>
-                        )}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">City</label>
-                      <p className="text-sm">{selectedCustomer.city || '-'}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">ZIP Code</label>
-                      <p className="text-sm">{selectedCustomer.zip || '-'}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-4 border-t">
-                    <Button variant="outline" onClick={() => setSelectedCustomer(null)}>
-                      Close
-                    </Button>
-                    {!selectedCustomer.isApproved ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={() => handleApproval(selectedCustomer.id, false)}
-                          disabled={processing === selectedCustomer.id}
-                          className="border-red-300 text-red-700 hover:bg-red-50"
-                        >
-                          <XCircle className="mr-2 h-4 w-4" />
-                          Reject
-                        </Button>
-                        <Button
-                          onClick={() => handleApproval(selectedCustomer.id, true)}
-                          disabled={processing === selectedCustomer.id}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Approve
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        onClick={() => handleApproval(selectedCustomer.id, false)}
-                        disabled={processing === selectedCustomer.id}
-                        className="border-red-300 text-red-700 hover:bg-red-50"
-                      >
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Revoke Approval
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </DashboardLayout>
     </ProtectedRoute>

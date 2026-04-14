@@ -11,8 +11,7 @@ import { VariantManagementDialog } from '@/components/products/variant-managemen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Package, Package2, PackageCheck, Archive } from 'lucide-react';
+import { Plus, Search, Package } from 'lucide-react';
 import { api, Product } from '@/lib/api';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
@@ -141,165 +140,133 @@ export default function ProductsPage() {
   return (
     <ProtectedRoute requiredRoles={['ADMIN', 'MANAGER', 'STAFF']}>
       <DashboardLayout>
-        <div className="space-y-5 px-2 sm:px-0">
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Products</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
-                Manage your product catalog and variants
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => router.push('/products/create')}
-                className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Product
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => router.push('/products/bulk-upload')}
-                className="h-9 px-4 rounded-xl text-sm"
-              >
-                Export/Import
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setReorderOpen(true)}
-                className="h-9 px-4 rounded-xl text-sm"
-              >
-                Sort Order
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setPopularOpen(true)}
-                className="h-9 px-4 rounded-xl text-sm"
-              >
-                Popular
-              </Button>
-            </div>
-          </div>
+        <div className="space-y-0">
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {/* Total Products */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5 text-slate-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total Products</p>
-                <p className="text-xl font-bold text-slate-900">{stats.total}</p>
-              </div>
-            </div>
+          {/* ════════ DARK HERO STRIP ════════ */}
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
 
-            {/* Active */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                <PackageCheck className="h-5 w-5 text-emerald-500" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              {/* Top row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tight">Products</h1>
+                  <p className="text-xs text-gray-500 mt-0.5">Manage your product catalog and variants</p>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                    <Package className="h-4 w-4 text-[#4D7DF2]" />
+                    <div>
+                      <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total</p>
+                      <p className="text-base font-black text-white tabular-nums leading-tight">{stats.total.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={() => setReorderOpen(true)} className="h-9 px-4 border-white/10 bg-white/[0.06] text-gray-300 hover:bg-white/[0.12] hover:text-white rounded-xl text-xs font-bold">
+                    Sort Order
+                  </Button>
+                  <Button variant="outline" onClick={() => setPopularOpen(true)} className="h-9 px-4 border-white/10 bg-white/[0.06] text-gray-300 hover:bg-white/[0.12] hover:text-white rounded-xl text-xs font-bold">
+                    Popular
+                  </Button>
+                  <Button onClick={() => router.push('/products/create')} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                    <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Product
+                  </Button>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Active</p>
-                <p className="text-xl font-bold text-emerald-600">{stats.active}</p>
-              </div>
-            </div>
 
-            {/* Draft */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                <Package2 className="h-5 w-5 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Draft</p>
-                <p className="text-xl font-bold text-amber-600">{stats.draft}</p>
-              </div>
-            </div>
-
-            {/* Inactive */}
-            <div className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200/80 shadow-sm px-5 py-4">
-              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5 text-slate-500" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Inactive</p>
-                <p className="text-xl font-bold text-slate-600">{stats.inactive}</p>
-              </div>
-            </div>
-
-            {/* Archived — dark navy hero chip */}
-            <div className="relative flex items-center gap-3 bg-[#1B2D4F] rounded-2xl shadow-sm px-5 py-4 overflow-hidden">
-              <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
-              <div className="absolute -bottom-6 -left-2 h-16 w-16 rounded-full bg-white/5" />
-              <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative">
-                <Archive className="h-5 w-5 text-red-400" />
-              </div>
-              <div className="relative">
-                <p className="text-xs text-slate-400 font-medium">Archived</p>
-                <p className="text-2xl font-bold text-white">{stats.archived}</p>
+              {/* Status pills */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                {[
+                  { key: 'all',      label: 'All',      count: stats.total,    color: null },
+                  { key: 'ACTIVE',   label: 'Active',   count: stats.active,   color: 'emerald' },
+                  { key: 'DRAFT',    label: 'Draft',    count: stats.draft,    color: 'amber' },
+                  { key: 'INACTIVE', label: 'Inactive', count: stats.inactive, color: 'gray' },
+                  { key: 'ARCHIVED', label: 'Archived', count: stats.archived, color: 'red' },
+                ].map((pill) => {
+                  const colorStyles: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+                    emerald: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', ring: 'ring-emerald-500/30', dot: 'bg-emerald-400' },
+                    amber:   { bg: 'bg-amber-500/15',   text: 'text-amber-400',   ring: 'ring-amber-500/30',   dot: 'bg-amber-400' },
+                    gray:    { bg: 'bg-gray-500/15',    text: 'text-gray-300',    ring: 'ring-gray-500/30',    dot: 'bg-gray-400' },
+                    red:     { bg: 'bg-red-500/15',     text: 'text-red-400',     ring: 'ring-red-500/30',     dot: 'bg-red-400' },
+                  };
+                  const c = pill.color ? colorStyles[pill.color] : null;
+                  const isAll = pill.key === 'all';
+                  const isActive = isAll ? statusFilter === 'all' : statusFilter === pill.key;
+                  return (
+                    <button
+                      key={pill.key}
+                      onClick={() => { handleStatusFilter(pill.key); }}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                        : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
+                        : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
+                      }`}
+                    >
+                      {c && <span className={`w-1.5 h-1.5 rounded-full ${isActive ? c.dot : 'bg-gray-600'}`} />}
+                      <span>{pill.label}</span>
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-black tabular-nums ${
+                        isAll && isActive ? 'bg-white/20 text-white'
+                        : isActive && c ? `${c.bg} ${c.text}`
+                        : 'bg-white/[0.06] text-gray-500'
+                      }`}>
+                        {(pill.count ?? 0).toLocaleString()}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Dialogs (moved outside stats grid) */}
-          {reorderOpen && (
-            <ProductReorderDialog open={reorderOpen} onOpenChange={setReorderOpen} />
-          )}
-          {popularOpen && (
-            <PopularReorderDialog open={popularOpen} onOpenChange={setPopularOpen} />
-          )}
-
-          {/* Filter Bar */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search products by name or description..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 w-full"
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Select value={statusFilter} onValueChange={handleStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="DRAFT">Draft</SelectItem>
-                  <SelectItem value="INACTIVE">Inactive</SelectItem>
-                  <SelectItem value="ARCHIVED">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={categoryFilter} onValueChange={handleCategoryFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {/* ════════ COMPACT FILTER ROW ════════ */}
+          <div className="px-1 sm:px-0 py-4 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 sm:max-w-sm">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                <Input
+                  placeholder="Search products by name or description…"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[130px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={categoryFilter} onValueChange={handleCategoryFilter}>
+                  <SelectTrigger className="h-9 px-3 text-xs border-gray-200 rounded-xl bg-white w-auto min-w-[140px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" onClick={() => router.push('/products/bulk-upload')} className="h-9 px-4 border-gray-200 rounded-xl text-xs">
+                  Export/Import
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Products Table Card */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-100">
-                <Package2 className="h-4 w-4 text-slate-500" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-slate-800">Products List</h2>
-                <p className="text-xs text-slate-400">
-                  {loading ? 'Loading...' : `Showing ${products.length} of ${totalProducts} products`}
-                </p>
-              </div>
-            </div>
+          {/* ════════ DIALOGS (keep outside table) ════════ */}
+          {reorderOpen && <ProductReorderDialog open={reorderOpen} onOpenChange={setReorderOpen} />}
+          {popularOpen && <PopularReorderDialog open={popularOpen} onOpenChange={setPopularOpen} />}
+
+          {/* ════════ TABLE ════════ */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden mx-1 sm:mx-0">
             <ProductsTable
               products={products}
               loading={loading}
@@ -312,7 +279,7 @@ export default function ProductsPage() {
             />
           </div>
 
-          {/* Dialogs */}
+          {/* ════════ DIALOGS ════════ */}
           <VariantManagementDialog
             product={variantsProduct}
             open={!!variantsProduct}
