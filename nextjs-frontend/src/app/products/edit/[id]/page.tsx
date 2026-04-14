@@ -938,55 +938,55 @@ export default function EditProductPage() {
                   }
                   setCurrentTab(value);
                 }} className="w-full">
-                  <div className="overflow-x-auto pb-2 scrollbar-hide">
-                    <TabsList className="flex w-max sm:w-full sm:grid sm:grid-cols-6 min-w-full">
-                      <TabsTrigger value="basic" className="flex-1">Basic Info</TabsTrigger>
-                      <TabsTrigger value="variants" className="flex-1">Variants</TabsTrigger>
-                      <TabsTrigger value="images" className="flex-1">Images</TabsTrigger>
-                      <TabsTrigger value="categories" className="flex-1">Categories</TabsTrigger>
-                      <TabsTrigger value="related" className="flex-1">Related</TabsTrigger>
-                      <TabsTrigger value="reviews" className="flex-1">Reviews</TabsTrigger>
+                  <div className="overflow-x-auto pb-0 scrollbar-hide border-b border-gray-200">
+                    <TabsList className="flex w-max sm:w-full sm:grid sm:grid-cols-6 min-w-full bg-transparent h-auto p-0 gap-0 rounded-none">
+                      <TabsTrigger value="basic" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Basic Info</TabsTrigger>
+                      <TabsTrigger value="variants" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Variants</TabsTrigger>
+                      <TabsTrigger value="images" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Images</TabsTrigger>
+                      <TabsTrigger value="categories" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Categories</TabsTrigger>
+                      <TabsTrigger value="related" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Related</TabsTrigger>
+                      <TabsTrigger value="reviews" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Reviews</TabsTrigger>
                     </TabsList>
                   </div>
 
-                  <TabsContent value="basic" className="space-y-4">
+                  <TabsContent value="basic" className="space-y-4 pt-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Product Name <span className="text-red-500">*</span></Label>
+                      <Label htmlFor="name" className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Product Name <span className="text-red-500">*</span></Label>
                       <Input
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Enter product name"
-                        className={errors.name ? 'border-red-500' : ''}
+                        className={`rounded-xl border-gray-200 ${errors.name ? 'border-red-500' : ''}`}
                       />
                       {errors.name && (
                         <p className="text-sm text-red-600">{errors.name}</p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
+                    <div className="border-t border-gray-100 pt-4 space-y-2">
+                      <Label htmlFor="description" className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Description <span className="text-red-500">*</span></Label>
                       <Textarea
                         id="description"
                         value={formData.description}
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Enter product description"
-                        className={errors.description ? 'border-red-500' : ''}
+                        className={`rounded-xl border-gray-200 ${errors.description ? 'border-red-500' : ''}`}
                         rows={4}
                       />
                       {errors.description && (
                         <p className="text-sm text-red-600">{errors.description}</p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="status">Status</Label>
+                    <div className="border-t border-gray-100 pt-4 space-y-2">
+                      <Label htmlFor="status" className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Status</Label>
                       <Select
                         value={formData.status}
                         onValueChange={(value: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') =>
                           setFormData(prev => ({ ...prev, status: value }))
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded-xl border-gray-200">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -997,13 +997,14 @@ export default function EditProductPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="shipstationSku">ShipStation SKU</Label>
+                    <div className="border-t border-gray-100 pt-4 space-y-2">
+                      <Label htmlFor="shipstationSku" className="text-xs font-semibold text-gray-500 uppercase tracking-widest">ShipStation SKU</Label>
                       <Input
                         id="shipstationSku"
                         value={formData.shipstationSku}
                         onChange={(e) => setFormData(prev => ({ ...prev, shipstationSku: e.target.value }))}
                         placeholder="Enter ShipStation SKU"
+                        className="rounded-xl border-gray-200"
                       />
                     </div>
                     {/* Tab Navigation */}
@@ -1024,13 +1025,13 @@ export default function EditProductPage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="images" className="space-y-4">
+                  <TabsContent value="images" className="space-y-4 pt-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                        <h3 className="text-lg font-medium">Images</h3>
+                        <h3 className="text-lg font-semibold text-gray-800">Images</h3>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <Select value={imageScope} onValueChange={(v) => setImageScope(v as any)}>
-                            <SelectTrigger className="w-full sm:w-48">
+                            <SelectTrigger className="w-full sm:w-48 rounded-xl border-gray-200">
                               <SelectValue placeholder="Select scope" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1040,7 +1041,7 @@ export default function EditProductPage() {
                           </Select>
                           {imageScope === 'variant' && (
                             <Select value={selectedVariantIdForImages} onValueChange={(v) => setSelectedVariantIdForImages(v)}>
-                              <SelectTrigger className="w-full sm:w-56">
+                              <SelectTrigger className="w-full sm:w-56 rounded-xl border-gray-200">
                                 <SelectValue placeholder="Select variant" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1066,16 +1067,15 @@ export default function EditProductPage() {
                           ref={fileInputRef}
                           id="image-upload"
                         />
-                        <Button
+                        <button
                           type="button"
-                          size="sm"
                           onClick={() => fileInputRef.current?.click()}
                           disabled={uploadingImage}
-                          className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                          className="h-9 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 flex items-center gap-2 w-full sm:w-auto justify-center transition-colors disabled:opacity-50"
                         >
                           <Upload className="h-4 w-4" />
                           Upload Image
-                        </Button>
+                        </button>
                       </div>
                     </div>
 
@@ -1137,10 +1137,10 @@ export default function EditProductPage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="categories" className="space-y-4">
+                  <TabsContent value="categories" className="space-y-4 pt-4">
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Categories</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Categories</h3>
                         {availableCategories.length > 0 && (
                           <div className="mb-3 space-y-2">
                             <div className="flex gap-2">
@@ -1148,7 +1148,7 @@ export default function EditProductPage() {
                                 value={selectedCategoryOption}
                                 onValueChange={(val) => setSelectedCategoryOption(val)}
                               >
-                                <SelectTrigger className="w-64">
+                                <SelectTrigger className="w-64 rounded-xl border-gray-200">
                                   <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1157,17 +1157,17 @@ export default function EditProductPage() {
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <Button
+                              <button
                                 type="button"
-                                size="sm"
                                 onClick={() => {
                                   if (selectedCategoryOption && !formData.categories.includes(selectedCategoryOption)) {
                                     setFormData(prev => ({ ...prev, categories: [...prev.categories, selectedCategoryOption] }));
                                   }
                                 }}
+                                className="h-9 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
                               >
                                 Add
-                              </Button>
+                              </button>
                             </div>
                           </div>
                         )}
@@ -1177,10 +1177,11 @@ export default function EditProductPage() {
                             onChange={(e) => setNewCategory(e.target.value)}
                             placeholder="Add category"
                             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCategory())}
+                            className="rounded-xl border-gray-200"
                           />
-                          <Button type="button" onClick={addCategory} size="sm">
+                          <button type="button" onClick={addCategory} className="h-9 w-9 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
                             <Plus className="h-4 w-4" />
-                          </Button>
+                          </button>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {formData.categories.map((category) => (
@@ -1198,8 +1199,8 @@ export default function EditProductPage() {
                         </div>
                       </div>
 
-                      <div>
-                        <h3 className="text-lg font-medium mb-2">Tags</h3>
+                      <div className="border-t border-gray-100 pt-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Tags</h3>
                         {availableTags.length > 0 && (
                           <div className="mb-3 space-y-2">
                             <div className="flex gap-2">
@@ -1207,7 +1208,7 @@ export default function EditProductPage() {
                                 value={selectedTagOption}
                                 onValueChange={(val) => setSelectedTagOption(val)}
                               >
-                                <SelectTrigger className="w-64">
+                                <SelectTrigger className="w-64 rounded-xl border-gray-200">
                                   <SelectValue placeholder="Select tag" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -1216,17 +1217,17 @@ export default function EditProductPage() {
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <Button
+                              <button
                                 type="button"
-                                size="sm"
                                 onClick={() => {
                                   if (selectedTagOption && !formData.tags.includes(selectedTagOption)) {
                                     setFormData(prev => ({ ...prev, tags: [...prev.tags, selectedTagOption] }));
                                   }
                                 }}
+                                className="h-9 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
                               >
                                 Add
-                              </Button>
+                              </button>
                             </div>
                           </div>
                         )}
@@ -1236,10 +1237,11 @@ export default function EditProductPage() {
                             onChange={(e) => setNewTag(e.target.value)}
                             placeholder="Add tag"
                             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                            className="rounded-xl border-gray-200"
                           />
-                          <Button type="button" onClick={addTag} size="sm">
+                          <button type="button" onClick={addTag} className="h-9 w-9 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
                             <Plus className="h-4 w-4" />
-                          </Button>
+                          </button>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {formData.tags.map((tag) => (
@@ -1268,17 +1270,17 @@ export default function EditProductPage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="variants" className="space-y-4">
+                  <TabsContent value="variants" className="space-y-4 pt-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-medium">Product Variants</h3>
-                      <Button
+                      <h3 className="text-lg font-semibold text-gray-800">Product Variants</h3>
+                      <button
                         type="button"
                         onClick={() => openVariantForm()}
-                        size="sm"
+                        className="h-9 px-4 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-colors"
                       >
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-4 w-4" />
                         Add Variant
-                      </Button>
+                      </button>
                     </div>
 
                     {variants.length === 0 ? (
@@ -1295,70 +1297,66 @@ export default function EditProductPage() {
                             ref={(el) => {
                               variantRefs.current[variant.id] = el;
                             }}
-                            className="rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col h-full"
+                            className="rounded-xl border border-gray-100 bg-gray-50 flex flex-col h-full"
                           >
                             <div className="p-4 flex flex-col h-full">
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 h-full">
                                 <div className="flex-1 space-y-2">
                                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
-                                      <h4 className="font-medium">{variant.name}</h4>
-                                      <p className="text-xs sm:text-sm text-muted-foreground font-mono">SKU: {variant.sku}</p>
+                                      <h4 className="font-semibold text-gray-800">{variant.name}</h4>
+                                      <p className="text-xs text-gray-400 font-mono mt-0.5">SKU: {variant.sku}</p>
                                     </div>
                                     <div className="text-left sm:text-right shrink-0">
-                                      <p className="font-bold text-base sm:text-lg">${variant.regularPrice}</p>
+                                      <p className="font-black text-base sm:text-lg text-gray-800">${variant.regularPrice}</p>
                                       {variant.salePrice && (
-                                        <p className="text-xs sm:text-sm text-green-601 font-medium">Sale: ${variant.salePrice}</p>
+                                        <p className="text-xs text-emerald-600 font-semibold">Sale: ${variant.salePrice}</p>
                                       )}
                                     </div>
                                   </div>
 
                                   <div className="space-y-1">
                                     {variant.shipstationSku && (
-                                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                        <span className="font-medium">ShipStation:</span> {variant.shipstationSku}
+                                      <p className="text-xs text-gray-400 flex items-center gap-1">
+                                        <span className="font-semibold text-gray-500">ShipStation:</span> {variant.shipstationSku}
                                       </p>
                                     )}
                                     {variant.weight && variant.weight !== 0 && (
-                                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                        <span className="font-medium">Weight:</span> {variant.weight}g
+                                      <p className="text-xs text-gray-400 flex items-center gap-1">
+                                        <span className="font-semibold text-gray-500">Weight:</span> {variant.weight}g
                                       </p>
                                     )}
                                   </div>
 
                                   {/* SEO Information for Variant */}
                                   {(variant.seoTitle || variant.seoDescription || variant.seoSlug) && (
-                                    <div className="mt-2 p-2 bg-muted/30 rounded text-xs">
+                                    <div className="mt-2 p-2 bg-gray-100 rounded-lg text-xs">
                                       {variant.seoTitle && (
-                                        <p className="truncate"><span className="font-medium">SEO:</span> {variant.seoTitle}</p>
+                                        <p className="truncate text-gray-500"><span className="font-semibold text-gray-600">SEO:</span> {variant.seoTitle}</p>
                                       )}
                                     </div>
                                   )}
                                 </div>
 
-                                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t sm:border-0">
-                                  <Badge variant={variant.isActive ? "default" : "secondary"} className="h-fit">
+                                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t border-gray-100 sm:border-0">
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold border ${variant.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
                                     {variant.isActive ? "Active" : "Inactive"}
-                                  </Badge>
+                                  </span>
                                   <div className="flex gap-2">
-                                    <Button
+                                    <button
                                       type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-8 w-8 p-0"
+                                      className="h-8 w-8 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
                                       onClick={() => openVariantForm(variant)}
                                     >
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button
+                                      <Edit className="h-3.5 w-3.5" />
+                                    </button>
+                                    <button
                                       type="button"
-                                      variant="outline"
-                                      size="sm"
-                                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                      className="h-8 w-8 flex items-center justify-center rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                                       onClick={() => handleDeleteVariantClick(variant)}
                                     >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -1378,20 +1376,21 @@ export default function EditProductPage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="related" className="space-y-4">
+                  <TabsContent value="related" className="space-y-4 pt-4">
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Related Products</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Related Products</h3>
                       <div className="space-y-6">
 
                         {/* Related Products */}
                         <div>
-                          <h4 className="font-medium mb-2">Related Products</h4>
+                          <h4 className="font-semibold text-gray-700 mb-1">Related Products</h4>
                           <p className="text-sm text-muted-foreground mb-3">Products that are similar or complementary</p>
-                          <div className="border rounded-lg p-4">
+                          <div className="bg-gray-50 rounded-xl border border-gray-100 p-4">
                             <div className="flex items-center gap-2 mb-3">
                               <div className="relative flex-1">
                                 <Input
                                   placeholder="Search products to add..."
+                                  className="rounded-xl border-gray-200"
                                   value={relatedSearchQuery}
                                   onChange={(e) => {
                                     const q = e.target.value;
@@ -1443,14 +1442,15 @@ export default function EditProductPage() {
                         </div>
 
                         {/* Upsell Products */}
-                        <div>
-                          <h4 className="font-medium mb-2">Upsell Products</h4>
+                        <div className="border-t border-gray-100 pt-4">
+                          <h4 className="font-semibold text-gray-700 mb-1">Upsell Products</h4>
                           <p className="text-sm text-muted-foreground mb-3">Higher-value alternatives to suggest</p>
-                          <div className="border rounded-lg p-4">
+                          <div className="bg-gray-50 rounded-xl border border-gray-100 p-4">
                             <div className="flex items-center gap-2 mb-3">
                               <div className="relative flex-1">
                                 <Input
                                   placeholder="Search products to add..."
+                                  className="rounded-xl border-gray-200"
                                   value={upsellSearchQuery}
                                   onChange={(e) => {
                                     const q = e.target.value;
@@ -1502,14 +1502,15 @@ export default function EditProductPage() {
                         </div>
 
                         {/* Cross-sell Products */}
-                        <div>
-                          <h4 className="font-medium mb-2">Cross-sell Products</h4>
+                        <div className="border-t border-gray-100 pt-4">
+                          <h4 className="font-semibold text-gray-700 mb-1">Cross-sell Products</h4>
                           <p className="text-sm text-muted-foreground mb-3">Products often bought together</p>
-                          <div className="border rounded-lg p-4">
+                          <div className="bg-gray-50 rounded-xl border border-gray-100 p-4">
                             <div className="flex items-center gap-2 mb-3">
                               <div className="relative flex-1">
                                 <Input
                                   placeholder="Search products to add..."
+                                  className="rounded-xl border-gray-200"
                                   value={crossSearchQuery}
                                   onChange={(e) => {
                                     const q = e.target.value;
@@ -1572,9 +1573,9 @@ export default function EditProductPage() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="reviews" className="space-y-4">
+                  <TabsContent value="reviews" className="space-y-4 pt-4">
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Product Reviews</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Product Reviews</h3>
 
                       {reviews.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
@@ -1585,7 +1586,7 @@ export default function EditProductPage() {
                       ) : (
                         <div className="space-y-4">
                           {reviews.map((review) => (
-                            <div key={review.id} className="rounded-xl border border-slate-200 bg-slate-50/50">
+                            <div key={review.id} className="rounded-xl border border-gray-100 bg-gray-50">
                               <div className="p-4">
                                 <div className="flex items-start justify-between">
                                   <div className="flex-1">
@@ -1609,36 +1610,34 @@ export default function EditProductPage() {
                                       </Badge>
                                     </div>
                                     {review.title && (
-                                      <h4 className="font-medium mb-1">{review.title}</h4>
+                                      <h4 className="font-semibold text-gray-800 mb-1">{review.title}</h4>
                                     )}
                                     {review.comment && (
-                                      <p className="text-sm text-muted-foreground">{review.comment}</p>
+                                      <p className="text-sm text-gray-500">{review.comment}</p>
                                     )}
-                                    <p className="text-xs text-muted-foreground mt-2">
+                                    <p className="text-xs text-gray-400 mt-2">
                                       {new Date(review.createdAt).toLocaleDateString()}
                                     </p>
                                   </div>
 
                                   <div className="flex items-center gap-2">
                                     {!review.isApproved && (
-                                      <Button
+                                      <button
                                         type="button"
-                                        variant="outline"
-                                        size="sm"
                                         onClick={() => approveReview(review.id)}
+                                        className="flex items-center gap-1 h-8 px-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors"
                                       >
-                                        <Check className="h-4 w-4 mr-1" />
+                                        <Check className="h-3.5 w-3.5" />
                                         Approve
-                                      </Button>
+                                      </button>
                                     )}
-                                    <Button
+                                    <button
                                       type="button"
-                                      variant="outline"
-                                      size="sm"
                                       onClick={() => deleteReview(review.id)}
+                                      className="h-8 w-8 flex items-center justify-center rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                                     >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -1658,17 +1657,17 @@ export default function EditProductPage() {
                 </Tabs>
 
                 {/* Form Actions */}
-                <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-6 border-t">
+                <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 pt-6 border-t border-gray-100">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => router.push('/products')}
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto rounded-xl"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl font-semibold">
                     {isSubmitting ? (
                       <>
                         <LoadingSpinner size={16} className="mr-2" />
@@ -1686,185 +1685,107 @@ export default function EditProductPage() {
           {/* Variant Form Dialog */}
           {showVariantForm && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-50 p-4">
-              <div className="bg-background text-foreground border border-border rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">
-                    {editingVariant ? 'Edit Variant' : 'Add New Variant'}
-                  </h3>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={closeVariantForm}
-                  >
+              <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+                  <div>
+                    <h3 className="text-base font-black text-gray-900">
+                      {editingVariant ? 'Edit Variant' : 'Add New Variant'}
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-0.5">Fill in variant details below</p>
+                  </div>
+                  <button type="button" onClick={closeVariantForm} className="h-8 w-8 flex items-center justify-center rounded-xl border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors">
                     <X className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {/* Basic Information */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm">SKU <span className="text-red-500">*</span></Label>
-                      <Input
-                        value={variantFormData.sku}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, sku: e.target.value }))}
-                        placeholder="Enter SKU"
-                        className={`text-sm ${variantErrors.sku ? 'border-red-500' : ''}`}
-                      />
-                      {variantErrors.sku && (
-                        <p className="text-xs text-red-600">{variantErrors.sku}</p>
-                      )}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">SKU <span className="text-red-500">*</span></label>
+                      <Input value={variantFormData.sku} onChange={(e) => setVariantFormData(prev => ({ ...prev, sku: e.target.value }))} placeholder="Enter SKU" className={`rounded-xl border-gray-200 text-sm ${variantErrors.sku ? 'border-red-500' : ''}`} />
+                      {variantErrors.sku && <p className="text-xs text-red-600">{variantErrors.sku}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm">ShipStation SKU</Label>
-                      <Input
-                        value={variantFormData.shipstationSku}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, shipstationSku: e.target.value }))}
-                        placeholder="ShipStation SKU"
-                        className="text-sm"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">ShipStation SKU</label>
+                      <Input value={variantFormData.shipstationSku} onChange={(e) => setVariantFormData(prev => ({ ...prev, shipstationSku: e.target.value }))} placeholder="ShipStation SKU" className="rounded-xl border-gray-200 text-sm" />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm">Variant Name <span className="text-red-500">*</span></Label>
-                      <Input
-                        value={variantFormData.name}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter variant name"
-                        className={`text-sm ${variantErrors.name ? 'border-red-500' : ''}`}
-                      />
-                      {variantErrors.name && (
-                        <p className="text-xs text-red-600">{variantErrors.name}</p>
-                      )}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Variant Name <span className="text-red-500">*</span></label>
+                      <Input value={variantFormData.name} onChange={(e) => setVariantFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="Enter variant name" className={`rounded-xl border-gray-200 text-sm ${variantErrors.name ? 'border-red-500' : ''}`} />
+                      {variantErrors.name && <p className="text-xs text-red-600">{variantErrors.name}</p>}
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={variantFormData.description}
-                      onChange={(e) => setVariantFormData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Enter variant description"
-                      rows={2}
-                    />
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Description</label>
+                    <Textarea value={variantFormData.description} onChange={(e) => setVariantFormData(prev => ({ ...prev, description: e.target.value }))} placeholder="Enter variant description" rows={2} className="rounded-xl border-gray-200" />
                   </div>
 
                   {/* Pricing */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Regular Price <span className="text-red-500">*</span></Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={variantFormData.regularPrice}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, regularPrice: e.target.value }))}
-                        placeholder="0.00"
-                        className={variantErrors.regularPrice ? 'border-red-500' : ''}
-                      />
-                      {variantErrors.regularPrice && (
-                        <p className="text-sm text-red-600">{variantErrors.regularPrice}</p>
-                      )}
+                  <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Regular Price <span className="text-red-500">*</span></label>
+                      <Input type="number" step="0.01" value={variantFormData.regularPrice} onChange={(e) => setVariantFormData(prev => ({ ...prev, regularPrice: e.target.value }))} placeholder="0.00" className={`rounded-xl border-gray-200 ${variantErrors.regularPrice ? 'border-red-500' : ''}`} />
+                      {variantErrors.regularPrice && <p className="text-xs text-red-600">{variantErrors.regularPrice}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <Label>Sale Price <span className="text-red-500">*</span></Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={variantFormData.salePrice}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, salePrice: e.target.value }))}
-                        placeholder="0.00"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Sale Price</label>
+                      <Input type="number" step="0.01" value={variantFormData.salePrice} onChange={(e) => setVariantFormData(prev => ({ ...prev, salePrice: e.target.value }))} placeholder="0.00" className="rounded-xl border-gray-200" />
                     </div>
                   </div>
 
                   {/* Weight and HSN */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Weight (g)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={variantFormData.weight}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, weight: e.target.value }))}
-                        placeholder="0.00"
-                        className={variantErrors.weight ? 'border-red-500' : ''}
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Weight (g)</label>
+                      <Input type="number" step="0.01" value={variantFormData.weight} onChange={(e) => setVariantFormData(prev => ({ ...prev, weight: e.target.value }))} placeholder="0.00" className={`rounded-xl border-gray-200 ${variantErrors.weight ? 'border-red-500' : ''}`} />
                     </div>
-                    <div className="space-y-2">
-                      <Label>HSN Code</Label>
-                      <Input
-                        value={variantFormData.hsn}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, hsn: e.target.value }))}
-                        placeholder="Enter HSN code"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">HSN Code</label>
+                      <Input value={variantFormData.hsn} onChange={(e) => setVariantFormData(prev => ({ ...prev, hsn: e.target.value }))} placeholder="Enter HSN code" className="rounded-xl border-gray-200" />
                     </div>
                   </div>
 
                   {/* Segment Pricing */}
-                  <div className="space-y-4 border-t pt-4">
+                  <div className="space-y-3 border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between">
-                      <Label>Segment Pricing</Label>
-                      <Button type="button" variant="outline" size="sm" onClick={addSegmentPrice}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Segment Price
-                      </Button>
+                      <span className="text-xs font-semibold text-gray-700 uppercase tracking-widest">Segment Pricing</span>
+                      <button type="button" onClick={addSegmentPrice} className="h-8 px-3 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-colors">
+                        <Plus className="h-3.5 w-3.5" />Add Segment Price
+                      </button>
                     </div>
-
                     {variantFormData.segmentPrices.map((sp, index) => (
-                      <div key={index} className="rounded-lg border border-slate-200 bg-white">
-                        <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-600">Segment Price {index + 1}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeSegmentPrice(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                      <div key={index} className="rounded-xl border border-gray-100 bg-gray-50">
+                        <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-gray-600">Segment Price {index + 1}</span>
+                          <button type="button" onClick={() => removeSegmentPrice(index)} className="h-6 w-6 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                        <div className="p-3 sm:p-4 space-y-4">
+                        <div className="p-3 sm:p-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Customer Type <span className="text-red-500">*</span></Label>
-                              <select
-                                value={sp.customerType}
-                                onChange={(e) => updateSegmentPrice(index, 'customerType', e.target.value)}
-                                className={`w-full rounded-md border bg-background px-3 py-2 text-sm ${variantErrors.segmentPrices?.[index]?.customerType ? 'border-red-500' : 'border-input'}`}
-                              >
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Customer Type <span className="text-red-500">*</span></label>
+                              <select value={sp.customerType} onChange={(e) => updateSegmentPrice(index, 'customerType', e.target.value)} className={`w-full rounded-xl border bg-white px-3 py-2 text-sm text-gray-700 ${variantErrors.segmentPrices?.[index]?.customerType ? 'border-red-500' : 'border-gray-200'}`}>
                                 <option value="B2C">Wholesale</option>
                                 <option value="ENTERPRISE_1">Enterprise</option>
                               </select>
                             </div>
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Regular Price <span className="text-red-500">*</span></Label>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Regular Price <span className="text-red-500">*</span></label>
                               <div className="relative">
-                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  value={sp.regularPrice}
-                                  onChange={(e) => updateSegmentPrice(index, 'regularPrice', e.target.value)}
-                                  placeholder="0.00"
-                                  className={`pl-10 text-sm ${variantErrors.segmentPrices?.[index]?.regularPrice ? 'border-red-500' : ''}`}
-                                />
+                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                                <Input type="number" step="0.01" value={sp.regularPrice} onChange={(e) => updateSegmentPrice(index, 'regularPrice', e.target.value)} placeholder="0.00" className={`pl-10 text-sm rounded-xl border-gray-200 ${variantErrors.segmentPrices?.[index]?.regularPrice ? 'border-red-500' : ''}`} />
                               </div>
-                              {variantErrors.segmentPrices?.[index]?.regularPrice && (
-                                <p className="text-[10px] sm:text-xs text-red-600">{variantErrors.segmentPrices[index].regularPrice}</p>
-                              )}
+                              {variantErrors.segmentPrices?.[index]?.regularPrice && <p className="text-[10px] text-red-600">{variantErrors.segmentPrices[index].regularPrice}</p>}
                             </div>
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Sale Price <span className="text-red-500">*</span></Label>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Sale Price</label>
                               <div className="relative">
-                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  value={sp.salePrice}
-                                  onChange={(e) => updateSegmentPrice(index, 'salePrice', e.target.value)}
-                                  placeholder="0.00"
-                                  className="pl-10 text-sm"
-                                />
+                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                                <Input type="number" step="0.01" value={sp.salePrice} onChange={(e) => updateSegmentPrice(index, 'salePrice', e.target.value)} placeholder="0.00" className="pl-10 text-sm rounded-xl border-gray-200" />
                               </div>
                             </div>
                           </div>
@@ -1874,65 +1795,37 @@ export default function EditProductPage() {
                   </div>
 
                   {/* Bulk Pricing */}
-                  <div className="space-y-4 border-t pt-4">
+                  <div className="space-y-3 border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between">
-                      <Label>Bulk Pricing</Label>
-                      <Button type="button" variant="outline" size="sm" onClick={addBulkPrice}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Bulk Price
-                      </Button>
+                      <span className="text-xs font-semibold text-gray-700 uppercase tracking-widest">Bulk Pricing</span>
+                      <button type="button" onClick={addBulkPrice} className="h-8 px-3 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 transition-colors">
+                        <Plus className="h-3.5 w-3.5" />Add Bulk Price
+                      </button>
                     </div>
-
                     {variantFormData.bulkPrices.map((bp, index) => (
-                      <div key={index} className="rounded-lg border border-slate-200 bg-white">
-                        <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-600">Bulk Price {index + 1}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeBulkPrice(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                      <div key={index} className="rounded-xl border border-gray-100 bg-gray-50">
+                        <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-gray-600">Bulk Price {index + 1}</span>
+                          <button type="button" onClick={() => removeBulkPrice(index)} className="h-6 w-6 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                        <div className="p-3 sm:p-4 space-y-4">
+                        <div className="p-3 sm:p-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Min Quantity <span className="text-red-500">*</span></Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={bp.minQty}
-                                onChange={(e) => updateBulkPrice(index, 'minQty', e.target.value)}
-                                placeholder="e.g., 50"
-                                className="text-sm"
-                              />
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Min Quantity <span className="text-red-500">*</span></label>
+                              <Input type="number" min="1" value={bp.minQty} onChange={(e) => updateBulkPrice(index, 'minQty', e.target.value)} placeholder="e.g., 50" className="text-sm rounded-xl border-gray-200" />
                             </div>
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Max Quantity</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={bp.maxQty}
-                                onChange={(e) => updateBulkPrice(index, 'maxQty', e.target.value)}
-                                placeholder="e.g., 99"
-                                className="text-sm"
-                              />
-                              <p className="text-[10px] sm:text-xs text-muted-foreground">Empty for unlimited</p>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Max Quantity</label>
+                              <Input type="number" min="1" value={bp.maxQty} onChange={(e) => updateBulkPrice(index, 'maxQty', e.target.value)} placeholder="e.g., 99" className="text-sm rounded-xl border-gray-200" />
+                              <p className="text-[10px] text-gray-400">Empty for unlimited</p>
                             </div>
-                            <div className="space-y-2">
-                              <Label className="text-xs sm:text-sm">Price <span className="text-red-500">*</span></Label>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Price <span className="text-red-500">*</span></label>
                               <div className="relative">
-                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  value={bp.price}
-                                  onChange={(e) => updateBulkPrice(index, 'price', e.target.value)}
-                                  placeholder="0.00"
-                                  className="pl-10 text-sm"
-                                />
+                                <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                                <Input type="number" step="0.01" value={bp.price} onChange={(e) => updateBulkPrice(index, 'price', e.target.value)} placeholder="0.00" className="pl-10 text-sm rounded-xl border-gray-200" />
                               </div>
                             </div>
                           </div>
@@ -1942,8 +1835,8 @@ export default function EditProductPage() {
                   </div>
 
                   {/* Variant Images */}
-                  <div className="space-y-2 border-t pt-4">
-                    <Label>Variant Images</Label>
+                  <div className="space-y-2 border-t border-gray-100 pt-4">
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Variant Images</label>
                     <div
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={async (e) => {
@@ -1957,24 +1850,19 @@ export default function EditProductPage() {
                           }
                         }
                       }}
-                      className="rounded-md border border-dashed p-4 text-center"
+                      className="rounded-xl border border-dashed border-gray-200 p-4 text-center bg-gray-50"
                     >
                       {variantFormImages.length === 0 ? (
-                        <div className="text-sm text-muted-foreground py-6">
-                          <div className="font-medium mb-1">No images uploaded</div>
-                          <div>Click &quot;Upload Image&quot; or drag and drop to add variant images</div>
+                        <div className="text-sm text-gray-400 py-6">
+                          <div className="font-semibold text-gray-500 mb-1">No images uploaded</div>
+                          <div className="text-xs">Click &quot;Upload Image&quot; or drag and drop</div>
                         </div>
                       ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {variantFormImages.map((img, idx) => (
-                            <div key={idx} className="relative group border rounded-md overflow-hidden">
+                            <div key={idx} className="relative group rounded-xl border border-gray-200 overflow-hidden">
                               <img src={img.url} alt={img.altText || `Image ${idx + 1}`} className="w-full h-28 object-cover" />
-                              <button
-                                type="button"
-                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition bg-white/90 border rounded px-2 py-0.5 text-xs"
-                                onClick={() => setVariantFormImages(prev => prev.filter((_, i) => i !== idx))}
-                                title="Remove"
-                              >
+                              <button type="button" className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition bg-white/95 border border-gray-200 rounded-lg px-2 py-0.5 text-xs font-semibold text-gray-600" onClick={() => setVariantFormImages(prev => prev.filter((_, i) => i !== idx))} title="Remove">
                                 Remove
                               </button>
                             </div>
@@ -1982,132 +1870,77 @@ export default function EditProductPage() {
                         </div>
                       )}
                       <div className="mt-3 flex justify-center">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={async () => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = 'image/*';
-                            input.multiple = true;
-                            input.onchange = async () => {
-                              const files = Array.from(input.files || []);
-                              for (const file of files) {
-                                const res = await api.uploadFile(file as File);
-                                if (res.success && res.data?.url) {
-                                  const url = res.data.url;
-                                  setVariantFormImages(prev => [...prev, { url }]);
-                                }
-                              }
-                            };
-                            input.click();
-                          }}
-                        >
-                          Upload Image
-                        </Button>
+                        <button type="button" className="h-8 px-4 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 flex items-center gap-1.5 transition-colors" onClick={async () => {
+                          const input = document.createElement('input');
+                          input.type = 'file'; input.accept = 'image/*'; input.multiple = true;
+                          input.onchange = async () => {
+                            const files = Array.from(input.files || []);
+                            for (const file of files) {
+                              const res = await api.uploadFile(file as File);
+                              if (res.success && res.data?.url) { const u = res.data.url; setVariantFormImages(prev => [...prev, { url: u }]); }
+                            }
+                          };
+                          input.click();
+                        }}>
+                          <Upload className="h-3.5 w-3.5" /> Upload Image
+                        </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Marketing & Tax */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Ideal For</Label>
-                      <Input
-                        value={variantFormData.idealFor}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, idealFor: e.target.value }))}
-                        placeholder="e.g., Athletes, Skin Health"
-                      />
+                  <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Ideal For</label>
+                      <Input value={variantFormData.idealFor} onChange={(e) => setVariantFormData(prev => ({ ...prev, idealFor: e.target.value }))} placeholder="e.g., Athletes, Skin Health" className="rounded-xl border-gray-200" />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Key Benefits</Label>
-                      <Input
-                        value={variantFormData.keyBenefits}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, keyBenefits: e.target.value }))}
-                        placeholder="e.g., Recovery, Joint Support"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Key Benefits</label>
+                      <Input value={variantFormData.keyBenefits} onChange={(e) => setVariantFormData(prev => ({ ...prev, keyBenefits: e.target.value }))} placeholder="e.g., Recovery, Joint Support" className="rounded-xl border-gray-200" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Tax Name</Label>
-                      <Input
-                        value={variantFormData.taxName}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, taxName: e.target.value }))}
-                        placeholder="e.g., GST, VAT"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Tax Name</label>
+                      <Input value={variantFormData.taxName} onChange={(e) => setVariantFormData(prev => ({ ...prev, taxName: e.target.value }))} placeholder="e.g., GST, VAT" className="rounded-xl border-gray-200" />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Tax Percentage (%)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={variantFormData.taxPercentage}
-                        onChange={(e) => setVariantFormData(prev => ({ ...prev, taxPercentage: e.target.value }))}
-                        placeholder="e.g., 18"
-                      />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Tax Percentage (%)</label>
+                      <Input type="number" step="0.01" value={variantFormData.taxPercentage} onChange={(e) => setVariantFormData(prev => ({ ...prev, taxPercentage: e.target.value }))} placeholder="e.g., 18" className="rounded-xl border-gray-200" />
                     </div>
                   </div>
 
                   {/* SEO Fields */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-medium mb-3">SEO Information</h4>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>SEO Title</Label>
-                        <Input
-                          value={variantFormData.seoTitle}
-                          onChange={(e) => setVariantFormData(prev => ({ ...prev, seoTitle: e.target.value }))}
-                          placeholder="SEO title for this variant"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>SEO Description</Label>
-                        <Textarea
-                          value={variantFormData.seoDescription}
-                          onChange={(e) => setVariantFormData(prev => ({ ...prev, seoDescription: e.target.value }))}
-                          placeholder="SEO description for this variant"
-                          rows={2}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>SEO Slug</Label>
-                        <Input
-                          value={variantFormData.seoSlug}
-                          onChange={(e) => setVariantFormData(prev => ({ ...prev, seoSlug: e.target.value }))}
-                          placeholder="SEO-friendly URL slug (e.g. variant-name)"
-                        />
-                      </div>
+                  <div className="border-t border-gray-100 pt-4 space-y-3">
+                    <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-widest">SEO Information</h4>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">SEO Title</label>
+                      <Input value={variantFormData.seoTitle} onChange={(e) => setVariantFormData(prev => ({ ...prev, seoTitle: e.target.value }))} placeholder="SEO title for this variant" className="rounded-xl border-gray-200" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">SEO Description</label>
+                      <Textarea value={variantFormData.seoDescription} onChange={(e) => setVariantFormData(prev => ({ ...prev, seoDescription: e.target.value }))} placeholder="SEO description for this variant" rows={2} className="rounded-xl border-gray-200" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">SEO Slug</label>
+                      <Input value={variantFormData.seoSlug} onChange={(e) => setVariantFormData(prev => ({ ...prev, seoSlug: e.target.value }))} placeholder="SEO-friendly URL slug (e.g. variant-name)" className="rounded-xl border-gray-200" />
                     </div>
                   </div>
 
                   {/* Active Status */}
-                  <div className="flex items-center space-x-2 border-t pt-4">
-                    <input
-                      type="checkbox"
-                      id="variant-active"
-                      checked={variantFormData.isActive}
-                      onChange={(e) => setVariantFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                      className="rounded border-gray-300"
-                    />
-                    <Label htmlFor="variant-active">Active</Label>
+                  <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
+                    <input type="checkbox" id="variant-active" checked={variantFormData.isActive} onChange={(e) => setVariantFormData(prev => ({ ...prev, isActive: e.target.checked }))} className="rounded border-gray-300 accent-[#1B2D4F]" />
+                    <label htmlFor="variant-active" className="text-sm font-semibold text-gray-700 cursor-pointer">Active</label>
                   </div>
 
                   {/* Form Actions */}
-                  <div className="flex items-center justify-end gap-4 pt-4 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={closeVariantForm}
-                    >
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onClick={closeVariantForm} className="h-9 px-5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
                       Cancel
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleVariantSubmit}
-                    >
+                    </button>
+                    <button type="button" onClick={handleVariantSubmit} className="h-9 px-5 rounded-xl bg-[#1B2D4F] hover:bg-[#243d6b] text-white text-sm font-semibold transition-colors">
                       {editingVariant ? 'Update Variant' : 'Create Variant'}
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
