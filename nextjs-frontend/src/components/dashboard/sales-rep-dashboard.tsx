@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -16,11 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { 
-  Bell, 
-  TrendingUp, 
-  User, 
-  DollarSign, 
+import {
+  Bell,
+  TrendingUp,
+  User,
+  DollarSign,
   ArrowRight,
   CheckCircle,
   Clock,
@@ -84,13 +84,13 @@ export function SalesRepDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       logger.info('[SALES REP] Fetching tier upgrade notifications...');
-      
+
       // Fetch tier upgrade notifications
       const notificationsRes = await api.getTierUpgradeNotifications({ limit: 10 });
       logger.info('[SALES REP] Notifications response:', { data: notificationsRes });
-      
+
       if (notificationsRes.success && notificationsRes.data) {
         logger.info('[SALES REP] Setting notifications:', { data: notificationsRes.data.notifications });
         setNotifications(notificationsRes.data.notifications || []);
@@ -123,9 +123,9 @@ export function SalesRepDashboard() {
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       await api.markNotificationAsRead(notificationId);
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === notificationId 
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif.id === notificationId
             ? { ...notif, isRead: true, readAt: new Date().toISOString() }
             : notif
         )
@@ -140,7 +140,7 @@ export function SalesRepDashboard() {
   const handleUpgradeCustomer = async (customerId: string, notificationId: string) => {
     try {
       setUpgradingCustomer(customerId);
-      
+
       // Update customer tier to B2C
       const response = await api.updateCustomer(customerId, {
         customerType: 'B2C'
@@ -149,10 +149,10 @@ export function SalesRepDashboard() {
       if (response.success) {
         // Mark notification as read
         await api.markNotificationAsRead(notificationId);
-        
+
         // Remove notification from list
         setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
-        
+
         toast.success('Customer upgraded to Tier 1 successfully');
       } else {
         toast.error(response.error || 'Failed to upgrade customer');
@@ -188,15 +188,24 @@ export function SalesRepDashboard() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Sales Rep Dashboard</h1>
-            <p className="text-muted-foreground">Loading your assigned customers and notifications...</p>
+        {/* Dark hero strip — loading state */}
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-black text-white tracking-tight">Sales Rep Dashboard</h1>
+                <p className="text-xs text-white/40 mt-1">Loading your assigned customers and notifications...</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={fetchData} disabled className="rounded-xl">
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Refresh
+                </Button>
+              </div>
+            </div>
           </div>
-          <Button variant="outline" onClick={fetchData} disabled>
-            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            Refresh
-          </Button>
         </div>
         <div className="text-center py-8 text-muted-foreground">
           Loading dashboard data...
@@ -207,63 +216,68 @@ export function SalesRepDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Sales Rep Dashboard</h1>
-          <p className="text-muted-foreground">Manage your assigned customers and tier upgrades</p>
+      {/* Dark hero strip */}
+      <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+        <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-black text-white tracking-tight">Sales Rep Dashboard</h1>
+              <p className="text-xs text-white/40 mt-1">Your performance overview and assigned customers</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={fetchData}
+                disabled={loading}
+                className="rounded-xl bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
+          </div>
         </div>
-        <Button variant="outline" onClick={fetchData} disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Assigned Customers</CardTitle>
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-medium text-gray-600">Assigned Customers</span>
             <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.assignedCustomers || 0}</div>
-            <p className="text-xs text-muted-foreground">Customers under your management</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold">{stats?.assignedCustomers || 0}</div>
+          <p className="text-xs text-muted-foreground mt-1">Customers under your management</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-medium text-gray-600">Total Orders</span>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalOrders || 0}</div>
-            <p className="text-xs text-muted-foreground">Orders from your customers</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold">{stats?.totalOrders || 0}</div>
+          <p className="text-xs text-muted-foreground mt-1">Orders from your customers</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-medium text-gray-600">Total Revenue</span>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${stats?.totalRevenue?.toLocaleString() || '0'}</div>
-            <p className="text-xs text-muted-foreground">Revenue from your customers</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold">${stats?.totalRevenue?.toLocaleString() || '0'}</div>
+          <p className="text-xs text-muted-foreground mt-1">Revenue from your customers</p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tier Upgrades</CardTitle>
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+          <div className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-medium text-gray-600">Tier Upgrades</span>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.tierUpgradeNotifications || 0}</div>
-            <p className="text-xs text-muted-foreground">Customers eligible for upgrade</p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold">{stats?.tierUpgradeNotifications || 0}</div>
+          <p className="text-xs text-muted-foreground mt-1">Customers eligible for upgrade</p>
+        </div>
       </div>
 
       {/* Tier Upgrade Notifications */}
@@ -292,8 +306,8 @@ export function SalesRepDashboard() {
               <div
                 key={notification.id}
                 className={`p-4 border rounded-lg ${
-                  notification.isRead 
-                    ? 'bg-gray-50 border-gray-200' 
+                  notification.isRead
+                    ? 'bg-gray-50 border-gray-200'
                     : 'bg-blue-50 border-blue-200'
                 }`}
               >
@@ -304,7 +318,7 @@ export function SalesRepDashboard() {
                         {notification.customer?.firstName?.charAt(0) || 'C'}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <h4 className="font-semibold text-sm">
@@ -318,11 +332,11 @@ export function SalesRepDashboard() {
                           <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
                         )}
                       </div>
-                      
+
                       <p className="text-sm text-muted-foreground mb-2">
                         {notification.message.replace('Tier 1 (B2C)', 'Tier 1').replace('Tier 2 (B2B)', 'Tier 2')}
                       </p>
-                      
+
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
@@ -339,26 +353,26 @@ export function SalesRepDashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 ml-4">
                     {!notification.isRead && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleMarkAsRead(notification.id)}
-                        className="text-xs"
+                        className="text-xs rounded-xl"
                       >
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Mark Read
                       </Button>
                     )}
-                    
+
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
                           size="sm"
                           disabled={upgradingCustomer === notification.customer?.id}
-                          className="text-xs"
+                          className="text-xs bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
                         >
                           {upgradingCustomer === notification.customer?.id ? (
                             <>
@@ -377,7 +391,7 @@ export function SalesRepDashboard() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Upgrade Customer Tier</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to upgrade {notification.customer?.firstName} {notification.customer?.lastName} 
+                            Are you sure you want to upgrade {notification.customer?.firstName} {notification.customer?.lastName}
                             from {notification.metadata?.currentTier?.replace('Tier 2 (B2B)', 'Tier 2')} to {notification.metadata?.suggestedTier?.replace('Tier 1 (B2C)', 'Tier 1')}?
                             <br /><br />
                             This will give them access to Tier 1 pricing and benefits.
@@ -387,7 +401,7 @@ export function SalesRepDashboard() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleUpgradeCustomer(notification.customer?.id!, notification.id)}
-                            className="bg-primary hover:bg-primary/90"
+                            className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
                           >
                             Upgrade Customer
                           </AlertDialogAction>

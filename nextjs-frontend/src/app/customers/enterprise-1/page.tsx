@@ -209,15 +209,32 @@ export default function Enterprise1CustomersPage() {
       <DashboardLayout>
         <div className="space-y-5 px-2 sm:px-0">
           {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">Enterprise 1 Customers</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Manage your Enterprise 1 customers</p>
+          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-black text-white tracking-tight">Enterprise Tier 1 Customers</h1>
+                  <p className="text-xs text-white/40 mt-1">Manage and oversee your Enterprise Tier 1 customer accounts</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleExportAll}
+                    className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all"
+                  >
+                    Export All
+                  </button>
+                  <button
+                    onClick={() => setShowCreateDialog(true)}
+                    className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Add Customer
+                  </button>
+                </div>
+              </div>
             </div>
-            <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Customer
-            </Button>
           </div>
 
           {/* Filter bar */}
