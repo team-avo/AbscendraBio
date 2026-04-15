@@ -399,97 +399,121 @@ export default function AccountHomePage() {
   return (
     <ProtectedRoute requiredRoles={["CUSTOMER"]}>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">My Account</h1>
-          <p className="text-lg text-gray-600 mt-2">Manage your profile, addresses, and orders</p>
+        {/* Dark Hero Strip */}
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          {/* Grid texture */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          {/* Blue glow */}
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-black text-white tracking-tight">MY ACCOUNT</h1>
+                <p className="text-xs text-white/40 mt-1">Manage your profile and orders</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link href="/account/orders" className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all">
+                  View Orders
+                </Link>
+                <Link href="/account/favorites" className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all">
+                  Favorites
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
-          <Card className="relative">
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Profile</CardTitle>
+          {/* Profile Card */}
+          <div className="relative bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-gray-900">Profile</p>
               {!editingProfile && (
-                <Button
-                  variant="secondary"
-                  size="icon"
+                <button
                   aria-label="Edit profile"
-                  className="rounded-full absolute top-3 right-3"
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all"
                   onClick={() => setShowEditProfile(true)}
                 >
                   <Pencil className="h-4 w-4" />
-                </Button>
+                </button>
               )}
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="text-sm text-muted-foreground">Loading profile...</div>
-              ) : !editingProfile ? (
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">Name</span> <div className="font-medium">{customer ? `${customer.firstName} ${customer.lastName}` : `${user?.firstName} ${user?.lastName}`}</div></div>
-                  <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">Email</span> <div>{user?.email}</div></div>
-                  <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">Mobile</span> <div>{customer?.mobile || '-'}</div></div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground w-24">Company</span>
-                    <div>{customer?.companyName || profile.companyName || '—'}</div>
+            </div>
+            {loading ? (
+              <div className="text-sm text-muted-foreground">Loading profile...</div>
+            ) : !editingProfile ? (
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div className="w-12 h-12 rounded-full bg-[#1B2D4F] flex items-center justify-center shrink-0">
+                  <span className="text-white font-bold text-base">
+                    {(customer?.firstName || user?.firstName || '?')[0]?.toUpperCase()}{(customer?.lastName || user?.lastName || '')[0]?.toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Name</p>
+                    <p className="font-medium text-gray-900 mt-0.5">{customer ? `${customer.firstName} ${customer.lastName}` : `${user?.firstName} ${user?.lastName}`}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground w-24">License</span>
-                    <div>{customer?.licenseNumber || profile.licenseNumber || '—'}</div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Email</p>
+                    <p className="text-gray-900 mt-0.5">{user?.email}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground w-24">City</span>
-                    <div>{customer?.city || '—'}</div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Mobile</p>
+                    <p className="text-gray-900 mt-0.5">{customer?.mobile || '-'}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground w-24">ZIP Code</span>
-                    <div>{customer?.zip || '—'}</div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Company</p>
+                    <p className="text-gray-900 mt-0.5">{customer?.companyName || profile.companyName || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">License</p>
+                    <p className="text-gray-900 mt-0.5">{customer?.licenseNumber || profile.licenseNumber || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">City / ZIP</p>
+                    <p className="text-gray-900 mt-0.5">{customer?.city || '—'} {customer?.zip ? `• ${customer.zip}` : ''}</p>
                   </div>
                   {customer && (
-                    <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">Type</span> <Badge variant="secondary">{customer.customerType === 'B2C' || customer.customerType === 'B2B' ? 'Wholesale' : customer.customerType === 'ENTERPRISE_1' || customer.customerType === 'ENTERPRISE_2' ? 'Enterprise' : customer.customerType}</Badge></div>
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Account Type</p>
+                      <p className="text-gray-900 mt-0.5">{customer.customerType === 'B2C' || customer.customerType === 'B2B' ? 'Wholesale' : customer.customerType === 'ENTERPRISE_1' || customer.customerType === 'ENTERPRISE_2' ? 'Enterprise' : customer.customerType}</p>
+                    </div>
                   )}
-                  <div className="border-t pt-3 mt-3">
-                    <div className="flex items-center gap-2"><span className="text-muted-foreground w-24">Total Orders</span> <div className="font-semibold text-blue-600">{totalOrders}</div></div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Total Orders</p>
+                    <p className="font-semibold text-[#1B2D4F] mt-0.5">{totalOrders}</p>
                   </div>
                   {customer?.salesAssignments && customer.salesAssignments.length > 0 && (
-                    <div className="border-t pt-3 mt-3">
-                      <div className="flex items-start gap-2">
-                        <span className="text-muted-foreground w-24 flex items-center gap-1"><Users className="h-4 w-4" />Sales Rep</span>
-                        <div className="space-y-2">
-                          {customer.salesAssignments.map((assignment) => {
-                            const repData = (assignment as any).salesRep?.user;
-                            return (
-                              <div key={assignment.id} className="text-sm">
-                                <div className="font-medium">{salesRepNames[assignment.salesRepId] || 'Loading...'}</div>
-                                {repData?.email && (
-                                  <div className="text-xs text-muted-foreground">{repData.email}</div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                    <div className="sm:col-span-2">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center gap-1"><Users className="h-3 w-3" />Sales Rep</p>
+                      <div className="space-y-1 mt-0.5">
+                        {customer.salesAssignments.map((assignment) => {
+                          const repData = (assignment as any).salesRep?.user;
+                          return (
+                            <div key={assignment.id}>
+                              <div className="font-medium text-gray-900">{salesRepNames[assignment.salesRepId] || 'Loading...'}</div>
+                              {repData?.email && <div className="text-xs text-muted-foreground">{repData.email}</div>}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
                 </div>
-              ) : null}
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Orders</CardTitle>
-                <div className="flex gap-2">
-                  <Button asChild variant="outline" className="border-gray-300">
-                    <Link href="/account/favorites">My Favorites</Link>
-                  </Button>
-                  <Button asChild className="whitespace-nowrap">
-                    <Link href="/account/orders">View Orders</Link>
-                  </Button>
-                </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            ) : null}
+          </div>
+
+          {/* Orders Card */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-gray-900">Orders</p>
+              <div className="flex gap-2">
+                <Link href="/account/favorites" className="inline-flex items-center border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-all">My Favorites</Link>
+                <Link href="/account/orders" className="inline-flex items-center bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all">View Orders</Link>
+              </div>
+            </div>
+            <div className="space-y-4">
               <div className="text-sm text-muted-foreground">View your recent orders and their status.</div>
               {lastOrder && (
                 <div className="border rounded-md overflow-hidden">
@@ -520,33 +544,28 @@ export default function AccountHomePage() {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Bulk Quote Requests</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-muted-foreground">Track your bulk quote requests and their status.</div>
-              <div className="text-center py-4">
-                <Link href="/account/bulk-quotes">
-                  <Button variant="outline" className="w-full">
-                    View Bulk Quote Requests
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Bulk Quotes Card */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+            <p className="text-sm font-semibold text-gray-900 mb-4">Bulk Quote Requests</p>
+            <div className="text-sm text-muted-foreground mb-4">Track your bulk quote requests and their status.</div>
+            <div className="text-center py-2">
+              <Link href="/account/bulk-quotes" className="inline-flex items-center justify-center w-full border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+                View Bulk Quote Requests
+              </Link>
+            </div>
+          </div>
 
 
         </div>
 
         <div className="mt-8">
-          <Card>
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Addresses</CardTitle>
-              <Button size="sm" onClick={() => {
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-gray-900">Addresses</p>
+              <button className="inline-flex items-center bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all" onClick={() => {
                 setEditingAddressId(null);
                 setAddressForm({
                   type: 'SHIPPING',
@@ -566,9 +585,8 @@ export default function AccountHomePage() {
                 setAddrState('');
                 setAddrCity('');
                 setShowAddressDialog(true);
-              }}>Add Address</Button>
-            </CardHeader>
-            <CardContent>
+              }}>Add Address</button>
+            </div>
               {customer && (
                 <p className="text-xs text-muted-foreground mb-4">Contact name: {customer.firstName} {customer.lastName}</p>
               )}
@@ -584,7 +602,7 @@ export default function AccountHomePage() {
                       return true;
                     });
                   })().map((a) => (
-                    <div key={a.id} className="p-4 border rounded-md">
+                    <div key={a.id} className="p-4 border border-gray-200 rounded-xl">
                       {
                         <div className="flex items-start justify-between gap-4">
                           <div>
@@ -624,8 +642,7 @@ export default function AccountHomePage() {
               ) : (
                 <div className="text-sm text-muted-foreground">No addresses yet.</div>
               )}
-            </CardContent>
-          </Card>
+          </div>
 
           {/* Dialogs */}
           <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>

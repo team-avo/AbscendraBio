@@ -87,44 +87,45 @@ export default function CustomerBulkQuotesPage() {
   return (
     <ProtectedRoute requiredRoles={["CUSTOMER"]}>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">My Bulk Quote Requests</h1>
-            <p className="text-muted-foreground">
-              Track your bulk quote requests and their status
-            </p>
+        {/* Dark Hero Strip */}
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          {/* Grid texture */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          {/* Blue glow */}
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-black text-white tracking-tight">BULK QUOTE REQUESTS</h1>
+                <p className="text-xs text-white/40 mt-1">Track your quote requests and their status</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link href="/landing/products" className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all">
+                  <Plus className="w-3 h-3" /> New Request
+                </Link>
+              </div>
+            </div>
           </div>
-          <Link href="/landing/products">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              New Request
-            </Button>
-          </Link>
         </div>
 
         {loading ? (
           <div className="text-center py-8">Loading your bulk quote requests...</div>
         ) : bulkQuotes.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Bulk Quote Requests</h3>
-              <p className="text-gray-600 mb-6">
-                You haven't submitted any bulk quote requests yet.
-              </p>
-              <Link href="/landing/products">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Browse Products
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 text-center py-12">
+            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Bulk Quote Requests</h3>
+            <p className="text-gray-600 mb-6">
+              You haven't submitted any bulk quote requests yet.
+            </p>
+            <Link href="/landing/products" className="inline-flex items-center gap-1.5 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-all">
+              <Plus className="w-4 h-4" /> Browse Products
+            </Link>
+          </div>
         ) : (
           <div className="space-y-4">
             {bulkQuotes.slice(0, 5).map((quote) => (
-              <Card key={quote.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
+              <div key={quote.id} className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-all">
+                <div>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4 flex-1">
                       {quote.product?.images?.[0] && (
@@ -171,8 +172,8 @@ export default function CustomerBulkQuotesPage() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
 
             {/* {bulkQuotes.length > 5 && (

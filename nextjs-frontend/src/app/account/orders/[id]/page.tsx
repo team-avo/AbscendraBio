@@ -290,51 +290,59 @@ export default function AccountOrderDetailsPage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" aria-label="Back" onClick={() => router.back()} className="shrink-0">
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Order Details</h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Track your order and view items, payments and shipping.</p>
+            {/* Dark Hero Strip */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden mb-6">
+              {/* Grid texture */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+              {/* Blue glow */}
+              <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+              <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-black text-white tracking-tight">
+                      ORDER #{order?.orderNumber || orderId.slice(0, 8).toUpperCase()}
+                    </h1>
+                    <p className="text-xs text-white/40 mt-1">Order details and timeline</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => router.back()} className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all">
+                      ← My Orders
+                    </button>
+                  </div>
                 </div>
               </div>
-
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <CardTitle className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <Receipt className="h-5 w-5 shrink-0" />
-                        <span className="truncate">Order {order?.orderNumber || orderId.slice(0, 8)}</span>
-                        {order && (
-                          <Badge className={`${getStatusColor(order.status)} shrink-0`}>{order.status}</Badge>
-                        )}
-                      </CardTitle>
-                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <Button
-                          variant="outline"
-                          onClick={handleDownloadInvoice}
-                          disabled={downloadingInvoice || !order}
-                          className="w-full sm:w-auto border-gray-300"
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          {downloadingInvoice ? 'Downloading...' : 'Invoice'}
-                        </Button>
-                        <Button
-                          onClick={() => setShowTracking(true)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto"
-                        >
-                          📦 Track order
-                        </Button>
-                      </div>
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <Receipt className="h-5 w-5 shrink-0 text-gray-500" />
+                      <span className="font-semibold truncate text-gray-900">Order {order?.orderNumber || orderId.slice(0, 8)}</span>
+                      {order && (
+                        <Badge className={`${getStatusColor(order.status)} shrink-0 rounded-full`}>{order.status}</Badge>
+                      )}
                     </div>
-                  </CardHeader>
-                  <CardContent className="text-sm">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        onClick={handleDownloadInvoice}
+                        disabled={downloadingInvoice || !order}
+                        className="w-full sm:w-auto border-gray-200 rounded-xl"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        {downloadingInvoice ? 'Downloading...' : 'Invoice'}
+                      </Button>
+                      <Button
+                        onClick={() => setShowTracking(true)}
+                        className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white w-full sm:w-auto rounded-xl"
+                      >
+                        📦 Track order
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="text-sm">
                     {loading ? (
                       <div className="text-muted-foreground">Loading order...</div>
                     ) : !order ? (
@@ -359,17 +367,15 @@ export default function AccountOrderDetailsPage() {
                         </div>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Home className="h-5 w-5" />
-                      Shipping & Billing Address
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-sm">
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-4">
+                    <Home className="h-4 w-4" />
+                    Shipping &amp; Billing Address
+                  </p>
+                  <div className="text-sm">
                     {!order ? (
                       <div className="text-muted-foreground">Order not found.</div>
                     ) : (
@@ -471,14 +477,12 @@ export default function AccountOrderDetailsPage() {
                         )}
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Items</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Items</p>
+                  <div>
                     {loading ? (
                       <div className="text-sm text-muted-foreground">Loading items...</div>
                     ) : !order?.items?.length ? (
@@ -528,14 +532,12 @@ export default function AccountOrderDetailsPage() {
                         })}
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Shipping</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-sm">
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Shipping</p>
+                  <div className="text-sm">
                     {order && (order.shipments?.length ?? 0) > 0 ? (
                       <div className="space-y-4">
                         {(order.shipments || []).map((s: any) => (
@@ -582,16 +584,14 @@ export default function AccountOrderDetailsPage() {
                         <div className="text-xs text-gray-400 mt-1">Your order will be shipped soon</div>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Summary</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Summary</p>
+                  <div>
                     {totals ? (
                       <div className="space-y-3 text-sm">
                         <div className="flex items-center justify-between"><div className="text-muted-foreground">Subtotal</div><div>{formatCurrency(totals.subtotal)}</div></div>
@@ -628,12 +628,12 @@ export default function AccountOrderDetailsPage() {
                     ) : (
                       <div className="text-sm text-muted-foreground">Loading totals...</div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
                 <Button
                   variant="outline"
                   onClick={() => setShowTracking(true)}
-                  className="w-full"
+                  className="w-full border-gray-200 rounded-xl"
                 >
                   Track order
                 </Button>
