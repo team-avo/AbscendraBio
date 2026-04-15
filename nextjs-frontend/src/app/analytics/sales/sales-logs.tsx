@@ -315,7 +315,7 @@ export function SalesLogs({ salesChannelId }: SalesLogsProps) {
                             </Card>
                         </div>
 
-                        <div className="rounded-md border overflow-x-auto">
+                        <div className="rounded-xl border border-gray-200 overflow-hidden">
                             <Table className="min-w-[700px] sm:min-w-full">
                                 <TableHeader>
                                     <TableRow>

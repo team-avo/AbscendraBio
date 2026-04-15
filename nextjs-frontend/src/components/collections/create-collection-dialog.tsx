@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Tag } from "lucide-react";
 
 interface CreateCollectionData {
     name: string;
@@ -35,15 +36,22 @@ export function CreateCollectionDialog({ open, onOpenChange, onSubmit }: CreateC
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200">
                 <form onSubmit={handleSubmit}>
-                    <DialogHeader>
-                        <DialogTitle>Create Collection</DialogTitle>
-                        <DialogDescription>
-                            Create a new collection to group related products
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                        <div className="flex items-center gap-3 relative z-10">
+                            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                                <Tag className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base font-bold text-white">Create Collection</DialogTitle>
+                                <p className="text-xs text-white/50 mt-0.5">Group related products together</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="grid gap-4 p-6">
                         <div className="grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
@@ -81,11 +89,11 @@ export function CreateCollectionDialog({ open, onOpenChange, onSubmit }: CreateC
                             <Label htmlFor="isActive">Active</Label>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <DialogFooter className="px-6 pb-6">
+                        <Button type="button" variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit">Create Collection</Button>
+                        <Button type="submit" className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">Create Collection</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

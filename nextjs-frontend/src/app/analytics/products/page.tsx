@@ -342,7 +342,7 @@ export default function ProductPerformancePage() {
               </div>
 
               <TabsContent value="revenue" className="mt-0">
-                <div className="rounded-md border overflow-x-auto">
+                <div className="rounded-xl border border-gray-200 overflow-hidden">
                   <Table className="min-w-[800px]">
                     <TableHeader>
                       <TableRow>
@@ -411,7 +411,7 @@ export default function ProductPerformancePage() {
               </TabsContent>
 
               <TabsContent value="units" className="mt-0">
-                <div className="rounded-md border overflow-x-auto">
+                <div className="rounded-xl border border-gray-200 overflow-hidden">
                   <Table className="min-w-[800px]">
                     <TableHeader>
                       <TableRow>

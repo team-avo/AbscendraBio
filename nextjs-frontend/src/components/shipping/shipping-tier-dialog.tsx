@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -16,6 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
+import { Truck } from 'lucide-react';
 
 interface ShippingTier {
     id: string;
@@ -111,17 +111,22 @@ export function ShippingTierDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{isEditing ? 'Edit Shipping Tier' : 'Add Shipping Tier'}</DialogTitle>
-                    <DialogDescription>
-                        {isEditing
-                            ? 'Update the shipping tier details below.'
-                            : 'Create a new shipping tier with price range and rate.'}
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200">
+                <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                  <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Truck className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <DialogTitle className="text-base font-bold text-white">Shipping Tier</DialogTitle>
+                      <p className="text-xs text-white/50 mt-0.5">{isEditing ? 'Update the shipping tier details' : 'Create a new shipping tier'}</p>
+                    </div>
+                  </div>
+                </div>
                 <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 p-6">
                         <div className="grid gap-2">
                             <Label htmlFor="name">Tier Name</Label>
                             <Input
@@ -192,11 +197,11 @@ export function ShippingTierDialog({
                             </div>
                         )}
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <DialogFooter className="px-6 pb-6 pt-2">
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading}>
+                        <Button type="submit" disabled={loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                             {loading ? 'Saving...' : isEditing ? 'Update Tier' : 'Create Tier'}
                         </Button>
                     </DialogFooter>

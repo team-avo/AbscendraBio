@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Trash2, Package, Target, Users } from 'lucide-react';
+import { Loader2, Plus, Trash2, Package, Target, Users, Tag } from 'lucide-react';
 import { api, Promotion } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
@@ -417,15 +417,23 @@ export function EditCouponDialog({ coupon, open, onOpenChange, onSuccess }: Edit
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>Edit Coupon</DialogTitle>
-          <DialogDescription>
-            Update the coupon details. Note: The coupon code cannot be changed.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Tag className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Edit Coupon</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Update coupon details and restrictions</p>
+            </div>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 pb-4">
+          <div className="px-4 sm:px-6 pt-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -717,8 +725,8 @@ export function EditCouponDialog({ coupon, open, onOpenChange, onSuccess }: Edit
                 </Card>
               )}
               <DialogFooter className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">Cancel</Button>
-                <Button type="button" onClick={handleNextTab} className="w-full sm:w-auto">Next: Restrictions & Limits</Button>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto rounded-xl">Cancel</Button>
+                <Button type="button" onClick={handleNextTab} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">Next: Restrictions & Limits</Button>
               </DialogFooter>
             </TabsContent>
 
@@ -889,11 +897,11 @@ export function EditCouponDialog({ coupon, open, onOpenChange, onSuccess }: Edit
                     variant="outline"
                     onClick={() => onOpenChange(false)}
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto rounded-xl"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                     {isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -908,6 +916,7 @@ export function EditCouponDialog({ coupon, open, onOpenChange, onSuccess }: Edit
             </TabsContent>
           </Tabs>
 
+          </div>
         </form>
       </DialogContent>
     </Dialog >

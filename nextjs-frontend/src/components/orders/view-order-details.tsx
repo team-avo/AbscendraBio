@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -316,10 +316,20 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
     if (loading) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Order Details</DialogTitle>
-                    </DialogHeader>
+                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                      <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                      <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                      <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <ShoppingCart className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <DialogTitle className="text-base font-bold text-white">Order Details</DialogTitle>
+                          <p className="text-xs text-white/50 mt-0.5">View full order information</p>
+                        </div>
+                      </div>
+                    </div>
                     <div className="flex items-center justify-center py-12">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -334,10 +344,20 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
     if (!orderDetails) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Order Details</DialogTitle>
-                    </DialogHeader>
+                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                      <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                      <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                      <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <ShoppingCart className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <DialogTitle className="text-base font-bold text-white">Order Details</DialogTitle>
+                          <p className="text-xs text-white/50 mt-0.5">View full order information</p>
+                        </div>
+                      </div>
+                    </div>
                     <div className="text-center py-12">
                         <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <h3 className="text-lg font-medium mb-2">Order not found</h3>
@@ -350,13 +370,20 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader className="px-4 sm:px-6">
-                    <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-                        <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
-                        Order - {orderDetails.orderNumber}
-                    </DialogTitle>
-                </DialogHeader>
+            <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+                <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                  <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <ShoppingCart className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <DialogTitle className="text-base font-bold text-white">Order Details</DialogTitle>
+                      <p className="text-xs text-white/50 mt-0.5">Order #{orderDetails.orderNumber}</p>
+                    </div>
+                  </div>
+                </div>
 
                 <Tabs defaultValue="overview" className="w-full">
                     <div className="px-4 sm:px-6 mb-4">

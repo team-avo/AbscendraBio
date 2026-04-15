@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -16,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { api, Order } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
+import { RefreshCw } from 'lucide-react';
 
 interface OrderStatusDialogProps {
   order: Order | null;
@@ -84,15 +83,22 @@ export function OrderStatusDialog({ order, open, onOpenChange, onSuccess }: Orde
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[92vw] sm:w-auto max-w-md">
-        <DialogHeader>
-          <DialogTitle>Update Order Status</DialogTitle>
-          <DialogDescription>
-            Update the status for order #{order.orderNumber}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[92vw] sm:w-auto max-w-md p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <RefreshCw className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Update Status</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Order #{order.orderNumber}</p>
+            </div>
+          </div>
+        </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 p-6">
           <div>
             <Label>Current Status</Label>
             <div className="mt-1">
@@ -145,12 +151,13 @@ export function OrderStatusDialog({ order, open, onOpenChange, onSuccess }: Orde
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose}>
+            <Button variant="outline" className="rounded-xl" onClick={handleClose}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               disabled={loading || !status || status === order.status}
+              className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
             >
               {loading ? 'Updating...' : 'Update Status'}
             </Button>

@@ -8,12 +8,11 @@ import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
 
@@ -116,49 +115,59 @@ export function AssignSalesRepsDialog({ manager, open, onOpenChange, onSuccess }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Assign Sales Representatives</DialogTitle>
-          <DialogDescription>
-            Select sales representatives to assign to {manager.user.firstName} {manager.user.lastName}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Users className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Assign Sales Reps</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Select reps for {manager.user.firstName} {manager.user.lastName}</p>
+            </div>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="border rounded-lg p-4 max-h-96 overflow-y-auto space-y-3">
-            {isLoadingReps ? (
-              <p className="text-center text-gray-500 py-4">Loading sales representatives...</p>
-            ) : allReps.length === 0 ? (
-              <p className="text-center text-gray-500 py-4">No sales representatives available</p>
-            ) : (
-              allReps.map((rep) => (
-                <div key={rep.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-                  <Checkbox
-                    id={rep.id}
-                    checked={selectedRepIds.includes(rep.id)}
-                    onCheckedChange={() => handleToggleRep(rep.id)}
-                  />
-                  <Label htmlFor={rep.id} className="flex-1 cursor-pointer">
-                    <div>
-                      <p className="font-medium">{rep.user.firstName} {rep.user.lastName}</p>
-                      <p className="text-sm text-gray-500">{rep.user.email}</p>
-                    </div>
-                  </Label>
-                </div>
-              ))
-            )}
+          <div className="p-6">
+            <div className="border rounded-lg p-4 max-h-96 overflow-y-auto space-y-3">
+              {isLoadingReps ? (
+                <p className="text-center text-gray-500 py-4">Loading sales representatives...</p>
+              ) : allReps.length === 0 ? (
+                <p className="text-center text-gray-500 py-4">No sales representatives available</p>
+              ) : (
+                allReps.map((rep) => (
+                  <div key={rep.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                    <Checkbox
+                      id={rep.id}
+                      checked={selectedRepIds.includes(rep.id)}
+                      onCheckedChange={() => handleToggleRep(rep.id)}
+                    />
+                    <Label htmlFor={rep.id} className="flex-1 cursor-pointer">
+                      <div>
+                        <p className="font-medium">{rep.user.firstName} {rep.user.lastName}</p>
+                        <p className="text-sm text-gray-500">{rep.user.email}</p>
+                      </div>
+                    </Label>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="px-6 pb-6 pt-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
+              className="rounded-xl"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || isLoadingReps}>
+            <Button type="submit" disabled={isSubmitting || isLoadingReps} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -417,30 +417,22 @@ export function CustomerOrdersDialog({ customer, open, onOpenChange }: CustomerO
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="!w-[94vw] !max-w-[94vw] sm:!w-[96vw] sm:!max-w-[96vw] !h-[92vh] sm:!h-[96vh] !max-h-[96vh] overflow-hidden bg-background text-foreground flex flex-col p-3 sm:p-4 md:p-6">
-          {/* Header row: avatar+title on left, filter+export on right */}
-          <div className="flex-shrink-0 flex flex-col gap-2">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              {/* Left: avatar + title */}
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <Avatar className="h-8 w-8 sm:h-10 sm:w-10 shrink-0">
-                  <AvatarImage src={`/avatars/${customer.id}.jpg`} />
-                  <AvatarFallback className="text-xs sm:text-sm">
-                    {getInitials(customer.firstName, customer.lastName)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <DialogTitle className="text-sm sm:text-lg font-semibold truncate leading-none">
-                    {customer.firstName} {customer.lastName}&apos;s Orders
-                  </DialogTitle>
-                  <div className="text-[10px] sm:text-xs text-muted-foreground">
-                    {stats?.total || orders.length} order{(stats?.total || orders.length) !== 1 ? 's' : ''} found
-                  </div>
-                </div>
+        <DialogContent className="!w-[94vw] !max-w-[94vw] sm:!w-[96vw] sm:!max-w-[96vw] !h-[92vh] sm:!h-[96vh] !max-h-[96vh] overflow-hidden bg-background text-foreground flex flex-col p-0 rounded-2xl overflow-hidden border-gray-200">
+          <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+            <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <Package className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-base font-bold text-white">Customer Orders</DialogTitle>
+                <p className="text-xs text-white/50 mt-0.5">Order history and details for {customer.firstName} {customer.lastName}</p>
               </div>
             </div>
           </div>
 
+          <div className="flex flex-col flex-1 overflow-hidden p-3 sm:p-4 md:p-6">
           {/* Content area */}
           {loading ? (
             <div className="flex items-center justify-center py-8 flex-1">
@@ -748,6 +740,7 @@ export function CustomerOrdersDialog({ customer, open, onOpenChange }: CustomerO
               </div>
             </ScrollArea>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 

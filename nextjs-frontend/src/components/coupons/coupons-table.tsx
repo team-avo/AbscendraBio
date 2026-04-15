@@ -126,7 +126,7 @@ export function CouponsTable({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto -mx-4 sm:mx-0">
+      <div className="rounded-xl border border-gray-200 overflow-hidden -mx-4 sm:mx-0">
         <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>

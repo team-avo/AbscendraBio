@@ -299,7 +299,7 @@ export function OrdersTable({
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="rounded-md border overflow-x-auto">
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
           <Table className="min-w-[900px]">
             <TableHeader>
               <TableRow>
@@ -375,7 +375,7 @@ export function OrdersTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
         {/* Table Header with Export Buttons */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-3 sm:p-4 border-b bg-muted/30">
           <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">

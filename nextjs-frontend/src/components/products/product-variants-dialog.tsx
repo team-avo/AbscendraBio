@@ -11,9 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
@@ -311,15 +309,22 @@ export function ProductVariantsDialog({ product, open, onOpenChange, onSuccess }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-[990px] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-background text-foreground p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>Manage Product Variants</DialogTitle>
-          <DialogDescription>
-            Manage variants for {product.name}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] sm:max-w-[990px] max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-background text-foreground p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Package className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Product Variants</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Manage variants for {product.name}</p>
+            </div>
+          </div>
+        </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 sm:p-6">
           {/* Add/Edit Variant Form */}
           {showAddForm && (
             <Card className="bg-card" ref={formRef}>
@@ -637,7 +642,7 @@ export function ProductVariantsDialog({ product, open, onOpenChange, onSuccess }
                   </Button>
                 </div>
               ) : (
-                <div className="rounded-md border overflow-x-auto scrollbar-hide">
+                <div className="rounded-xl border border-gray-200 overflow-hidden scrollbar-hide">
                   <Table className="min-w-[800px] sm:min-w-full">
                     <TableHeader>
                       <TableRow>
@@ -711,8 +716,8 @@ export function ProductVariantsDialog({ product, open, onOpenChange, onSuccess }
           </Card>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <Button variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)}>
             Close
           </Button>
         </DialogFooter>

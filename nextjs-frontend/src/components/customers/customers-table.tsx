@@ -355,7 +355,7 @@ export function CustomersTable({
           </div>
         </div>
       )}
-      <div className="rounded-md border overflow-x-auto -mx-4 sm:mx-0">
+      <div className="rounded-xl border border-gray-200 overflow-hidden -mx-4 sm:mx-0">
         <Table className="min-w-[1100px]">
           <TableHeader>
             <TableRow>

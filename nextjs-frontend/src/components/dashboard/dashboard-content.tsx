@@ -420,24 +420,41 @@ export function DashboardContent() {
     return (
         <div className="space-y-4">
 
-            {/* ── GREETING ─────────────────────────────────────── */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-xl font-bold text-slate-900">
-                        {greeting}{user?.firstName ? `, ${user.firstName}` : ''}!
-                    </h1>
-                    <p className="text-sm text-slate-400 mt-0.5">{formattedDate}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" className="text-xs h-8 px-3 border-slate-200 text-slate-600 hover:bg-slate-50" onClick={handleViewStore}>
-                        View Store
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-xs h-8 px-3 border-slate-200 text-slate-600 hover:bg-slate-50" onClick={handleAddCustomer}>
-                        + Customer
-                    </Button>
-                    <Button size="sm" className="text-xs h-8 px-3 bg-[#1B2D4F] hover:bg-[#16243f] text-white" onClick={handleCreateOrder}>
-                        + New Order
-                    </Button>
+            {/* ── GREETING HERO ────────────────────────────────── */}
+            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                {/* Grid texture */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                {/* Blue glow */}
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h1 className="text-xl font-black text-white tracking-tight">
+                                {greeting}{user?.firstName ? `, ${user.firstName}` : ''}!
+                            </h1>
+                            <p className="text-xs text-white/40 mt-0.5">{formattedDate}</p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <button
+                                className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all"
+                                onClick={handleViewStore}
+                            >
+                                View Store
+                            </button>
+                            <button
+                                className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all"
+                                onClick={handleAddCustomer}
+                            >
+                                + Customer
+                            </button>
+                            <button
+                                className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-all"
+                                onClick={handleCreateOrder}
+                            >
+                                + New Order
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

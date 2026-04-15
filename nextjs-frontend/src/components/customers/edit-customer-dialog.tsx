@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { api, Customer } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
+import { User } from 'lucide-react';
 
 interface EditCustomerDialogProps {
   customer: Customer | null;
@@ -113,15 +114,22 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>Edit Customer</DialogTitle>
-          <DialogDescription>
-            Update customer information for {customer.firstName} {customer.lastName}.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <User className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Edit Customer</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Update customer information and details</p>
+            </div>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
@@ -268,12 +276,13 @@ export function EditCustomerDialog({ customer, open, onOpenChange, onSuccess }: 
             <Button
               type="button"
               variant="outline"
+              className="rounded-xl"
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !formData.mobile}>
+            <Button type="submit" disabled={loading || !formData.mobile} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
               {loading ? 'Updating...' : 'Update Customer'}
             </Button>
           </DialogFooter>

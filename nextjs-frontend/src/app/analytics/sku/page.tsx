@@ -512,7 +512,7 @@ export default function SkuAnalyticsPage() {
                                         </div>
                                     </div>
                                     <div className="p-1 sm:p-4">
-                                        <div className="rounded-md border overflow-x-auto">
+                                        <div className="rounded-xl border border-gray-200 overflow-hidden">
                                             <Table className="min-w-[300px]">
                                                 <TableHeader>
                                                     <TableRow>

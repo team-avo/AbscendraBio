@@ -26,7 +26,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import logger from '@/lib/logger';
 
@@ -116,14 +116,22 @@ export function AssignSalesManagerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{dialogTitle}</DialogTitle>
-                    <DialogDescription>
-                        {dialogDescription}
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200">
+                <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                    <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                    <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <Users className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-white">Assign Sales Manager</DialogTitle>
+                            <p className="text-xs text-white/50 mt-0.5">Assign or change the account manager</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div className="p-6">
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="sales-manager">Sales Manager</Label>
@@ -194,14 +202,15 @@ export function AssignSalesManagerDialog({
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+                    <Button variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)} disabled={saving}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={saving || !selectedManagerId || loading}>
+                    <Button onClick={handleSave} disabled={saving || !selectedManagerId || loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                         {saving && <LoadingSpinner size={16} className="mr-2" />}
                         Save Assignment
                     </Button>
                 </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
     );

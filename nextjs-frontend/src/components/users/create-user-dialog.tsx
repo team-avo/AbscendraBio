@@ -10,12 +10,11 @@ import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
 
@@ -169,13 +168,20 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-[425px] p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4 border-b">
-          <DialogTitle className="text-xl sm:text-2xl">Create New User</DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            Add a new user to the system with their role and permissions.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200 flex flex-col max-h-[90vh]">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Users className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Create User</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Add a new user to the system</p>
+            </div>
+          </div>
+        </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -325,11 +331,11 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
             variant="outline"
             onClick={() => handleOpenChange(false)}
             disabled={isSubmitting}
-            className="w-full sm:w-auto order-2 sm:order-1"
+            className="w-full sm:w-auto order-2 sm:order-1 rounded-xl"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting || !isFormValid()} className="w-full sm:w-auto order-1 sm:order-2">
+          <Button type="submit" disabled={isSubmitting || !isFormValid()} className="w-full sm:w-auto order-1 sm:order-2 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

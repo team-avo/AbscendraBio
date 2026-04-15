@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -77,13 +77,20 @@ export function OrderDetailsDialog({ order, open, onClose, onCommentAdded }: Ord
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0 pb-4">
-          <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
-            <Package className="h-5 w-5" />
-            Order Details - #{displayOrder.orderNumber}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-6xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col p-0 rounded-2xl overflow-hidden border-gray-200">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Package className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Order Details</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">View full order information and history</p>
+            </div>
+          </div>
+        </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
@@ -91,7 +98,7 @@ export function OrderDetailsDialog({ order, open, onClose, onCommentAdded }: Ord
             <span className="ml-2">Loading order details...</span>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+          <div className="flex-1 overflow-y-auto space-y-6 p-6">
             {/* Order Status & Payment */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card>

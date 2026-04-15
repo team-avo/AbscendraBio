@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
@@ -965,32 +963,37 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className={cn(
-          "flex flex-col bg-background text-foreground p-0", // Removed padding to handle header/footer
+          "flex flex-col bg-background text-foreground p-0 rounded-2xl overflow-hidden border-gray-200",
           "w-[95vw] sm:max-w-5xl",
-          "max-h-[90vh] overflow-hidden" // Changed from h-[90vh] to handle short content without gaps
+          "max-h-[90vh] overflow-hidden"
         )}>
-          <DialogHeader className="p-4 pr-12 sm:p-6 sm:pb-3 border-b shrink-0">
-            <div className="flex items-center gap-2">
-              <DialogTitle className="flex items-center gap-2">
-                Edit Order #{order.orderNumber}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyOrderId}
-                  className="h-7 px-2"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </DialogTitle>
+          <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+            <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <Package className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <DialogTitle className="text-base font-bold text-white">Edit Order</DialogTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyOrderId}
+                    className="h-7 px-2 text-white/70 hover:text-white hover:bg-white/10"
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-white/50 mt-0.5">Order #{order.orderNumber}</p>
+              </div>
             </div>
-            <DialogDescription>
-              Update order details and status
-            </DialogDescription>
-          </DialogHeader>
+          </div>
 
           <div className="h-auto max-h-[80vh] overflow-y-auto px-4 pb-4 pt-1 sm:px-6 sm:pb-6 sm:pt-2">
 
@@ -1977,14 +1980,14 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
                 <Button
                   variant="outline"
                   onClick={() => onOpenChange(false)}
-                  className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm"
+                  className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm"
+                  className="flex-1 sm:flex-none h-9 sm:h-10 text-xs sm:text-sm bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
                 >
                   {loading ? 'Updating...' : 'Update Order'}
                 </Button>

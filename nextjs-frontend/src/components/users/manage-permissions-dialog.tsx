@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { api, User, Permission } from '@/lib/api';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, Shield } from 'lucide-react';
 import logger from '@/lib/logger';
 
 interface ManagePermissionsDialogProps {
@@ -185,13 +185,20 @@ export function ManagePermissionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4 border-b">
-          <DialogTitle className="text-xl sm:text-2xl">Manage Permissions</DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            Manage permissions for {user.firstName} {user.lastName}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] sm:max-w-2xl p-0 rounded-2xl overflow-hidden border-gray-200 flex flex-col max-h-[90vh]">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold text-white">Manage Permissions</DialogTitle>
+              <p className="text-xs text-white/50 mt-0.5">Configure access rights for {user.firstName} {user.lastName}</p>
+            </div>
+          </div>
+        </div>
 
         {fetchingUser ? (
           <div className="py-8 text-center">
@@ -281,14 +288,14 @@ export function ManagePermissionsDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={loading}
-                className="w-full sm:w-auto order-2 sm:order-1"
+                className="w-full sm:w-auto order-2 sm:order-1 rounded-xl"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={loading || fetchingUser}
-                className="w-full sm:w-auto order-1 sm:order-2"
+                className="w-full sm:w-auto order-1 sm:order-2 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
               >
                 {loading ? (
                   <>

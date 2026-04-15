@@ -33,7 +33,7 @@ export function CategoriesTable({
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="rounded-md border overflow-x-auto">
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
           <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
@@ -61,7 +61,7 @@ export function CategoriesTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
         <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>

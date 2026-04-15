@@ -61,7 +61,7 @@ export function ShippingTiersTable({
     }
 
     return (
-        <div className="relative overflow-x-auto rounded-md border">
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
             <Table>
                 <TableHeader>
                     <TableRow>

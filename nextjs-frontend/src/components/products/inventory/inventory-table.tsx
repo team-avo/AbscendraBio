@@ -111,7 +111,7 @@ export function InventoryTable({
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="rounded-md border overflow-x-auto">
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
           <Table className="min-w-[900px]">
             <TableHeader>
               <TableRow>
@@ -147,7 +147,7 @@ export function InventoryTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
         {/* Header actions */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-3 border-b bg-muted/30 gap-3">
           <span className="text-sm text-muted-foreground whitespace-nowrap">

@@ -909,7 +909,7 @@ export function SettingsContent() {
                             <CardTitle className="text-lg sm:text-xl">Tax Rates</CardTitle>
                         </CardHeader>
                         <CardContent className="p-4 sm:p-5">
-                            <div className="rounded-md border overflow-x-auto -mx-2 sm:mx-0">
+                            <div className="rounded-xl border border-gray-200 overflow-hidden -mx-2 sm:mx-0">
                                 <Table className="min-w-[700px]">
                                     <TableHeader>
                                         <TableRow className="bg-muted/50">
@@ -1088,7 +1088,7 @@ export function SettingsContent() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 sm:p-5">
-                            <div className="rounded-md border overflow-x-auto -mx-2 sm:mx-0">
+                            <div className="rounded-xl border border-gray-200 overflow-hidden -mx-2 sm:mx-0">
                                 <Table className="min-w-[800px]">
                                     <TableHeader>
                                         <TableRow className="bg-muted/50">

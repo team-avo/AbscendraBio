@@ -197,7 +197,7 @@ export function IndependentSalesRepsReport({ range, from, to, salesChannelId, on
                     description="Enter your email to receive the independent sales reps performance report as an Excel file."
                 />
                 <CardContent>
-                    <div className="rounded-md border overflow-x-auto">
+                    <div className="rounded-xl border border-gray-200 overflow-hidden">
                         <Table className="min-w-[700px] sm:min-w-full">
                             <TableHeader>
                                 <TableRow>
@@ -275,7 +275,7 @@ export function IndependentSalesRepsReport({ range, from, to, salesChannelId, on
                         <CardDescription>Recent orders for the selected period</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="rounded-md border overflow-x-auto">
+                        <div className="rounded-xl border border-gray-200 overflow-hidden">
                             <Table className="min-w-[700px] sm:min-w-full">
                                 <TableHeader>
                                     <TableRow>

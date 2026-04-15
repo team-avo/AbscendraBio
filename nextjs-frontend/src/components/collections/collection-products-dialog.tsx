@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Search, Plus, Minus } from "lucide-react";
+import { Search, Plus, Minus, Package } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -78,16 +77,23 @@ export function CollectionProductsDialog({ open, onOpenChange, collection, onSub
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-[95vw] sm:max-w-[800px] h-[90vh] sm:h-[80vh] p-0 sm:p-6">
-                <DialogHeader>
-                    <DialogTitle>Collection Products</DialogTitle>
-                    <DialogDescription>
-                        Manage products in the {collection.name} collection
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="w-[95vw] sm:max-w-[800px] h-[90vh] sm:h-[80vh] p-0 rounded-2xl overflow-hidden border-gray-200">
+                <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                    <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                    <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <Package className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-white">Collection Products</DialogTitle>
+                            <p className="text-xs text-white/50 mt-0.5">Manage products in the {collection.name} collection</p>
+                        </div>
+                    </div>
+                </div>
 
-                <div className="flex flex-col h-full gap-4">
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-4 sm:px-0">
+                <div className="flex flex-col h-full gap-4 p-6">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div className="relative flex-1">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -97,7 +103,7 @@ export function CollectionProductsDialog({ open, onOpenChange, collection, onSub
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <Button onClick={handleSave} className="w-full sm:w-auto">Save Changes</Button>
+                        <Button onClick={handleSave} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">Save Changes</Button>
                     </div>
 
                     <ScrollArea className="flex-1 border rounded-md">
@@ -177,7 +183,7 @@ export function CollectionProductsDialog({ open, onOpenChange, collection, onSub
                         </div>
                     </ScrollArea>
 
-                    <div className="flex justify-between items-center px-4 sm:px-0">
+                    <div className="flex justify-between items-center">
                         <div className="text-sm text-muted-foreground">
                             {selectedProducts.size} products selected
                         </div>

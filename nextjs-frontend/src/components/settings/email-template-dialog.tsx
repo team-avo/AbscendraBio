@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
-import { Eye, Save, Upload, X } from "lucide-react";
+import { Eye, Save, Upload, X, Mail } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitize";
 import logger from '@/lib/logger';
 
@@ -504,15 +504,26 @@ export function EmailTemplateDialog({ open, onClose, onSuccess, template }: Emai
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">
-            {template ? "Edit Email Template" : "Create Email Template"}
-          </h2>
-          <Button variant="outline" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
+      <div className="bg-white rounded-2xl overflow-hidden max-w-6xl max-h-[90vh] overflow-y-auto w-full mx-4">
+        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <Mail className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white">Email Template</h2>
+                <p className="text-xs text-white/50 mt-0.5">{template ? "Edit existing email template" : "Create a new email template"}</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/10">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
+        <div className="p-6">
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -665,14 +676,15 @@ export function EmailTemplateDialog({ open, onClose, onSuccess, template }: Emai
           </Tabs>
 
           <div className="flex justify-end gap-2 mt-6">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl">
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
               {loading ? "Saving..." : "Save Template"}
             </Button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

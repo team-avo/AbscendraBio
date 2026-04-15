@@ -84,7 +84,7 @@ export function WarehouseLocationsTable({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="rounded-xl border border-gray-200 overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>

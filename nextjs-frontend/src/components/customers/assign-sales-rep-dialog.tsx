@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { api, Customer } from '@/lib/api';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 
 interface AssignSalesRepDialogProps {
     customer: Customer | null;
@@ -114,14 +114,22 @@ export function AssignSalesRepDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{dialogTitle}</DialogTitle>
-                    <DialogDescription>
-                        {dialogDescription}
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200">
+                <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                    <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+                    <div className="flex items-center gap-3 relative z-10">
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <Users className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-white">Assign Sales Rep</DialogTitle>
+                            <p className="text-xs text-white/50 mt-0.5">Assign or change the sales representative</p>
+                        </div>
+                    </div>
+                </div>
 
+                <div className="p-6">
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="sales-rep">Sales Representative</Label>
@@ -192,14 +200,15 @@ export function AssignSalesRepDialog({
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+                    <Button variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)} disabled={saving}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={saving || !selectedRepId || loading}>
+                    <Button onClick={handleSave} disabled={saving || !selectedRepId || loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
                         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Assignment
                     </Button>
                 </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
     );
