@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+// Sheet no longer used — replaced with centered modal mobile menu (portaled via createPortal)
+import { createPortal } from "react-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -102,6 +103,30 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
   const [showCreateOrderDialog, setShowCreateOrderDialog] = useState(false);
   const [notifications, setNotifications] = useState<Array<any>>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Mobile menu state — controlled so we can auto-close on route change
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setOpenContact(false);
+  }, [pathname]);
+
+  // Lock body scroll while the centered mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+  }, [mobileMenuOpen]);
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMobileMenuOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileMenuOpen]);
 
   // Store page state (synced with URL)
   const searchParams = useSearchParams();
@@ -443,45 +468,216 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
             </div>
 
           {/* Mobile Trigger */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-1.5">
              {!isAdminPage && isAuthenticated && (
                 <CartSidebar
                   trigger={
-                    <Button variant="ghost" size="icon" className={`relative rounded-full h-10 w-10 ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : ''}`}>
+                    <Button variant="ghost" size="icon" className={`relative rounded-full h-11 w-11 ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : 'hover:bg-black/5'}`} aria-label="Open cart">
                       <ShoppingCart className="h-5 w-5" />
-                      {items.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-[#4D7DF2] rounded-full" />}
+                      {items.length > 0 && (
+                        <Badge className="absolute -top-0.5 -right-0.5 h-[18px] min-w-[18px] px-1 flex items-center justify-center text-[9px] rounded-full bg-[#4D7DF2] text-white border-2 border-white/20">
+                          {items.reduce((sum, it) => sum + it.quantity, 0)}
+                        </Badge>
+                      )}
                     </Button>
                   }
                 />
              )}
-             <Sheet>
-               <SheetTrigger asChild>
-                 <Button variant="ghost" size="icon" className={`rounded-full ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : ''}`}>
-                    <Menu className="h-6 w-6" />
-                 </Button>
-               </SheetTrigger>
-               <SheetContent side="right" className="w-[320px] rounded-l-[2rem] p-0 shadow-2xl">
-                 <div className="flex flex-col h-full bg-white">
-                    <div className="p-8 border-b">
-                      <Image src="/logo.png" alt="Abscendra Bio" width={140} height={32} className="h-8 w-auto" />
-                    </div>
-                    <nav className="flex-1 p-6 space-y-2">
-                      <Link href="/" className="block p-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 rounded-2xl">Home</Link>
-                      <Link href="/landing/products" className="block p-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 rounded-2xl">Products</Link>
-                      <Link href="/landing/third-party-testing" className="block p-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 rounded-2xl">Testing</Link>
-                      <button onClick={() => setOpenContact(true)} className="block w-full text-left p-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 rounded-2xl">Contact</button>
-                    </nav>
-                    <div className="p-8 border-t space-y-4">
-                      {!isAuthenticated ? (
-                        <>
-                          <Button onClick={() => openLoginModal('customer')} variant="outline" className="w-full rounded-full h-14 uppercase text-[10px] font-black">Login</Button>
-                          <Button onClick={() => setOpenContact(true)} className="w-full bg-[#070B14] text-white rounded-full h-14 uppercase text-[10px] font-black">Inquire Now</Button>
-                        </>
-                      ) : <Button onClick={() => logout()} className="w-full bg-red-50 text-red-600 rounded-full h-14 uppercase text-[10px] font-black">Logout</Button>}
-                    </div>
-                 </div>
-               </SheetContent>
-             </Sheet>
+             <Button
+               variant="ghost"
+               size="icon"
+               onClick={() => setMobileMenuOpen(true)}
+               className={`rounded-full h-11 w-11 ${isLandingPage && !scrolled ? 'text-white hover:bg-white/15' : 'hover:bg-black/5'}`}
+               aria-label="Open menu"
+             >
+               <Menu className="h-6 w-6" />
+             </Button>
+
+             {/* Centered modal mobile menu — portaled to document.body to escape any transformed ancestor's containing block */}
+             {typeof document !== 'undefined' && createPortal(
+               <AnimatePresence>
+                 {mobileMenuOpen && (
+                 <motion.div
+                   className="fixed inset-0 z-[100] md:hidden"
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   exit={{ opacity: 0 }}
+                   transition={{ duration: 0.2 }}
+                   role="dialog"
+                   aria-modal="true"
+                   aria-label="Main Navigation"
+                 >
+                   {/* Backdrop */}
+                   <div
+                     className="absolute inset-0 bg-[#070B14]/70 backdrop-blur-md"
+                     onClick={() => setMobileMenuOpen(false)}
+                   />
+
+                   {/* Centered panel — outer div does the centering (Flexbox), inner motion.div animates */}
+                   <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+                     <motion.div
+                       className="relative w-full max-w-sm max-h-[85vh] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden pointer-events-auto"
+                       initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                       animate={{ opacity: 1, scale: 1, y: 0 }}
+                       exit={{ opacity: 0, scale: 0.94, y: 10 }}
+                       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                     >
+                     {/* Header with logo + close */}
+                     <div className="px-6 pt-6 pb-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+                       <Image src="/logo.png" alt="Ascendra Bio" width={140} height={32} className="h-8 w-auto" />
+                       <button
+                         onClick={() => setMobileMenuOpen(false)}
+                         className="h-10 w-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors"
+                         aria-label="Close menu"
+                       >
+                         <X className="h-5 w-5" />
+                       </button>
+                     </div>
+
+                     {/* User info strip (authenticated only) */}
+                     {isAuthenticated && (
+                       <div className="px-6 py-4 bg-gray-50/60 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
+                         <Avatar className="h-10 w-10">
+                           <AvatarFallback className="bg-[#4D7DF2] text-white font-bold text-xs uppercase">
+                             {`${(user?.firstName?.[0] || user?.email?.[0] || 'A').toUpperCase()}${(user?.lastName?.[0] || '').toUpperCase()}`}
+                           </AvatarFallback>
+                         </Avatar>
+                         <div className="flex-1 min-w-0">
+                           <p className="text-sm font-bold text-[#1B2D4F] truncate">{user?.firstName} {user?.lastName}</p>
+                           <p className="text-[11px] text-gray-500 truncate">{user?.email}</p>
+                         </div>
+                       </div>
+                     )}
+
+                     {/* Nav links */}
+                     <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 min-h-0">
+                       <Link
+                         href="/"
+                         onClick={() => setMobileMenuOpen(false)}
+                         className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${pathname === '/' ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
+                       >
+                         Home
+                       </Link>
+
+                       {/* Products — only for authenticated users */}
+                       {isAuthenticated && (
+                         <Link
+                           href="/landing/products"
+                           onClick={() => setMobileMenuOpen(false)}
+                           className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isProducts ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
+                         >
+                           Products
+                         </Link>
+                       )}
+
+                       <Link
+                         href="/landing/third-party-testing"
+                         onClick={() => setMobileMenuOpen(false)}
+                         className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
+                       >
+                         3rd Party Testing
+                       </Link>
+
+                       <button
+                         onClick={() => { setMobileMenuOpen(false); setOpenContact(true); }}
+                         className="block w-full text-center px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                       >
+                         Contact
+                       </button>
+
+                       {/* Role-aware sections for authenticated users */}
+                       {isAuthenticated && (
+                         <>
+                           <div className="pt-4 pb-2 text-center text-[9px] font-black uppercase tracking-[0.25em] text-gray-400">
+                             {hasRole(["ADMIN", "MANAGER", "STAFF", "SALES_MANAGER", "SALES_REP"]) ? 'Back-Office' : 'My Account'}
+                           </div>
+                           {hasRole(["ADMIN", "MANAGER", "STAFF", "SALES_MANAGER", "SALES_REP"]) ? (
+                             <>
+                               <Link
+                                 href="/admin-dashboard"
+                                 onClick={() => setMobileMenuOpen(false)}
+                                 className="flex items-center justify-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                               >
+                                 <LayoutDashboard className="h-4 w-4" />
+                                 Dashboard
+                               </Link>
+                               <Link
+                                 href="/orders"
+                                 onClick={() => setMobileMenuOpen(false)}
+                                 className="flex items-center justify-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                               >
+                                 <List className="h-4 w-4" />
+                                 Orders
+                               </Link>
+                             </>
+                           ) : (
+                             <>
+                               <Link
+                                 href="/account"
+                                 onClick={() => setMobileMenuOpen(false)}
+                                 className="flex items-center justify-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                               >
+                                 <User className="h-4 w-4" />
+                                 Profile
+                               </Link>
+                               <Link
+                                 href="/account/orders"
+                                 onClick={() => setMobileMenuOpen(false)}
+                                 className="flex items-center justify-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                               >
+                                 <List className="h-4 w-4" />
+                                 My Orders
+                               </Link>
+                               <Link
+                                 href="/account/favorites"
+                                 onClick={() => setMobileMenuOpen(false)}
+                                 className="flex items-center justify-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F] rounded-2xl transition-colors"
+                               >
+                                 <Heart className="h-4 w-4" />
+                                 Favorites
+                               </Link>
+                             </>
+                           )}
+                         </>
+                       )}
+                     </nav>
+
+                     {/* Footer actions */}
+                     <div className="px-6 py-5 border-t border-gray-100 space-y-3 flex-shrink-0">
+                       {!isAuthenticated ? (
+                         <>
+                           <Button
+                             onClick={() => { setMobileMenuOpen(false); openLoginModal('customer'); }}
+                             variant="outline"
+                             className="w-full rounded-full h-12 uppercase text-[11px] font-black tracking-[0.15em] border-gray-200"
+                           >
+                             Login
+                           </Button>
+                           <Button
+                             onClick={() => { setMobileMenuOpen(false); setOpenContact(true); }}
+                             className="w-full bg-[#070B14] hover:bg-gray-800 text-white rounded-full h-12 uppercase text-[11px] font-black tracking-[0.15em]"
+                           >
+                             Inquire Now
+                           </Button>
+                         </>
+                       ) : (
+                         <Button
+                           onClick={() => { setMobileMenuOpen(false); logout(); }}
+                           variant="ghost"
+                           className="w-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-full h-12 uppercase text-[11px] font-black tracking-[0.15em]"
+                         >
+                           <LogOut className="h-4 w-4 mr-2" />
+                           Logout
+                         </Button>
+                       )}
+                     </div>
+                     </motion.div>
+                   </div>
+                 </motion.div>
+                 )}
+               </AnimatePresence>,
+               document.body
+             )}
           </div>
         </nav>
       </div>

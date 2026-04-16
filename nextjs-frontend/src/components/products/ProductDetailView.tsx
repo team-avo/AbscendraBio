@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { api, type Product, resolveImageUrl, getPublicReportsForProduct, getPublicReportDownloadUrl, type ThirdPartyReport } from "@/lib/api";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
-import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check } from "lucide-react";
+import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, Lock, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
 import { CartSidebar } from "@/components/cart/CartSidebar";
@@ -167,6 +167,61 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
     try { await update(ui.currentVariantId, Math.max(0, newQty)); }
     catch (e: any) { toast.error(e.message || 'Failed to update'); }
   };
+
+  // ── Gate product detail behind login on ALL viewports (mobile + desktop) ──
+  if (!isAuthenticated) {
+    return (
+      <div className={`${isModal ? "bg-white w-full flex flex-col" : "force-light min-h-screen bg-white"} ${barlow.className}`}>
+        <div className={isModal ? "p-4" : "max-w-3xl mx-auto px-4 sm:px-6 py-10"}>
+          <div className="relative bg-[#070B14] rounded-2xl overflow-hidden">
+            {/* Grid texture */}
+            <div
+              className="absolute inset-0 opacity-[0.03]"
+              style={{
+                backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)',
+                backgroundSize: '40px 40px',
+              }}
+            />
+            {/* Blue glow */}
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#3A6FA0]/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-white/[0.08] border border-white/[0.10] flex items-center justify-center mx-auto mb-6">
+                <Lock className="w-7 h-7 text-white/80" />
+              </div>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">Verified Researchers Only</span>
+                <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-lg mx-auto">
+                Sign in to view this peptide
+              </h1>
+              <p className="mt-4 text-sm sm:text-base text-white/60 max-w-md mx-auto leading-relaxed">
+                Product details, pricing, and Certificates of Analysis are available to verified researchers only.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={() => openLoginModal?.('customer')}
+                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#070B14] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </button>
+                <button
+                  onClick={() => openLoginModal?.('customer')}
+                  className="inline-flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.12] text-white rounded-xl px-6 py-3 text-sm font-semibold transition-all"
+                >
+                  Create an Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative ${isModal ? "bg-white w-full h-[85vh] max-h-[800px] flex flex-col overflow-hidden" : "force-light min-h-screen bg-white"} ${barlow.className}`}>

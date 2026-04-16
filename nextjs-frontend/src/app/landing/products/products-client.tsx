@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, SlidersHorizontal, FlaskConical, ChevronDown, Check } from 'lucide-react'
+import { Search, SlidersHorizontal, FlaskConical, ChevronDown, Check, Lock, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -185,6 +185,62 @@ export default function ProductsClient({ products }: Props) {
   const clearAll = () => {
     setSearchTerm(''); setPriceRange([0, maxPrice]); setInStockOnly(false); setSelectedCategory('All')
     updateParams({ q: null, cat: null, sort: null, stock: null })
+  }
+
+  // ── Gate products behind login on ALL viewports (mobile + desktop) ──
+  if (!isAuthenticated) {
+    return (
+      <div className={`${barlow.className} pt-6 pb-20`}>
+        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          {/* Grid texture */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+          {/* Blue glow */}
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#3A6FA0]/10 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-20 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.08] border border-white/[0.10] flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-7 h-7 text-white/80" />
+            </div>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">Verified Researchers Only</span>
+              <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight max-w-xl mx-auto">
+              Sign in to browse the full catalog
+            </h1>
+            <p className="mt-4 text-sm sm:text-base text-white/60 max-w-lg mx-auto leading-relaxed">
+              Our research peptides are available exclusively to verified researchers. Sign in to your account or create one to view pricing, Certificates of Analysis, and place orders.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => openLoginModal?.()}
+                className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#070B14] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In
+              </button>
+              <button
+                onClick={() => openLoginModal?.()}
+                className="inline-flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.12] text-white rounded-xl px-6 py-3 text-sm font-semibold transition-all"
+              >
+                Create an Account
+              </button>
+            </div>
+            <p className="mt-6 text-[11px] text-white/30 uppercase tracking-[0.25em]">
+              Third-party tested · US-made · 24hr shipping
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
