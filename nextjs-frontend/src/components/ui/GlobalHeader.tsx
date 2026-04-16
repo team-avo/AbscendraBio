@@ -331,13 +331,15 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                   {isLandingRoute ? (
                     <>
                       {isAuthenticated && (
-                        <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
-                          Products
-                        </Link>
+                        <>
+                          <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                            Products
+                          </Link>
+                          <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                            3rd Party Testing
+                          </Link>
+                        </>
                       )}
-                      <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
-                        3rd Party Testing
-                      </Link>
                       <button onClick={() => setOpenContact(true)} className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
                         Contact
                       </button>
@@ -570,13 +572,15 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                          </Link>
                        )}
 
-                       <Link
-                         href="/landing/third-party-testing"
-                         onClick={() => setMobileMenuOpen(false)}
-                         className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
-                       >
-                         3rd Party Testing
-                       </Link>
+                       {isAuthenticated && (
+                         <Link
+                           href="/landing/third-party-testing"
+                           onClick={() => setMobileMenuOpen(false)}
+                           className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
+                         >
+                           3rd Party Testing
+                         </Link>
+                       )}
 
                        <button
                          onClick={() => { setMobileMenuOpen(false); setOpenContact(true); }}

@@ -2182,3 +2182,174 @@ Scheduler will run daily at 1:00 AM
     [35menv[39m: "development"
 [2026-04-15 16:00:00.153 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
     [35menv[39m: "development"
+[2026-04-15 17:00:00.873 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 17:00:00.892 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 17:00:00.893 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 18:00:00.640 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 18:00:00.662 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 18:00:00.663 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 19:00:00.993 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 19:00:01.015 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 19:00:01.015 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 20:00:00.099 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 20:00:00.161 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 20:00:00.161 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 21:00:00.941 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 21:00:00.965 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 21:00:00.965 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 22:00:00.438 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 22:00:00.457 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 22:00:00.457 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15 23:00:00.798 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-15 23:00:00.861 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-15 23:00:00.862 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-16 00:00:00.960 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-16 00:00:00.977 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-16 00:00:00.977 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-15T19:30:00.648Z] Stock alert scheduler triggered
+[2026-04-15T19:30:00.661Z] Starting stock alert check...
+Store information not found or email not configured
+[2026-04-16 01:00:00.634 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-16 01:00:00.697 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-16 01:00:00.697 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[2026-04-16 02:00:00.558 +0530] [32mINFO[39m: [36m[Cron] Starting label tracking sync...[39m
+    [35menv[39m: "development"
+[2026-04-16 02:00:00.601 +0530] [32mINFO[39m: [36m[LabelTrackingSync] No orders with labels to sync[39m
+    [35menv[39m: "development"
+[2026-04-16 02:00:00.601 +0530] [32mINFO[39m: [36m[Cron] Label tracking sync completed[39m
+    [35menv[39m: "development"
+[INVENTORY SYNC] Starting ShipStation inventory sync...
+[INVENTORY SYNC] Fetching ShipStation inventory page 1...
+[INVENTORY SYNC] Error fetching page 1: ShipStation API key is missing. Set SHIPSTATION_API_KEY environment variable.
+[INVENTORY SYNC] Total items fetched from ShipStation: 0
+[INVENTORY SYNC] No inventory items found in ShipStation
+[2026-04-16 02:30:00.368 +0530] [32mINFO[39m: [36m[Cron] Starting ShipStation inventory sync...[39m
+    [35menv[39m: "development"
+[2026-04-16 02:30:00.379 +0530] [32mINFO[39m: [36m[Cron] ShipStation inventory sync completed[39m
+    [35menv[39m: "development"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:05 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:06 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/storefront/products?page=1&limit=24 HTTP/1.1" 200 8995 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:40 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:41 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:41 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:41 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:51:41 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:54:07 +0000] "GET /api/public-third-party-reports HTTP/1.1" 200 26 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:54:07 +0000] "GET /api/public-third-party-reports HTTP/1.1" 200 26 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-third-party-reports HTTP/1.1" 200 26 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:16 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:22 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:22 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:22 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:22 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:23 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:23 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:40 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:41 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:57:41 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:51 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:51 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:57 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:03:58:58 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:22 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:22 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/settings/integrations/google-places HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/auth/profile HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/public-content/footer HTTP/1.1" 200 28 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/storefront/products?page=1&limit=4 HTTP/1.1" 200 4617 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/locations/custom/countries HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/public-pages/navigation/menus?location=main HTTP/1.1" 200 129 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/public-pages/navigation/menus/cmnyp3x7i0002xmq67f8uqa46/items HTTP/1.1" 200 715 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "GET /api/customers?limit=100 HTTP/1.1" 401 45 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+::1 - - [16/Apr/2026:04:00:27 +0000] "POST /api/auth/refresh HTTP/1.1" 401 54 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
