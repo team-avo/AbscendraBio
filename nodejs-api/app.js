@@ -84,9 +84,11 @@ const app = express();
 app.use(helmet());
 
 // CORS configuration
+const allowedOrigins = (process.env.FRONTEND_CORS_URL || process.env.CORS_ORIGIN || "http://localhost:3000").split(",").map(origin => origin.trim());
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_CORS_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
