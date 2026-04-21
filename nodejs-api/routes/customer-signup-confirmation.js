@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
   <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;border:1px solid #eee;margin-top:24px;margin-bottom:24px;">
     <tr>
       <td style="padding:24px;border-bottom:1px solid #eee;text-align:center;">
-        <h1 style="margin:0;font-size:22px;color:#111;">Welcome to Centre Labs</h1>
+        <h1 style="margin:0;font-size:22px;color:#111;">Welcome to Ascendra Bio</h1>
         <p style="margin:8px 0 0;color:#555;">Your account is pending approval</p>
       </td>
     </tr>
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
       <td style="padding:24px;">
         <p style="margin:0 0 12px;color:#111;">Hi ${safe(firstName) || 'Customer'},</p>
         <p style="margin:0 0 16px;color:#333;line-height:1.5;">
-          Thank you for creating an account with Centre Labs. Your account is currently pending approval.
+          Thank you for creating an account with Ascendra Bio. Your account is currently pending approval.
           Once approved, you will be able to sign in and access your account. Please keep this email for your records.
         </p>
         <h3 style="margin:0 0 8px;color:#111;">Submitted details</h3>
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     </tr>
     <tr>
       <td style="padding:16px;text-align:center;color:#888;border-top:1px solid #eee;font-size:12px;">
-        © ${new Date().getFullYear()} Centre Labs. All rights reserved.
+        © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
       </td>
     </tr>
   </table>
@@ -71,9 +71,9 @@ router.post('/', async (req, res) => {
     });
 
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || 'noreply@centreresearch.com',
+      from: process.env.EMAIL_FROM || 'noreply@ascendrabio.com',
       to: email,
-      subject: 'Your Centre Labs account is pending approval',
+      subject: 'Your Ascendra Bio account is pending approval',
       html,
     });
     console.log('[customer-signup-confirmation] sent', info?.messageId);

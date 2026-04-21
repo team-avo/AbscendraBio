@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
 
     // Fetch store email from StoreInformation
     const storeInfo = await prisma.storeInformation.findFirst();
-    const storeEmail = storeInfo?.email || process.env.ADMIN_EMAIL || "admin@centreresearch.com";
+    const storeEmail = storeInfo?.email || process.env.ADMIN_EMAIL || "admin@ascendrabio.com";
 
     // Hardcoded subject and HTML body (no templates)
     const subject = `New Inquiry Received - ${email}`;
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
       <h1>New Inquiry</h1>
       <p>You have received a new inquiry from: <strong>${email}</strong></p>
       <p>Message:</p>
-      <p>I'm interested in Centre Physician Directed. Please contact me with more information about your products and pricing. Thank you.</p>
+      <p>I'm interested in Ascendra Bio Physician Directed. Please contact me with more information about your products and pricing. Thank you.</p>
     `;
 
     const transporter = nodemailer.createTransport({
@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || "noreply@centreresearch.com",
+      from: process.env.EMAIL_FROM || "noreply@ascendrabio.com",
       to: storeEmail,
       subject,
       html,

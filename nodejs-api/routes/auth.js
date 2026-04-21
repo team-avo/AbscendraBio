@@ -39,7 +39,7 @@ const sendVerificationEmail = async (toEmail, firstName, verificationLink) => {
         </tr>
         <tr>
           <td style="padding:16px 24px 24px 24px;color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #f0f0f0;">
-            © ${new Date().getFullYear()} Centre Labs. All rights reserved.
+            © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
           </td>
         </tr>
       </table>
@@ -48,7 +48,7 @@ const sendVerificationEmail = async (toEmail, firstName, verificationLink) => {
 
   console.log("[Resend] Sending email verification...");
   await resend.emails.send({
-    from: "Notifications | Centre Research <notifications@centreresearch.org>",
+    from: "Notifications | Ascendra Bio <notifications@ascendrabio.com>",
     to: toEmail,
     subject,
     html,

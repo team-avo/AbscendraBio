@@ -46,8 +46,8 @@ async function dispatchCampaign(campaignId) {
       const data = {
         customerName: `${customer.firstName} ${customer.lastName}`,
         customerEmail: customer.email,
-        storeName: 'Centre Labs',
-        storeEmail: 'contact@centreresearch.com',
+        storeName: 'Ascendra Bio',
+        storeEmail: 'contact@ascendrabio.com',
         storePhone: '+1 (555) 123-4567',
         storeAddress: '123 Research Ave, Science City, SC 12345',
         campaignName: campaign.name
@@ -56,7 +56,7 @@ async function dispatchCampaign(campaignId) {
         const templateType = campaign.emailTemplateType || 'MARKETING_GENERIC';
         await sendEmailWithTemplate(templateType, customer.email, data);
       } else if (campaign.type === 'SMS') {
-        const smsBody = `Promo: ${campaign.name} at Centre Labs`;
+        const smsBody = `Promo: ${campaign.name} at Ascendra Bio`;
         // Note: customer table currently holds email; extend to mobile if available
         // Attempt send only if mobile exists
         const mobile = customer.mobile || null;
