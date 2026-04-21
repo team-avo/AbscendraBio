@@ -10,15 +10,10 @@ const resend = require('../config/resend');
 const Queue = require('bull');
 
 // Initialize Bull Queue
-const redisConfig = {
-  host: process.env.REDIS_HOST || 'peptides_dev_redis', // Default from docker-compose service name if available, or localhost
+const redisConfig = process.env.REDIS_URL || {
+  host: process.env.REDIS_HOST || '127.0.0.1',
   port: process.env.REDIS_PORT || 6379,
 };
-
-// Fallback for local dev if not using docker networking
-if (process.env.NODE_ENV !== 'production' && !process.env.REDIS_HOST) {
-  redisConfig.host = '127.0.0.1';
-}
 
 const emailQueue = new Queue('email-queue', {
   redis: redisConfig,
