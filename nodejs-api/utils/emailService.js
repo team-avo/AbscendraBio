@@ -110,22 +110,22 @@ const createTransporter = () => {
 
 const getFromEmail = (templateType) => {
   const mapping = {
-    'ORDER_CONFIRMATION': 'Centre Labs | Orders <orders@centreresearch.org>',
-    'SHIPPING_NOTIFICATION': 'Centre Labs | Shipping <shipping@centreresearch.org>',
-    'ORDER_CANCELLED': 'Centre Labs | Orders <orders@centreresearch.org>',
-    'PAYMENT_SUCCESS': 'Centre Labs | Orders <orders@centreresearch.org>',
-    'PASSWORD_RESET': 'Centre Labs | Notifications <notifications@centreresearch.org>',
-    'ACCOUNT_VERIFICATION': 'Centre Labs | Notifications <notifications@centreresearch.org>',
-    'WELCOME_EMAIL': 'Centre Labs | Notifications <notifications@centreresearch.org>',
-    'LOW_INVENTORY_ALERT': 'Centre Labs | Notifications <notifications@centreresearch.org>',
-    'BULK_QUOTE': 'Centre Labs | Orders <orders@centreresearch.org>',
-    'MARKETING_GENERIC': 'Centre Labs <leadership@centreresearch.org>',
-    'PARTNER_STATEMENT_GENERATED': 'Centre Labs | Billing <billing@centreresearch.org>',
-    'PARTNER_PAYMENT_REMINDER': 'Centre Labs | Billing <billing@centreresearch.org>',
-    'PARTNER_OVERDUE_ALERT': 'Centre Labs | Billing <billing@centreresearch.org>',
-    'ABANDONED_CART': 'Centre Labs | Notifications <notifications@centreresearch.org>',
+    'ORDER_CONFIRMATION': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+    'SHIPPING_NOTIFICATION': 'Ascendra Bio | Shipping <shipping@ascendrabio.com>',
+    'ORDER_CANCELLED': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+    'PAYMENT_SUCCESS': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+    'PASSWORD_RESET': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    'ACCOUNT_VERIFICATION': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    'WELCOME_EMAIL': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    'LOW_INVENTORY_ALERT': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    'BULK_QUOTE': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+    'MARKETING_GENERIC': 'Ascendra Bio <leadership@ascendrabio.com>',
+    'PARTNER_STATEMENT_GENERATED': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+    'PARTNER_PAYMENT_REMINDER': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+    'PARTNER_OVERDUE_ALERT': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+    'ABANDONED_CART': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
   };
-  return mapping[templateType] || 'Centre Labs <info@centreresearch.org>';
+  return mapping[templateType] || 'Ascendra Bio <info@ascendrabio.com>';
 };
 
 // Process email with template using Resend (Internal function called by Queue)
@@ -424,7 +424,7 @@ const processRawEmailResend = async ({ to, subject, html, text, from, attachment
     console.log("[Resend] Sending raw email...");
 
     const response = await resend.emails.send({
-      from: from || 'Centre Research <info@centreresearch.org>',
+      from: from || 'Ascendra Bio <info@ascendrabio.com>',
       to: to,
       subject: subject,
       html: html,
@@ -760,7 +760,7 @@ const processEmailWithTemplate = async (
 
     // Prepare email options
     const mailOptions = {
-      from: process.env.EMAIL_FROM || "noreply@centreresearch.com",
+      from: process.env.EMAIL_FROM || "noreply@ascendrabio.com",
       to: recipientEmail,
       subject: subject,
       html: finalHtml,
