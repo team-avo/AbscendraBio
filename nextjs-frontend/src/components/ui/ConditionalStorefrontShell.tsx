@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 import GlobalHeader from "@/components/ui/GlobalHeader";
 import Footer from "@/components/landing/Footer";
+import FooterBlue from "@/components/landing/FooterBlue";
 
 /**
  * Routes that use DashboardLayout (admin sidebar).
@@ -54,6 +55,8 @@ export function ConditionalStorefrontHeader() {
 /** Renders Footer only on non-admin (storefront) pages. */
 export function ConditionalStorefrontFooter() {
   const isAdmin = useIsAdminPage();
+  const pathname = usePathname();
   if (isAdmin) return null;
+  if (pathname === "/bluelanding") return <FooterBlue />;
   return <Footer />;
 }

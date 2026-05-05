@@ -175,16 +175,16 @@ export default function LandingProductsPage() {
 
             {/* Left — Title */}
             <div>
-              <span className="inline-block text-[10px] font-black uppercase tracking-[0.3em] text-[#4D7DF2] mb-5">
+              <span className="inline-block text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-[#4D7DF2] mb-5">
                 Research Catalog
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-white">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none text-white">
                 Premium Peptide
               </h1>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight tracking-tight leading-none text-gray-400 mt-1">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extralight tracking-tight leading-none text-gray-400 mt-1">
                 Products
               </h1>
-              <p className="mt-5 text-sm text-gray-500 max-w-md leading-relaxed">
+              <p className="mt-6 text-base sm:text-lg text-gray-400 max-w-xl leading-relaxed">
                 High-purity research peptides with third-party verified certificates. Available to licensed researchers and clinics.
               </p>
             </div>
@@ -193,12 +193,12 @@ export default function LandingProductsPage() {
             <div className="flex flex-row lg:flex-col gap-4 lg:gap-3 pb-1">
               {trustBadges.map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#4D7DF2]/10 border border-[#4D7DF2]/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-3.5 h-3.5 text-[#4D7DF2]" />
+                  <div className="w-10 h-10 rounded-lg bg-[#4D7DF2]/10 border border-[#4D7DF2]/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-[#4D7DF2]" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold text-white leading-none">{label}</p>
-                    <p className="text-[10px] text-gray-500 mt-0.5">{sub}</p>
+                    <p className="text-sm font-bold text-white leading-none">{label}</p>
+                    <p className="text-xs text-gray-500 mt-1">{sub}</p>
                   </div>
                 </div>
               ))}

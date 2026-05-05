@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     ...base,
     icons: {
-      icon: "/logo.png",
+      icon: "/favicon-a.png",
     },
   };
 }

@@ -7,11 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { motion, AnimatePresence } from 'motion/react'
 import { Barlow } from 'next/font/google'
-import ProductDetailView from '@/components/products/ProductDetailView'
 import { ProductCard } from '@/components/products/ProductCard'
 
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800', '900'] });
@@ -47,7 +45,6 @@ export default function ProductsClient({ products }: Props) {
   const { add, items, update } = useCart()
   const { user, openLoginModal, isAuthenticated } = useAuth()
   const router = useRouter()
-  const [quickViewId, setQuickViewId] = useState<string | number | null>(null)
   const [customerType, setCustomerType] = useState<'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined>(undefined)
   const [favoriteIdsByProduct, setFavoriteIdsByProduct] = useState<Record<string, string>>({})
   const [filterOpen, setFilterOpen] = useState(false)
@@ -325,24 +322,13 @@ export default function ProductsClient({ products }: Props) {
               key={p.id}
               product={p}
               index={index}
-              onQuickView={setQuickViewId}
+              onQuickView={(id) => router.push(`/landing/products/${id}`)}
               isFavorite={!!favoriteIdsByProduct[String(p.id)]}
               onToggleFavorite={toggleFavorite}
             />
           ))}
         </AnimatePresence>
       </motion.div>
-
-      {/* ── Quick View Modal ── */}
-      {quickViewId && (
-        <Dialog open={!!quickViewId} onOpenChange={(open) => !open && setQuickViewId(null)}>
-          <DialogContent className="max-w-lg w-full p-0 overflow-hidden rounded-3xl border-0 shadow-2xl">
-            <DialogTitle className="sr-only">Product Detail</DialogTitle>
-            <DialogDescription className="sr-only">View product details and add to cart</DialogDescription>
-            <ProductDetailView productId={String(quickViewId)} isModal={true} />
-          </DialogContent>
-        </Dialog>
-      )}
 
       {/* ── Empty State ── */}
       {filtered.length === 0 && (
