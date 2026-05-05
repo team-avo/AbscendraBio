@@ -43,7 +43,7 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api",
   },
-  output: "standalone", // Enable standalone builds for Docker
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
 };
 
 module.exports = nextConfig;
