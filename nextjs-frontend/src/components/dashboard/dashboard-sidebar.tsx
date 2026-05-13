@@ -37,7 +37,8 @@ import {
     Search as SearchIcon,
     User as UserIcon,
     Heart,
-    ArrowLeft
+    ArrowLeft,
+    Mail
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -87,6 +88,7 @@ const navItems: NavItem[] = [
             { title: "Collections", href: "/products/collections", icon: Package },
             // { title: "Inventory", href: "/products/inventory", icon: Warehouse },
             { title: "Inventory", href: "/inventory", icon: Warehouse },
+            { title: "Stock Receipts", href: "/inventory/receipts", icon: Mail },
             { title: "Warehouse Locations", href: "/products/locations", icon: Warehouse },
         ]
     },

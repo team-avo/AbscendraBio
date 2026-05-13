@@ -7,6 +7,7 @@ const { run: runPromotionExpiryScheduler } = require('./cron/promotionExpirySche
 const { generatePartnerStatements, sendPaymentReminders } = require('./cron/partnerBillingScheduler');
 const { syncShipStationInventory } = require('./utils/inventorySyncService');
 const { run: runLabelTrackingSync } = require('./cron/labelTrackingSync');
+const { run: runSupplierEmailPoll } = require('./cron/supplierEmailPoll');
 const logger = require('./utils/logger');
 const port = process.env.PORT || 4000;
 const server = http.createServer(app);
@@ -117,6 +118,20 @@ cron.schedule('0 * * * *', async () => {
     });
   } catch (err) {
     logger.error(`[Cron] Label tracking sync error: ${err.message}`);
+  }
+});
+
+// Poll Gmail for supplier order-confirmation emails — stages PendingStockReceipt rows for admin review.
+// Skips silently if GMAIL_* env vars are not configured.
+const supplierEmailPollExpr = process.env.SUPPLIER_EMAIL_POLL_CRON || '*/15 * * * *';
+cron.schedule(supplierEmailPollExpr, async () => {
+  try {
+    const result = await runSupplierEmailPoll();
+    if (result && (result.created || result.errors)) {
+      logger.info('[Cron] Supplier email poll completed', result);
+    }
+  } catch (err) {
+    logger.error(`[Cron] Supplier email poll error: ${err.message}`);
   }
 });
 

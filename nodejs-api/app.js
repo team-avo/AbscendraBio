@@ -62,6 +62,7 @@ const otpRoutes = require("./routes/otp");
 const bulkQuotesRoutes = require("./routes/bulk-quotes");
 const shipstationRoutes = require("./routes/shipstation");
 const stockAlertsRoutes = require("./routes/stock-alerts");
+const stockReceiptsRoutes = require("./routes/stock-receipts");
 const bulkPricesRoutes = require("./routes/bulkPrices");
 const odooRoutes = require("./integrations/skydell_odoo/odooRoutes");
 const odooConfigRoutes = require("./integrations/skydell_odoo/odooConfigRoutes");
@@ -246,6 +247,8 @@ app.use("/api/bulk-quotes", authMiddleware, bulkQuotesRoutes);
 // Stock alerts (auth required)
 logger.info("Registering stock alerts routes...");
 app.use("/api/stock-alerts", authMiddleware, stockAlertsRoutes);
+// Supplier email auto-import + admin review for inbound stock (auth required)
+app.use("/api/stock-receipts", authMiddleware, stockReceiptsRoutes);
 app.use("/api/sales-channels", salesChannelRoutes);
 app.use("/api/login-audit-logs", authMiddleware, loginAuditLogRoutes);
 app.use("/api/comments", authMiddleware, commentsRoutes);

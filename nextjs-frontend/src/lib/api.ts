@@ -12,6 +12,7 @@ import { createContentMethods } from "./api-content";
 import { createMarketingMethods } from "./api-marketing";
 import { createLocationMethods } from "./api-locations";
 import { createCommentMethods } from "./api-comments";
+import { createStockReceiptMethods } from "./api-stock-receipts";
 
 // ---------------------
 // Compose the api object
@@ -28,6 +29,7 @@ export const api = Object.assign(client, {
   ...createMarketingMethods(client),
   ...createLocationMethods(client),
   ...createCommentMethods(client),
+  ...createStockReceiptMethods(client),
 });
 
 // ---------------------

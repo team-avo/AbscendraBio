@@ -54,6 +54,9 @@ model User {
   // Comments
   comments Comment[]
 
+  // Supplier stock receipts processed by this user
+  processedStockReceipts PendingStockReceipt[] @relation("ProcessedStockReceipts")
+
   @@map("users")
 }
 
@@ -295,6 +298,10 @@ model ProductVariant {
   // Third party reports
   thirdPartyReports ThirdPartyReport[] @relation("VariantToThirdPartyReport")
 
+  // Supplier email auto-import
+  supplierMappings    SupplierProductMapping[]
+  pendingReceiptLines PendingStockReceiptLine[]
+
   @@map("product_variants")
 }
 
@@ -487,7 +494,8 @@ model Location {
   updatedAt DateTime @updatedAt
 
   // Relations
-  inventory Inventory[]
+  inventory       Inventory[]
+  supplierSources SupplierEmailSource[]
 
   @@map("locations")
 }
@@ -505,6 +513,90 @@ model InventoryMovement {
   inventory Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   @@map("inventory_movements")
+}
+
+// Supplier email auto-import: configurable senders that send order-confirmation emails
+model SupplierEmailSource {
+  id                String   @id @default(cuid())
+  name              String
+  senderEmail       String   @unique
+  parserKey         String
+  defaultLocationId String
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  location Location                 @relation(fields: [defaultLocationId], references: [id])
+  mappings SupplierProductMapping[]
+  receipts PendingStockReceipt[]
+
+  @@map("supplier_email_sources")
+}
+
+// Learned mapping from "supplier product name as it appears in email" → internal ProductVariant
+model SupplierProductMapping {
+  id                  String   @id @default(cuid())
+  supplierSourceId    String
+  supplierProductName String
+  variantId           String
+  quantityMultiplier  Float    @default(1)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  source  SupplierEmailSource @relation(fields: [supplierSourceId], references: [id], onDelete: Cascade)
+  variant ProductVariant      @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierSourceId, supplierProductName])
+  @@map("supplier_product_mappings")
+}
+
+// One row per supplier order-confirmation email parsed by the cron — admin reviews and approves
+model PendingStockReceipt {
+  id               String               @id @default(cuid())
+  supplierSourceId String
+  gmailMessageId   String               @unique
+  gmailThreadId    String?
+  orderNumber      String?
+  rawSubject       String
+  rawHtml          String
+  receivedAt       DateTime
+  status           PendingReceiptStatus @default(PENDING)
+  processedAt      DateTime?
+  processedById    String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  // Relations
+  source      SupplierEmailSource       @relation(fields: [supplierSourceId], references: [id])
+  processedBy User?                     @relation("ProcessedStockReceipts", fields: [processedById], references: [id])
+  lines       PendingStockReceiptLine[]
+
+  @@index([status])
+  @@index([supplierSourceId])
+  @@map("pending_stock_receipts")
+}
+
+// One row per parsed line item on a supplier order email
+model PendingStockReceiptLine {
+  id                  String          @id @default(cuid())
+  receiptId           String
+  supplierProductName String
+  parsedQuantity      Int
+  matchedVariantId    String?
+  effectiveQuantity   Int?
+  matchStatus         LineMatchStatus @default(UNMATCHED)
+  appliedMovementId   String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  // Relations
+  receipt PendingStockReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  variant ProductVariant?     @relation(fields: [matchedVariantId], references: [id])
+
+  @@index([receiptId])
+  @@map("pending_stock_receipt_lines")
 }
 
 // Order Management
@@ -1245,6 +1337,20 @@ enum MovementType {
   OUTBOUND
   ADJUSTMENT
   TRANSFER
+}
+
+enum PendingReceiptStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIAL
+}
+
+enum LineMatchStatus {
+  UNMATCHED
+  AUTO_MATCHED
+  MANUAL_MATCHED
+  REJECTED
 }
 
 enum PromotionType {
