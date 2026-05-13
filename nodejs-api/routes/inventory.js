@@ -10,6 +10,7 @@ const {
 } = require("../utils/inventorySyncService");
 const { queueProductSync } = require("../integrations/skydell_odoo");
 const { notifySalesChannelWebhooks } = require("../utils/webhookService");
+const { applyBulkMovement } = require("../services/inventory.service");
 
 const router = express.Router();
 
@@ -1254,102 +1255,7 @@ router.post(
   ],
   asyncHandler(async (req, res) => {
     const { items, type, reason } = req.body;
-
-    const results = await prisma.$transaction(async (tx) => {
-      const processed = [];
-      for (const item of items) {
-        let inv = await tx.inventory.findFirst({
-          where: { variantId: item.variantId, locationId: item.locationId },
-        });
-        if (!inv) {
-          inv = await tx.inventory.create({
-            data: {
-              variantId: item.variantId,
-              locationId: item.locationId,
-              quantity: 0,
-              lowStockAlert: 10,
-            },
-          });
-        }
-
-        const delta = [
-          "PURCHASE",
-          "RETURN",
-          "ADJUSTMENT_IN",
-          "TRANSFER_IN",
-        ].includes(type)
-          ? item.quantity
-          : -item.quantity;
-
-        const updated = await tx.inventory.update({
-          where: { id: inv.id },
-          data: { quantity: { increment: delta } },
-          include: {
-            variant: {
-              include: { product: { select: { name: true, status: true } } },
-            },
-            location: true,
-          },
-        });
-
-        const movement = await tx.inventoryMovement.create({
-          data: {
-            inventoryId: inv.id,
-            quantity: delta,
-            type: [
-              "PURCHASE",
-              "RETURN",
-              "ADJUSTMENT_IN",
-              "TRANSFER_IN",
-            ].includes(type)
-              ? "INBOUND"
-              : "OUTBOUND",
-            reason,
-          },
-        });
-
-        processed.push({ inventory: updated, movement });
-      }
-      return processed;
-    });
-
-    // Notify sales channel webhooks about inventory changes
-    const bulkMovementVariantIds = [
-      ...new Set(results.map((r) => r.inventory?.variantId).filter(Boolean)),
-    ];
-    if (bulkMovementVariantIds.length > 0) {
-      notifySalesChannelWebhooks(bulkMovementVariantIds).catch((err) =>
-        console.error("[BULK MOVEMENT] Webhook notification failed:", err),
-      );
-    }
-
-    // Sync affected products to Odoo
-    try {
-      const bulkMovementProductIds = [
-        ...new Set(
-          results
-            .map(
-              (r) =>
-                r.inventory?.variant?.product?.id ||
-                r.inventory?.variant?.productId,
-            )
-            .filter(Boolean),
-        ),
-      ];
-      for (const productId of bulkMovementProductIds) {
-        queueProductSync(
-          productId,
-          "INVENTORY_ADJUSTMENT_MANUAL",
-          `Bulk inventory movement (${req.body.type}, ${results.length} items)`,
-          { initiatedBy: req.user?.id || "system" },
-        ).catch((err) =>
-          console.error("[BULK MOVEMENT] Failed to queue Odoo sync:", err),
-        );
-      }
-    } catch (odooErr) {
-      console.error("[BULK MOVEMENT] Odoo sync queueing failed:", odooErr);
-    }
-
+    const results = await applyBulkMovement(items, type, reason, req.user && req.user.id);
     res.json({
       success: true,
       data: { processed: results.length, items: results },
