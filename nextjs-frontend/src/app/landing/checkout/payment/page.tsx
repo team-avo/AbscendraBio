@@ -423,7 +423,9 @@ function PaymentPageContent() {
       setPaymentInstructions({
         type: 'zelle',
         title: 'Zelle Payment Instructions',
-        email: 'accounting@centreresearch.org',
+        recipient: 'ASCENDRA BIO, LLC',
+        handle: 'ascendrabio',
+        email: 'accounts@ascendrabio.com',
         message: 'Order processing will commence only upon receipt of the payment confirmation email.'
       });
       setShowPaymentInstructions(true);
@@ -431,12 +433,12 @@ function PaymentPageContent() {
       setPaymentInstructions({
         type: 'wire',
         title: 'Wire Transfer Instructions',
-        company: 'Ascendra Bio Inc',
+        company: 'ASCENDRA BIO, LLC',
         address: '383 Madison Avenue, New York, NY 10179',
-        accountNumber: '716397685',
-        routingNumber: '021000021',
-        email: 'accounting@centreresearch.org',
-        message: 'Once wire is confirmed, please screenshot confirmation and send to accounting@centreresearch.org'
+        accountNumber: '2909225805',
+        routingNumber: '322271627',
+        email: 'accounts@ascendrabio.com',
+        message: 'Once wire is confirmed, please screenshot confirmation and send to accounts@ascendrabio.com'
       });
       setShowPaymentInstructions(true);
     }
@@ -846,10 +848,10 @@ function PaymentPageContent() {
                       </div>
                       <ol className="list-decimal list-inside space-y-2">
                         <li>
-                          Please remit Zelle payments to <strong>accounting@centreresearch.org</strong>. Include your order number in the memo field. We will receive email confirmation from Zelle upon successful transmission.
+                          Open your bank&apos;s app and send a Zelle payment to <strong>ASCENDRA BIO, LLC</strong> (Zelle handle: <strong>ascendrabio</strong>). Include your order number in the memo. You can also scan the QR code shown on the next screen.
                         </li>
                         <li>
-                          Kindly forward a screenshot of the payment confirmation to <strong>accounting@centreresearch.org</strong> for cross-verification.
+                          Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
                         </li>
                       </ol>
                     </div>
@@ -933,7 +935,10 @@ function PaymentPageContent() {
                     <div>
                       <h4 className="font-medium text-green-800">Zelle Payment</h4>
                       <p className="text-sm text-green-700 mt-1">
-                        Send payment to: <strong>{paymentInstructions.email}</strong>
+                        Send payment to: <strong>{paymentInstructions.recipient || 'ASCENDRA BIO, LLC'}</strong>
+                        {paymentInstructions.handle && (
+                          <> · Zelle handle: <strong>{paymentInstructions.handle}</strong></>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -943,8 +948,8 @@ function PaymentPageContent() {
                 <div className="flex flex-col items-center justify-center py-12 my-6 bg-white border border-gray-100 rounded-2xl shadow-inner overflow-hidden">
                   <div className="relative w-80 h-80 sm:w-[440px] sm:h-[440px] overflow-hidden rounded-xl">
                     <Image
-                      src="/Zelle-payment-qr.png"
-                      alt="Zelle Payment QR Code"
+                      src="/zelle-qr-ascendrabio.jpeg"
+                      alt="Zelle Payment QR Code — ASCENDRA BIO, LLC"
                       fill
                       className="object-contain"
                       priority
@@ -958,10 +963,10 @@ function PaymentPageContent() {
                   </div>
                   <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
                     <li>
-                      Please remit Zelle payments to <strong>accounting@centreresearch.org</strong>. Include your order number in the memo field. We will receive email confirmation from Zelle upon successful transmission.
+                      Open your bank&apos;s app and scan the QR code above, or send a Zelle payment manually to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>). Include your order number in the memo field.
                     </li>
                     <li>
-                      Kindly forward a screenshot of the payment confirmation to <strong>accounting@centreresearch.org</strong> for cross-verification.
+                      Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
                     </li>
                   </ol>
                 </div>
