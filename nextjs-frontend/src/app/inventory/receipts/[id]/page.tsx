@@ -75,7 +75,7 @@ function lineStatusBadge(line: StockReceiptLine) {
         default:
             return (
                 <Badge className="bg-red-100 text-red-900 hover:bg-red-200">
-                    Unmatched
+                    New Product
                 </Badge>
             );
     }
