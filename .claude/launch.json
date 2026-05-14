@@ -4,8 +4,8 @@
     {
       "name": "frontend",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000,
+      "runtimeArgs": ["run", "dev", "--", "-p", "3055"],
+      "port": 3055,
       "cwd": "nextjs-frontend",
       "autoPort": false
     }

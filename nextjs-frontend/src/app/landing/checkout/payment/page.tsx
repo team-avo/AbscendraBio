@@ -432,13 +432,13 @@ function PaymentPageContent() {
     } else if (method === 'wire') {
       setPaymentInstructions({
         type: 'wire',
-        title: 'Wire Transfer Instructions',
+        title: 'ACH Transfer Instructions',
         company: 'ASCENDRA BIO, LLC',
         address: '383 Madison Avenue, New York, NY 10179',
         accountNumber: '2909225805',
         routingNumber: '322271627',
         email: 'accounts@ascendrabio.com',
-        message: 'Once wire is confirmed, please screenshot confirmation and send to accounts@ascendrabio.com'
+        message: 'Once the ACH transfer is confirmed, please screenshot confirmation and send to accounts@ascendrabio.com'
       });
       setShowPaymentInstructions(true);
     }
@@ -690,7 +690,7 @@ function PaymentPageContent() {
                         <span>
                           {selectedPaymentMethod === 'credit-card' && 'Authorize.Net selected'}
                           {selectedPaymentMethod === 'zelle' && 'Zelle payment selected'}
-                          {selectedPaymentMethod === 'wire' && 'Wire transfer selected'}
+                          {selectedPaymentMethod === 'wire' && 'ACH transfer selected'}
                         </span>
                       </div>
                     </div>
@@ -810,14 +810,14 @@ function PaymentPageContent() {
                     </Label>
                   </div>
 
-                  {/* Wire Transfer Option */}
+                  {/* ACH Transfer Option */}
                   <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-all duration-200">
                     <RadioGroupItem value="wire" id="wire" className="h-4 w-4" />
                     <Label htmlFor="wire" className="flex items-center space-x-3 cursor-pointer flex-1">
                       <Building2 className="h-5 w-5 text-purple-600" />
                       <div className="flex-1">
-                        <div className="font-semibold">Wire Transfer</div>
-                        <div className="text-sm text-gray-600">You will receive wire instructions on the next page</div>
+                        <div className="font-semibold">ACH</div>
+                        <div className="text-sm text-gray-600">You will receive ACH transfer instructions on the next page</div>
                       </div>
                     </Label>
                   </div>
@@ -903,129 +903,131 @@ function PaymentPageContent() {
 
       {/* Payment Instructions Dialog */}
       <Dialog open={showPaymentInstructions} onOpenChange={setShowPaymentInstructions}>
-        <DialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[95vh] p-0 gap-0 grid-rows-[auto_1fr_auto] sm:max-w-lg">
+          <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle>{paymentInstructions?.title}</DialogTitle>
             <DialogDescription>
               Follow the instructions below to complete your payment.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
-                <p>{error}</p>
-                {error === 'Cart is empty' && (
-                  <div className="mt-2 text-xs text-red-500">
-                    Looks like there were changes to your cart,{' '}
-                    <button
-                      onClick={() => window.location.href = '/landing/products'}
-                      className="font-bold underline hover:text-red-700 transition-colors"
-                    >
-                      click here to build your cart again
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            {paymentInstructions?.type === 'zelle' && (
-              <div className="space-y-3">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <div className="flex items-start gap-2">
-                    <Smartphone className="h-5 w-5 text-green-600 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium text-green-800">Zelle Payment</h4>
-                      <p className="text-sm text-green-700 mt-1">
-                        Send payment to: <strong>{paymentInstructions.recipient || 'ASCENDRA BIO, LLC'}</strong>
-                        {paymentInstructions.handle && (
-                          <> · Zelle handle: <strong>{paymentInstructions.handle}</strong></>
-                        )}
-                      </p>
+          <div className="overflow-y-auto px-6 py-2">
+            <div className="space-y-4">
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
+                  <p>{error}</p>
+                  {error === 'Cart is empty' && (
+                    <div className="mt-2 text-xs text-red-500">
+                      Looks like there were changes to your cart,{' '}
+                      <button
+                        onClick={() => window.location.href = '/landing/products'}
+                        className="font-bold underline hover:text-red-700 transition-colors"
+                      >
+                        click here to build your cart again
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+              {paymentInstructions?.type === 'zelle' && (
+                <div className="space-y-3">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <Smartphone className="h-5 w-5 text-green-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-green-800">Zelle Payment</h4>
+                        <p className="text-sm text-green-700 mt-1">
+                          Send payment to: <strong>{paymentInstructions.recipient || 'ASCENDRA BIO, LLC'}</strong>
+                          {paymentInstructions.handle && (
+                            <> · Zelle handle: <strong>{paymentInstructions.handle}</strong></>
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Zelle QR Code - Final Refined Display */}
-                <div className="flex flex-col items-center justify-center py-12 my-6 bg-white border border-gray-100 rounded-2xl shadow-inner overflow-hidden">
-                  <div className="relative w-80 h-80 sm:w-[440px] sm:h-[440px] overflow-hidden rounded-xl">
-                    <Image
-                      src="/zelle-qr-ascendrabio.jpeg"
-                      alt="Zelle Payment QR Code — ASCENDRA BIO, LLC"
-                      fill
-                      className="object-contain"
-                      priority
-                    />
+                  {/* Zelle QR Code - Final Refined Display */}
+                  <div className="flex flex-col items-center justify-center py-6 bg-white border border-gray-100 rounded-2xl shadow-inner overflow-hidden">
+                    <p className="text-sm text-gray-600 text-center px-4 mb-4">
+                      Scan this code in your bank&apos;s app to pay <strong>ASCENDRA BIO, LLC</strong> at <strong>ascendrabio</strong>.
+                    </p>
+                    <div className="relative w-[280px] h-[280px] sm:w-[440px] sm:h-[440px] overflow-hidden rounded-xl">
+                      <Image
+                        src="/zelle-qr-ascendrabio.jpeg"
+                        alt="Zelle Payment QR Code — ASCENDRA BIO, LLC"
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    </div>
+                    <div className="mt-4 text-purple-600 font-bold text-2xl italic tracking-tight">Zelle<sup className="text-xs">®</sup></div>
                   </div>
-                </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-                  <div className="text-sm text-blue-900 font-semibold">
-                    Payment Instructions :
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                    <div className="text-sm text-blue-900 font-semibold">
+                      Payment Instructions :
+                    </div>
+                    <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+                      <li>
+                        Open your bank&apos;s app and scan the QR code above, or send a Zelle payment manually to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>). Include your order number in the memo field.
+                      </li>
+                      <li>
+                        Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
+                      </li>
+                    </ol>
                   </div>
-                  <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                    <li>
-                      Open your bank&apos;s app and scan the QR code above, or send a Zelle payment manually to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>). Include your order number in the memo field.
-                    </li>
-                    <li>
-                      Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
-                    </li>
-                  </ol>
-                </div>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
-                  <strong>Important Notice:</strong>
-                  <br />
-                  {paymentInstructions.message}
-                </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-sm font-semibold text-gray-700">Order Total: ${orderTotal.toFixed(2)}</p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    After confirming, you will receive order confirmation via email.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {paymentInstructions?.type === 'wire' && (
-              <div className="space-y-3">
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <h4 className="font-medium text-purple-800 mb-3">Wire Transfer Details</h4>
-                  <div className="space-y-2 text-sm">
-                    <p><strong>Company:</strong> {paymentInstructions.company}</p>
-                    <p><strong>Address:</strong> {paymentInstructions.address}</p>
-                    <p><strong>Account Number:</strong> {paymentInstructions.accountNumber}</p>
-                    <p><strong>Routing Number:</strong> {paymentInstructions.routingNumber}</p>
-                  </div>
-                </div>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Wire Instructions:</strong>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+                    <strong>Important Notice:</strong>
                     <br />
                     {paymentInstructions.message}
-                  </p>
+                  </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-sm font-semibold text-gray-700">Order Total: ${orderTotal.toFixed(2)}</p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    After confirming, you will receive order confirmation via email.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setShowPaymentInstructions(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleManualPayment} disabled={manualPaymentLoading}>
-              {manualPaymentLoading ? (
-                <span className="inline-flex items-center gap-2">
-                  <span className="animate-spin inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent" />
-                  Processing...
-                </span>
-              ) : (
-                'Confirm Order'
               )}
-            </Button>
-          </DialogFooter>
+
+              {paymentInstructions?.type === 'wire' && (
+                <div className="space-y-3">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <h4 className="font-medium text-purple-800 mb-3">ACH Transfer Details</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Company:</strong> {paymentInstructions.company}</p>
+                      <p><strong>Address:</strong> {paymentInstructions.address}</p>
+                      <p><strong>Account Number:</strong> {paymentInstructions.accountNumber}</p>
+                      <p><strong>Routing Number:</strong> {paymentInstructions.routingNumber}</p>
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>ACH Transfer Instructions:</strong>
+                      <br />
+                      {paymentInstructions.message}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="border-t bg-white px-6 py-4 rounded-b-lg">
+            <div className="bg-gray-50 rounded-lg p-3 mb-3">
+              <p className="text-sm font-semibold text-gray-700">Order Total: ${orderTotal.toFixed(2)}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                After confirming, you will receive order confirmation via email.
+              </p>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setShowPaymentInstructions(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleManualPayment} disabled={manualPaymentLoading}>
+                {manualPaymentLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="animate-spin inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent" />
+                    Processing...
+                  </span>
+                ) : (
+                  'Confirm Order'
+                )}
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
