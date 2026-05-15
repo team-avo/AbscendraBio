@@ -340,7 +340,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                           </Link>
                         </>
                       )}
-                      <button onClick={() => setOpenContact(true)} className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                      <button onClick={() => setOpenContact(true)} className={`cursor-pointer px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
                         Contact
                       </button>
                     </>
@@ -438,6 +438,22 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                           <span className="font-bold text-xs uppercase tracking-widest">Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
+                      {!hasRole(["ADMIN", "MANAGER", "STAFF", "SALES_MANAGER", "SALES_REP"]) && (
+                        <>
+                          <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer">
+                            <Link href="/account" className="flex items-center gap-3">
+                              <User className="h-4 w-4 text-[#1B2D4F]" />
+                              <span className="font-bold text-xs uppercase tracking-widest">Profile</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild className="rounded-xl py-3 cursor-pointer">
+                            <Link href="/account/orders" className="flex items-center gap-3">
+                              <List className="h-4 w-4 text-[#1B2D4F]" />
+                              <span className="font-bold text-xs uppercase tracking-widest">My Orders</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
                       <DropdownMenuSeparator className="my-1" />
                       <DropdownMenuItem onClick={() => logout()} className="flex items-center gap-3 text-red-600 rounded-xl py-3 cursor-pointer">
                         <LogOut className="h-4 w-4" />

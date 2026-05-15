@@ -158,7 +158,7 @@ export function OrderDateFilter({
                     <PopoverTrigger asChild>
                         <Button variant="outline" className="w-full sm:w-[200px] justify-start text-left font-normal">
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {from ? from.toLocaleDateString() : 'Select date'}
+                            {from ? from.toLocaleDateString('en-US') : 'Select date'}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -178,7 +178,7 @@ export function OrderDateFilter({
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full sm:w-[140px] justify-start text-xs sm:text-sm">
                                 <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-                                {from ? from.toLocaleDateString() : 'From'}
+                                {from ? from.toLocaleDateString('en-US') : 'From'}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -189,7 +189,7 @@ export function OrderDateFilter({
                         <PopoverTrigger asChild>
                             <Button variant="outline" className="w-full sm:w-[140px] justify-start text-xs sm:text-sm">
                                 <CalendarIcon className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-                                {to ? to.toLocaleDateString() : 'To'}
+                                {to ? to.toLocaleDateString('en-US') : 'To'}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">

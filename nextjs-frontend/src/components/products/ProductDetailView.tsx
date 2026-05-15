@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { api, type Product, resolveImageUrl, getPublicReportsForProduct, getPublicReportDownloadUrl, type ThirdPartyReport } from "@/lib/api";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
-import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, Lock, LogIn } from "lucide-react";
+import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, Lock, LogIn, FlaskConical, Dna, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
 import { CartSidebar } from "@/components/cart/CartSidebar";
@@ -15,6 +16,54 @@ import { getPricingCustomerType } from "@/utils/pricingMapper";
 import logger from '@/lib/logger';
 
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
+
+const SCIENTIFIC_PROFILES: Record<string, { overview: string; applications: string[]; mechanism: string }> = {
+  "BPC-157": {
+    overview: "BPC-157 is a 15-amino acid peptide derived from a protective gastric juice protein. It is among the most studied tissue-repair peptides due to its broad regenerative activity across multiple tissue types.",
+    applications: ["Tendon and ligament repair research", "Gastrointestinal mucosal healing", "Angiogenesis and wound healing studies", "Nitric oxide pathway modulation"],
+    mechanism: "Activates the FAK-paxillin pathway to accelerate fibroblast migration. Upregulates VEGF expression and promotes collagen synthesis without systemic GH axis involvement.",
+  },
+  "CJC-1295 + Ipamorelin": {
+    overview: "A synergistic combination of CJC-1295 (GHRH analogue) and Ipamorelin (selective GHRP). Used in growth hormone secretagogue research for its clean, sustained GH pulse profile.",
+    applications: ["Growth hormone stimulation studies", "Metabolic rate and body composition research", "Sleep architecture and recovery research", "Age-related GH decline models"],
+    mechanism: "CJC-1295 extends GHRH receptor activation; Ipamorelin selectively stimulates pituitary GH release via ghrelin receptors without cortisol or prolactin elevation.",
+  },
+  "AOD-9604": {
+    overview: "AOD-9604 is a modified fragment (176-191) of human growth hormone. It retains the lipolytic activity of hGH without binding to IGF-1 receptors, making it a clean research tool for adipose metabolism.",
+    applications: ["Lipolysis and fat metabolism research", "Adipocyte differentiation studies", "Metabolic syndrome model research", "Non-diabetogenic GH fragment studies"],
+    mechanism: "Stimulates lipolysis and inhibits lipogenesis via beta-3 adrenergic receptors. Does not bind GH receptor or stimulate IGF-1 secretion, isolating the fat-metabolism pathway.",
+  },
+  "Cerebrolysin": {
+    overview: "Cerebrolysin is a neuropeptide complex containing BDNF, NGF, GDNF, and CNTF fragments. It is one of the most studied neuroprotective agents in models of Alzheimer's, TBI, and stroke.",
+    applications: ["Neurodegenerative disease models (Alzheimer's, Parkinson's)", "Traumatic brain injury recovery research", "Ischemic stroke neuroprotection studies", "Cognitive function and neuroplasticity research"],
+    mechanism: "Delivers neurotrophic factors across the blood-brain barrier. Reduces amyloid precursor protein processing and tau hyperphosphorylation while enhancing synaptic density and neurogenesis.",
+  },
+  "CJC-1295 (DAC)": {
+    overview: "CJC-1295 with Drug Affinity Complex (DAC) modification binds to albumin in plasma, dramatically extending its half-life to 6-8 days. Used in long-duration GH stimulation research protocols.",
+    applications: ["Extended GH pulse studies", "Long-duration anabolic signaling research", "Pituitary function and GHRH sensitivity studies", "Lean mass accretion models"],
+    mechanism: "The DAC modification creates an albumin-reactive maleimidoproprionic acid group, enabling sustained GHRH receptor activation and prolonged downstream GH secretion.",
+  },
+  "Epithalon": {
+    overview: "Epithalon (Ala-Glu-Asp-Gly) is a synthetic tetrapeptide based on Epithalamin. It is the leading research compound for telomerase activation and longevity-associated pineal gland function.",
+    applications: ["Telomerase activation and telomere length research", "Pineal gland function and melatonin regulation", "Circadian rhythm modulation studies", "Aging biology and senescence models"],
+    mechanism: "Activates telomerase enzyme to elongate telomeres in somatic cells. Regulates the pineal gland's synthesis of melatonin and modulates HPA axis function in aged subjects.",
+  },
+  "Cagrilintide": {
+    overview: "Cagrilintide is a long-acting amylin analogue with a 7-day half-life. It is under active investigation as a combination partner with semaglutide (CagriSema) for its complementary satiety signaling.",
+    applications: ["Amylin receptor agonism studies", "Appetite and satiety signaling research", "GLP-1 / amylin combination therapy models", "Insulin secretion modulation research"],
+    mechanism: "Acts on amylin receptors (AMY1-3) in the area postrema to reduce food intake, slow gastric emptying, and suppress glucagon. Synergistic with GLP-1 agonists via distinct receptor pathways.",
+  },
+};
+
+const RELATED_PRODUCTS: Record<string, string[]> = {
+  "BPC-157": ["CJC-1295 + Ipamorelin", "Epithalon", "AOD-9604"],
+  "CJC-1295 + Ipamorelin": ["CJC-1295 (DAC)", "AOD-9604", "Epithalon"],
+  "AOD-9604": ["CJC-1295 + Ipamorelin", "Cagrilintide", "BPC-157"],
+  "Cerebrolysin": ["BPC-157", "Epithalon", "CJC-1295 + Ipamorelin"],
+  "CJC-1295 (DAC)": ["CJC-1295 + Ipamorelin", "Epithalon", "AOD-9604"],
+  "Epithalon": ["CJC-1295 + Ipamorelin", "BPC-157", "Cerebrolysin"],
+  "Cagrilintide": ["AOD-9604", "CJC-1295 + Ipamorelin", "BPC-157"],
+};
 
 export default function ProductDetailView({ productId, isModal = false }: { productId: string; isModal?: boolean }) {
   const { add, items, update } = useCart();
@@ -33,6 +82,8 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<Array<{ id: string; name: string; images?: any[] }>>([]);
+  const [sciProfileOpen, setSciProfileOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -56,12 +107,26 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
       setCustomerType(customerTypeValue);
 
       if (productRes.success && productRes.data) {
-        setProduct(productRes.data);
-        const firstVariant = productRes.data.variants?.[0];
+        const prod = productRes.data;
+        setProduct(prod);
+        const firstVariant = prod.variants?.[0];
         const variantImg = (firstVariant as any)?.images?.[0]?.url;
-        const productImg = (productRes.data as any)?.images?.[0]?.url;
+        const productImg = (prod as any)?.images?.[0]?.url;
         setHeroSrc(resolveImageUrl(variantImg || productImg || "/products/peptide-1.jpg"));
         setSelectedVariantId(firstVariant?.id || null);
+
+        // Load related products
+        const relatedNames = RELATED_PRODUCTS[prod.name] || [];
+        if (relatedNames.length > 0) {
+          try {
+            const allRes = await api.getStorefrontProducts({ limit: 20 });
+            if (allRes.success && allRes.data) {
+              const all = allRes.data.products || [];
+              const matched = all.filter((p: any) => relatedNames.includes(p.name));
+              setRelatedProducts(matched.slice(0, 3));
+            }
+          } catch (e) { logger.error("Failed to load related products", { error: e }); }
+        }
       } else {
         setError(productRes.error || "Failed to load product");
       }
@@ -379,6 +444,75 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                           </button>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Scientific Profile */}
+                {product?.name && SCIENTIFIC_PROFILES[product.name] && (() => {
+                  const profile = SCIENTIFIC_PROFILES[product.name];
+                  return (
+                    <div className="rounded-2xl border border-gray-100 overflow-hidden">
+                      <button
+                        onClick={() => setSciProfileOpen(o => !o)}
+                        className="w-full flex items-center justify-between px-4 py-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <FlaskConical className="w-3.5 h-3.5 text-[#4D7DF2]" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-[#070B14]">Scientific Profile</span>
+                        </div>
+                        <span className="text-[10px] text-gray-400">{sciProfileOpen ? '▲' : '▼'}</span>
+                      </button>
+                      {sciProfileOpen && (
+                        <div className="px-4 py-4 space-y-3 bg-white">
+                          <p className="text-xs text-gray-600 leading-relaxed">{profile.overview}</p>
+                          <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Mechanism</p>
+                            <p className="text-xs text-gray-500 leading-relaxed">{profile.mechanism}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Research Applications</p>
+                            <ul className="space-y-1">
+                              {profile.applications.map((app, i) => (
+                                <li key={i} className="flex items-start gap-1.5 text-xs text-gray-500">
+                                  <span className="text-[#4D7DF2] mt-0.5 shrink-0">·</span>
+                                  {app}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Frequently Paired With */}
+                {relatedProducts.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Dna className="w-3 h-3 text-gray-400" />
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Frequently Paired With</p>
+                    </div>
+                    <div className="grid gap-2">
+                      {relatedProducts.map((rp) => {
+                        const img = (rp as any).images?.[0]?.url;
+                        return (
+                          <Link
+                            key={rp.id}
+                            href={`/landing/products/${rp.id}`}
+                            className="flex items-center gap-3 p-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] rounded-xl border border-gray-100 transition-colors group"
+                          >
+                            {img && (
+                              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-gray-100 shrink-0">
+                                <img src={resolveImageUrl(img)} alt={rp.name} className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                            <span className="text-xs font-bold text-[#070B14] flex-1 truncate">{rp.name}</span>
+                            <ArrowRight className="w-3 h-3 text-gray-300 group-hover:text-[#4D7DF2] transition-colors shrink-0" />
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
