@@ -170,8 +170,8 @@ export function FooterBlue() {
               {[
                 { title: 'Lab Reports', href: '/landing/third-party-testing' },
                 { title: 'Quality Analysis', href: '/landing/third-party-testing' },
-                { title: 'Clinical Inquiry', href: '#' },
-                { title: 'About Us', href: '#' },
+                { title: 'Clinical Inquiry', href: '/landing/contact' },
+                { title: 'About Us', href: '/landing/about' },
               ].map((lnk, i) => (
                 <li key={i}>
                   <Link href={lnk.href} className="text-sm text-white/80 hover:text-white transition-colors duration-200">{lnk.title}</Link>
@@ -200,8 +200,8 @@ export function FooterBlue() {
             &copy; {new Date().getFullYear()} Ascendra Bio Sciences. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
-            <Link href="#" className="text-[11px] text-white/70 hover:text-white transition-colors">Privacy</Link>
-            <Link href="#" className="text-[11px] text-white/70 hover:text-white transition-colors">Terms</Link>
+            <Link href="/landing/privacy" className="text-[11px] text-white/70 hover:text-white transition-colors">Privacy</Link>
+            <Link href="/landing/terms" className="text-[11px] text-white/70 hover:text-white transition-colors">Terms</Link>
           </div>
         </div>
       </div>

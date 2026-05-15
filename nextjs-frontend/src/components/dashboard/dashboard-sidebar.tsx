@@ -417,7 +417,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-xs font-semibold text-white truncate">
-                                {user?.role?.replace('_', ' ') || 'Admin'}
+                                {user?.role === 'CUSTOMER' ? 'Account' : (user?.role?.replace(/_/g, ' ') || 'Admin')}
                             </p>
                             <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
                         </div>

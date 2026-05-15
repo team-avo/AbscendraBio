@@ -90,9 +90,9 @@ export default function LandingPage() {
 
           {/* Product image */}
           <motion.div
-            initial={{ opacity: 0, scale: 1.05 }}
+            initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="absolute right-0 top-0 h-full w-full lg:w-[60%]"
           >
             <Image
@@ -118,9 +118,9 @@ export default function LandingPage() {
           <div className="max-w-lg lg:max-w-[40%]">
             {/* Eyebrow */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.35 }}
               className="flex items-center gap-3 mb-6"
             >
               <span className="w-8 h-[1px] bg-[#4D7DF2]" />
@@ -132,26 +132,26 @@ export default function LandingPage() {
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-white">
               <motion.span
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
+                transition={{ duration: 0.35, delay: 0.05 }}
                 className="block"
               >
                 Advanced
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                transition={{ duration: 0.35, delay: 0.1 }}
                 className="block text-[#4D7DF2]"
               >
                 Bio-Research
               </motion.span>
               <motion.span
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="block font-extralight text-white/30"
+                transition={{ duration: 0.35, delay: 0.15 }}
+                className="block font-extralight text-white/70"
               >
                 Purity Redefined.
               </motion.span>
@@ -161,7 +161,7 @@ export default function LandingPage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.35, delay: 0.2 }}
               className="mt-6 text-base sm:text-lg text-gray-400 max-w-md leading-relaxed font-medium"
             >
               Industry-leading synthesis protocols ensuring 99.9% purity for clinical and academic research.
@@ -169,9 +169,9 @@ export default function LandingPage() {
 
             {/* CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 0.35, delay: 0.25 }}
               className="mt-10 flex flex-col sm:flex-row items-start gap-4"
             >
               <button
@@ -194,7 +194,7 @@ export default function LandingPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1 }}
+              transition={{ duration: 0.35, delay: 0.35 }}
               className="mt-14 flex flex-wrap gap-8"
             >
               {[

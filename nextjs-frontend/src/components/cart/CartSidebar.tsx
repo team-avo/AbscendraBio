@@ -32,6 +32,13 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
   const [authOpen, setAuthOpen] = React.useState(false);
 
   const getItemPrice = (it: any) => {
+    // PRIORITY 1: Use unitPrice from backend (already calculated with correct pricing tier)
+    if (it.unitPrice != null && Number(it.unitPrice) > 0) {
+      const price = Number(it.unitPrice);
+      const regularPrice = Number(it.variant?.regularPrice || 0);
+      return { price, isBulkPrice: false, regularPrice, savings: regularPrice - price };
+    }
+
     const pricingType = getPricingCustomerType(customerType);
     let price = 0;
     let isBulkPrice = false;
@@ -53,8 +60,6 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
       const salePrice = Number(it?.variant?.salePrice ?? 0);
       const variantRegularPrice = Number(it?.variant?.regularPrice ?? 0);
       price = salePrice > 0 ? salePrice : variantRegularPrice;
-    } else if (!isBulkPrice && it.unitPrice) {
-      price = Number(it.unitPrice);
     }
 
     const regularPrice = Number(it.variant?.regularPrice || 0);
@@ -89,7 +94,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
             </div>
             <div>
               <h2 className="text-base font-black text-[#070B14]">Your Cart</h2>
-              <p className="text-[10px] text-gray-400 font-medium">{items.length} {items.length === 1 ? 'item' : 'items'}</p>
+              <p className="text-[10px] text-gray-400 font-medium">{items.reduce((s, it) => s + it.quantity, 0)} {items.reduce((s, it) => s + it.quantity, 0) === 1 ? 'item' : 'items'}</p>
             </div>
           </div>
         </div>
@@ -194,7 +199,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
               <span className="font-black text-[#070B14]">{formatCurrency(subtotal)}</span>
             </div>
 
-            {discount.isEligible && (
+            {discount.isEligible && discount.discountAmount > 0 && (
               <>
                 <div className="flex items-center justify-between text-sm text-emerald-600">
                   <span className="font-medium">Discount ({formatDiscountPercentage(discount.discountPercentage)})</span>

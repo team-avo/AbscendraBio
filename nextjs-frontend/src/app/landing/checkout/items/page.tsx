@@ -773,7 +773,12 @@ export default function CheckoutItemsPage() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between"><span>Discount</span><span className={discountAmount > 0 ? "text-green-600 font-medium" : "text-gray-700"}>-${discountAmount.toFixed(2)}</span></div>
+                  {discountAmount > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span>Discount</span>
+                      <span className="text-green-600 font-medium">-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                   {promotions.length > 0 ? (
                     <Select value={couponCode} onValueChange={(v) => {
                       if (v === '__clear__') {
