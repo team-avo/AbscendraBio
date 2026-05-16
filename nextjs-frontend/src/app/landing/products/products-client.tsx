@@ -88,7 +88,13 @@ export default function ProductsClient({ products }: Props) {
 
   const filtered = products
     .filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+      const tokens = searchTerm.toLowerCase().split(/\s+/).filter(t => t.length > 1 && /[a-z0-9]/i.test(t))
+      const searchableText = [
+        p.name,
+        p.fullName,
+        ...(p._variantsPricing || []).map((v: any) => v.name),
+      ].join(' ').toLowerCase()
+      const matchesSearch = tokens.length === 0 || tokens.every(t => searchableText.includes(t))
       const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1]
       const matchesStock = !inStockOnly || p.inStock
       const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory
