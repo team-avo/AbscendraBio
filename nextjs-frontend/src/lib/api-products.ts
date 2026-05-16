@@ -132,6 +132,19 @@ export const createProductMethods = (client: ApiClient) => ({
     return client.get(`/storefront/products/${id}`);
   },
 
+  async getVariantsBatch(variantIds: string[]): Promise<ApiResponse<Array<{
+    id: string;
+    name: string;
+    sku: string;
+    regularPrice: number;
+    salePrice: number;
+    product: { id: string; name: string; status: string; images: Array<{ url: string }> };
+    inventory: Array<{ quantity: number; reservedQty: number; sellWhenOutOfStock: boolean; locationId: string }>;
+    inStock: boolean;
+  }>>> {
+    return client.get(`/storefront/products/variants/batch?ids=${variantIds.join(",")}`);
+  },
+
   // Cart endpoints
   async getCart(): Promise<
     ApiResponse<{
