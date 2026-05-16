@@ -127,19 +127,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loadGuestCart = useCallback(async () => {
-    const guest = readGuestCart();
-    if (guest.length === 0) { setItems([]); return; }
+    setLoading(true);
+    try {
+      const guest = readGuestCart();
+      if (guest.length === 0) { setItems([]); return; }
 
-    const variantIds = guest.map(g => g.variantId);
-    const batchRes = await api.getVariantsBatch(variantIds).catch(() => ({ success: false, data: [] as any[] }));
-    const variantMap = new Map((batchRes.success && batchRes.data ? batchRes.data : []).map((v: any) => [v.id, v]));
+      const variantIds = guest.map(g => g.variantId);
+      const batchRes = await api.getVariantsBatch(variantIds).catch(() => ({ success: false, data: [] as any[] }));
+      const variantMap = new Map((batchRes.success && batchRes.data ? batchRes.data : []).map((v: any) => [v.id, v]));
 
-    setItems(guest.map(g => ({
-      variantId: g.variantId,
-      quantity: g.quantity,
-      unitPrice: g.unitPrice,
-      variant: variantMap.get(g.variantId) ?? undefined,
-    })));
+      setItems(guest.map(g => ({
+        variantId: g.variantId,
+        quantity: g.quantity,
+        unitPrice: g.unitPrice,
+        variant: variantMap.get(g.variantId) ?? undefined,
+      })));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const refresh = useCallback(async () => {

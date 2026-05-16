@@ -70,7 +70,7 @@ const sanitizePhone = (value: string) =>
 
 export default function CheckoutPage() {
   const { isAuthenticated, hasRole, user } = useAuth();
-  const { items, subtotal, discount, total, refresh, update, remove } = useCart();
+  const { items, subtotal, discount, total, loading: cartLoading, refresh, update, remove } = useCart();
 
   // Safe wrapper for cart operations
   const safeUpdate = async (variantId: string, quantity: number) => {
@@ -562,10 +562,13 @@ export default function CheckoutPage() {
     // Don't redirect while the out-of-stock dialog is showing
     if (showOutOfStockDialog) return;
 
+    // Wait for cart to finish loading before checking emptiness
+    if (cartLoading) return;
+
     if (items.length === 0) {
       router.replace('/landing/products');
     }
-  }, [isAuthenticated, router, items, showOutOfStockDialog]);
+  }, [isAuthenticated, router, items, cartLoading, showOutOfStockDialog]);
 
   // Validate stock on mount
   useEffect(() => {
