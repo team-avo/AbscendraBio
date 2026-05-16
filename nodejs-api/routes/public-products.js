@@ -137,6 +137,53 @@ router.get(
   })
 );
 
+// Public: batch fetch variant details (for guest cart enrichment)
+router.get(
+  "/variants/batch",
+  [
+    query("ids").isString().withMessage("ids query param is required"),
+    validateRequest,
+  ],
+  asyncHandler(async (req, res) => {
+    const ids = String(req.query.ids).split(",").map(s => s.trim()).filter(Boolean).slice(0, 50);
+    if (ids.length === 0) return res.json({ success: true, data: [] });
+
+    const variants = await prisma.productVariant.findMany({
+      where: { id: { in: ids }, isActive: true },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            images: { take: 1, orderBy: { sortOrder: "asc" }, select: { url: true } },
+          },
+        },
+        inventory: {
+          select: { quantity: true, reservedQty: true, sellWhenOutOfStock: true, locationId: true },
+        },
+      },
+    });
+
+    const data = variants
+      .filter(v => v.product?.status === "ACTIVE")
+      .map(v => ({
+        id: v.id,
+        name: v.name,
+        sku: v.sku,
+        regularPrice: v.regularPrice,
+        salePrice: v.salePrice,
+        product: v.product,
+        inventory: v.inventory,
+        inStock:
+          v.inventory.some(inv => inv.sellWhenOutOfStock) ||
+          v.inventory.reduce((sum, inv) => sum + Math.max(0, (inv.quantity || 0) - (inv.reservedQty || 0)), 0) > 0,
+      }));
+
+    res.json({ success: true, data });
+  }),
+);
+
 // Public: get product by id or slug
 router.get(
   "/:id",
