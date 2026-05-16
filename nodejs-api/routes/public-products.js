@@ -44,7 +44,7 @@ router.get(
 
     const where = { status: "ACTIVE" };
     if (search) {
-      const searchTerms = search.split(/\s+/).filter(Boolean);
+      const searchTerms = search.split(/\s+/).filter(t => t.length > 1 && /[a-z0-9]/i.test(t));
       if (searchTerms.length > 0) {
         where.AND = [
           ...(where.AND || []),
@@ -52,6 +52,8 @@ router.get(
             OR: [
               { name: { contains: term, mode: "insensitive" } },
               { description: { contains: term, mode: "insensitive" } },
+              { variants: { some: { name: { contains: term, mode: "insensitive" } } } },
+              { variants: { some: { sku: { contains: term, mode: "insensitive" } } } },
             ]
           }))
         ];

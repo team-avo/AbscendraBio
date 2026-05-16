@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { ShoppingCart, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, FlaskConical } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import { useCart } from '@/contexts/cart-context';
@@ -22,14 +22,24 @@ interface ProductCardProps {
   className?: string;
 }
 
-function ProductCardImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [imgSrc, setImgSrc] = useState(resolveImageUrl(src));
+function ProductCardImage({ src, alt, className }: { src?: string | null; alt: string; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const resolvedSrc = src ? resolveImageUrl(src) : null;
+
+  if (!resolvedSrc || failed) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100`}>
+        <FlaskConical className="w-10 h-10 text-slate-200" strokeWidth={1.5} />
+      </div>
+    );
+  }
+
   return (
     <img
-      src={imgSrc || resolveImageUrl('/peptide-vial-bpc157.png')}
+      src={resolvedSrc}
       alt={alt}
       className={className}
-      onError={() => setImgSrc(resolveImageUrl('/peptide-vial-bpc157.png'))}
+      onError={() => setFailed(true)}
     />
   );
 }
