@@ -993,7 +993,7 @@ export default function CheckoutAddressPage() {
           <>
             {/* Modern 3-step progress bar */}
             <div className="mb-8">
-              <div className="flex items-center">
+              <div className="flex items-center max-w-sm">
                 <div className="flex flex-col items-center">
                   <button type="button" onClick={() => router.push('/landing/checkout/items')} className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-primary border-2 border-primary text-white hover:bg-primary/90 transition-colors">
                     ✓
