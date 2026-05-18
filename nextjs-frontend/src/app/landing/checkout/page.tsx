@@ -69,7 +69,7 @@ const sanitizePhone = (value: string) =>
   value.replace(/\D/g, "").slice(0, 10);
 
 export default function CheckoutPage() {
-  const { isAuthenticated, hasRole, user } = useAuth();
+  const { isAuthenticated, hasRole, user, isLoading: authLoading } = useAuth();
   const { items, subtotal, discount, total, loading: cartLoading, refresh, update, remove } = useCart();
 
   // Safe wrapper for cart operations
@@ -134,6 +134,12 @@ export default function CheckoutPage() {
   const [billingForm, setBillingForm] = useState<AddressFormState>(() => createEmptyAddressForm());
   const [shippingForm, setShippingForm] = useState<AddressFormState>(() => createEmptyAddressForm());
 
+  type AddressTouched = Partial<Record<keyof AddressFormState, boolean>>;
+  const [billingTouched, setBillingTouched] = useState<AddressTouched>({});
+  const [shippingTouched, setShippingTouched] = useState<AddressTouched>({});
+  const touchBilling = useCallback((key: keyof AddressFormState) => setBillingTouched(p => ({ ...p, [key]: true })), []);
+  const touchShipping = useCallback((key: keyof AddressFormState) => setShippingTouched(p => ({ ...p, [key]: true })), []);
+
   const [billingCountryCode, setBillingCountryCode] = useState('United States');
   const [billingStateCode, setBillingStateCode] = useState('');
   const [shippingCountryCode, setShippingCountryCode] = useState('United States');
@@ -163,20 +169,19 @@ export default function CheckoutPage() {
   const [newLocationName, setNewLocationName] = useState('');
   const [savingLocation, setSavingLocation] = useState(false);
 
-  // Out-of-stock validation state
-  const [outOfStockItems, setOutOfStockItems] = useState<Array<{ productName: string; variantName: string }>>([]);
-  const [showOutOfStockDialog, setShowOutOfStockDialog] = useState(false);
-
   const canCheckout =
     isAuthenticated && user?.role === "CUSTOMER" && user.customerId && items.length > 0;
 
   const formatAddressLabel = (address: Address) => {
     const name = [address.firstName, address.lastName].filter(Boolean).join(" ") || "Unnamed";
-    const company = (address as any).company ? ` (${(address as any).company})` : "";
-    const summaryParts = [address.address1, address.city, address.state].filter(Boolean);
-    const summary = summaryParts.length ? summaryParts.join(", ") : "";
-    const defaultTag = address.isDefault ? " (Default)" : "";
-    const typeLabel = address.type === "BILLING" ? "Billing" : "Shipping";
+    // Truncate long company names on mobile
+    const rawCompany = (address as any).company || "";
+    const company = rawCompany ? ` (${rawCompany.length > 20 ? rawCompany.slice(0, 18) + "…" : rawCompany})` : "";
+    // Show city + state abbreviation (not full street) to keep the label short
+    const summaryParts = [address.city, address.state].filter(Boolean);
+    const summary = summaryParts.length ? summaryParts.join(", ") : (address.address1 || "");
+    const defaultTag = address.isDefault ? " ★" : "";
+    const typeLabel = address.type === "BILLING" ? "Bill" : "Ship";
     return summary
       ? `${typeLabel} • ${name}${company} — ${summary}${defaultTag}`
       : `${typeLabel} • ${name}${company}${defaultTag}`;
@@ -335,11 +340,13 @@ export default function CheckoutPage() {
       if (typeof window !== 'undefined') sessionStorage.setItem('checkout_billingId', value);
       const selected = addresses.find((a) => a.id === value) || null;
       applyBillingAddress(selected);
+      setBillingTouched({});
       if (sameAsBilling) {
         const newShippingId = selected ? selected.id : "new";
         setShippingId(newShippingId);
         if (typeof window !== 'undefined') sessionStorage.setItem('checkout_shippingId', newShippingId);
         applyShippingAddress(selected);
+        setShippingTouched({});
       }
     },
     [addresses, applyBillingAddress, applyShippingAddress, markAddressDirty, sameAsBilling]
@@ -359,6 +366,7 @@ export default function CheckoutPage() {
       if (typeof window !== 'undefined') sessionStorage.setItem('checkout_shippingId', value);
       const selected = addresses.find((a) => a.id === value) || null;
       applyShippingAddress(selected);
+      setShippingTouched({});
     },
     [addresses, applyShippingAddress, markAddressDirty]
   );
@@ -375,36 +383,19 @@ export default function CheckoutPage() {
         setShippingStateCode(billingStateCode);
         setShippingForm({ ...billingForm });
       } else {
-        const shippingCandidates = [...addresses]
-          .filter((a) => a.type === "SHIPPING")
-          .sort(
-            (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          );
-        const next =
-          shippingCandidates[0] ||
-          addresses.find((a) => a.id === shippingId) ||
-          null;
-        if (next) {
-          setShippingId(next.id);
-          if (typeof window !== 'undefined') sessionStorage.setItem('checkout_shippingId', next.id);
-          applyShippingAddress(next);
-        } else {
-          setShippingId("new");
-          if (typeof window !== 'undefined') sessionStorage.setItem('checkout_shippingId', 'new');
-          applyShippingAddress(null);
-        }
+        // Don't auto-select a shipping address — let the user explicitly choose
+        setShippingId("new");
+        if (typeof window !== 'undefined') sessionStorage.setItem('checkout_shippingId', 'new');
+        applyShippingAddress(null);
       }
     },
     [
-      addresses,
       applyShippingAddress,
       billingForm,
       billingCountryCode,
       billingId,
       billingStateCode,
       markAddressDirty,
-      shippingId,
     ]
   );
 
@@ -419,11 +410,6 @@ export default function CheckoutPage() {
         const res = await api.getCustomer(user.customerId);
         if (res.success && res.data) {
           const customerData = res.data as any;
-          if (!customerData.mobileVerified) {
-            setOtpOpen(true);
-          } else {
-            setOtpOpen(false);
-          }
           setCustomerMobile(customerData.mobile || "");
 
           const list: Address[] = customerData.addresses || [];
@@ -515,19 +501,7 @@ export default function CheckoutPage() {
     [api, applyBillingAddress, applyShippingAddress, canCheckout, sameAsBilling, billingId, shippingId, user?.customerId]
   );
 
-  const [otpOpen, setOtpOpen] = useState(false);
-  const [otpRequested, setOtpRequested] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
-  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
-  const [resendIn, setResendIn] = useState<number>(0);
-  const [verifying, setVerifying] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [otpSuccess, setOtpSuccess] = useState(false);
   const [customerMobile, setCustomerMobile] = useState<string>("");
-  const [editingPhone, setEditingPhone] = useState(false);
-  const [editedPhone, setEditedPhone] = useState<string>("");
-  const [otpError, setOtpError] = useState<string>("");
 
   useEffect(() => {
     if (user?.customerId) {
@@ -554,21 +528,16 @@ export default function CheckoutPage() {
   }, [discount.discountAmount, discountAmount]);
 
   useEffect(() => {
+    if (authLoading) return; // wait for auth to hydrate
     if (!isAuthenticated) {
       router.replace('/landing/products');
       return;
     }
-
-    // Don't redirect while the out-of-stock dialog is showing
-    if (showOutOfStockDialog) return;
-
-    // Wait for cart to finish loading before checking emptiness
-    if (cartLoading) return;
-
-    if (items.length === 0) {
+    // Don't redirect during initial cart load — items may still be fetching
+    if (!cartLoading && items.length === 0) {
       router.replace('/landing/products');
     }
-  }, [isAuthenticated, router, items, cartLoading, showOutOfStockDialog]);
+  }, [isAuthenticated, authLoading, router, items, cartLoading]);
 
   // Validate stock on mount
   useEffect(() => {
@@ -577,12 +546,12 @@ export default function CheckoutPage() {
       try {
         const res = await api.validateCartStock();
         if (res.success && res.data && res.data.removedItems && res.data.removedItems.length > 0) {
-          setOutOfStockItems(res.data.removedItems.map((item: any) => ({
-            productName: item.productName,
-            variantName: item.variantName,
-          })));
-          setShowOutOfStockDialog(true);
-          // Don't refresh here — wait for user to close the dialog
+          const names = (res.data.removedItems as any[]).map((i: any) =>
+            `${i.productName}${i.variantName ? ` (${i.variantName})` : ''}`
+          ).join(', ');
+          toast.warning(`Removed out-of-stock items: ${names}`);
+          await refresh();
+          if (items.length === 0) router.replace('/landing/products');
         }
       } catch (err) {
         logger.error('Failed to validate cart stock:', { error: err });
@@ -1024,12 +993,13 @@ export default function CheckoutPage() {
               </div>
               <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
                 <div className="text-left">Address</div>
-                <div className="text-center">Checkout</div>
+                <div className="text-center">Items</div>
                 <div className="text-center">Payment</div>
                 <div className="text-right">Summary</div>
               </div>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black mb-10 tracking-tight text-primary uppercase italic">Identification & Logistics</h1>
+            <h1 className="text-3xl sm:text-5xl font-black mb-4 tracking-tight text-primary uppercase italic">Shipping & Billing Address</h1>
+            <p className="text-sm text-gray-500 mb-8">We currently ship within the United States only.</p>
 
             <div className="max-w-4xl mx-auto">
               <Card className="border-gray-200">
@@ -1078,8 +1048,14 @@ export default function CheckoutPage() {
                               id="billing-firstName"
                               value={billingForm.firstName}
                               onChange={(e) => updateBillingField("firstName", e.target.value)}
+                              onBlur={() => touchBilling("firstName")}
                               placeholder="Enter first name"
+                              maxLength={50}
+                              className={billingTouched.firstName && !billingForm.firstName ? "border-red-400" : ""}
                             />
+                            {billingTouched.firstName && !billingForm.firstName && (
+                              <p className="text-xs text-red-500 mt-1">First name is required</p>
+                            )}
                           </div>
                           <div>
                             <Label htmlFor="billing-lastName">
@@ -1089,8 +1065,14 @@ export default function CheckoutPage() {
                               id="billing-lastName"
                               value={billingForm.lastName}
                               onChange={(e) => updateBillingField("lastName", e.target.value)}
+                              onBlur={() => touchBilling("lastName")}
                               placeholder="Enter last name"
+                              maxLength={50}
+                              className={billingTouched.lastName && !billingForm.lastName ? "border-red-400" : ""}
                             />
+                            {billingTouched.lastName && !billingForm.lastName && (
+                              <p className="text-xs text-red-500 mt-1">Last name is required</p>
+                            )}
                           </div>
                         </div>
                         <div>
@@ -1100,6 +1082,7 @@ export default function CheckoutPage() {
                             value={billingForm.company}
                             onChange={(e) => updateBillingField("company", e.target.value)}
                             placeholder="Enter company name"
+                            maxLength={100}
                           />
                         </div>
                         <div>
@@ -1110,7 +1093,9 @@ export default function CheckoutPage() {
                             id="billing-address1"
                             value={billingForm.address1}
                             onChange={(val) => updateBillingField("address1", val)}
+                            onBlur={() => touchBilling("address1")}
                             placeholder="Enter address"
+                            className={billingTouched.address1 && !billingForm.address1 ? "border-red-400" : ""}
                             onAddressSelect={(parsed) => {
                               markAddressDirty();
                               setBillingForm((prev) => ({
@@ -1126,6 +1111,9 @@ export default function CheckoutPage() {
                               if (parsed.state) setBillingStateCode(parsed.state);
                             }}
                           />
+                          {billingTouched.address1 && !billingForm.address1 && (
+                            <p className="text-xs text-red-500 mt-1">Address is required</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="billing-address2">Address Line 2 (Optional)</Label>
@@ -1196,9 +1184,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New State
-                              </SelectItem>
                               {billingStateCode && !customBillingStates.includes(billingStateCode) && (
                                 <SelectItem value={billingStateCode}>
                                   {billingStateCode}
@@ -1231,9 +1216,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select city" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New City
-                              </SelectItem>
                               {billingForm.city && !customBillingCities.includes(billingForm.city) && (
                                 <SelectItem value={billingForm.city}>
                                   {billingForm.city}
@@ -1254,53 +1236,43 @@ export default function CheckoutPage() {
                           <Input
                             id="billing-postalCode"
                             value={billingForm.postalCode}
-                            onChange={(e) => updateBillingField("postalCode", e.target.value)}
-                            placeholder="Enter postal code"
+                            onChange={(e) => updateBillingField("postalCode", e.target.value.replace(/\D/g, '').slice(0, 5))}
+                            onBlur={() => touchBilling("postalCode")}
+                            placeholder="5-digit ZIP"
+                            inputMode="numeric"
+                            maxLength={5}
+                            pattern="\d{5}"
+                            className={billingTouched.postalCode && !billingForm.postalCode ? "border-red-400" : ""}
                           />
+                          {billingTouched.postalCode && !billingForm.postalCode && (
+                            <p className="text-xs text-red-500 mt-1">Postal code is required</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="billing-phone">
                             Phone Number <span className="text-red-500">*</span>
                           </Label>
                           <div className="flex gap-2">
-                            <Select
-                              value={Country.getAllCountries().find(c => c.name === billingCountryCode)?.isoCode || ""}
-                              onValueChange={(isoValue) => {
-                                markAddressDirty();
-                                const countryName = Country.getCountryByCode(isoValue)?.name || isoValue;
-                                setBillingCountryCode(countryName);
-                                // Also clear state/city as country changed
-                                setBillingStateCode("");
-                                setBillingForm(prev => ({
-                                  ...prev,
-                                  country: countryName,
-                                  state: "",
-                                  city: ""
-                                }));
-                              }}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Country.getAllCountries().map((country) => (
-                                  <SelectItem key={country.isoCode} value={country.isoCode}>
-                                    {country.flag} {country.phonecode}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center px-3 border border-input rounded-md bg-muted text-sm text-muted-foreground shrink-0 select-none">
+                              🇺🇸 +1
+                            </div>
                             <Input
                               id="billing-phone"
                               value={billingForm.phone}
                               onChange={(e) => updateBillingField("phone", sanitizePhone(e.target.value))}
-                              placeholder="Enter phone number"
-                              className="flex-1"
+                              onBlur={() => touchBilling("phone")}
+                              placeholder="10-digit mobile number"
+                              className={`flex-1${billingTouched.phone && billingForm.phone.length !== 10 ? " border-red-400" : ""}`}
                               inputMode="numeric"
-                              pattern="\\d{10}"
+                              pattern="\d{10}"
                               maxLength={10}
                             />
                           </div>
+                          {billingTouched.phone && billingForm.phone.length !== 10 && (
+                            <p className="text-xs text-red-500 mt-1">
+                              {billingForm.phone.length === 0 ? "Phone number is required" : "Must be 10 digits"}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1369,9 +1341,15 @@ export default function CheckoutPage() {
                               id="shipping-firstName"
                               value={shippingForm.firstName}
                               onChange={(e) => updateShippingField("firstName", e.target.value)}
+                              onBlur={() => !sameAsBilling && touchShipping("firstName")}
                               disabled={sameAsBilling}
                               placeholder="Enter first name"
+                              maxLength={50}
+                              className={!sameAsBilling && shippingTouched.firstName && !shippingForm.firstName ? "border-red-400" : ""}
                             />
+                            {!sameAsBilling && shippingTouched.firstName && !shippingForm.firstName && (
+                              <p className="text-xs text-red-500 mt-1">First name is required</p>
+                            )}
                           </div>
                           <div>
                             <Label htmlFor="shipping-lastName">
@@ -1381,9 +1359,15 @@ export default function CheckoutPage() {
                               id="shipping-lastName"
                               value={shippingForm.lastName}
                               onChange={(e) => updateShippingField("lastName", e.target.value)}
+                              onBlur={() => !sameAsBilling && touchShipping("lastName")}
                               disabled={sameAsBilling}
                               placeholder="Enter last name"
+                              maxLength={50}
+                              className={!sameAsBilling && shippingTouched.lastName && !shippingForm.lastName ? "border-red-400" : ""}
                             />
+                            {!sameAsBilling && shippingTouched.lastName && !shippingForm.lastName && (
+                              <p className="text-xs text-red-500 mt-1">Last name is required</p>
+                            )}
                           </div>
                         </div>
                         <div>
@@ -1394,6 +1378,7 @@ export default function CheckoutPage() {
                             onChange={(e) => updateShippingField("company", e.target.value)}
                             disabled={sameAsBilling}
                             placeholder="Enter company name"
+                            maxLength={100}
                           />
                         </div>
                         <div>
@@ -1404,8 +1389,10 @@ export default function CheckoutPage() {
                             id="shipping-address1"
                             value={shippingForm.address1}
                             onChange={(val) => updateShippingField("address1", val)}
+                            onBlur={() => !sameAsBilling && touchShipping("address1")}
                             disabled={sameAsBilling}
                             placeholder="Enter address"
+                            className={!sameAsBilling && shippingTouched.address1 && !shippingForm.address1 ? "border-red-400" : ""}
                             onAddressSelect={(parsed) => {
                               markAddressDirty();
                               setShippingForm((prev) => ({
@@ -1421,6 +1408,9 @@ export default function CheckoutPage() {
                               if (parsed.state) setShippingStateCode(parsed.state);
                             }}
                           />
+                          {!sameAsBilling && shippingTouched.address1 && !shippingForm.address1 && (
+                            <p className="text-xs text-red-500 mt-1">Address is required</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="shipping-address2">Address Line 2 (Optional)</Label>
@@ -1495,9 +1485,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New State
-                              </SelectItem>
                               {shippingStateCode && !customShippingStates.includes(shippingStateCode) && (
                                 <SelectItem value={shippingStateCode}>
                                   {shippingStateCode}
@@ -1530,9 +1517,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select city" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New City
-                              </SelectItem>
                               {shippingForm.city && !customShippingCities.includes(shippingForm.city) && (
                                 <SelectItem value={shippingForm.city}>
                                   {shippingForm.city}
@@ -1553,57 +1537,45 @@ export default function CheckoutPage() {
                           <Input
                             id="shipping-postalCode"
                             value={shippingForm.postalCode}
-                            onChange={(e) => updateShippingField("postalCode", e.target.value)}
+                            onChange={(e) => updateShippingField("postalCode", e.target.value.replace(/\D/g, '').slice(0, 5))}
+                            onBlur={() => !sameAsBilling && touchShipping("postalCode")}
                             disabled={sameAsBilling}
-                            placeholder="Enter postal code"
+                            placeholder="5-digit ZIP"
+                            inputMode="numeric"
+                            maxLength={5}
+                            pattern="\d{5}"
+                            className={!sameAsBilling && shippingTouched.postalCode && !shippingForm.postalCode ? "border-red-400" : ""}
                           />
+                          {!sameAsBilling && shippingTouched.postalCode && !shippingForm.postalCode && (
+                            <p className="text-xs text-red-500 mt-1">Postal code is required</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="shipping-phone">
                             Phone Number <span className="text-red-500">*</span>
                           </Label>
                           <div className="flex gap-2">
-                            <Select
-                              value={Country.getAllCountries().find(c => c.name === shippingCountryCode)?.isoCode || ""}
-                              onValueChange={(isoValue) => {
-                                if (sameAsBilling) return;
-                                markAddressDirty();
-                                const countryName = Country.getCountryByCode(isoValue)?.name || isoValue;
-                                setShippingCountryCode(countryName);
-                                // Also clear state/city as country changed
-                                setShippingStateCode("");
-                                setShippingForm(prev => ({
-                                  ...prev,
-                                  country: countryName,
-                                  state: "",
-                                  city: ""
-                                }));
-                              }}
-                              disabled={sameAsBilling}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Country.getAllCountries().map((country) => (
-                                  <SelectItem key={country.isoCode} value={country.isoCode}>
-                                    {country.flag} {country.phonecode}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center px-3 border border-input rounded-md bg-muted text-sm text-muted-foreground shrink-0 select-none">
+                              🇺🇸 +1
+                            </div>
                             <Input
                               id="shipping-phone"
                               value={shippingForm.phone}
                               onChange={(e) => updateShippingField("phone", sanitizePhone(e.target.value))}
+                              onBlur={() => !sameAsBilling && touchShipping("phone")}
                               disabled={sameAsBilling}
-                              placeholder="Enter phone number"
-                              className="flex-1"
+                              placeholder="10-digit mobile number"
+                              className={`flex-1${!sameAsBilling && shippingTouched.phone && shippingForm.phone.length !== 10 ? " border-red-400" : ""}`}
                               inputMode="numeric"
-                              pattern="\\d{10}"
+                              pattern="\d{10}"
                               maxLength={10}
                             />
                           </div>
+                          {!sameAsBilling && shippingTouched.phone && shippingForm.phone.length !== 10 && (
+                            <p className="text-xs text-red-500 mt-1">
+                              {shippingForm.phone.length === 0 ? "Phone number is required" : "Must be 10 digits"}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1635,7 +1607,7 @@ export default function CheckoutPage() {
                       ) : addrSuccess ? (
                         <>✓ Addresses Saved</>
                       ) : (
-                        'Continue to Checkout'
+                        'Continue to Order Review'
                       )}
                     </Button>
                   </div>
@@ -1743,37 +1715,6 @@ export default function CheckoutPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Out of Stock Dialog */}
-      <Dialog open={showOutOfStockDialog} onOpenChange={() => { /* prevent closing by clicking outside */ }}>
-        <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle className="text-red-600">Out of Stock</DialogTitle>
-            <DialogDescription>
-              Sorry, the item has ran out of stock, please try again later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 my-2">
-            {outOfStockItems.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-2 bg-red-50 rounded border border-red-100">
-                <span className="text-sm font-medium text-gray-800">{item.productName}</span>
-                {item.variantName && (
-                  <span className="text-xs text-gray-500">({item.variantName})</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button onClick={async () => {
-              setShowOutOfStockDialog(false);
-              await refresh();
-              // If cart is now empty, redirect
-              if (items.length === 0) {
-                router.replace('/landing/products');
-              }
-            }}>OK</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

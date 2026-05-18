@@ -43,6 +43,8 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [portalMismatch, setPortalMismatch] = useState<null | 'ADMIN_ON_CUSTOMER'>(null);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [emailSentOk, setEmailSentOk] = useState(true);
+  const [resendingVerification, setResendingVerification] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -191,14 +193,14 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 4) {
-      newErrors.password = 'Password must be at least 4 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     } else if (/\s/.test(password)) {
       newErrors.password = 'Password cannot contain spaces';
     }
 
     if (tab === 'signup') {
-      if (password && password.length < 4) newErrors.password = 'Password must be at least 4 characters';
+      if (password && password.length < 8) newErrors.password = 'Password must be at least 8 characters';
       else if (password && /\s/.test(password)) newErrors.password = 'Password cannot contain spaces';
       
       if (!licenseNumber || !licenseNumber.trim()) newErrors.licenseNumber = 'NPI / License number is required';
@@ -257,8 +259,10 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
           zip: zip.trim() || undefined,
         });
         if (registered) {
+          // registered is the full API response — check if email was actually sent
+          const sent = (registered as any)?.emailSent !== false;
+          setEmailSentOk(sent);
           setShowApprovalModal(true);
-          try { (await import('sonner')).toast?.info?.('We sent a verification email. Please verify your email.'); } catch { }
           return;
         }
       } else {
@@ -296,9 +300,16 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
       logger.error('Login error:', { error });
       if (tab === 'signup' && error?.response?.data?.error) {
         const errorMessage = error.response.data.error;
-        if (errorMessage.includes('email') && errorMessage.includes('already')) setErrors(prev => ({ ...prev, email: 'Email already taken' }));
-        else if (errorMessage.includes('mobile') && errorMessage.includes('already')) setErrors(prev => ({ ...prev, mobile: 'Mobile number already taken' }));
-        else toast.error(errorMessage);
+        const lower = errorMessage.toLowerCase();
+        if (lower.includes('email or mobile') || lower.includes('email and mobile')) {
+          setErrors(prev => ({ ...prev, email: 'Email already registered', mobile: 'Mobile already registered' }));
+        } else if (lower.includes('email') && lower.includes('already')) {
+          setErrors(prev => ({ ...prev, email: 'Email already taken' }));
+        } else if (lower.includes('mobile') && lower.includes('already')) {
+          setErrors(prev => ({ ...prev, mobile: 'Mobile number already taken' }));
+        } else {
+          toast.error(errorMessage);
+        }
       } else if (tab === 'signin') {
         const errorMessage = (error?.response?.data?.error || error?.response?.data?.message || error?.message || '').toLowerCase();
         if (errorMessage.includes('verification') || errorMessage.includes('pending') || errorMessage.includes('approval') || errorMessage.includes('inactive')) return toast.error(error?.response?.data?.error || 'Account status issue');
@@ -358,21 +369,101 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
     <div className="w-full">
       {/* Approval modal */}
       <Dialog open={showApprovalModal} onOpenChange={setShowApprovalModal}>
-        <DialogContent className="sm:max-w-[420px] rounded-3xl">
-          <DialogHeader><DialogTitle className="text-center">Check your email</DialogTitle></DialogHeader>
-          <div className="flex flex-col items-center space-y-4 pb-2">
-            <p className="text-center text-sm text-gray-500">We sent a verification link to <strong>{email}</strong>. Please verify your email to continue.</p>
+        <DialogContent className="sm:max-w-[440px] rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-lg">
+              {emailSentOk ? 'Account created — 2 steps to go' : 'Account created'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center space-y-5 pb-2">
+            {emailSentOk ? (
+              <div className="w-full space-y-3">
+                <div className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-4">
+                  <span className="text-blue-500 font-black text-base shrink-0">1</span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Verify your email</p>
+                    <p className="text-xs text-gray-500 mt-0.5">We sent a link to <strong>{email}</strong>. Click it to confirm your address. The link expires in 24 hours.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                  <span className="text-amber-500 font-black text-base shrink-0">2</span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Wait for admin approval</p>
+                    <p className="text-xs text-gray-500 mt-0.5">After verification, our team will review your account. You'll receive an email once approved — then you can log in.</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full space-y-3">
+                <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-2xl p-4">
+                  <span className="text-red-500 font-black text-base shrink-0">!</span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Verification email could not be sent</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Your account was created but we couldn't send the verification email to <strong>{email}</strong>. Use the button below to try again.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                  <span className="text-amber-500 font-black text-base shrink-0">2</span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">Wait for admin approval</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Once your email is verified, our team will review your account and email you when approved.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {!emailSentOk && (
+              <Button
+                variant="outline"
+                className="w-full rounded-2xl h-10 text-sm"
+                disabled={resendingVerification}
+                onClick={async () => {
+                  setResendingVerification(true);
+                  try {
+                    await api.resendVerification(email);
+                    setEmailSentOk(true);
+                    toast.success('Verification email sent — check your inbox.');
+                  } catch {
+                    toast.error('Failed to resend. Please try again shortly.');
+                  } finally {
+                    setResendingVerification(false);
+                  }
+                }}
+              >
+                {resendingVerification ? 'Sending…' : 'Resend verification email'}
+              </Button>
+            )}
             <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowApprovalModal(false)}>Got it</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Email verification modal */}
+      {/* Email verification modal (shown when trying to log in before verifying) */}
       <Dialog open={showEmailVerificationModal} onOpenChange={setShowEmailVerificationModal}>
-        <DialogContent className="sm:max-w-[420px] rounded-3xl">
-          <DialogHeader><DialogTitle className="text-center">Verify your email</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[440px] rounded-3xl">
+          <DialogHeader><DialogTitle className="text-center">Email not yet verified</DialogTitle></DialogHeader>
           <div className="flex flex-col items-center space-y-4 pb-2">
-            <p className="text-center text-sm text-gray-500">A verification link has been sent to your inbox. Please check your email to continue.</p>
+            <p className="text-center text-sm text-gray-500">
+              Your account requires email verification before you can sign in. Check your inbox for the verification link, or request a new one below.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full rounded-2xl h-10 text-sm"
+              disabled={resendingVerification}
+              onClick={async () => {
+                if (!email) { toast.error('Enter your email in the sign-in form first'); return; }
+                setResendingVerification(true);
+                try {
+                  await api.resendVerification(email);
+                  toast.success('Verification email sent — check your inbox.');
+                } catch {
+                  toast.error('Failed to resend. Please try again shortly.');
+                } finally {
+                  setResendingVerification(false);
+                }
+              }}
+            >
+              {resendingVerification ? 'Sending…' : 'Resend verification email'}
+            </Button>
             <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowEmailVerificationModal(false)}>Got it</Button>
           </div>
         </DialogContent>

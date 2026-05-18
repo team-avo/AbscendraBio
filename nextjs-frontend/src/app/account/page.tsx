@@ -476,7 +476,7 @@ export default function AccountHomePage() {
                   {customer && (
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Account Type</p>
-                      <p className="text-gray-900 mt-0.5">{customer.customerType === 'B2C' || customer.customerType === 'B2B' ? 'Wholesale' : customer.customerType === 'ENTERPRISE_1' || customer.customerType === 'ENTERPRISE_2' ? 'Enterprise' : customer.customerType}</p>
+                      <p className="text-gray-900 mt-0.5">{customer.customerType === 'B2C' ? 'Retail' : customer.customerType === 'B2B' ? 'Wholesale' : customer.customerType === 'ENTERPRISE_1' || customer.customerType === 'ENTERPRISE_2' ? 'Enterprise' : customer.customerType}</p>
                     </div>
                   )}
                   <div>
@@ -607,7 +607,7 @@ export default function AccountHomePage() {
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <div className="font-medium flex items-center gap-2">
-                              {a.type} {a.isDefault ? <Badge variant="secondary">Default</Badge> : null}
+                              {a.type === 'SHIPPING' ? 'Shipping' : a.type === 'BILLING' ? 'Billing' : a.type} {a.isDefault ? <Badge variant="secondary">Default</Badge> : null}
                             </div>
                             <div>{a.firstName} {a.lastName}</div>
                             <div>{a.address1}{a.address2 ? `, ${a.address2}` : ''}</div>
@@ -672,7 +672,7 @@ export default function AccountHomePage() {
                     />
                   </div>
                   <div>
-                    <Label>NPI / License Number (Optional)</Label>
+                    <Label>NPI / License Number</Label>
                     <Input
                       value={profile.licenseNumber}
                       onChange={(e) => setProfile({ ...profile, licenseNumber: e.target.value })}
@@ -857,7 +857,14 @@ export default function AccountHomePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <Label>Postal code</Label>
-                      <Input value={addressForm.postalCode} onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value })} />
+                      <Input
+                        value={addressForm.postalCode}
+                        onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value.replace(/\D/g, '').slice(0, 5) })}
+                        inputMode="numeric"
+                        maxLength={5}
+                        pattern="\d{5}"
+                        placeholder="5-digit ZIP"
+                      />
                     </div>
                     <div>
                       <Label>Phone</Label>

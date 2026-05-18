@@ -9,18 +9,17 @@ import { Separator } from "@/components/ui/separator";
 import { resolveImageUrl } from "@/lib/api";
 import { api, type Address } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, X, Copy, Check, Tag, MapPin, Pencil } from "lucide-react";
+import { Minus, Plus, X, Copy, Check, Tag, MapPin, Pencil, Loader2 } from "lucide-react";
 import { Country, State } from "country-state-city";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Promotion } from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import logger from '@/lib/logger';
 
 export default function CheckoutItemsPage() {
-  const { isAuthenticated, hasRole, user } = useAuth();
-  const { items, subtotal, discount, total, refresh, update, remove } = useCart();
+  const { isAuthenticated, hasRole, user, isLoading: authLoading } = useAuth();
+  const { items, subtotal, discount, total, loading: cartLoading, refresh, update, remove } = useCart();
   const router = useRouter();
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,9 +52,6 @@ export default function CheckoutItemsPage() {
   const [showTermsError, setShowTermsError] = useState(false);
   const [couponCopied, setCouponCopied] = useState(false);
 
-  // Out-of-stock validation state
-  const [outOfStockItems, setOutOfStockItems] = useState<Array<{ productName: string; variantName: string }>>([]);
-  const [showOutOfStockDialog, setShowOutOfStockDialog] = useState(false);
   const addressSectionRef = useRef<HTMLDivElement | null>(null);
 
   const handleScrollToAddress = () => {
@@ -195,13 +191,13 @@ export default function CheckoutItemsPage() {
 
   // Refresh cart on page load to ensure pricing is up-to-date
   useEffect(() => {
+    if (authLoading || cartLoading) return; // wait for hydration
     if (!isAuthenticated) {
       router.replace('/landing/products');
-    } else if (canCheckout && !showOutOfStockDialog) {
-      // Fetch fresh cart data to ensure pricing reflects latest variant prices
+    } else if (canCheckout) {
       refresh();
     }
-  }, [isAuthenticated, canCheckout, refresh, router, showOutOfStockDialog]);
+  }, [isAuthenticated, authLoading, cartLoading, canCheckout, refresh, router]);
 
   // Validate stock on mount
   useEffect(() => {
@@ -210,12 +206,11 @@ export default function CheckoutItemsPage() {
       try {
         const res = await api.validateCartStock();
         if (res.success && res.data && res.data.removedItems && res.data.removedItems.length > 0) {
-          setOutOfStockItems(res.data.removedItems.map((item: any) => ({
-            productName: item.productName,
-            variantName: item.variantName,
-          })));
-          setShowOutOfStockDialog(true);
-          // Don't refresh here — wait for user to close the dialog
+          const removed = res.data.removedItems as Array<{ productName: string; variantName: string }>;
+          const names = removed.map(i => `${i.productName}${i.variantName ? ` (${i.variantName})` : ''}`).join(', ');
+          toast.warning(`Removed out-of-stock items: ${names}`);
+          await refresh();
+          if (items.length === 0) router.replace('/landing/products');
         }
       } catch (err) {
         logger.error('Failed to validate cart stock:', { error: err });
@@ -521,7 +516,7 @@ export default function CheckoutItemsPage() {
             <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline text-left">
               Address
             </button>
-            <div className="text-center">Checkout</div>
+            <div className="text-center">Items</div>
             <div className="text-center opacity-60 cursor-not-allowed">Payment</div>
             <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
@@ -773,12 +768,6 @@ export default function CheckoutItemsPage() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  {discountAmount > 0 && (
-                    <div className="flex items-center justify-between">
-                      <span>Discount</span>
-                      <span className="text-green-600 font-medium">-${discountAmount.toFixed(2)}</span>
-                    </div>
-                  )}
                   {promotions.length > 0 ? (
                     <Select value={couponCode} onValueChange={(v) => {
                       if (v === '__clear__') {
@@ -787,7 +776,7 @@ export default function CheckoutItemsPage() {
                         setCouponCode(v);
                       }
                     }}>
-                      <SelectTrigger className="w-full border-gray-300">
+                      <SelectTrigger className={`w-full ${couponCode && discountAmount > 0 ? "border-green-400 bg-green-50" : "border-gray-300"}`}>
                         <SelectValue placeholder={couponLoading ? 'Checking coupons…' : (couponCode || 'Select a coupon')} />
                       </SelectTrigger>
                       <SelectContent className="force-light">
@@ -808,23 +797,44 @@ export default function CheckoutItemsPage() {
                   ) : (
                     <div className="flex gap-2">
                       <input
-                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        id="coupon-code"
+                        aria-label="Enter coupon code"
+                        className={`flex-1 border rounded-md px-3 py-2 text-sm ${couponCode && discountAmount > 0 ? "border-green-400 bg-green-50" : "border-gray-300"}`}
                         placeholder="Enter coupon code"
                         value={couponCode}
+                        maxLength={50}
                         onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                       />
                       <Button type="button" variant="outline" onClick={() => setCouponCode(couponCode.trim().toUpperCase())}>Apply</Button>
                     </div>
                   )}
+                  {couponLoading && (
+                    <p className="text-xs text-gray-500 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Applying coupon…</p>
+                  )}
+                  {!couponLoading && couponCode && discountAmount > 0 && (
+                    <div className="flex items-center justify-between rounded-md bg-green-50 border border-green-200 px-3 py-2">
+                      <div className="flex items-center gap-2 text-green-700">
+                        <Check className="w-4 h-4 shrink-0" />
+                        <span className="text-sm font-medium">{couponCode}</span>
+                        <span className="text-xs text-green-600">applied</span>
+                      </div>
+                      <span className="text-sm font-semibold text-green-700">-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {!couponLoading && couponCode && discountAmount === 0 && (
+                    <p className="text-xs text-red-500">Coupon not applicable to current cart.</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-between text-gray-700"><span>Tax (Country)</span><span>{taxComputed ? `$${countryTaxAmount.toFixed(2)}` : '—'}</span></div>
-                <div className="flex items-center justify-between text-gray-700"><span>Tax (Product)</span><span>{taxComputed ? `$${productTaxAmount.toFixed(2)}` : '—'}</span></div>
+                <div className="flex items-center justify-between text-gray-700"><span>State Tax</span><span>{taxComputed ? `$${countryTaxAmount.toFixed(2)}` : '—'}</span></div>
+                <div className="flex items-center justify-between text-gray-700"><span>Product Tax</span><span>{taxComputed ? `$${productTaxAmount.toFixed(2)}` : '—'}</span></div>
 
                 {/* Shipping moved below taxes */}
                 <div className="flex items-center justify-between text-gray-700">
                   <span>Shipping</span>
                   <span>
-                    {selectedShippingRate ? (
+                    {shippingRatesLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin inline" />
+                    ) : selectedShippingRate ? (
                       `$${selectedShippingRate.rate.toFixed(2)}`
                     ) : shippingRate ? (
                       `$${(shippingRate.finalRate || 0).toFixed(2)}`
@@ -833,6 +843,9 @@ export default function CheckoutItemsPage() {
                     )}
                   </span>
                 </div>
+                {!shippingRatesLoading && !selectedShippingRate && !shippingRate && billingId && shippingId && customRates.length === 0 && (
+                  <p className="text-xs text-red-500">Couldn't calculate shipping — please try again or contact support.</p>
+                )}
 
                 {/* Shipping Rate Selection */}
                 {customRates.length > 0 && (
@@ -924,37 +937,6 @@ export default function CheckoutItemsPage() {
         </div>
       </main>
 
-      {/* Out of Stock Dialog */}
-      <Dialog open={showOutOfStockDialog} onOpenChange={() => { /* prevent closing by clicking outside */ }}>
-        <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle className="text-red-600">Out of Stock</DialogTitle>
-            <DialogDescription>
-              Sorry, the item has ran out of stock, please try again later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 my-2">
-            {outOfStockItems.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-2 bg-red-50 rounded border border-red-100">
-                <span className="text-sm font-medium text-gray-800">{item.productName}</span>
-                {item.variantName && (
-                  <span className="text-xs text-gray-500">({item.variantName})</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button onClick={async () => {
-              setShowOutOfStockDialog(false);
-              await refresh();
-              // If cart is now empty, redirect
-              if (items.length === 0) {
-                router.replace('/landing/products');
-              }
-            }}>OK</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -73,8 +73,8 @@ export const createAuthMethods = (client: ApiClient) => ({
     return client.get(`/auth/verify-email?token=${encodeURIComponent(token)}`);
   },
 
-  async resendVerification(): Promise<ApiResponse> {
-    return client.post(`/auth/request-email-verification`);
+  async resendVerification(email?: string): Promise<ApiResponse> {
+    return client.post(`/auth/request-email-verification`, email ? { email } : {});
   },
 
   // Password reset flow

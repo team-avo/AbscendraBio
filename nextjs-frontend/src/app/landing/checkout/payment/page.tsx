@@ -602,7 +602,7 @@ function PaymentPageContent() {
           </div>
           <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
             <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline">Address</button>
-            <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="text-center text-gray-700 hover:underline">Checkout</button>
+            <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="text-center text-gray-700 hover:underline">Items</button>
             <div className="text-center">Payment</div>
             <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
@@ -626,6 +626,16 @@ function PaymentPageContent() {
         `}</style>
 
         <h1 className="text-3xl sm:text-4xl font-black mb-8">Payment</h1>
+
+        {/* Price-changed notice: shown when fresh cart total differs from what the user saw on the items page */}
+        {!cartLoading && cartData && Math.abs(orderTotal - parseFloat(params.get("orderTotal") || "0")) > 0.01 && (
+          <div className="mb-4 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 flex items-start gap-2">
+            <span className="font-semibold shrink-0">Price updated:</span>
+            <span>
+              Your order total was recalculated to <strong>${orderTotal.toFixed(2)}</strong> (was ${parseFloat(params.get("orderTotal") || "0").toFixed(2)}) based on your latest cart. No changes to your items.
+            </span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
           {/* Order Summary */}
@@ -688,7 +698,7 @@ function PaymentPageContent() {
                       <div className="flex items-center gap-2 text-sm text-blue-800">
                         <CheckCircle className="h-4 w-4" />
                         <span>
-                          {selectedPaymentMethod === 'credit-card' && 'Authorize.Net selected'}
+                          {selectedPaymentMethod === 'credit-card' && 'Credit / Debit Card selected'}
                           {selectedPaymentMethod === 'zelle' && 'Zelle payment selected'}
                           {selectedPaymentMethod === 'wire' && 'ACH transfer selected'}
                         </span>
@@ -792,7 +802,7 @@ function PaymentPageContent() {
                     <Label htmlFor="credit-card" className="flex items-center space-x-3 cursor-pointer flex-1">
                       <CreditCard className="h-5 w-5 text-blue-600" />
                       <div className="flex-1">
-                        <div className="font-semibold">Authorize.Net <span className="text-xs font-normal text-gray-500">(adds 3% card fee)</span></div>
+                        <div className="font-semibold">Credit / Debit Card <span className="text-xs font-normal text-gray-400">Visa, Mastercard, Amex</span> <span className="text-xs font-normal text-gray-500">(adds 3% card fee)</span></div>
                         <div className="text-sm text-gray-600">Pay securely with your credit or debit card</div>
                       </div>
                     </Label>
@@ -816,8 +826,8 @@ function PaymentPageContent() {
                     <Label htmlFor="wire" className="flex items-center space-x-3 cursor-pointer flex-1">
                       <Building2 className="h-5 w-5 text-purple-600" />
                       <div className="flex-1">
-                        <div className="font-semibold">ACH</div>
-                        <div className="text-sm text-gray-600">You will receive ACH transfer instructions on the next page</div>
+                        <div className="font-semibold">Bank Transfer (ACH)</div>
+                        <div className="text-sm text-gray-600">Pay via ACH bank transfer — instructions on the next step</div>
                       </div>
                     </Label>
                   </div>
@@ -840,28 +850,6 @@ function PaymentPageContent() {
                     'Continue'
                   )}
                 </Button>
-                {selectedPaymentMethod === 'zelle' && (
-                  <div className="mt-6 space-y-3">
-                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-                      <div className="font-semibold uppercase tracking-wide">
-                        Payment Instructions :
-                      </div>
-                      <ol className="list-decimal list-inside space-y-2">
-                        <li>
-                          Open your bank&apos;s app and send a Zelle payment to <strong>ASCENDRA BIO, LLC</strong> (Zelle handle: <strong>ascendrabio</strong>). Include your order number in the memo. You can also scan the QR code shown on the next screen.
-                        </li>
-                        <li>
-                          Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
-                        </li>
-                      </ol>
-                    </div>
-                    <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-                      <strong>Important Notice:</strong>
-                      <br />
-                      Order processing will commence only upon receipt of the payment confirmation email.
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -890,7 +878,15 @@ function PaymentPageContent() {
             </h3>
             <p className="text-sm text-muted-foreground">{resultMessage}</p>
             {resultSuccess && isManualResult && manualCountdown !== null && (
-              <p className="text-xs text-gray-500 mt-1">Navigating to your orders in {manualCountdown}s…</p>
+              <div className="flex flex-col items-center gap-1 mt-1">
+                <p className="text-xs text-gray-500">Navigating to your orders in {manualCountdown}s…</p>
+                <button
+                  className="text-xs text-blue-600 underline"
+                  onClick={() => setManualCountdown(null)}
+                >
+                  Stay on this page
+                </button>
+              </div>
             )}
             {resultSuccess ? (
               <Button className="mt-2" onClick={() => router.push('/account/orders')}>View Orders</Button>
