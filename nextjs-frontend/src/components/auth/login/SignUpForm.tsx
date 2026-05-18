@@ -167,7 +167,7 @@ export function SignUpForm({
                 <div className="relative group">
                     <PhoneInputWithFlag
                         id="mobile"
-                        placeholder="e.g., +1 555 000 1111"
+                        placeholder="555 000 1111"
                         value={mobile}
                         onChange={(v) => setMobile(v)}
                         className={`transition-all ${errors.mobile ? 'border-red-500' : ''}`}

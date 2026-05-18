@@ -88,8 +88,8 @@ router.post(
       })
       .withMessage("Valid email is required"),
     body("password")
-      .isLength({ min: 4 })
-      .withMessage("Password must be at least 4 characters long")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
       .custom((val) => !/\s/.test(val))
       .withMessage("Password cannot contain spaces"),
     body("firstName").notEmpty().trim().withMessage("First name is required"),
@@ -100,9 +100,10 @@ router.post(
       .if(body("role").equals("CUSTOMER"))
       .notEmpty()
       .trim()
-      .withMessage(
-        "NPI / License number is required for customer registration",
-      ),
+      .withMessage("NPI / License number is required for customer registration")
+      .if(body("role").equals("CUSTOMER"))
+      .matches(/^\d{10}$/)
+      .withMessage("NPI / License number must be exactly 10 digits"),
     body("role")
       .optional()
       .isIn(["ADMIN", "MANAGER", "STAFF", "CUSTOMER"])
@@ -111,7 +112,13 @@ router.post(
       .if(body("role").equals("CUSTOMER"))
       .notEmpty()
       .trim()
-      .withMessage("Mobile number is required for customer registration"),
+      .withMessage("Mobile number is required for customer registration")
+      .if(body("role").equals("CUSTOMER"))
+      .custom((val) => {
+        const digits = (val || "").replace(/\D/g, "");
+        return digits.length >= 10 && digits.length <= 15;
+      })
+      .withMessage("Mobile number must be between 10 and 15 digits"),
 
     validateRequest,
   ],
@@ -238,9 +245,10 @@ router.post(
 
     if (role === "CUSTOMER") {
       // Generate email verification token and send email
+      let emailSent = false;
       try {
         const verificationToken = crypto.randomBytes(32).toString("hex");
-        const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365); // 365 days
+        const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
         await prisma.emailVerificationToken.create({
           data: { userId: user.id, token: verificationToken, expiresAt },
         });
@@ -248,17 +256,18 @@ router.post(
           process.env.FRONTEND_URL || "http://localhost:3000"
         }/verify?token=${verificationToken}`;
         await sendVerificationEmail(user.email, user.firstName || "", link);
+        emailSent = true;
       } catch (e) {
-        console.warn("Failed to queue verification email:", e?.message);
+        console.error("Failed to send verification email:", e?.message);
       }
 
       res.status(201).json({
         success: true,
-        message:
-          "Account created. Please verify your email and wait for approval",
-        data: {
-          user,
-        },
+        emailSent,
+        message: emailSent
+          ? "Account created. Please verify your email and wait for admin approval."
+          : "Account created, but we couldn't send the verification email. Please use the resend option on the login page.",
+        data: { user },
       });
     } else {
       // Generate token for staff users
@@ -324,8 +333,8 @@ router.post(
   [
     body("token").isString().withMessage("Token is required"),
     body("newPassword")
-      .isLength({ min: 4 })
-      .withMessage("New password must be at least 4 characters long")
+      .isLength({ min: 8 })
+      .withMessage("New password must be at least 8 characters long")
       .custom((val) => !/\s/.test(val))
       .withMessage("New password cannot contain spaces"),
     validateRequest,
@@ -556,36 +565,43 @@ router.post(
   }),
 );
 
-// Request email verification (resend)
+// Request email verification (resend) — public endpoint, takes email in body
 router.post(
   "/request-email-verification",
-  authMiddleware,
+  [
+    body("email").isEmail().withMessage("Valid email is required"),
+    validateRequest,
+  ],
   asyncHandler(async (req, res) => {
-    // Only customers
-    const me = await prisma.user.findUnique({ where: { id: req.user.id } });
+    const { email } = req.body;
+
+    // Always return the same success shape to avoid user-enumeration
+    const genericOk = { success: true, message: "If that email is registered and unverified, a new link has been sent." };
+
+    const me = await prisma.user.findUnique({ where: { email } });
     if (!me || me.role !== "CUSTOMER" || !me.customerId) {
-      return res.status(400).json({ success: false, error: "Not applicable" });
+      return res.json(genericOk);
     }
-    const customer = await prisma.customer.findUnique({
-      where: { id: me.customerId },
-    });
+
+    const customer = await prisma.customer.findUnique({ where: { id: me.customerId } });
     if (customer?.emailVerified) {
       return res.json({ success: true, message: "Email already verified" });
     }
-    // Invalidate previous tokens
-    await prisma.emailVerificationToken.deleteMany({
-      where: { userId: me.id },
-    });
+
+    // Invalidate previous tokens and issue a fresh one
+    await prisma.emailVerificationToken.deleteMany({ where: { userId: me.id } });
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
     await prisma.emailVerificationToken.create({
       data: { userId: me.id, token: verificationToken, expiresAt },
     });
-    const link = `${
-      process.env.FRONTEND_URL || "http://localhost:3000"
-    }/verify?token=${verificationToken}`;
-    await sendVerificationEmail(me.email, me.firstName || "", link);
-    res.json({ success: true, message: "Verification email sent" });
+    const link = `${process.env.FRONTEND_URL || "http://localhost:3000"}/verify?token=${verificationToken}`;
+    try {
+      await sendVerificationEmail(me.email, me.firstName || "", link);
+    } catch (e) {
+      console.error("Failed to resend verification email:", e?.message);
+    }
+    res.json(genericOk);
   }),
 );
 
@@ -738,8 +754,8 @@ router.put(
       .notEmpty()
       .withMessage("Current password is required"),
     body("newPassword")
-      .isLength({ min: 4 })
-      .withMessage("New password must be at least 4 characters long")
+      .isLength({ min: 8 })
+      .withMessage("New password must be at least 8 characters long")
       .custom((val) => !/\s/.test(val))
       .withMessage("New password cannot contain spaces"),
     validateRequest,
