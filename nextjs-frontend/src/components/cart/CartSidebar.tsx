@@ -224,6 +224,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
               disabled={items.length === 0 || hasOutOfStockItems}
               onClick={() => {
                 if (!isAuthenticated) { setAuthOpen(true); return; }
+                onOpenChange?.(false);
                 router.push('/landing/checkout');
               }}
             >
