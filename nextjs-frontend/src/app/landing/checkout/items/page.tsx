@@ -483,45 +483,38 @@ export default function CheckoutItemsPage() {
   }, [total, discountAmount, selectedShippingRate, shippingRate, taxAmount]);
 
   return (
-    <div className="force-light min-h-screen bg-background text-foreground">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress bar - 4 steps (clickable back-only) */}
-        <div className="mb-6">
-          <div className="flex items-center">
-            <div className="flex items-center flex-1">
-              <button type="button" onClick={() => router.push('/landing/checkout')} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-primary text-white">
+    <div className="force-light min-h-screen bg-gray-50">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern 3-step progress bar */}
+        <div className="mb-8">
+          <div className="flex items-center max-w-sm">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white border-2 border-primary text-primary ring-4 ring-primary/10">
                 1
-              </button>
-              <div className="h-1 flex-1 mx-2 rounded bg-primary" />
+              </div>
+              <span className="text-xs mt-1 font-semibold text-primary">Items</span>
             </div>
-            <div className="flex items-center flex-1">
-              <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-primary text-white cursor-default">
+            <div className="flex-1 h-0.5 bg-gray-200 mx-3 mb-5" />
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white border-2 border-gray-200 text-gray-300">
                 2
-              </button>
-              <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
+              </div>
+              <span className="text-xs mt-1 font-medium text-gray-400">Address</span>
             </div>
-            <div className="flex items-center flex-1">
-              <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-gray-200 text-gray-600 cursor-not-allowed">
+            <div className="flex-1 h-0.5 bg-gray-200 mx-3 mb-5" />
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white border-2 border-gray-200 text-gray-300">
                 3
-              </button>
-              <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
+              </div>
+              <span className="text-xs mt-1 font-medium text-gray-400">Payment</span>
             </div>
-            <div className="flex items-center">
-              <button type="button" disabled className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-gray-200 text-gray-600 cursor-not-allowed">
-                4
-              </button>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
-            <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline text-left">
-              Address
-            </button>
-            <div className="text-center">Items</div>
-            <div className="text-center opacity-60 cursor-not-allowed">Payment</div>
-            <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
         </div>
 
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Review Your Order</h1>
+          <p className="text-sm text-gray-500 mt-1">Check your items, apply a coupon, and select your shipping method.</p>
+        </div>
 
         <style jsx global>{`
           .custom-scrollbar::-webkit-scrollbar {
@@ -539,9 +532,8 @@ export default function CheckoutItemsPage() {
           }
         `}</style>
 
-        <h1 className="text-3xl sm:text-5xl font-black mb-10 tracking-tight text-primary uppercase italic">Secure Checkout</h1>
-        <div className="grid lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid lg:grid-cols-5 gap-6 items-start">
+          <div className="lg:col-span-3 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold tracking-tight">Your items</h2>
               <div className="hidden sm:flex gap-2">
@@ -700,61 +692,10 @@ export default function CheckoutItemsPage() {
               )}
             </div>
 
-            {/* Address Summary Cards (Repositioned) */}
-            {(() => {
-              const billingAddress = addresses.find(a => a.id === billingId);
-              const shippingAddress = addresses.find(a => a.id === shippingId);
-              const sameAddress = billingId && shippingId && billingId === shippingId;
-              if (!billingAddress && !shippingAddress) return null;
-
-              const AddressCard = ({ title, addr }: { title: string, addr: Address | null }) => {
-                if (!addr) return null;
-                return (
-                  <div className="mt-4 border border-gray-200 rounded-lg bg-white p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary" />
-                        <h2 className="text-xs font-black uppercase tracking-widest">{title}</h2>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5 text-xs h-7 px-2"
-                        onClick={() => router.push('/landing/checkout')}
-                      >
-                        <Pencil className="h-3 w-3" />
-                        Edit
-                      </Button>
-                    </div>
-                    <div className="text-sm text-gray-800">
-                      <div className="font-medium text-black">
-                        {[addr.firstName, addr.lastName].filter(Boolean).join(' ')}
-                        {addr.company && <span className="text-gray-500 font-normal"> ({addr.company})</span>}
-                      </div>
-                      <div>{addr.address1}</div>
-                      {addr.address2 && <div>{addr.address2}</div>}
-                      <div>{[addr.city, addr.state, addr.postalCode].filter(Boolean).join(', ')}</div>
-                      <div>{addr.country}</div>
-                      {addr.phone && <div className="text-gray-500 mt-0.5 flex items-center gap-1.5 break-all">
-                        <span className="text-xs font-semibold py-0.5 px-1.5 bg-gray-100 rounded text-gray-600 uppercase">Phone</span> {addr.phone}
-                      </div>}
-                    </div>
-                  </div>
-                );
-              };
-
-              return (
-                <div id="address-summary-section" ref={addressSectionRef} className="grid sm:grid-cols-2 gap-4 mt-4 scroll-mt-20">
-                  <AddressCard title="Billing Address" addr={billingAddress || null} />
-                  <AddressCard title="Shipping Address" addr={shippingAddress || null} />
-                </div>
-              );
-            })()}
 
 
           </div>
-          <div className="space-y-4 lg:sticky lg:top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="lg:col-span-2 space-y-4 lg:sticky lg:top-24 self-start max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
             <Card className="border-gray-200">
               <CardContent className="p-4 space-y-3">
 
@@ -825,8 +766,7 @@ export default function CheckoutItemsPage() {
                     <p className="text-xs text-red-500">Coupon not applicable to current cart.</p>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-gray-700"><span>State Tax</span><span>{taxComputed ? `$${countryTaxAmount.toFixed(2)}` : '—'}</span></div>
-                <div className="flex items-center justify-between text-gray-700"><span>Product Tax</span><span>{taxComputed ? `$${productTaxAmount.toFixed(2)}` : '—'}</span></div>
+                <div className="flex items-center justify-between text-gray-400 text-sm italic"><span>Tax</span><span>Calculated after address</span></div>
 
                 {/* Shipping moved below taxes */}
                 <div className="flex items-center justify-between text-gray-700">
@@ -882,7 +822,7 @@ export default function CheckoutItemsPage() {
                 {error && <div className="text-sm text-red-600">{error}</div>}
                 <Button
                   className="w-full hidden md:block"
-                  disabled={!canCheckout || !billingId || !shippingId || (!shippingComputed && !selectedShippingRate)}
+                  disabled={!canCheckout || (!shippingComputed && !selectedShippingRate)}
                   onClick={() => {
                     if (!termsAccepted) {
                       setShowTermsError(true);
@@ -892,20 +832,11 @@ export default function CheckoutItemsPage() {
                       });
                       return;
                     }
-                    router.push(`/landing/checkout/payment?orderTotal=${finalTotal.toFixed(2)}&billing=${billingId}&shipping=${shippingId}&shippingAmount=${(selectedShippingRate?.rate || shippingRate?.finalRate || 0).toFixed(2)}&serviceCode=${selectedShippingRate?.serviceCode || ''}&discountAmount=${discountAmount.toFixed(2)}&subtotal=${subtotal.toFixed(2)}&taxAmount=${taxAmount.toFixed(2)}${couponCode ? `&coupon=${encodeURIComponent(couponCode)}` : ''}`);
+                    const shippingCost = selectedShippingRate?.rate || shippingRate?.finalRate || 0;
+                    router.push(`/landing/checkout/address?orderTotal=${finalTotal.toFixed(2)}&shippingAmount=${shippingCost.toFixed(2)}&serviceCode=${selectedShippingRate?.serviceCode || ''}&discountAmount=${discountAmount.toFixed(2)}&subtotal=${subtotal.toFixed(2)}${couponCode ? `&coupon=${encodeURIComponent(couponCode)}` : ''}`);
                   }}
                 >
-                  Continue to Payment
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full mt-2 hidden md:flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={handleScrollToAddress}
-                >
-                  <MapPin className="h-4 w-4 text-red-500" />
-                  View address details
+                  Continue to Address →
                 </Button>
               </CardContent>
             </Card>
@@ -919,7 +850,7 @@ export default function CheckoutItemsPage() {
           </div>
           <Button
             className="flex-1"
-            disabled={!canCheckout || !billingId || !shippingId || (!shippingComputed && !selectedShippingRate)}
+            disabled={!canCheckout || (!shippingComputed && !selectedShippingRate)}
             onClick={() => {
               if (!termsAccepted) {
                 setShowTermsError(true);
@@ -929,10 +860,11 @@ export default function CheckoutItemsPage() {
                 });
                 return;
               }
-              router.push(`/landing/checkout/payment?orderTotal=${finalTotal.toFixed(2)}&billing=${billingId}&shipping=${shippingId}&shippingAmount=${(selectedShippingRate?.rate || shippingRate?.finalRate || 0).toFixed(2)}&serviceCode=${selectedShippingRate?.serviceCode || ''}&discountAmount=${discountAmount.toFixed(2)}&subtotal=${subtotal.toFixed(2)}&taxAmount=${taxAmount.toFixed(2)}${couponCode ? `&coupon=${encodeURIComponent(couponCode)}` : ''}`);
+              const shippingCost = selectedShippingRate?.rate || shippingRate?.finalRate || 0;
+              router.push(`/landing/checkout/address?orderTotal=${finalTotal.toFixed(2)}&shippingAmount=${shippingCost.toFixed(2)}&serviceCode=${selectedShippingRate?.serviceCode || ''}&discountAmount=${discountAmount.toFixed(2)}&subtotal=${subtotal.toFixed(2)}${couponCode ? `&coupon=${encodeURIComponent(couponCode)}` : ''}`);
             }}
           >
-            Pay
+            Continue
           </Button>
         </div>
       </main>
