@@ -34,6 +34,7 @@ interface PendingCustomer {
   createdAt: string;
   isActive: boolean;
   isApproved: boolean;
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'DEACTIVATED';
   emailVerified?: boolean;
 }
 
@@ -110,7 +111,8 @@ export default function CustomerApprovalsPage() {
 
       const updateData = {
         isApproved: approved,
-        isActive: approved, // Also activate the account if approved
+        isActive: approved,
+        approvalStatus: approved ? 'APPROVED' : 'DEACTIVATED',
       };
 
       logger.debug('Sending update data:', { updateData });
@@ -130,7 +132,7 @@ export default function CustomerApprovalsPage() {
 
         // Optimistically update dialog state to reflect new status immediately
         setSelectedCustomer((prev) => prev && prev.id === customerId
-          ? { ...prev, isApproved: approved, isActive: approved }
+          ? { ...prev, isApproved: approved, isActive: approved, approvalStatus: approved ? 'APPROVED' : 'DEACTIVATED' }
           : prev
         );
 
@@ -326,11 +328,11 @@ export default function CustomerApprovalsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {customer.isApproved ? (
+                          {customer.approvalStatus === 'APPROVED' ? (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">
                               <CheckCircle className="h-3 w-3" /> Approved
                             </span>
-                          ) : !customer.isActive ? (
+                          ) : customer.approvalStatus === 'DEACTIVATED' ? (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-bold border border-red-100">
                               <XCircle className="h-3 w-3" /> Rejected
                             </span>
@@ -348,7 +350,7 @@ export default function CustomerApprovalsPage() {
                             >
                               <Eye className="h-4 w-4" />
                             </button>
-                            {!customer.isApproved && customer.isActive !== false && (
+                            {customer.approvalStatus !== 'APPROVED' && customer.approvalStatus !== 'DEACTIVATED' && (
                               <>
                                 <button
                                   onClick={() => handleApproval(customer.id, true)}
@@ -366,7 +368,7 @@ export default function CustomerApprovalsPage() {
                                 </button>
                               </>
                             )}
-                            {customer.isApproved && (
+                            {customer.approvalStatus === 'APPROVED' && (
                               <button
                                 onClick={() => handleApproval(customer.id, false)}
                                 disabled={processing === customer.id}
@@ -375,7 +377,7 @@ export default function CustomerApprovalsPage() {
                                 <XCircle className="h-3.5 w-3.5" />Revoke
                               </button>
                             )}
-                            {!customer.isActive && !customer.isApproved && (
+                            {customer.approvalStatus === 'DEACTIVATED' && (
                               <button
                                 onClick={() => handleApproval(customer.id, true)}
                                 disabled={processing === customer.id}
@@ -436,13 +438,27 @@ export default function CustomerApprovalsPage() {
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Account Type</p>
                     <div className="mt-1">{getCustomerTypeBadge(selectedCustomer.customerType)}</div>
                   </div>
-                  {!selectedCustomer.isApproved && selectedCustomer.isActive !== false && (
+                  {selectedCustomer.approvalStatus !== 'APPROVED' && selectedCustomer.approvalStatus !== 'DEACTIVATED' && (
                     <div className="flex gap-3 pt-2">
                       <Button onClick={() => handleApproval(selectedCustomer.id, true)} disabled={!!processing} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-widest">
                         <CheckCircle className="mr-1.5 h-3.5 w-3.5" />Approve
                       </Button>
                       <Button onClick={() => handleApproval(selectedCustomer.id, false)} disabled={!!processing} variant="destructive" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest">
                         <XCircle className="mr-1.5 h-3.5 w-3.5" />Reject
+                      </Button>
+                    </div>
+                  )}
+                  {selectedCustomer.approvalStatus === 'APPROVED' && (
+                    <div className="flex gap-3 pt-2">
+                      <Button onClick={() => handleApproval(selectedCustomer.id, false)} disabled={!!processing} variant="destructive" className="flex-1 rounded-xl font-black text-xs uppercase tracking-widest">
+                        <XCircle className="mr-1.5 h-3.5 w-3.5" />Revoke Approval
+                      </Button>
+                    </div>
+                  )}
+                  {selectedCustomer.approvalStatus === 'DEACTIVATED' && (
+                    <div className="flex gap-3 pt-2">
+                      <Button onClick={() => handleApproval(selectedCustomer.id, true)} disabled={!!processing} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-widest">
+                        <CheckCircle className="mr-1.5 h-3.5 w-3.5" />Re-approve
                       </Button>
                     </div>
                   )}
