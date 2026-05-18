@@ -104,7 +104,7 @@ export function SignUpForm({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={errors.email ? 'border-red-500' : ''}
-                    placeholder="admin@example.com"
+                    placeholder="you@example.com"
                 />
                 {errors.email && (<p className="mt-1 text-sm text-red-600">{errors.email}</p>)}
             </div>
@@ -152,7 +152,10 @@ export function SignUpForm({
                         id="licenseNumber"
                         placeholder="e.g., 1234567890"
                         value={licenseNumber}
-                        onChange={(e) => setLicenseNumber(e.target.value)}
+                        onChange={(e) => setLicenseNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        inputMode="numeric"
+                        maxLength={10}
+                        pattern="\d{10}"
                         className={`bg-gray-50 border-gray-200 focus:bg-white transition-all ${errors.licenseNumber ? 'border-red-500' : ''}`}
                     />
                     {errors.licenseNumber && (<p className="text-xs text-red-600 font-medium">{errors.licenseNumber}</p>)}
@@ -188,15 +191,18 @@ export function SignUpForm({
                     <Input
                         id="zip"
                         value={zip}
-                        onChange={(e) => setZip(e.target.value)}
-                        placeholder="Enter ZIP code"
+                        onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                        placeholder="5-digit ZIP"
+                        inputMode="numeric"
+                        maxLength={5}
+                        pattern="\d{5}"
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
                 <Label className="text-sm font-semibold text-gray-700 ml-1 block" htmlFor="password-signup">Password <span className="text-red-500">*</span></Label>
-                <p className="text-xs text-gray-500 ml-1 mb-2 block">Minimum 4 characters, no spaces</p>
+                <p className="text-xs text-gray-500 ml-1 mb-2 block">Minimum 8 characters</p>
                 <div className="relative">
                     <Input
                         id="password-signup"
@@ -235,7 +241,7 @@ export function SignUpForm({
                     onClick={onSwitchToOtp}
                     className="text-sm font-semibold text-blue-600 hover:text-blue-500 transition-colors"
                 >
-                    Already have an account? Login with email code
+                    Already registered? Sign in instead
                 </button>
             </div>
 

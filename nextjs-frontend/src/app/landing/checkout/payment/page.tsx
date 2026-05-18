@@ -602,7 +602,7 @@ function PaymentPageContent() {
           </div>
           <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
             <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline">Address</button>
-            <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="text-center text-gray-700 hover:underline">Checkout</button>
+            <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="text-center text-gray-700 hover:underline">Items</button>
             <div className="text-center">Payment</div>
             <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
@@ -698,7 +698,7 @@ function PaymentPageContent() {
                       <div className="flex items-center gap-2 text-sm text-blue-800">
                         <CheckCircle className="h-4 w-4" />
                         <span>
-                          {selectedPaymentMethod === 'credit-card' && 'Authorize.Net selected'}
+                          {selectedPaymentMethod === 'credit-card' && 'Credit / Debit Card selected'}
                           {selectedPaymentMethod === 'zelle' && 'Zelle payment selected'}
                           {selectedPaymentMethod === 'wire' && 'ACH transfer selected'}
                         </span>
@@ -802,7 +802,7 @@ function PaymentPageContent() {
                     <Label htmlFor="credit-card" className="flex items-center space-x-3 cursor-pointer flex-1">
                       <CreditCard className="h-5 w-5 text-blue-600" />
                       <div className="flex-1">
-                        <div className="font-semibold">Authorize.Net <span className="text-xs font-normal text-gray-500">(adds 3% card fee)</span></div>
+                        <div className="font-semibold">Credit / Debit Card <span className="text-xs font-normal text-gray-400">Visa, Mastercard, Amex</span> <span className="text-xs font-normal text-gray-500">(adds 3% card fee)</span></div>
                         <div className="text-sm text-gray-600">Pay securely with your credit or debit card</div>
                       </div>
                     </Label>
@@ -826,8 +826,8 @@ function PaymentPageContent() {
                     <Label htmlFor="wire" className="flex items-center space-x-3 cursor-pointer flex-1">
                       <Building2 className="h-5 w-5 text-purple-600" />
                       <div className="flex-1">
-                        <div className="font-semibold">ACH</div>
-                        <div className="text-sm text-gray-600">You will receive ACH transfer instructions on the next page</div>
+                        <div className="font-semibold">Bank Transfer (ACH)</div>
+                        <div className="text-sm text-gray-600">Pay via ACH bank transfer — instructions on the next step</div>
                       </div>
                     </Label>
                   </div>
@@ -850,28 +850,6 @@ function PaymentPageContent() {
                     'Continue'
                   )}
                 </Button>
-                {selectedPaymentMethod === 'zelle' && (
-                  <div className="mt-6 space-y-3">
-                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-                      <div className="font-semibold uppercase tracking-wide">
-                        Payment Instructions :
-                      </div>
-                      <ol className="list-decimal list-inside space-y-2">
-                        <li>
-                          Open your bank&apos;s app and send a Zelle payment to <strong>ASCENDRA BIO, LLC</strong> (Zelle handle: <strong>ascendrabio</strong>). Include your order number in the memo. You can also scan the QR code shown on the next screen.
-                        </li>
-                        <li>
-                          Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
-                        </li>
-                      </ol>
-                    </div>
-                    <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-                      <strong>Important Notice:</strong>
-                      <br />
-                      Order processing will commence only upon receipt of the payment confirmation email.
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>

@@ -135,31 +135,7 @@ export function AuthModal({ isOpen, onOpenChange, defaultView = 'customer' }: Au
 
           {/* ── Right White Panel ── */}
           <div className="flex-1 bg-white flex flex-col overflow-hidden min-h-0">
-            {/* Tab switcher */}
-            {!isSuccess && (
-              <div className="flex border-b border-gray-100 shrink-0">
-                <button
-                  onClick={() => { setView('customer'); }}
-                  className={`flex-1 py-5 text-xs font-black uppercase tracking-widest transition-all ${
-                    view === 'customer'
-                      ? 'text-[#070B14] border-b-2 border-[#070B14]'
-                      : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  Customer
-                </button>
-                <button
-                  onClick={() => { setView('admin'); }}
-                  className={`flex-1 py-5 text-xs font-black uppercase tracking-widest transition-all ${
-                    view === 'admin'
-                      ? 'text-[#070B14] border-b-2 border-[#070B14]'
-                      : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  Admin / Staff
-                </button>
-              </div>
-            )}
+            {/* Tab switcher — admin login is at /admin/login (not exposed here) */}
 
             {/* Form area */}
             <div className="flex-1 overflow-y-auto scrollbar-hide px-10 py-8">

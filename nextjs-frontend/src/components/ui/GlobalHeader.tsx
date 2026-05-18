@@ -271,7 +271,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
             <Link href="/" className="flex-shrink-0 flex items-center group transition-transform hover:scale-105 active:scale-95">
               <Image
                 src="/logo.png"
-                alt="Abscendra Bio"
+                alt="Ascendra Bio"
                 width={140}
                 height={32}
                 className={`w-auto group-hover:opacity-80 transition-all duration-300 ${scrolled ? 'h-5 sm:h-6' : 'h-6 sm:h-7'} ${isLandingPage && !scrolled ? 'brightness-0 invert' : ''}`}
@@ -303,6 +303,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/30 group-focus-within:text-primary transition-colors w-3.5 h-3.5" />
                 <Input
                   placeholder="Search products..."
+                  aria-label="Search products"
                   value={storeSearch}
                   onChange={(e) => updateStoreParams({ q: e.target.value })}
                   className="pl-10 h-10 bg-black/[0.03] border-transparent rounded-full focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all text-xs font-bold"
@@ -314,7 +315,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl shadow-2xl border-white/20 backdrop-blur-xl">
                   <SelectItem value="featured">Featured</SelectItem>
-                  <SelectItem value="name">Alpha A-Z</SelectItem>
+                  <SelectItem value="name">Name: A–Z</SelectItem>
                   <SelectItem value="price-low">Price: Low-High</SelectItem>
                   <SelectItem value="price-high">Price: High-Low</SelectItem>
                 </SelectContent>
@@ -331,15 +332,13 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                   {isLandingRoute ? (
                     <>
                       {isAuthenticated && (
-                        <>
-                          <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
-                            Products
-                          </Link>
-                          <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
-                            3rd Party Testing
-                          </Link>
-                        </>
+                        <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                          Products
+                        </Link>
                       )}
+                      <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
+                        3rd Party Testing
+                      </Link>
                       <button onClick={() => setOpenContact(true)} className={`cursor-pointer px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${isLandingPage && !scrolled ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#1B2D4F] hover:bg-gray-50'}`}>
                         Contact
                       </button>
@@ -403,18 +402,20 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
               )}
 
               {!isAdminPage && isAuthenticated && (
-                <CartSidebar
-                  trigger={
-                    <Button variant="ghost" size="icon" className={`relative rounded-full h-10 w-10 transition-all active:scale-95 ${isLandingPage && !scrolled ? 'hover:bg-white/10 text-white/80' : 'hover:bg-black/5'}`}>
-                      <ShoppingCart className="h-5 w-5" />
-                      {items.length > 0 && (
-                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full bg-[#4D7DF2] text-white border-2 border-white/20">
-                          {items.reduce((sum, it) => sum + it.quantity, 0)}
-                        </Badge>
-                      )}
-                    </Button>
-                  }
-                />
+                <div className="hidden md:block">
+                  <CartSidebar
+                    trigger={
+                      <Button variant="ghost" size="icon" className={`relative rounded-full h-10 w-10 transition-all active:scale-95 ${isLandingPage && !scrolled ? 'hover:bg-white/10 text-white/80' : 'hover:bg-black/5'}`}>
+                        <ShoppingCart className="h-5 w-5" />
+                        {items.length > 0 && (
+                          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full bg-[#4D7DF2] text-white border-2 border-white/20">
+                            {items.reduce((sum, it) => sum + it.quantity, 0)}
+                          </Badge>
+                        )}
+                      </Button>
+                    }
+                  />
+                </div>
               )}
 
               {isAuthenticated ? (
@@ -477,7 +478,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                         Login
                       </button>
                       <button onClick={() => setOpenContact(true)} className={`px-6 py-2.5 text-[13px] font-bold rounded-full transition-all active:scale-95 ${isLandingPage && !scrolled ? 'bg-white text-[#070B14] hover:bg-gray-100 shadow-[0_10px_30px_rgba(255,255,255,0.1)]' : 'bg-[#070B14] text-white hover:bg-gray-800 shadow-[0_10px_30px_rgba(0,0,0,0.15)]'}`}>
-                        Inquire Now
+                        Contact Us
                       </button>
                     </>
                   )}
@@ -588,15 +589,13 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                          </Link>
                        )}
 
-                       {isAuthenticated && (
-                         <Link
-                           href="/landing/third-party-testing"
-                           onClick={() => setMobileMenuOpen(false)}
-                           className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
-                         >
-                           3rd Party Testing
-                         </Link>
-                       )}
+                       <Link
+                         href="/landing/third-party-testing"
+                         onClick={() => setMobileMenuOpen(false)}
+                         className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#1B2D4F]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B2D4F]'}`}
+                       >
+                         3rd Party Testing
+                       </Link>
 
                        <button
                          onClick={() => { setMobileMenuOpen(false); setOpenContact(true); }}
@@ -677,7 +676,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                              onClick={() => { setMobileMenuOpen(false); setOpenContact(true); }}
                              className="w-full bg-[#070B14] hover:bg-gray-800 text-white rounded-full h-12 uppercase text-[11px] font-black tracking-[0.15em]"
                            >
-                             Inquire Now
+                             Contact Us
                            </Button>
                          </>
                        ) : (
