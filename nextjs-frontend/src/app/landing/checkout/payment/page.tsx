@@ -579,35 +579,33 @@ function PaymentPageContent() {
   }, [isManualResult, resultOpen, resultSuccess, manualCountdown, router]);
 
   return (
-    <div className="force-light min-h-screen bg-background text-foreground">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="flex items-center">
-            <div className="flex items-center flex-1">
-              <button onClick={() => router.push(`/landing/checkout`)} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white">1</button>
-              <div className="h-1 flex-1 mx-2 rounded bg-red-500" />
+    <div className="force-light min-h-screen bg-gray-50 text-foreground">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern 3-step progress bar */}
+        <div className="mb-8">
+          <div className="flex items-center max-w-sm">
+            <div className="flex flex-col items-center">
+              <button type="button" onClick={() => router.push('/landing/checkout/items')}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-primary border-2 border-primary text-white hover:bg-primary/90 transition-colors">
+                ✓
+              </button>
+              <span className="text-xs mt-1 font-medium text-gray-500">Items</span>
             </div>
-            <div className="flex items-center flex-1">
-              <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white">2</button>
-              <div className="h-1 flex-1 mx-2 rounded bg-red-500" />
+            <div className="flex-1 h-0.5 bg-primary mx-3 mb-5" />
+            <div className="flex flex-col items-center">
+              <button type="button" onClick={() => router.push('/landing/checkout/address')}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-primary border-2 border-primary text-white hover:bg-primary/90 transition-colors">
+                ✓
+              </button>
+              <span className="text-xs mt-1 font-medium text-gray-500">Address</span>
             </div>
-            <div className="flex items-center flex-1">
-              <div className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-red-500 text-white">3</div>
-              <div className="h-1 flex-1 mx-2 rounded bg-gray-200" />
+            <div className="flex-1 h-0.5 bg-primary mx-3 mb-5" />
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white border-2 border-primary text-primary ring-4 ring-primary/10">3</div>
+              <span className="text-xs mt-1 font-semibold text-primary">Payment</span>
             </div>
-            <div className="flex items-center">
-              <div className="flex items-center justify-center w-9 h-9 rounded-full font-semibold bg-gray-200 text-gray-600">4</div>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
-            <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline">Address</button>
-            <button onClick={() => router.push(`/landing/checkout/items?billing=${billing}&shipping=${shipping}&orderTotal=${orderTotal || 0}`)} className="text-center text-gray-700 hover:underline">Items</button>
-            <div className="text-center">Payment</div>
-            <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
         </div>
-
 
         <style jsx global>{`
           .custom-scrollbar::-webkit-scrollbar {
@@ -625,7 +623,10 @@ function PaymentPageContent() {
           }
         `}</style>
 
-        <h1 className="text-3xl sm:text-4xl font-black mb-8">Payment</h1>
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payment</h1>
+          <p className="text-sm text-gray-500 mt-1">Choose your payment method and complete your order.</p>
+        </div>
 
         {/* Price-changed notice: shown when fresh cart total differs from what the user saw on the items page */}
         {!cartLoading && cartData && Math.abs(orderTotal - parseFloat(params.get("orderTotal") || "0")) > 0.01 && (
