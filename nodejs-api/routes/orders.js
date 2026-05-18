@@ -1621,7 +1621,12 @@ router.post(
     body("discountAmount")
       .optional()
       .isDecimal({ decimal_digits: "0,2" })
-      .withMessage("Discount amount must be a valid decimal"),
+      .withMessage("Discount amount must be a valid decimal")
+      .custom((val) => {
+        if (val !== undefined && parseFloat(val) < 0)
+          throw new Error("Discount amount cannot be negative");
+        return true;
+      }),
     body("shippingAmount")
       .optional()
       .isDecimal({ decimal_digits: "0,2" })
