@@ -666,14 +666,14 @@ function PaymentPageContent() {
                     </span>
                   </div>
 
-                  {selectedPaymentMethod === 'credit-card' && (
+                  {/* {selectedPaymentMethod === 'credit-card' && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Credit card fee (3%)</span>
                       <span className="font-medium">
                         ${(Math.round(orderTotal * 3) / 100).toFixed(2)}
                       </span>
                     </div>
-                  )}
+                  )} */}
 
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Tax</span>
@@ -684,13 +684,7 @@ function PaymentPageContent() {
 
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>${
-                      (
-                        selectedPaymentMethod === 'credit-card'
-                          ? (Math.round(orderTotal * 103) / 100)
-                          : orderTotal
-                      ).toFixed(2)
-                    }</span>
+                    <span>${orderTotal.toFixed(2)}</span>
                   </div>
 
                   {selectedPaymentMethod && (
@@ -698,7 +692,7 @@ function PaymentPageContent() {
                       <div className="flex items-center gap-2 text-sm text-blue-800">
                         <CheckCircle className="h-4 w-4" />
                         <span>
-                          {selectedPaymentMethod === 'credit-card' && 'Credit / Debit Card selected'}
+                          {/* {selectedPaymentMethod === 'credit-card' && 'Credit / Debit Card selected'} */}
                           {selectedPaymentMethod === 'zelle' && 'Zelle payment selected'}
                           {selectedPaymentMethod === 'wire' && 'ACH transfer selected'}
                         </span>
@@ -785,18 +779,18 @@ function PaymentPageContent() {
                   </div>
                 )}
 
-                {cooldownActive && selectedPaymentMethod === 'credit-card' && (
+                {/* cooldownActive && selectedPaymentMethod === 'credit-card' && (
                   <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
                     <p>
                       Please wait <span className="font-bold">{formatRemaining(remainingMs)}</span> before retrying card payment to avoid a duplicate transaction.
                     </p>
                   </div>
-                )}
+                ) */}
 
 
 
                 <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} className="space-y-3">
-                  {/* Authorize.Net Option */}
+                  {/* Authorize.Net Option — commented out
                   <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200">
                     <RadioGroupItem value="credit-card" id="credit-card" className="h-4 w-4" />
                     <Label htmlFor="credit-card" className="flex items-center space-x-3 cursor-pointer flex-1">
@@ -807,6 +801,7 @@ function PaymentPageContent() {
                       </div>
                     </Label>
                   </div>
+                  */}
 
                   {/* Zelle Option */}
                   <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 cursor-pointer transition-all duration-200">
@@ -1027,7 +1022,7 @@ function PaymentPageContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Custom Card Payment Dialog */}
+      {/* Custom Card Payment Dialog — commented out (Authorize.Net disabled)
       <CardPaymentDialog
         open={showCardDialog}
         onClose={() => setShowCardDialog(false)}
@@ -1042,6 +1037,7 @@ function PaymentPageContent() {
         subtotal={subtotal}
         taxAmount={taxAmount}
       />
+      */}
 
       {/* Out of Stock Dialog */}
       <Dialog open={showOutOfStockDialog} onOpenChange={() => { /* prevent closing by clicking outside */ }}>
