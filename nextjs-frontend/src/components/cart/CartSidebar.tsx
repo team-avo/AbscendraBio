@@ -30,6 +30,9 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
   const customerType = (user as any)?.customer?.customerType as 'B2C' | 'B2B' | 'ENTERPRISE_1' | 'ENTERPRISE_2' | undefined;
   const router = useRouter();
   const [authOpen, setAuthOpen] = React.useState(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const isOpen = open !== undefined ? open : internalOpen;
+  const handleOpenChange = (val: boolean) => { setInternalOpen(val); onOpenChange?.(val); };
 
   const getItemPrice = (it: any) => {
     // PRIORITY 1: Use unitPrice from backend (already calculated with correct pricing tier)
@@ -78,7 +81,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
   const hasOutOfStockItems = items.some(it => getStock(it).isOutOfStock);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
@@ -224,7 +227,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
               disabled={items.length === 0 || hasOutOfStockItems}
               onClick={() => {
                 if (!isAuthenticated) { setAuthOpen(true); return; }
-                onOpenChange?.(false);
+                handleOpenChange(false);
                 router.push('/landing/checkout');
               }}
             >

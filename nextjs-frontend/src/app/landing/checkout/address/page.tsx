@@ -985,8 +985,8 @@ export default function CheckoutAddressPage() {
   }
 
   return (
-    <div className="force-light min-h-screen bg-background text-foreground">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="force-light min-h-screen bg-gray-50 text-foreground">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {redirecting ? (
           <div className="py-16 text-center text-gray-600">Loading checkout…</div>
         ) : (
@@ -1022,7 +1022,7 @@ export default function CheckoutAddressPage() {
               <p className="text-sm text-gray-500 mt-1">We currently ship within the United States only.</p>
             </div>
 
-            <div className="max-w-4xl mx-auto">
+            <div>
               <Card className="border-gray-200">
                 <CardContent className="p-6">
                   <div className="grid md:grid-cols-2 gap-8">

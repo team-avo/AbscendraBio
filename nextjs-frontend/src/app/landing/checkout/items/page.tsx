@@ -32,7 +32,6 @@ export default function CheckoutItemsPage() {
   const [countryTaxAmount, setCountryTaxAmount] = useState<number>(0);
   const [shippingComputed, setShippingComputed] = useState(false);
   const [taxComputed, setTaxComputed] = useState(false);
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
   // Coupons state
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [couponCode, setCouponCode] = useState<string>("");
@@ -169,12 +168,6 @@ export default function CheckoutItemsPage() {
   };
 
 
-  function scrollItems(direction: 'left' | 'right') {
-    const node = scrollerRef.current;
-    if (!node) return;
-    const scrollAmount = Math.min(360, node.clientWidth * 0.9);
-    node.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-  }
 
   async function changeQuantity(variantId: string, nextQty: number) {
     if (nextQty < 1) return;
@@ -534,38 +527,24 @@ export default function CheckoutItemsPage() {
 
         <div className="grid lg:grid-cols-5 gap-6 items-start">
           <div className="lg:col-span-3 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold tracking-tight">Your items</h2>
-              <div className="hidden sm:flex gap-2">
-                <Button type="button" variant="outline" size="icon" className="border-gray-300" onClick={() => scrollItems('left')}><span className="sr-only">Prev</span>‹</Button>
-                <Button type="button" variant="outline" size="icon" className="border-gray-300" onClick={() => scrollItems('right')}><span className="sr-only">Next</span>›</Button>
-              </div>
-            </div>
+            <h2 className="text-base font-semibold tracking-tight">Your items</h2>
 
-            <div className="relative">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 sm:hidden">
-                <Button type="button" variant="outline" size="icon" className="border-gray-300" onClick={() => scrollItems('left')}>‹</Button>
-              </div>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 sm:hidden">
-                <Button type="button" variant="outline" size="icon" className="border-gray-300" onClick={() => scrollItems('right')}>›</Button>
-              </div>
-
-              <div ref={scrollerRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="space-y-3">
                 {items.map(it => (
-                  <Card key={it.variantId} className="border-gray-200 hover:shadow-sm transition-shadow min-w-[260px] max-w-[280px] snap-start">
-                    <CardContent className="p-3">
-                      <div className="space-y-3">
-                        <div className="w-full aspect-square bg-gray-50 rounded-lg border overflow-hidden">
+                  <Card key={it.variantId} className="border-gray-200 hover:shadow-sm transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex gap-4 items-start">
+                        <div className="w-16 h-16 flex-shrink-0 bg-gray-50 rounded-lg border overflow-hidden">
                           <img src={resolveImageUrl(it.variant?.product?.images?.[0]?.url || '/products/peptide-1.jpg')} alt={it.variant?.product?.name || 'Product'} className="w-full h-full object-cover" />
                         </div>
-                        <div className="min-w-0">
-                          <div className="font-bold text-black text-base leading-tight mb-1 break-words">{it.variant?.product?.name}</div>
-                          <div className="text-sm text-gray-600 mb-2 break-words">{it.variant?.name}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-gray-900 text-sm leading-tight mb-0.5 break-words">{it.variant?.product?.name}</div>
+                          <div className="text-xs text-gray-500 mb-3 break-words">{it.variant?.name}</div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Button type="button" variant="outline" size="icon" className="h-8 w-8 border-gray-300" onClick={() => changeQuantity(it.variantId, it.quantity - 1)}><Minus className="h-4 w-4" /></Button>
+                              <Button type="button" variant="outline" size="icon" className="h-7 w-7 border-gray-300" onClick={() => changeQuantity(it.variantId, it.quantity - 1)}><Minus className="h-3 w-3" /></Button>
                               <div className="inline-flex items-center text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">{it.quantity}</div>
-                              <Button type="button" variant="outline" size="icon" className="h-8 w-8 border-gray-300" onClick={() => changeQuantity(it.variantId, it.quantity + 1)}><Plus className="h-4 w-4" /></Button>
+                              <Button type="button" variant="outline" size="icon" className="h-7 w-7 border-gray-300" onClick={() => changeQuantity(it.variantId, it.quantity + 1)}><Plus className="h-3 w-3" /></Button>
                             </div>
                             <div className="flex flex-col items-end gap-1">
                               {(() => {
@@ -661,7 +640,6 @@ export default function CheckoutItemsPage() {
                   </Card>
                 ))}
               </div>
-            </div>
 
             <div className={`border rounded-[2rem] p-8 mt-8 transition-all duration-300 ${showTermsError ? 'border-destructive bg-destructive/5' : 'border-primary/10 bg-gray-50'}`}>
               <div className="flex items-start gap-4">
