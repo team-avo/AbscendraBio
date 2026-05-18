@@ -516,7 +516,7 @@ export default function CheckoutItemsPage() {
             <button onClick={() => router.push('/landing/checkout')} className="text-left text-gray-700 hover:underline text-left">
               Address
             </button>
-            <div className="text-center">Checkout</div>
+            <div className="text-center">Items</div>
             <div className="text-center opacity-60 cursor-not-allowed">Payment</div>
             <div className="text-right opacity-60 cursor-not-allowed">Summary</div>
           </div>
@@ -797,9 +797,12 @@ export default function CheckoutItemsPage() {
                   ) : (
                     <div className="flex gap-2">
                       <input
+                        id="coupon-code"
+                        aria-label="Enter coupon code"
                         className={`flex-1 border rounded-md px-3 py-2 text-sm ${couponCode && discountAmount > 0 ? "border-green-400 bg-green-50" : "border-gray-300"}`}
                         placeholder="Enter coupon code"
                         value={couponCode}
+                        maxLength={50}
                         onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                       />
                       <Button type="button" variant="outline" onClick={() => setCouponCode(couponCode.trim().toUpperCase())}>Apply</Button>
@@ -822,8 +825,8 @@ export default function CheckoutItemsPage() {
                     <p className="text-xs text-red-500">Coupon not applicable to current cart.</p>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-gray-700"><span>Tax (Country)</span><span>{taxComputed ? `$${countryTaxAmount.toFixed(2)}` : '—'}</span></div>
-                <div className="flex items-center justify-between text-gray-700"><span>Tax (Product)</span><span>{taxComputed ? `$${productTaxAmount.toFixed(2)}` : '—'}</span></div>
+                <div className="flex items-center justify-between text-gray-700"><span>State Tax</span><span>{taxComputed ? `$${countryTaxAmount.toFixed(2)}` : '—'}</span></div>
+                <div className="flex items-center justify-between text-gray-700"><span>Product Tax</span><span>{taxComputed ? `$${productTaxAmount.toFixed(2)}` : '—'}</span></div>
 
                 {/* Shipping moved below taxes */}
                 <div className="flex items-center justify-between text-gray-700">

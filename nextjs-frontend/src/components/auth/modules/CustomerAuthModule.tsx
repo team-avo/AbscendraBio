@@ -191,14 +191,14 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 4) {
-      newErrors.password = 'Password must be at least 4 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     } else if (/\s/.test(password)) {
       newErrors.password = 'Password cannot contain spaces';
     }
 
     if (tab === 'signup') {
-      if (password && password.length < 4) newErrors.password = 'Password must be at least 4 characters';
+      if (password && password.length < 8) newErrors.password = 'Password must be at least 8 characters';
       else if (password && /\s/.test(password)) newErrors.password = 'Password cannot contain spaces';
       
       if (!licenseNumber || !licenseNumber.trim()) newErrors.licenseNumber = 'NPI / License number is required';

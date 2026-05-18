@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface SignInFormProps {
@@ -30,15 +29,6 @@ export function SignInForm({
     portalMismatch, setPortalMismatch,
     onSubmit, onForgotPassword, onSwitchToOtp, clearErrors,
 }: SignInFormProps) {
-    const [showDemo, setShowDemo] = useState(false);
-
-    const demoAccounts = [
-        { label: 'Admin', email: 'admin@example.com', pass: 'SecurePass123!' },
-        { label: 'Manager', email: 'manager@example.com', pass: 'SecurePass123!' },
-        { label: 'Staff', email: 'staff@example.com', pass: 'SecurePass123!' },
-        { label: 'Customer', email: 'john.doe@example.com', pass: 'SecurePass123!' },
-    ];
-
     return (
         <div className="space-y-6">
             <div>
@@ -139,32 +129,6 @@ export function SignInForm({
                 </button>
             </div>
 
-            {/* Demo accounts */}
-            <div className="border-t border-gray-100 pt-4">
-                <button
-                    type="button"
-                    onClick={() => setShowDemo(v => !v)}
-                    className="flex items-center justify-between w-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                    <span>Demo Accounts</span>
-                    {showDemo ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
-                {showDemo && (
-                    <div className="grid grid-cols-2 gap-2 mt-3">
-                        {demoAccounts.map(({ label, email: e, pass }) => (
-                            <button
-                                key={label}
-                                type="button"
-                                onClick={() => { setEmail(e); setPassword(pass); clearErrors('email'); clearErrors('password'); }}
-                                className="px-3 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 text-xs font-bold text-gray-600 transition-colors text-left"
-                            >
-                                {label}
-                                <span className="block text-[9px] text-gray-400 font-normal truncate mt-0.5">{e}</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
         </div>
     );
 }

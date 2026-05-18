@@ -993,12 +993,13 @@ export default function CheckoutPage() {
               </div>
               <div className="grid grid-cols-4 text-xs text-gray-600 mt-2">
                 <div className="text-left">Address</div>
-                <div className="text-center">Checkout</div>
+                <div className="text-center">Items</div>
                 <div className="text-center">Payment</div>
                 <div className="text-right">Summary</div>
               </div>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black mb-10 tracking-tight text-primary uppercase italic">Identification & Logistics</h1>
+            <h1 className="text-3xl sm:text-5xl font-black mb-4 tracking-tight text-primary uppercase italic">Shipping & Billing Address</h1>
+            <p className="text-sm text-gray-500 mb-8">We currently ship within the United States only.</p>
 
             <div className="max-w-4xl mx-auto">
               <Card className="border-gray-200">
@@ -1049,6 +1050,7 @@ export default function CheckoutPage() {
                               onChange={(e) => updateBillingField("firstName", e.target.value)}
                               onBlur={() => touchBilling("firstName")}
                               placeholder="Enter first name"
+                              maxLength={50}
                               className={billingTouched.firstName && !billingForm.firstName ? "border-red-400" : ""}
                             />
                             {billingTouched.firstName && !billingForm.firstName && (
@@ -1065,6 +1067,7 @@ export default function CheckoutPage() {
                               onChange={(e) => updateBillingField("lastName", e.target.value)}
                               onBlur={() => touchBilling("lastName")}
                               placeholder="Enter last name"
+                              maxLength={50}
                               className={billingTouched.lastName && !billingForm.lastName ? "border-red-400" : ""}
                             />
                             {billingTouched.lastName && !billingForm.lastName && (
@@ -1079,6 +1082,7 @@ export default function CheckoutPage() {
                             value={billingForm.company}
                             onChange={(e) => updateBillingField("company", e.target.value)}
                             placeholder="Enter company name"
+                            maxLength={100}
                           />
                         </div>
                         <div>
@@ -1180,9 +1184,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New State
-                              </SelectItem>
                               {billingStateCode && !customBillingStates.includes(billingStateCode) && (
                                 <SelectItem value={billingStateCode}>
                                   {billingStateCode}
@@ -1215,9 +1216,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select city" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New City
-                              </SelectItem>
                               {billingForm.city && !customBillingCities.includes(billingForm.city) && (
                                 <SelectItem value={billingForm.city}>
                                   {billingForm.city}
@@ -1238,9 +1236,12 @@ export default function CheckoutPage() {
                           <Input
                             id="billing-postalCode"
                             value={billingForm.postalCode}
-                            onChange={(e) => updateBillingField("postalCode", e.target.value)}
+                            onChange={(e) => updateBillingField("postalCode", e.target.value.replace(/\D/g, '').slice(0, 5))}
                             onBlur={() => touchBilling("postalCode")}
-                            placeholder="Enter postal code"
+                            placeholder="5-digit ZIP"
+                            inputMode="numeric"
+                            maxLength={5}
+                            pattern="\d{5}"
                             className={billingTouched.postalCode && !billingForm.postalCode ? "border-red-400" : ""}
                           />
                           {billingTouched.postalCode && !billingForm.postalCode && (
@@ -1252,33 +1253,9 @@ export default function CheckoutPage() {
                             Phone Number <span className="text-red-500">*</span>
                           </Label>
                           <div className="flex gap-2">
-                            <Select
-                              value={Country.getAllCountries().find(c => c.name === billingCountryCode)?.isoCode || ""}
-                              onValueChange={(isoValue) => {
-                                markAddressDirty();
-                                const countryName = Country.getCountryByCode(isoValue)?.name || isoValue;
-                                setBillingCountryCode(countryName);
-                                // Also clear state/city as country changed
-                                setBillingStateCode("");
-                                setBillingForm(prev => ({
-                                  ...prev,
-                                  country: countryName,
-                                  state: "",
-                                  city: ""
-                                }));
-                              }}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Country.getAllCountries().map((country) => (
-                                  <SelectItem key={country.isoCode} value={country.isoCode}>
-                                    {country.flag} {country.phonecode}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center px-3 border border-input rounded-md bg-muted text-sm text-muted-foreground shrink-0 select-none">
+                              🇺🇸 +1
+                            </div>
                             <Input
                               id="billing-phone"
                               value={billingForm.phone}
@@ -1287,7 +1264,7 @@ export default function CheckoutPage() {
                               placeholder="10-digit mobile number"
                               className={`flex-1${billingTouched.phone && billingForm.phone.length !== 10 ? " border-red-400" : ""}`}
                               inputMode="numeric"
-                              pattern="\\d{10}"
+                              pattern="\d{10}"
                               maxLength={10}
                             />
                           </div>
@@ -1367,6 +1344,7 @@ export default function CheckoutPage() {
                               onBlur={() => !sameAsBilling && touchShipping("firstName")}
                               disabled={sameAsBilling}
                               placeholder="Enter first name"
+                              maxLength={50}
                               className={!sameAsBilling && shippingTouched.firstName && !shippingForm.firstName ? "border-red-400" : ""}
                             />
                             {!sameAsBilling && shippingTouched.firstName && !shippingForm.firstName && (
@@ -1384,6 +1362,7 @@ export default function CheckoutPage() {
                               onBlur={() => !sameAsBilling && touchShipping("lastName")}
                               disabled={sameAsBilling}
                               placeholder="Enter last name"
+                              maxLength={50}
                               className={!sameAsBilling && shippingTouched.lastName && !shippingForm.lastName ? "border-red-400" : ""}
                             />
                             {!sameAsBilling && shippingTouched.lastName && !shippingForm.lastName && (
@@ -1399,6 +1378,7 @@ export default function CheckoutPage() {
                             onChange={(e) => updateShippingField("company", e.target.value)}
                             disabled={sameAsBilling}
                             placeholder="Enter company name"
+                            maxLength={100}
                           />
                         </div>
                         <div>
@@ -1505,9 +1485,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New State
-                              </SelectItem>
                               {shippingStateCode && !customShippingStates.includes(shippingStateCode) && (
                                 <SelectItem value={shippingStateCode}>
                                   {shippingStateCode}
@@ -1540,9 +1517,6 @@ export default function CheckoutPage() {
                               <SelectValue placeholder="Select city" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="__add_new__" className="text-blue-600 font-medium">
-                                + Add New City
-                              </SelectItem>
                               {shippingForm.city && !customShippingCities.includes(shippingForm.city) && (
                                 <SelectItem value={shippingForm.city}>
                                   {shippingForm.city}
@@ -1563,10 +1537,13 @@ export default function CheckoutPage() {
                           <Input
                             id="shipping-postalCode"
                             value={shippingForm.postalCode}
-                            onChange={(e) => updateShippingField("postalCode", e.target.value)}
+                            onChange={(e) => updateShippingField("postalCode", e.target.value.replace(/\D/g, '').slice(0, 5))}
                             onBlur={() => !sameAsBilling && touchShipping("postalCode")}
                             disabled={sameAsBilling}
-                            placeholder="Enter postal code"
+                            placeholder="5-digit ZIP"
+                            inputMode="numeric"
+                            maxLength={5}
+                            pattern="\d{5}"
                             className={!sameAsBilling && shippingTouched.postalCode && !shippingForm.postalCode ? "border-red-400" : ""}
                           />
                           {!sameAsBilling && shippingTouched.postalCode && !shippingForm.postalCode && (
@@ -1578,35 +1555,9 @@ export default function CheckoutPage() {
                             Phone Number <span className="text-red-500">*</span>
                           </Label>
                           <div className="flex gap-2">
-                            <Select
-                              value={Country.getAllCountries().find(c => c.name === shippingCountryCode)?.isoCode || ""}
-                              onValueChange={(isoValue) => {
-                                if (sameAsBilling) return;
-                                markAddressDirty();
-                                const countryName = Country.getCountryByCode(isoValue)?.name || isoValue;
-                                setShippingCountryCode(countryName);
-                                // Also clear state/city as country changed
-                                setShippingStateCode("");
-                                setShippingForm(prev => ({
-                                  ...prev,
-                                  country: countryName,
-                                  state: "",
-                                  city: ""
-                                }));
-                              }}
-                              disabled={sameAsBilling}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Country.getAllCountries().map((country) => (
-                                  <SelectItem key={country.isoCode} value={country.isoCode}>
-                                    {country.flag} {country.phonecode}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center px-3 border border-input rounded-md bg-muted text-sm text-muted-foreground shrink-0 select-none">
+                              🇺🇸 +1
+                            </div>
                             <Input
                               id="shipping-phone"
                               value={shippingForm.phone}
@@ -1616,7 +1567,7 @@ export default function CheckoutPage() {
                               placeholder="10-digit mobile number"
                               className={`flex-1${!sameAsBilling && shippingTouched.phone && shippingForm.phone.length !== 10 ? " border-red-400" : ""}`}
                               inputMode="numeric"
-                              pattern="\\d{10}"
+                              pattern="\d{10}"
                               maxLength={10}
                             />
                           </div>
@@ -1656,7 +1607,7 @@ export default function CheckoutPage() {
                       ) : addrSuccess ? (
                         <>✓ Addresses Saved</>
                       ) : (
-                        'Continue to Checkout'
+                        'Continue to Order Review'
                       )}
                     </Button>
                   </div>
