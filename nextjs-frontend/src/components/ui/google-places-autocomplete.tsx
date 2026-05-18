@@ -21,6 +21,7 @@ interface GooglePlacesAutocompleteProps {
     value?: string;
     /** Fires on every keystroke (mirrors normal Input onChange) */
     onChange?: (value: string) => void;
+    onBlur?: () => void;
     placeholder?: string;
     disabled?: boolean;
     id?: string;
@@ -57,6 +58,7 @@ export function GooglePlacesAutocomplete({
     onAddressSelect,
     value,
     onChange,
+    onBlur,
     placeholder = 'Enter address',
     disabled = false,
     id,
@@ -70,6 +72,7 @@ export function GooglePlacesAutocomplete({
                 id={id}
                 value={value}
                 onChange={(e) => onChange?.(e.target.value)}
+                onBlur={onBlur}
                 placeholder={placeholder}
                 disabled={disabled}
                 className={className}
@@ -82,6 +85,7 @@ export function GooglePlacesAutocomplete({
             onAddressSelect={onAddressSelect}
             value={value}
             onChange={onChange}
+            onBlur={onBlur}
             placeholder={placeholder}
             disabled={disabled}
             id={id}
@@ -95,6 +99,7 @@ function AutocompleteInner({
     onAddressSelect,
     value,
     onChange,
+    onBlur,
     placeholder,
     disabled,
     id,
@@ -194,6 +199,7 @@ function AutocompleteInner({
                 value={value}
                 onChange={(e) => handleInput(e.target.value)}
                 onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
+                onBlur={onBlur}
                 placeholder={placeholder}
                 disabled={disabled}
                 className={cn(className)}

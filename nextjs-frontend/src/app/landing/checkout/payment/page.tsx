@@ -627,6 +627,16 @@ function PaymentPageContent() {
 
         <h1 className="text-3xl sm:text-4xl font-black mb-8">Payment</h1>
 
+        {/* Price-changed notice: shown when fresh cart total differs from what the user saw on the items page */}
+        {!cartLoading && cartData && Math.abs(orderTotal - parseFloat(params.get("orderTotal") || "0")) > 0.01 && (
+          <div className="mb-4 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-800 flex items-start gap-2">
+            <span className="font-semibold shrink-0">Price updated:</span>
+            <span>
+              Your order total was recalculated to <strong>${orderTotal.toFixed(2)}</strong> (was ${parseFloat(params.get("orderTotal") || "0").toFixed(2)}) based on your latest cart. No changes to your items.
+            </span>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
           {/* Order Summary */}
           <div className="xl:col-span-2 relative">
@@ -890,7 +900,15 @@ function PaymentPageContent() {
             </h3>
             <p className="text-sm text-muted-foreground">{resultMessage}</p>
             {resultSuccess && isManualResult && manualCountdown !== null && (
-              <p className="text-xs text-gray-500 mt-1">Navigating to your orders in {manualCountdown}s…</p>
+              <div className="flex flex-col items-center gap-1 mt-1">
+                <p className="text-xs text-gray-500">Navigating to your orders in {manualCountdown}s…</p>
+                <button
+                  className="text-xs text-blue-600 underline"
+                  onClick={() => setManualCountdown(null)}
+                >
+                  Stay on this page
+                </button>
+              </div>
             )}
             {resultSuccess ? (
               <Button className="mt-2" onClick={() => router.push('/account/orders')}>View Orders</Button>
