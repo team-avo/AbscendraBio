@@ -38,7 +38,8 @@ import {
     User as UserIcon,
     Heart,
     ArrowLeft,
-    Mail
+    Mail,
+    Zap
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -180,6 +181,11 @@ const navItems: NavItem[] = [
         title: "Payments",
         href: "/payments",
         icon: CreditCard,
+    },
+    {
+        title: "Zelle Payments",
+        href: "/payments/zelle",
+        icon: Zap,
     },
     // {
     //     title: "Shipping",

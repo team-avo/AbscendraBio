@@ -8,6 +8,7 @@ const { generatePartnerStatements, sendPaymentReminders } = require('./cron/part
 const { syncShipStationInventory } = require('./utils/inventorySyncService');
 const { run: runLabelTrackingSync } = require('./cron/labelTrackingSync');
 const { run: runSupplierEmailPoll } = require('./cron/supplierEmailPoll');
+const { run: runZellePoll } = require('./cron/zellePoll');
 const logger = require('./utils/logger');
 const port = process.env.PORT || 4000;
 const server = http.createServer(app);
@@ -132,6 +133,22 @@ cron.schedule(supplierEmailPollExpr, async () => {
     }
   } catch (err) {
     logger.error(`[Cron] Supplier email poll error: ${err.message}`);
+  }
+});
+
+// Poll billing@ascendrabio.com for Zelle payment notification emails.
+// Skips silently if BILLING_GMAIL_* env vars are not configured.
+// Set ZELLE_SENDER_EMAIL to limit polling to your bank's notification address.
+const zellePollExpr = process.env.ZELLE_POLL_CRON || '*/5 * * * *';
+cron.schedule(zellePollExpr, async () => {
+  try {
+    const result = await runZellePoll();
+    if (result && result.skipped === 'billing-gmail-not-configured') return;
+    if (result && (result.created || result.errors)) {
+      logger.info('[Cron] Zelle poll completed', result);
+    }
+  } catch (err) {
+    logger.error(`[Cron] Zelle poll error: ${err.message}`);
   }
 });
 

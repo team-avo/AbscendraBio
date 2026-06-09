@@ -12,6 +12,7 @@ import { Barlow } from 'next/font/google';
 import { Award, Zap, FlaskConical, ShieldCheck, ArrowRight, X } from 'lucide-react';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { ProductCarousel } from '@/components/landing/ProductCarousel';
+import { HeroBackground } from '@/components/ui/HeroBackground';
 const barlow = Barlow({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
 export default function LandingPage() {
@@ -80,13 +81,16 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* HERO — FULL-WIDTH PRODUCT BANNER            */}
       {/* ═══════════════════════════════════════════ */}
-      <main className="relative z-20 min-h-[92vh] w-full overflow-hidden bg-[#070B14]">
+      <main className="relative z-20 min-h-[92vh] w-full overflow-hidden bg-[#F9FBFF]">
+
+        {/* Admin-login style animated light-blue background */}
+        <HeroBackground />
 
         {/* Background: product image fills the right / bottom */}
         <div className="absolute inset-0 z-0">
           {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#070B14] via-[#070B14] to-transparent" style={{ backgroundSize: '100% 100%', backgroundImage: 'linear-gradient(to right, #070B14 0%, #070B14 42%, transparent 72%)' }} />
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#070B14] via-transparent to-[#070B14]/40 lg:hidden" />
+          <div className="absolute inset-0 z-10" style={{ backgroundSize: '100% 100%', backgroundImage: 'linear-gradient(to right, #F9FBFF 0%, #F9FBFF 38%, rgba(249,251,255,0) 70%)' }} />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F9FBFF] via-transparent to-[#F9FBFF]/40 lg:hidden" />
 
           {/* Product image */}
           <motion.div
@@ -130,7 +134,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-white">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-[#070B14]">
               <motion.span
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -151,7 +155,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.15 }}
-                className="block font-extralight text-white/70"
+                className="block font-extralight text-[#070B14]/50"
               >
                 Purity Redefined.
               </motion.span>
@@ -162,7 +166,7 @@ export default function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.35, delay: 0.2 }}
-              className="mt-6 text-base sm:text-lg text-gray-400 max-w-md leading-relaxed font-medium"
+              className="mt-6 text-base sm:text-lg text-gray-600 max-w-md leading-relaxed font-medium"
             >
               Industry-leading synthesis protocols ensuring 99.9% purity for clinical and academic research.
             </motion.p>
@@ -184,7 +188,7 @@ export default function LandingPage() {
 
               <Link
                 href="/landing/third-party-testing"
-                className="flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white px-7 py-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-200"
+                className="flex items-center gap-2 text-sm font-bold text-[#070B14]/60 hover:text-[#070B14] px-7 py-4 rounded-xl border border-[#070B14]/10 hover:border-[#070B14]/20 transition-all duration-200"
               >
                 Review Lab Reports
               </Link>
@@ -203,8 +207,8 @@ export default function LandingPage() {
                 { value: '30+', label: 'Peptides' },
               ].map((stat, i) => (
                 <div key={i} className="flex items-baseline gap-2">
-                  <span className="text-xl font-black text-white tracking-tight">{stat.value}</span>
-                  <span className="text-xs font-bold text-white/30 uppercase tracking-widest">{stat.label}</span>
+                  <span className="text-xl font-black text-[#070B14] tracking-tight">{stat.value}</span>
+                  <span className="text-xs font-bold text-[#070B14]/40 uppercase tracking-widest">{stat.label}</span>
                 </div>
               ))}
             </motion.div>

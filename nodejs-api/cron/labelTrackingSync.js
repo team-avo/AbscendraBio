@@ -15,6 +15,16 @@ const prisma = require('../prisma/client');
 const { ssRequest } = require('../utils/shipstationClient');
 const logger = require('../utils/logger');
 const { sendShippingNotification } = require('../utils/emailService');
+const {
+    recordOrderStatusChange,
+    adjustInventoryForStatusChange,
+} = require('../services/orderStatusEffects');
+
+// Carrier event codes that indicate the parcel was dispatched (Picked Up /
+// Departed). Per spec these are the primary LABEL_CREATED -> SHIPPED trigger;
+// the DISPATCHED_STATUSES set below is a secondary fallback for carriers that
+// don't emit PU/DP events.
+const DISPATCH_EVENT_CODES = new Set(['PU', 'DP']);
 
 // ---------- configuration ----------
 const BATCH_SIZE = 50;
@@ -87,6 +97,15 @@ async function syncSingleOrder(order) {
     const trackingUrl = tracking?.tracking_url || '';
     const carrierCode = tracking?.carrier_code || '';
 
+    // Dispatch detection: primary = a PU/DP event in events[]; fallback = the
+    // top-level status code being in DISPATCHED_STATUSES.
+    const events = Array.isArray(tracking?.events) ? tracking.events : [];
+    const hasDispatchEvent = events.some((e) => DISPATCH_EVENT_CODES.has(e?.event_code));
+    const isDispatched =
+        hasDispatchEvent ||
+        DISPATCHED_STATUSES.has(statusDetailCode) ||
+        DISPATCHED_STATUSES.has(statusCode);
+
     logger.info(`[LabelTrackingSync] Order ${order.orderNumber} status: ${statusDetailCode} / ${statusCode} - ${statusDescription}`);
 
     // Save/Update full shipping status for detailed tracking
@@ -127,9 +146,9 @@ async function syncSingleOrder(order) {
         // Ignore duplicate event errors
     }
 
-    // ---- LABEL_CREATED → SHIPPED (when dispatched) ----
+    // ---- LABEL_CREATED → SHIPPED (when dispatched: PU/DP event or status) ----
     if (order.status === 'LABEL_CREATED') {
-        if (DISPATCHED_STATUSES.has(statusDetailCode) || DISPATCHED_STATUSES.has(statusCode)) {
+        if (isDispatched) {
             // Auto-create a Shipment record
             try {
                 await prisma.shipment.create({
@@ -156,6 +175,10 @@ async function syncSingleOrder(order) {
                     shipmentRequestStatus: 'ACCEPTED_BY_SHIPPER',
                 },
             });
+
+            // Audit history + inventory release (defensive; never break sync)
+            await recordOrderStatusChange({ orderId: order.id, orderNumber: order.orderNumber, fromStatus: 'LABEL_CREATED', toStatus: 'SHIPPED' });
+            await adjustInventoryForStatusChange(order, 'LABEL_CREATED', 'SHIPPED');
 
             // Trigger shipping notification email
             try {
@@ -214,6 +237,10 @@ async function syncSingleOrder(order) {
                 },
             });
 
+            // Audit history + inventory release (goods left, skipping SHIPPED)
+            await recordOrderStatusChange({ orderId: order.id, orderNumber: order.orderNumber, fromStatus: 'LABEL_CREATED', toStatus: 'DELIVERED' });
+            await adjustInventoryForStatusChange(order, 'LABEL_CREATED', 'DELIVERED');
+
             logger.info(`[LabelTrackingSync] ✅ Order ${order.orderNumber} updated: LABEL_CREATED → DELIVERED (${statusDetailCode})`);
             return { action: 'updated', from: 'LABEL_CREATED', to: 'DELIVERED', statusDetailCode, description: statusDescription };
         }
@@ -234,6 +261,9 @@ async function syncSingleOrder(order) {
                     shipmentRequestStatus: 'DELIVERED',
                 },
             });
+
+            // Audit history (inventory already released at SHIPPED — no-op here)
+            await recordOrderStatusChange({ orderId: order.id, orderNumber: order.orderNumber, fromStatus: 'SHIPPED', toStatus: 'DELIVERED' });
 
             // Also update any existing Shipment record to DELIVERED
             try {
@@ -265,6 +295,29 @@ async function syncSingleOrder(order) {
     }
 
     return { action: 'skipped', reason: 'unexpected_status' };
+}
+
+// ---------- per-order sync audit (LabelSyncLog) ----------
+const SYNC_STATUS_MAP = { updated: 'SUCCESS', no_change: 'NO_CHANGE', skipped: 'SKIPPED', error: 'FAILED' };
+
+async function writeLabelSyncLog(order, result) {
+    try {
+        await prisma.labelSyncLog.create({
+            data: {
+                orderId: order.id,
+                orderNumber: order.orderNumber,
+                statusBefore: result.from || order.status || 'UNKNOWN',
+                statusAfter: result.to || (result.action === 'no_change' ? order.status : null),
+                syncStatus: SYNC_STATUS_MAP[result.action] || 'NO_CHANGE',
+                failureReason: result.error || result.reason || null,
+                shipstationLabelId: order.shipstationLabel?.label_id || null,
+                shipstationStatus: result.statusDetailCode || result.status || null,
+                apiResponseJson: result,
+            },
+        });
+    } catch (logErr) {
+        logger.warn(`[LabelTrackingSync] Failed to write LabelSyncLog for ${order.orderNumber}: ${logErr.message}`);
+    }
 }
 
 // ---------- main run function ----------
@@ -364,12 +417,14 @@ async function run() {
                     if (result.action === 'updated') {
                         summary.updated += 1;
                     }
+                    await writeLabelSyncLog(order, result);
                     summary.details.push({
                         orderNumber: order.orderNumber,
                         ...result,
                     });
                 } catch (err) {
                     summary.errors += 1;
+                    await writeLabelSyncLog(order, { action: 'error', error: err.message });
                     summary.details.push({
                         orderNumber: order.orderNumber,
                         action: 'error',
@@ -408,4 +463,4 @@ async function checkSingleLabel(labelId) {
     return tracking;
 }
 
-module.exports = { run, syncSingleOrder, checkSingleLabel };
+module.exports = { run, syncSingleOrder, checkSingleLabel, writeLabelSyncLog };

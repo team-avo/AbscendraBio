@@ -666,9 +666,13 @@ model Order {
   odooSyncLogs       OdooSyncLog[]
   ledgerEntries      PartnerLedgerEntry[]
   shippingStatuses   ShippingStatus[]
+  labelSyncLogs      LabelSyncLog[]
 
   // Comments
   comments Comment[]
+
+  // Zelle payments detected from billing@ inbox
+  zellePayments ZellePayment[]
 
   // Sales Channel
   salesChannelId String?
@@ -713,6 +717,37 @@ model ShippingStatus {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("shipping_status")
+}
+
+enum LabelSyncStatus {
+  SUCCESS
+  FAILED
+  NO_CHANGE
+  SKIPPED
+}
+
+model LabelSyncLog {
+  id                 String          @id @default(cuid())
+  orderId            String?
+  orderNumber        String
+  statusBefore       String
+  statusAfter        String?
+  syncStatus         LabelSyncStatus
+  failureReason      String?
+  shipstationLabelId String?
+  shipstationStatus  String?
+  apiResponseJson    Json?
+  createdAt          DateTime        @default(now())
+
+  // Relations
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([orderNumber])
+  @@index([syncStatus])
+  @@index([createdAt])
+  @@index([shipstationLabelId])
+  @@map("label_sync_logs")
 }
 
 model OrderItem {
@@ -1291,6 +1326,7 @@ enum PaymentMethod {
   PAYPAL
   STRIPE
   BANK_TRANSFER
+  ZELLE
 }
 
 enum PaymentStatus {
@@ -2148,4 +2184,54 @@ model Comment {
   @@index([userId])
   @@index([parentId])
   @@map("comments")
+}
+
+// ─── Zelle Payment Auto-Detection ────────────────────────────────────────────
+// Each row = one Zelle payment notification email detected in billing@ascendrabio.com.
+// The cron job creates these; admin reviews unmatched ones and confirms matched ones.
+
+model ZellePayment {
+  id               String             @id @default(cuid())
+
+  // Gmail message identifiers (unique so we never double-process the same email)
+  gmailMessageId   String             @unique
+  gmailThreadId    String?
+
+  // Raw email fields preserved for auditing
+  rawSubject       String
+  rawHtml          String             @db.Text
+  receivedAt       DateTime
+
+  // Fields extracted by the Zelle email parser
+  parsedAmount     Decimal            @db.Decimal(10, 2)
+  parsedSenderName String
+  parsedMemo       String?
+
+  // Matching state
+  status           ZellePaymentStatus @default(UNMATCHED)
+  matchConfidence  String?            // "HIGH" | "LOW" — only set when status = MATCHED or CONFIRMED
+
+  // Linked order (null when UNMATCHED)
+  orderId          String?
+  order            Order?             @relation(fields: [orderId], references: [id])
+
+  // Who confirmed a manually-matched payment
+  confirmedById    String?
+  confirmedAt      DateTime?
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([status])
+  @@index([orderId])
+  @@index([receivedAt])
+  @@map("zelle_payments")
+}
+
+enum ZellePaymentStatus {
+  UNMATCHED         // No matching order found
+  MATCHED           // Auto-matched to an order — awaiting admin confirmation
+  CONFIRMED         // Admin confirmed (or HIGH confidence auto-confirmed)
+  MANUALLY_MATCHED  // Admin manually linked to an order and confirmed
+  IGNORED           // Admin dismissed this payment (e.g. duplicate, wrong inbox)
 }

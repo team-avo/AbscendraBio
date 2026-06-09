@@ -9,6 +9,28 @@ const SHIPSTATION_API_SECRET = process.env.SHIPSTATION_API_SECRET || '';
 // Default to false - only allow mock fallback if explicitly enabled
 const ALLOW_MOCK_FALLBACK = process.env.SHIPSTATION_ALLOW_MOCK_FALLBACK === 'true';
 
+// Retry config. ShipStation rate-limits to ~200 req/min and returns 429 with a
+// Retry-After header; transient 5xx are also worth retrying. Retrying globally
+// (here, in the shared client) avoids every caller implementing its own backoff.
+// https://docs.shipstation.com/rate-limits
+const MAX_RETRIES = parseInt(process.env.SHIPSTATION_MAX_RETRIES || '3', 10);
+const BASE_BACKOFF_MS = parseInt(process.env.SHIPSTATION_BACKOFF_MS || '500', 10);
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function isRetryable(status) {
+  return status === 429 || (status >= 500 && status <= 599);
+}
+
+// Backoff: honor Retry-After (seconds) when present, else exponential + jitter.
+function backoffMs(attempt, retryAfterSeconds) {
+  if (retryAfterSeconds && !Number.isNaN(retryAfterSeconds)) {
+    return retryAfterSeconds * 1000;
+  }
+  const exp = BASE_BACKOFF_MS * Math.pow(2, attempt);
+  return exp + Math.floor(Math.random() * 250);
+}
+
 function sanitizeBaseUrl(url) {
   return (url || '').replace(/\/$/, '');
 }
@@ -85,6 +107,8 @@ async function performRequest({ method, path, body, baseUrl, useMock }) {
     err.status = response.status;
     err.data = data;
     err.duration = duration;
+    const retryAfter = response.headers.get('retry-after');
+    if (retryAfter) err.retryAfterSeconds = parseInt(retryAfter, 10);
     throw err;
   }
 
@@ -96,13 +120,28 @@ async function ssRequest(method, path, body) {
   const useMockInitially = isMockUrl(initialBaseUrl);
 
   try {
-    return await performRequest({
-      method,
-      path,
-      body,
-      baseUrl: initialBaseUrl,
-      useMock: useMockInitially,
-    });
+    // Retry loop for transient failures (429 rate-limit, 5xx). Honors Retry-After.
+    let attempt = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        return await performRequest({
+          method,
+          path,
+          body,
+          baseUrl: initialBaseUrl,
+          useMock: useMockInitially,
+        });
+      } catch (err) {
+        if (!isRetryable(err.status) || attempt >= MAX_RETRIES) throw err;
+        const wait = backoffMs(attempt, err.retryAfterSeconds);
+        console.warn(
+          `⏳ ShipStation ${err.status} on ${method} ${path}; retry ${attempt + 1}/${MAX_RETRIES} in ${wait}ms`,
+        );
+        await sleep(wait);
+        attempt += 1;
+      }
+    }
   } catch (error) {
     const shouldFallback =
       !useMockInitially &&

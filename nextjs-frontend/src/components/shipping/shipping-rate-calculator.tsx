@@ -158,7 +158,7 @@ export default function ShippingRateCalculator({
 
     setLoading(true);
     try {
-      const response = await api.post('/shipstation/rates', {
+      const response = await api.post('/shipstation/rates/estimate', {
         shipTo,
         shipFrom,
         weightOz,

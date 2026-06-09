@@ -3,6 +3,26 @@ const router = express.Router();
 const prisma = require('../prisma/client');
 const { ssRequest } = require('../utils/shipstationClient');
 const logger = require('../utils/logger');
+const { getShipFrom, getDefaultDimensions } = require('../config/shipFrom');
+
+// Convert a legacy/UI address ({ name, address1, city, state, postalCode, country })
+// into the ShipStation V2 shape. Used so the existing admin UI (which still posts
+// the old camelCase shape) works against the V2 API.
+function toV2Address(a, residential = 'unknown') {
+  if (!a) return undefined;
+  const country = a.country === 'United States' ? 'US' : a.country || 'US';
+  return {
+    name: a.name || `${a.firstName || ''} ${a.lastName || ''}`.trim() || 'Customer',
+    phone: a.phone || '000-000-0000',
+    address_line1: a.address1 || a.address_line1 || '',
+    ...(a.address2 ? { address_line2: a.address2 } : {}),
+    city_locality: a.city || a.city_locality || '',
+    state_province: a.state || a.state_province || '',
+    postal_code: a.postalCode || a.postal_code || '',
+    country_code: country,
+    address_residential_indicator: residential,
+  };
+}
 
 // --------------------
 // Package Pickups APIs
@@ -271,7 +291,13 @@ router.post('/labels', async (req, res) => {
       test_label,
       label_format,
       label_layout,
-      label_download_type
+      label_download_type,
+      // legacy/UI fields (camelCase) — used when `shipment` isn't supplied
+      shipTo,
+      serviceCode,
+      weightOz,
+      packageCode,
+      dimensions,
     } = req.body;
 
     if (!orderId) {
@@ -281,9 +307,34 @@ router.post('/labels', async (req, res) => {
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (!order) return res.status(404).json({ success: false, error: 'Order not found' });
 
+    // Accept either a pre-shaped V2 `shipment` object OR the legacy UI payload
+    // (shipTo + serviceCode + weightOz). For the legacy case we build the V2
+    // shipment server-side and ALWAYS use the configured origin (never a
+    // client-supplied ship-from, which the old UI hardcoded to a fake address).
+    let finalShipment = shipment;
+    if (!finalShipment) {
+      if (!serviceCode) {
+        return res.status(400).json({ success: false, error: 'serviceCode (or a full shipment object) is required' });
+      }
+      finalShipment = {
+        external_shipment_id: orderId,
+        service_code: serviceCode,
+        ship_from: getShipFrom(),
+        ship_to: toV2Address(shipTo, 'yes'),
+        packages: [
+          {
+            weight: { value: Math.max(1, Math.ceil(weightOz || 16)), unit: 'ounce' },
+            dimensions: dimensions || getDefaultDimensions(),
+            ...(packageCode ? { package_code: packageCode } : {}),
+          },
+        ],
+      };
+    }
+
     // Build the complete ShipStation label payload
     const labelPayload = {
-      shipment,
+      shipment: finalShipment,
+      validate_address: req.body.validate_address || process.env.SHIPSTATION_VALIDATE_ADDRESS || 'validate_and_clean',
       test_label: test_label || false,
       label_format: label_format || 'pdf',
       label_layout: label_layout || '4x6',
@@ -299,17 +350,20 @@ router.post('/labels', async (req, res) => {
     logger.info('✅ ShipStation Response', { data });
 
     const shipmentCost = data?.shipment_cost?.amount || data?.shipmentCost?.amount || null;
+    const trackingNumber = data?.tracking_number || data?.trackingNumber || null;
 
-    // Persist on order with full label response only
+    // Persist label + tracking on the order so the UI/customer can see it.
     const updated = await prisma.order.update({
       where: { id: orderId },
       data: {
         estimatedShippingCost: shipmentCost !== null ? shipmentCost : undefined,
         shipstationLabel: data || {},
+        shipmentTrackingNumber: trackingNumber || undefined,
+        shipmentRequestStatus: trackingNumber ? 'ACCEPTED_BY_SHIPPER' : undefined,
       },
     });
 
-    return res.json({ success: true, data });
+    return res.json({ success: true, data, order: updated });
   } catch (err) {
     logger.error('❌ Label creation error', { message: err.message, data: err.data, payload: req.body });
 
@@ -471,6 +525,45 @@ router.post('/tracking/orders/:orderId/sync', async (req, res) => {
   }
 });
 
+// GET /api/shipstation/label-sync-logs — historical cron sync log (LabelSyncLog).
+// Paginated (default 50/page); filterable by syncStatus and createdAt date range.
+router.get('/label-sync-logs', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    const where = {};
+    if (req.query.syncStatus) where.syncStatus = req.query.syncStatus;
+    if (req.query.startDate || req.query.endDate) {
+      where.createdAt = {};
+      if (req.query.startDate) where.createdAt.gte = new Date(req.query.startDate);
+      if (req.query.endDate) where.createdAt.lte = new Date(req.query.endDate);
+    }
+
+    const [logs, total] = await Promise.all([
+      prisma.labelSyncLog.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.labelSyncLog.count({ where }),
+    ]);
+
+    return res.json({
+      success: true,
+      data: {
+        data: logs,
+        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      },
+    });
+  } catch (err) {
+    logger.error('[ShipStation] List label sync logs error', { message: err.message });
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET /api/shipstation/tracking/sync-status — List all synced shipping statuses
 router.get('/tracking/sync-status', async (req, res) => {
   try {
@@ -513,72 +606,12 @@ router.get('/tracking/sync-status', async (req, res) => {
   }
 });
 
-// POST /api/shipstation/webhooks - Handle ShipStation webhook events
-router.post('/webhooks', async (req, res) => {
-  try {
-    const { eventType, resourceUrl, data } = req.body;
-
-    logger.info('ShipStation Webhook received', { eventType, resourceUrl });
-
-    // Handle different webhook events
-    switch (eventType) {
-      case 'LABEL_CREATED':
-      case 'LABEL_PURCHASED':
-        // Update order with tracking info
-        if (data?.trackingNumber) {
-          await prisma.order.updateMany({
-            where: { shipmentTrackingNumber: data.trackingNumber },
-            data: {
-              shipmentRequestStatus: 'ACCEPTED_BY_SHIPPER',
-              estimatedShippingCost: data.shipmentCost?.amount || undefined
-            }
-          });
-        }
-        break;
-
-      case 'TRACKING_UPDATED':
-        // Sync tracking events
-        if (data?.trackingNumber) {
-          const order = await prisma.order.findFirst({
-            where: { shipmentTrackingNumber: data.trackingNumber }
-          });
-
-          if (order && data.events) {
-            const trackingEvents = data.events.map(event => ({
-              orderId: order.id,
-              eventType: event.eventCode || event.status || 'UPDATE',
-              description: event.message || event.statusDescription || '',
-              location: event.location,
-              city: event.city,
-              state: event.state,
-              country: event.country,
-              postalCode: event.postalCode,
-              occurredAt: event.eventDate ? new Date(event.eventDate) : new Date()
-            }));
-
-            await prisma.shipmentTrackingEvent.createMany({ data: trackingEvents });
-
-            // Update order status if delivered
-            if (data.events.some(e => String(e.status).toUpperCase().includes('DELIVERED'))) {
-              await prisma.order.update({
-                where: { id: order.id },
-                data: { shipmentRequestStatus: 'DELIVERED' }
-              });
-            }
-          }
-        }
-        break;
-
-      default:
-        logger.warn('Unhandled webhook event', { eventType });
-    }
-
-    res.status(200).json({ success: true, message: 'Webhook processed' });
-  } catch (err) {
-    logger.error('Webhook processing error', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
+// NOTE: The ShipStation webhook receiver moved to a PUBLIC, signature-verified
+// endpoint mounted in app.js at POST /api/webhooks/shipstation. It must not sit
+// behind authMiddleware (ShipStation can't send an auth token) and it needs the
+// raw request body for RSA-SHA256 verification — neither of which is possible on
+// a router mounted under `app.use("/api/shipstation", authMiddleware, ...)`.
+// See utils/shipstationWebhook.js and services/shipstationWebhookHandler.js.
 
 // --------------------
 // Batches APIs

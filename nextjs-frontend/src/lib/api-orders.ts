@@ -461,6 +461,40 @@ export const createOrderMethods = (client: ApiClient) => ({
     return client.post("/shipstation/labels", data);
   },
 
+  // Inventory sync (ShipStation → local). Backend routes:
+  //   POST /api/inventory/sync/shipstation        (all SKUs)
+  //   POST /api/inventory/sync/shipstation/:sku   (single SKU)
+  async syncShipStationInventory(): Promise<ApiResponse<any>> {
+    return client.post("/inventory/sync/shipstation");
+  },
+
+  async syncShipStationInventorySku(sku: string): Promise<ApiResponse<any>> {
+    return client.post(`/inventory/sync/shipstation/${encodeURIComponent(sku)}`);
+  },
+
+  // Historical cron sync log (LabelSyncLog). Paginated + filterable.
+  async getLabelSyncLogs(params?: {
+    page?: number;
+    limit?: number;
+    syncStatus?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<
+    ApiResponse<{
+      data: any[];
+      pagination: { total: number; page: number; limit: number; totalPages: number };
+    }>
+  > {
+    const sp = new URLSearchParams();
+    if (params?.page) sp.append("page", params.page.toString());
+    if (params?.limit) sp.append("limit", params.limit.toString());
+    if (params?.syncStatus) sp.append("syncStatus", params.syncStatus);
+    if (params?.startDate) sp.append("startDate", params.startDate);
+    if (params?.endDate) sp.append("endDate", params.endDate);
+    const qs = sp.toString();
+    return client.get(`/shipstation/label-sync-logs${qs ? `?${qs}` : ""}`);
+  },
+
   // Refund management
   async initiateOrderRefund(orderId: string, amount: number, reason: string) {
     return client.post(`/orders/${orderId}/refund`, { amount, reason });

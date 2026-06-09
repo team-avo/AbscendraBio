@@ -63,6 +63,7 @@ const bulkQuotesRoutes = require("./routes/bulk-quotes");
 const shipstationRoutes = require("./routes/shipstation");
 const stockAlertsRoutes = require("./routes/stock-alerts");
 const stockReceiptsRoutes = require("./routes/stock-receipts");
+const zellePaymentsRoutes = require("./routes/zelle-payments");
 const bulkPricesRoutes = require("./routes/bulkPrices");
 const odooRoutes = require("./integrations/skydell_odoo/odooRoutes");
 const odooConfigRoutes = require("./integrations/skydell_odoo/odooConfigRoutes");
@@ -105,6 +106,51 @@ app.use(
 //   legacyHeaders: false,
 // });
 // app.use("/api/", limiter); // DISABLED - Rate limiting removed
+
+// ShipStation/ShipEngine webhook — PUBLIC and registered BEFORE the JSON body
+// parser so we can verify the RSA-SHA256 signature against the raw request body.
+// (ShipStation cannot send an auth token, so this endpoint must not sit behind
+// authMiddleware; security comes from signature verification instead.)
+const { verifyWebhook } = require("./utils/shipstationWebhook");
+const { processWebhook } = require("./services/shipstationWebhookHandler");
+// Collect the raw request body (Express 4.16 has no express.raw); needed for
+// RSA-SHA256 signature verification over the exact bytes ShipStation signed.
+function collectRawBody(req, res, next) {
+  let data = "";
+  let tooBig = false;
+  req.setEncoding("utf8");
+  req.on("data", (chunk) => {
+    data += chunk;
+    if (data.length > 2 * 1024 * 1024) {
+      tooBig = true;
+      req.destroy();
+    }
+  });
+  req.on("end", () => {
+    if (tooBig) return res.status(413).end();
+    req.rawBody = data;
+    next();
+  });
+  req.on("error", next);
+}
+app.post("/api/webhooks/shipstation", collectRawBody, async (req, res) => {
+    const rawBody = req.rawBody || "";
+    const verdict = await verifyWebhook(rawBody, req.headers);
+    if (!verdict.ok) {
+      logger.warn("[SS Webhook] Rejected", { reason: verdict.reason, status: verdict.status });
+      return res.status(verdict.status).end();
+    }
+    // Acknowledge fast; process after responding so we never block ShipStation.
+    res.status(200).json({ received: true });
+    try {
+      const payload = JSON.parse(rawBody || "{}");
+      const result = await processWebhook(payload);
+      logger.info("[SS Webhook] Processed", { result });
+    } catch (err) {
+      logger.error("[SS Webhook] Processing error", { message: err.message });
+    }
+  },
+);
 
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
@@ -249,6 +295,7 @@ logger.info("Registering stock alerts routes...");
 app.use("/api/stock-alerts", authMiddleware, stockAlertsRoutes);
 // Supplier email auto-import + admin review for inbound stock (auth required)
 app.use("/api/stock-receipts", authMiddleware, stockReceiptsRoutes);
+app.use("/api/zelle-payments", authMiddleware, zellePaymentsRoutes);
 app.use("/api/sales-channels", salesChannelRoutes);
 app.use("/api/login-audit-logs", authMiddleware, loginAuditLogRoutes);
 app.use("/api/comments", authMiddleware, commentsRoutes);

@@ -124,6 +124,26 @@ const calculateOrderTotals = (items) => {
   };
 };
 
+// Get the shipment tracking events for an order (used by the shipping UI).
+router.get(
+  "/:orderId/tracking-events",
+  requirePermission("ORDERS", "READ"),
+  async (req, res) => {
+    try {
+      const events = await prisma.shipmentTrackingEvent.findMany({
+        where: { orderId: req.params.orderId },
+        orderBy: { occurredAt: "desc" },
+      });
+      return res.json({ success: true, data: events });
+    } catch (err) {
+      logger.error("Failed to fetch tracking events", { message: err.message });
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to fetch tracking events" });
+    }
+  },
+);
+
 // Get all orders with pagination and filters
 router.get(
   "/",

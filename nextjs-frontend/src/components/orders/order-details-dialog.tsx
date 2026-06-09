@@ -8,7 +8,6 @@ import { format } from 'date-fns';
 import { Calendar, CreditCard, Package, User, MapPin, Phone, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
-import ShipmentManager from '@/components/shipping/shipment-manager';
 import logger from '@/lib/logger';
 import { CommentSection } from '../comments/comment-section';
 
@@ -203,16 +202,6 @@ export function OrderDetailsDialog({ order, open, onClose, onCommentAdded }: Ord
                 </div>
               </CardContent>
             </Card>
-
-            {/* Shipment Management */}
-            <ShipmentManager
-              orderId={displayOrder.id}
-              order={displayOrder}
-              onShipmentCreated={(shipment) => {
-                // Refresh order data when shipment is created
-                fetchFullOrder();
-              }}
-            />
 
             {/* Order Notes */}
             {displayOrder.notes && displayOrder.notes.length > 0 && (

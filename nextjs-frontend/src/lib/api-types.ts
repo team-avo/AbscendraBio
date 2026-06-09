@@ -418,6 +418,9 @@ export interface Order {
   shippingAddressId?: string | null;
   selectedPaymentType?: "ZELLE" | "BANK_WIRE" | "AUTHORIZE_NET" | null;
   shipstationLabel?: any;
+  shipmentTrackingNumber?: string;
+  shipmentRequestStatus?: string; // ACCEPTED_BY_SHIPPER | ON_THE_WAY | DELIVERED
+  estimatedShippingCost?: number;
   salesChannelId?: string | null;
   partnerOrderId?: string | null;
   salesChannel?: {
