@@ -51,9 +51,9 @@ export default function LotsPage() {
   useEffect(() => {
     (async () => {
       const [c, s, p] = await Promise.all([api.lmGetCompanies(), api.lmGetSuppliers(), api.lmGetPeptides(true)]);
-      if (c.success) setCompanies(c.data);
-      if (s.success) setSuppliers(s.data);
-      if (p.success) setPeptides(p.data);
+      if (c.success) setCompanies(c.data || []);
+      if (s.success) setSuppliers(s.data || []);
+      if (p.success) setPeptides(p.data || []);
     })();
   }, []);
 

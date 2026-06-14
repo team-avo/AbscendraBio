@@ -49,8 +49,8 @@ export default function CoaPage() {
     (async () => {
       const [l, lb, s] = await Promise.all([api.lmGetLots({ limit: 500 }), api.lmGetLabs(), api.lmGetServices()]);
       if (l.success) setLots(l.data.data || []);
-      if (lb.success) setLabs(lb.data);
-      if (s.success) setServices(s.data);
+      if (lb.success) setLabs(lb.data || []);
+      if (s.success) setServices(s.data || []);
     })();
   }, []);
 

@@ -31,14 +31,14 @@ export default function LabelsPage() {
     setLoading(true);
     try {
       const r = await api.lmGetLabelTemplates();
-      if (r.success) setRows(r.data);
+      if (r.success) setRows(r.data || []);
     } finally {
       setLoading(false);
     }
   };
   useEffect(() => {
     load();
-    api.lmGetCompanies().then((r) => r.success && setCompanies(r.data));
+    api.lmGetCompanies().then((r) => r.success && setCompanies(r.data || []));
   }, []);
 
   const save = async () => {

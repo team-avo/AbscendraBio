@@ -34,7 +34,7 @@ export default function RegistriesPage() {
         services: () => api.lmGetServices(),
       };
       const r = await map[tab]();
-      if (r.success) setRows(r.data);
+      if (r.success) setRows(r.data || []);
     } finally {
       setLoading(false);
     }
