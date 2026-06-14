@@ -14,6 +14,7 @@ import { createLocationMethods } from "./api-locations";
 import { createCommentMethods } from "./api-comments";
 import { createStockReceiptMethods } from "./api-stock-receipts";
 import { createZellePaymentMethods } from "./api-zelle-payments";
+import { createLotManagementMethods } from "./api-lot-management";
 
 // ---------------------
 // Compose the api object
@@ -32,6 +33,7 @@ export const api = Object.assign(client, {
   ...createCommentMethods(client),
   ...createStockReceiptMethods(client),
   ...createZellePaymentMethods(client),
+  ...createLotManagementMethods(client),
 });
 
 // ---------------------

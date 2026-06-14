@@ -2235,3 +2235,257 @@ enum ZellePaymentStatus {
   MANUALLY_MATCHED  // Admin manually linked to an order and confirmed
   IGNORED           // Admin dismissed this payment (e.g. duplicate, wrong inbox)
 }
+
+// ============================================================
+// LOT MANAGEMENT, COA & LABELING MODULE
+// ============================================================
+
+enum PeptideCategory {
+  RESEARCH
+  RESEARCH_BLEND
+  GLP1
+}
+
+enum ServiceCategory {
+  CORE
+  SAFETY
+  COMPOSITION
+  PHYSICAL
+}
+
+enum LotStatus {
+  IN_TESTING
+  RELEASED
+  QUARANTINE
+  REJECTED
+  EXPIRED
+  RECALLED
+}
+
+enum CoaStatus {
+  AWAITING_RESULTS
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum CoaResult {
+  PASS
+  FAIL
+  PENDING
+}
+
+// Brand. Ascendra Bio (ASB), Lineará (LIN).
+model Company {
+  id        String   @id @default(cuid())
+  name      String // unicode display name e.g. "Lineará"
+  code      String   @unique // ASCII code used in filenames/IDs (ASB, LIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lots           Lot[]
+  ownedCoas      Coa[]           @relation("CoaOwner")
+  sharedCoas     CoaShare[]
+  labelTemplates LabelTemplate[]
+
+  @@map("lm_companies")
+}
+
+model Peptide {
+  id              String          @id @default(cuid())
+  name            String
+  code            String          @unique
+  category        PeptideCategory @default(RESEARCH)
+  sequence        String?
+  chemicalFormula String?
+  casNumber       String?
+  molecularMass   String?
+  shelfLifeMonths Int? // null -> global default of 24
+  notes           String?
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  strengths PeptideStrength[]
+  lots      Lot[]
+
+  @@map("lm_peptides")
+}
+
+model PeptideStrength {
+  id           String @id @default(cuid())
+  peptideId    String
+  label        String // "10 mg"
+  code         String // "10MG"
+  displayOrder Int    @default(0)
+
+  peptide Peptide @relation(fields: [peptideId], references: [id], onDelete: Cascade)
+  lots    Lot[]
+
+  @@unique([peptideId, code])
+  @@map("lm_peptide_strengths")
+}
+
+model Supplier {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique
+  contactEmail String?
+  phone        String?
+  country      String?
+  notes        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lots Lot[]
+
+  @@map("lm_suppliers")
+}
+
+model Lab {
+  id             String   @id @default(cuid())
+  name           String
+  code           String   @unique
+  methodsOffered String?
+  contactEmail   String?
+  phone          String?
+  turnaround     String?
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  coas Coa[]
+
+  @@map("lm_labs")
+}
+
+model TestingService {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  name        String
+  category    ServiceCategory @default(CORE)
+  description String?
+  typicalLabs String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  coas Coa[] @relation("CoaTests")
+
+  @@map("lm_testing_services")
+}
+
+model Lot {
+  id                 String    @id @default(cuid())
+  lotNumber          String    @unique
+  companyId          String
+  procurementOrderId String // "ORD-TTR-260415"
+  orderDate          DateTime
+  supplierId         String
+  peptideId          String
+  peptideStrengthId  String
+  quantity           Int
+  mfgDate            DateTime
+  seq                Int
+  expirationDate     DateTime
+  bud                String // "2 Years"
+  receivedDate       DateTime?
+  storage            String    @default("Store at -20°C, lyophilized")
+  status             LotStatus @default(IN_TESTING)
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  company  Company         @relation(fields: [companyId], references: [id])
+  supplier Supplier        @relation(fields: [supplierId], references: [id])
+  peptide  Peptide         @relation(fields: [peptideId], references: [id])
+  strength PeptideStrength @relation(fields: [peptideStrengthId], references: [id])
+  coas     Coa[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([peptideId])
+  @@map("lm_lots")
+}
+
+model Coa {
+  id             String    @id @default(cuid())
+  coaNumber      Int       @unique // sequential, assigned by the service
+  filename       String
+  ownerCompanyId String
+  lotId          String
+  labId          String
+  dateSubmitted  DateTime
+  testDate       DateTime?
+  dateReceived   DateTime?
+  hplcPurity     Float?
+  msConfirmed    Boolean?
+  overallResult  CoaResult @default(PENDING)
+  reviewedBy     String?
+  reviewDate     DateTime?
+  status         CoaStatus @default(AWAITING_RESULTS)
+  fileUrl        String?
+  fileKey        String?
+  qrCodeUrl      String?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  ownerCompany Company          @relation("CoaOwner", fields: [ownerCompanyId], references: [id])
+  lot          Lot              @relation(fields: [lotId], references: [id])
+  lab          Lab              @relation(fields: [labId], references: [id])
+  tests        TestingService[] @relation("CoaTests")
+  shares       CoaShare[]
+
+  @@index([ownerCompanyId])
+  @@index([lotId])
+  @@index([status])
+  @@map("lm_coas")
+}
+
+// Shared-COA link. A COA is owned by one company but can be shared with the other.
+model CoaShare {
+  id        String   @id @default(cuid())
+  coaId     String
+  companyId String
+  createdAt DateTime @default(now())
+
+  coa     Coa     @relation(fields: [coaId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([coaId, companyId])
+  @@map("lm_coa_shares")
+}
+
+model LabelTemplate {
+  id         String   @id @default(cuid())
+  companyId  String
+  peptideId  String?
+  name       String
+  artworkUrl String
+  artworkKey String?
+  zones      Json // {qr:{x,y,w,h}, lotNumber:{x,y,size}, mfgDate:{...}, expDate:{...}}
+  widthMm    Float?
+  heightMm   Float?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@map("lm_label_templates")
+}
+
+model PatternConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique // LOT_NUMBER, ORDER_ID, COA_FILENAME, EXPIRATION
+  pattern   String
+  notes     String?
+  updatedAt DateTime @updatedAt
+
+  @@map("lm_pattern_configs")
+}

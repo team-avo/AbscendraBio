@@ -187,6 +187,11 @@ const navItems: NavItem[] = [
         href: "/payments/zelle",
         icon: Zap,
     },
+    {
+        title: "Lot Management",
+        href: "/lot-management",
+        icon: FlaskConical,
+    },
     // {
     //     title: "Shipping",
     //     href: "/shipping",

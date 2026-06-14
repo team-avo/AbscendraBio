@@ -64,6 +64,8 @@ const shipstationRoutes = require("./routes/shipstation");
 const stockAlertsRoutes = require("./routes/stock-alerts");
 const stockReceiptsRoutes = require("./routes/stock-receipts");
 const zellePaymentsRoutes = require("./routes/zelle-payments");
+const lotManagementRoutes = require("./routes/lot-management");
+const coaPublicRoutes = require("./routes/coa-public");
 const bulkPricesRoutes = require("./routes/bulkPrices");
 const odooRoutes = require("./integrations/skydell_odoo/odooRoutes");
 const odooConfigRoutes = require("./integrations/skydell_odoo/odooConfigRoutes");
@@ -296,6 +298,8 @@ app.use("/api/stock-alerts", authMiddleware, stockAlertsRoutes);
 // Supplier email auto-import + admin review for inbound stock (auth required)
 app.use("/api/stock-receipts", authMiddleware, stockReceiptsRoutes);
 app.use("/api/zelle-payments", authMiddleware, zellePaymentsRoutes);
+app.use("/api/lot-management", authMiddleware, lotManagementRoutes);
+app.use("/api/public/coa", coaPublicRoutes); // public QR trace, no auth
 app.use("/api/sales-channels", salesChannelRoutes);
 app.use("/api/login-audit-logs", authMiddleware, loginAuditLogRoutes);
 app.use("/api/comments", authMiddleware, commentsRoutes);

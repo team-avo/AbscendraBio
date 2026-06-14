@@ -1,0 +1,1298 @@
+{
+  "companies": [
+    {
+      "name": "Ascendra Bio",
+      "code": "ASB"
+    },
+    {
+      "name": "Lineará",
+      "code": "LIN"
+    }
+  ],
+  "patterns": [
+    {
+      "key": "LOT_NUMBER",
+      "pattern": "[PEPTIDE]-[STRENGTH]-[YYMMDD]-[SEQ]",
+      "notes": "YYMMDD = Mfg Date; SEQ = 2-digit per peptide+strength+date"
+    },
+    {
+      "key": "ORDER_ID",
+      "pattern": "ORD-[SUPPLIER]-[YYMMDD]",
+      "notes": "YYMMDD = Order Date"
+    },
+    {
+      "key": "COA_FILENAME",
+      "pattern": "[BRAND]_[PEPTIDE]_[STRENGTH]_[LOT]_[LAB]_[YYYYMMDD]",
+      "notes": "YYYYMMDD = Date Submitted"
+    },
+    {
+      "key": "EXPIRATION",
+      "pattern": "MFG+24M",
+      "notes": "Mfg Date + shelf life (default 24 months, per-SKU override)"
+    }
+  ],
+  "peptides": [
+    {
+      "name": "Acetyl Hexapeptide-8 (Argireline)",
+      "code": "ARGI",
+      "category": "RESEARCH",
+      "sequence": "Ac-Glu-Glu-Met-Gln-Arg-Arg-NH2",
+      "chemicalFormula": "C34H60N14O12S",
+      "casNumber": "616204-22-9",
+      "molecularMass": "~889.0 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Adamax",
+      "code": "ADMX",
+      "category": "RESEARCH",
+      "sequence": "Ac-Met-Glu-His-Phe-Pro-Gly-Pro-Ala-Gly-NH2",
+      "chemicalFormula": "C50H69N11O11S",
+      "casNumber": "Not assigned",
+      "molecularMass": "~1032.2 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "AHK-Cu",
+      "code": "AHKCU",
+      "category": "RESEARCH",
+      "sequence": "Ala-His-Lys + Cu(II)",
+      "chemicalFormula": "C15H24CuN6O4",
+      "casNumber": "126828-32-8",
+      "molecularMass": "~416.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "AOD-9604",
+      "code": "AOD9604",
+      "category": "RESEARCH",
+      "sequence": "hGH(177-191) frag + Tyr",
+      "chemicalFormula": "C78H123N23O25S2",
+      "casNumber": "221231-10-3",
+      "molecularMass": "~1815.1 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "5 mg",
+          "code": "5MG"
+        }
+      ]
+    },
+    {
+      "name": "ARA-290 (Cibinetide)",
+      "code": "ARA290",
+      "category": "RESEARCH",
+      "sequence": "Pyr-EQLERALNSS (11-mer)",
+      "chemicalFormula": "C51H84N16O21",
+      "casNumber": "1208243-50-8",
+      "molecularMass": "~1257.3 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "BPC-157",
+      "code": "BPC157",
+      "category": "RESEARCH",
+      "sequence": "GEPPPGKPADDAGLV",
+      "chemicalFormula": "C62H98N16O22",
+      "casNumber": "137525-51-0",
+      "molecularMass": "~1419.5 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        },
+        {
+          "label": "15 mg",
+          "code": "15MG"
+        }
+      ]
+    },
+    {
+      "name": "Bronchogen",
+      "code": "BRON",
+      "category": "RESEARCH",
+      "sequence": "Ala-Glu-Asp-Leu (AEDL)",
+      "chemicalFormula": "C18H30N4O9",
+      "casNumber": "Not assigned",
+      "molecularMass": "~446.45 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Cagrilintide",
+      "code": "CAGRI",
+      "category": "RESEARCH",
+      "sequence": "Acylated amylin analog",
+      "chemicalFormula": "C194H312N54O59S2",
+      "casNumber": "1415456-99-3",
+      "molecularMass": "~4409.0 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Cartalax",
+      "code": "CART",
+      "category": "RESEARCH",
+      "sequence": "Ala-Glu-Asp (AED)",
+      "chemicalFormula": "C12H19N3O8",
+      "casNumber": "Not assigned",
+      "molecularMass": "~333.29 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Cerebro Protein (Cerebrolysin)",
+      "code": "CERE",
+      "category": "RESEARCH",
+      "sequence": "Porcine brain peptide complex",
+      "chemicalFormula": "Mixture",
+      "casNumber": "Not assigned",
+      "molecularMass": "Mixture",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "30 mg",
+          "code": "30MG"
+        }
+      ]
+    },
+    {
+      "name": "CJC-1295 no DAC",
+      "code": "CJC",
+      "category": "RESEARCH",
+      "sequence": "29-aa GHRH analog (Mod GRF 1-29)",
+      "chemicalFormula": "C152H252N44O42",
+      "casNumber": "863288-34-0",
+      "molecularMass": "~3367.9 Da",
+      "notes": "No DAC variant (Mod GRF 1-29)",
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "CJC-1295 with DAC",
+      "code": "CJCDAC",
+      "category": "RESEARCH",
+      "sequence": "30-aa GHRH analog + DAC",
+      "chemicalFormula": "C165H269N47O46",
+      "casNumber": "446262-90-4",
+      "molecularMass": "~3647.2 g/mol",
+      "notes": "DAC variant",
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Cortagen",
+      "code": "CORTA",
+      "category": "RESEARCH",
+      "sequence": "Ala-Glu-Asp-Pro (AEDP)",
+      "chemicalFormula": "C17H26N4O9",
+      "casNumber": "335591-03-2",
+      "molecularMass": "~430.4 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "DSIP",
+      "code": "DSIP",
+      "category": "RESEARCH",
+      "sequence": "Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu",
+      "chemicalFormula": "C35H48N10O15",
+      "casNumber": "62568-57-4",
+      "molecularMass": "~849.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Epithalon (Epitalon)",
+      "code": "EPI",
+      "category": "RESEARCH",
+      "sequence": "Ala-Glu-Asp-Gly (AEDG)",
+      "chemicalFormula": "C14H22N4O9",
+      "casNumber": "307297-39-8",
+      "molecularMass": "390.35 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "FOXO4-DRI",
+      "code": "FOXO4",
+      "category": "RESEARCH",
+      "sequence": "FOXO4 D-retro-inverso peptide",
+      "chemicalFormula": "C180H260N52O55S",
+      "casNumber": "Not assigned",
+      "molecularMass": "~4134 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "GHK (Cu-free)",
+      "code": "GHK",
+      "category": "RESEARCH",
+      "sequence": "Gly-His-Lys",
+      "chemicalFormula": "C14H24N6O4",
+      "casNumber": "49557-75-7",
+      "molecularMass": "340.38 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "GHK-Cu (copper peptide)",
+      "code": "GHKCU",
+      "category": "RESEARCH",
+      "sequence": "Gly-His-Lys + Cu(II)",
+      "chemicalFormula": "C14H22CuN6O4",
+      "casNumber": "49557-75-7 / 89030-95-5",
+      "molecularMass": "~403.9 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "50 mg",
+          "code": "50MG"
+        }
+      ]
+    },
+    {
+      "name": "GHRP-2",
+      "code": "GHRP2",
+      "category": "RESEARCH",
+      "sequence": "DAla-DbNal-Ala-Trp-DPhe-Lys-NH2",
+      "chemicalFormula": "C45H55N9O6",
+      "casNumber": "158861-67-7",
+      "molecularMass": "~817.0 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "GHRP-6",
+      "code": "GHRP6",
+      "category": "RESEARCH",
+      "sequence": "His-DTrp-Ala-Trp-DPhe-Lys-NH2",
+      "chemicalFormula": "C46H56N12O6",
+      "casNumber": "87616-84-0",
+      "molecularMass": "~873.0 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Glutathione",
+      "code": "GLUT",
+      "category": "RESEARCH",
+      "sequence": "Gamma-Glu-Cys-Gly",
+      "chemicalFormula": "C10H17N3O6S",
+      "casNumber": "70-18-8",
+      "molecularMass": "307.32 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "600 mg",
+          "code": "600MG"
+        }
+      ]
+    },
+    {
+      "name": "IGF-1 LR3",
+      "code": "IGF1LR3",
+      "category": "RESEARCH",
+      "sequence": "83-aa IGF-1 analog",
+      "chemicalFormula": "C400H625N111O115S9",
+      "casNumber": "946870-92-4",
+      "molecularMass": "~9117.7 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Ipamorelin",
+      "code": "IPAM",
+      "category": "RESEARCH",
+      "sequence": "Aib-His-DBNal-DPhe-Lys-NH2",
+      "chemicalFormula": "C38H49N9O5",
+      "casNumber": "170851-70-4",
+      "molecularMass": "711.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Kisspeptin-10",
+      "code": "KISS",
+      "category": "RESEARCH",
+      "sequence": "Tyr-Asn-Trp-Asn-Ser-Phe-Gly-Leu-Arg-Phe-NH2",
+      "chemicalFormula": "C63H83N17O14",
+      "casNumber": "374675-21-5",
+      "molecularMass": "~1302.5 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "KPV",
+      "code": "KPV",
+      "category": "RESEARCH",
+      "sequence": "Lys-Pro-Val",
+      "chemicalFormula": "C16H26N4O5",
+      "casNumber": "82752-99-6",
+      "molecularMass": "354.4 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "LL-37",
+      "code": "LL37",
+      "category": "RESEARCH",
+      "sequence": "37-aa cathelicidin (LLGDFFRK...)",
+      "chemicalFormula": "C205H340N60O53",
+      "casNumber": "154947-66-7",
+      "molecularMass": "~4493.3 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "4 mg",
+          "code": "4MG"
+        }
+      ]
+    },
+    {
+      "name": "Melanotan I (Afamelanotide)",
+      "code": "MT1",
+      "category": "RESEARCH",
+      "sequence": "Ac-SYSNleEHFRWGKPV-NH2",
+      "chemicalFormula": "C78H111N21O19",
+      "casNumber": "75921-69-6",
+      "molecularMass": "~1646.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Melanotan II",
+      "code": "MT2",
+      "category": "RESEARCH",
+      "sequence": "Ac-Nle-cyclo[Asp-His-DPhe-Arg-Trp-Lys]-NH2",
+      "chemicalFormula": "C50H69N15O9",
+      "casNumber": "121062-08-6",
+      "molecularMass": "~1024.2 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "MOTS-c",
+      "code": "MOTSC",
+      "category": "RESEARCH",
+      "sequence": "MRWQEMGYIFYPRKLR (16-mer)",
+      "chemicalFormula": "C101H152N28O22S2",
+      "casNumber": "1627580-64-6",
+      "molecularMass": "~2174.6 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "NAD+",
+      "code": "NAD",
+      "category": "RESEARCH",
+      "sequence": "Nicotinamide Adenine Dinucleotide",
+      "chemicalFormula": "C21H27N7O14P2",
+      "casNumber": "53-84-9",
+      "molecularMass": "663.43 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "500 mg",
+          "code": "500MG"
+        },
+        {
+          "label": "1000 mg",
+          "code": "1000MG"
+        }
+      ]
+    },
+    {
+      "name": "Oxytocin",
+      "code": "OXYT",
+      "category": "RESEARCH",
+      "sequence": "CYIQNCPLG-NH2 (disulfide)",
+      "chemicalFormula": "C43H66N12O12S2",
+      "casNumber": "50-56-6",
+      "molecularMass": "~1007.2 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Palmitoyl Pentapeptide-4 (Matrixyl)",
+      "code": "MATX",
+      "category": "RESEARCH",
+      "sequence": "Pal-Lys-Thr-Thr-Lys-Ser",
+      "chemicalFormula": "C39H75N7O10",
+      "casNumber": "214047-00-4",
+      "molecularMass": "~802.07 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "PDA (Pentadeca Arginate)",
+      "code": "PDA",
+      "category": "RESEARCH",
+      "sequence": "GEPPPGKPADDAGLV (arginate salt)",
+      "chemicalFormula": "C62H98N16O22",
+      "casNumber": "Not assigned",
+      "molecularMass": "~1419.5 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "PE-22-28",
+      "code": "PE2228",
+      "category": "RESEARCH",
+      "sequence": "GVSWGLR (spadin analog)",
+      "chemicalFormula": "C35H55N11O9",
+      "casNumber": "1801959-12-5",
+      "molecularMass": "~773.9 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "PEG-MGF",
+      "code": "PEGMGF",
+      "category": "RESEARCH",
+      "sequence": "Pegylated MGF",
+      "chemicalFormula": "Variable (MGF core ~C121H200N42O39S)",
+      "casNumber": "Not assigned",
+      "molecularMass": "Variable (~2888 Da + PEG)",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Pinealon",
+      "code": "PINEA",
+      "category": "RESEARCH",
+      "sequence": "Glu-Asp-Arg (EDR)",
+      "chemicalFormula": "C15H26N6O8",
+      "casNumber": "175175-23-2",
+      "molecularMass": "~418.4 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "20 mg",
+          "code": "20MG"
+        }
+      ]
+    },
+    {
+      "name": "PNC-27",
+      "code": "PNC27",
+      "category": "RESEARCH",
+      "sequence": "32-aa p53-penetratin peptide",
+      "chemicalFormula": "C188H293N53O44S",
+      "casNumber": "1159861-00-3",
+      "molecularMass": "~4031.7 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "PT-141 (Bremelanotide)",
+      "code": "PT141",
+      "category": "RESEARCH",
+      "sequence": "Ac-Nle-cyclo[Asp-His-DPhe-Arg-Trp-Lys]-OH",
+      "chemicalFormula": "C50H68N14O10",
+      "casNumber": "189691-06-3",
+      "molecularMass": "~1025.2 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Retatrutide",
+      "code": "RETA",
+      "category": "GLP1",
+      "sequence": "Triple GIP/GLP-1/glucagon agonist",
+      "chemicalFormula": null,
+      "casNumber": "2381089-83-2",
+      "molecularMass": "~4731 Da",
+      "notes": "10mg is custom; 12/24/50 standard",
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        },
+        {
+          "label": "12 mg",
+          "code": "12MG"
+        },
+        {
+          "label": "24 mg",
+          "code": "24MG"
+        },
+        {
+          "label": "50 mg",
+          "code": "50MG"
+        }
+      ]
+    },
+    {
+      "name": "Selank",
+      "code": "SELA",
+      "category": "RESEARCH",
+      "sequence": "Thr-Lys-Pro-Arg-Pro-Gly-Pro",
+      "chemicalFormula": "C33H57N11O9",
+      "casNumber": "129954-34-3",
+      "molecularMass": "~751.9 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Selank (N-Acetyl)",
+      "code": "SELAA",
+      "category": "RESEARCH",
+      "sequence": "Ac-Thr-Lys-Pro-Arg-Pro-Gly-Pro",
+      "chemicalFormula": "C35H59N11O10",
+      "casNumber": "Not assigned",
+      "molecularMass": "~793.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Semaglutide",
+      "code": "SEMA",
+      "category": "GLP1",
+      "sequence": "GLP-1 receptor agonist",
+      "chemicalFormula": "C187H291N45O59",
+      "casNumber": "910463-68-2",
+      "molecularMass": "~4113.6 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        },
+        {
+          "label": "25 mg",
+          "code": "25MG"
+        }
+      ]
+    },
+    {
+      "name": "Semax",
+      "code": "SEMAX",
+      "category": "RESEARCH",
+      "sequence": "Met-Glu-His-Phe-Pro-Gly-Pro",
+      "chemicalFormula": "C37H51N9O10S",
+      "casNumber": "80714-61-0",
+      "molecularMass": "813.93 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "30 mg",
+          "code": "30MG"
+        }
+      ]
+    },
+    {
+      "name": "Semax (N-Acetyl)",
+      "code": "SEMAXA",
+      "category": "RESEARCH",
+      "sequence": "Ac-Met-Glu-His-Phe-Pro-Gly-Pro",
+      "chemicalFormula": "C39H53N9O11S",
+      "casNumber": "2920938-90-3",
+      "molecularMass": "~856.0 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "30 mg",
+          "code": "30MG"
+        }
+      ]
+    },
+    {
+      "name": "Sermorelin",
+      "code": "SERM",
+      "category": "RESEARCH",
+      "sequence": "GRF(1-29)",
+      "chemicalFormula": "C149H246N44O42S",
+      "casNumber": "86168-78-7",
+      "molecularMass": "~3357.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Snap-8 (Acetyl Octapeptide-3)",
+      "code": "SNAP8",
+      "category": "RESEARCH",
+      "sequence": "Ac-Glu-Glu-Met-Gln-Arg-Arg-Ala-Asp-NH2",
+      "chemicalFormula": "C41H70N16O16S",
+      "casNumber": "868844-74-0",
+      "molecularMass": "~1075.2 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "SS-31 (Elamipretide)",
+      "code": "SS31",
+      "category": "RESEARCH",
+      "sequence": "D-Arg-Dmt-Lys-Phe-NH2",
+      "chemicalFormula": "C32H49N9O5",
+      "casNumber": "736992-21-5",
+      "molecularMass": "~639.8 g/mol",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "TB-500 (Thymosin Beta-4)",
+      "code": "TB500",
+      "category": "RESEARCH",
+      "sequence": "43-aa (Ac-SDKPDMAEI...)",
+      "chemicalFormula": "C212H350N56O78S",
+      "casNumber": "77591-33-4",
+      "molecularMass": "~4963.4 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Tesamorelin",
+      "code": "TESA",
+      "category": "RESEARCH",
+      "sequence": "44-aa GHRH analog",
+      "chemicalFormula": "C221H366N72O67S",
+      "casNumber": "218949-48-5",
+      "molecularMass": "~5135.8 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "20 mg",
+          "code": "20MG"
+        }
+      ]
+    },
+    {
+      "name": "Thymalin",
+      "code": "THYM",
+      "category": "RESEARCH",
+      "sequence": "Thymus polypeptide fraction",
+      "chemicalFormula": "Mixture",
+      "casNumber": "Not assigned",
+      "molecularMass": "Mixture",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Thymosin Alpha-1",
+      "code": "TA1",
+      "category": "RESEARCH",
+      "sequence": "28-aa (Ac-SDAAVDTSSEITTKDLKEKKEVVEEAEN)",
+      "chemicalFormula": "C129H215N33O55",
+      "casNumber": "62304-98-7",
+      "molecularMass": "~3108.3 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "Tirzepatide",
+      "code": "TIRZ",
+      "category": "GLP1",
+      "sequence": "Dual GIP/GLP-1 agonist",
+      "chemicalFormula": "C225H348N48O68",
+      "casNumber": "2023788-19-2",
+      "molecularMass": "~4813.5 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        },
+        {
+          "label": "30 mg",
+          "code": "30MG"
+        },
+        {
+          "label": "60 mg",
+          "code": "60MG"
+        },
+        {
+          "label": "90 mg",
+          "code": "90MG"
+        }
+      ]
+    },
+    {
+      "name": "VIP",
+      "code": "VIP",
+      "category": "RESEARCH",
+      "sequence": "28-aa vasoactive intestinal peptide",
+      "chemicalFormula": "C147H238N44O43S",
+      "casNumber": "40077-57-4",
+      "molecularMass": "~3325.9 Da",
+      "notes": null,
+      "strengths": [
+        {
+          "label": "10 mg",
+          "code": "10MG"
+        }
+      ]
+    },
+    {
+      "name": "BPC-157/TB-500",
+      "code": "BPCTB",
+      "category": "RESEARCH_BLEND",
+      "sequence": "BPC-157 + TB-500",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "10/10 mg",
+          "code": "10-10MG"
+        }
+      ]
+    },
+    {
+      "name": "BPC-157/TB-500/KPV",
+      "code": "BPCTBKPV",
+      "category": "RESEARCH_BLEND",
+      "sequence": "BPC-157 + TB-500 + KPV (30mg total)",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "10/10/10 mg",
+          "code": "10-10-10MG"
+        }
+      ]
+    },
+    {
+      "name": "Cartalax/TB-500/BPC-157",
+      "code": "CARTTBBPC",
+      "category": "RESEARCH_BLEND",
+      "sequence": "Cartalax + TB-500 + BPC-157 (40mg total)",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "20/10/10 mg",
+          "code": "20-10-10MG"
+        }
+      ]
+    },
+    {
+      "name": "CJC-1295/Ipamorelin",
+      "code": "CJCIPA",
+      "category": "RESEARCH_BLEND",
+      "sequence": "CJC-1295 (no DAC) + Ipamorelin",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "5/5 mg",
+          "code": "5-5MG"
+        }
+      ]
+    },
+    {
+      "name": "GHK-Cu/KPV",
+      "code": "GHKCUKPV",
+      "category": "RESEARCH_BLEND",
+      "sequence": "GHK-Cu 50mg + KPV 10mg",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "50/10 mg",
+          "code": "50-10MG"
+        }
+      ]
+    },
+    {
+      "name": "GHK-Cu/BPC-157/TB-500",
+      "code": "GHKCUBPCTB",
+      "category": "RESEARCH_BLEND",
+      "sequence": "GHK-Cu + BPC-157 + TB-500 (70mg total)",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "50/10/10 mg",
+          "code": "50-10-10MG"
+        }
+      ]
+    },
+    {
+      "name": "GHK-Cu/KPV/BPC-157/TB-500",
+      "code": "GHKCUKPVBPCTB",
+      "category": "RESEARCH_BLEND",
+      "sequence": "GHK-Cu + KPV + BPC-157 + TB-500 (80mg total)",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "50/10/10/10 mg",
+          "code": "50-10-10-10MG"
+        }
+      ]
+    },
+    {
+      "name": "Semax/Selank",
+      "code": "SEMAXSELA",
+      "category": "RESEARCH_BLEND",
+      "sequence": "Semax + Selank",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "30/10 mg",
+          "code": "30-10MG"
+        }
+      ]
+    },
+    {
+      "name": "Tesamorelin/Ipamorelin",
+      "code": "TESAIPA",
+      "category": "RESEARCH_BLEND",
+      "sequence": "Tesamorelin + Ipamorelin",
+      "chemicalFormula": "Combined peptides",
+      "casNumber": "—",
+      "molecularMass": "—",
+      "notes": "Multi-peptide blend",
+      "strengths": [
+        {
+          "label": "10/5 mg",
+          "code": "10-5MG"
+        }
+      ]
+    }
+  ],
+  "suppliers": [
+    {
+      "name": "TideTron",
+      "code": "TTR",
+      "contactEmail": null,
+      "phone": null,
+      "country": null,
+      "notes": "Primary peptide supplier"
+    }
+  ],
+  "labs": [
+    {
+      "name": "ACS Peptide Testing",
+      "code": "ACS",
+      "methodsOffered": "HPLC, MS",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Analytical Formulations Lab",
+      "code": "AFL",
+      "methodsOffered": "HPLC, LC-MS, Formulation",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Bioviridian Inc.",
+      "code": "BVD",
+      "methodsOffered": "HPLC, MS, Bioassay",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "BioRegen",
+      "code": "BRG",
+      "methodsOffered": "HPLC, LC-MS",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Ethos Analytics",
+      "code": "ETH",
+      "methodsOffered": "HPLC, LC-MS, Endotoxin",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Freedom Diagnostics",
+      "code": "FRD",
+      "methodsOffered": "HPLC, MS, Microbial",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "HT Laboratories",
+      "code": "HTL",
+      "methodsOffered": "HPLC, LC-MS, Bioanalytical",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "ILS Laboratories",
+      "code": "ILS",
+      "methodsOffered": "HPLC, MS, Sterility",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Kovera Labs",
+      "code": "KOV",
+      "methodsOffered": "HPLC, LC-MS, COA Verification",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": "5-7 business days",
+      "notes": "Buffalo Grove, IL"
+    },
+    {
+      "name": "MZ Biolabs",
+      "code": "MZB",
+      "methodsOffered": "HPLC, MS, Identity",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "Peptide Test",
+      "code": "PTT",
+      "methodsOffered": "HPLC, MS",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    },
+    {
+      "name": "TrustPointe Analytics",
+      "code": "TPA",
+      "methodsOffered": "HPLC, LC-MS, Full Panel",
+      "contactEmail": null,
+      "phone": null,
+      "turnaround": null,
+      "notes": null
+    }
+  ],
+  "services": [
+    {
+      "code": "HPLC",
+      "name": "HPLC Purity Analysis",
+      "category": "CORE",
+      "description": "High-Performance Liquid Chromatography to determine purity %.",
+      "typicalLabs": "All labs"
+    },
+    {
+      "code": "LCMS",
+      "name": "LC-MS Identity Confirmation",
+      "category": "CORE",
+      "description": "Liquid Chromatography-Mass Spectrometry to confirm identity by molecular weight.",
+      "typicalLabs": "All labs"
+    },
+    {
+      "code": "HPMS",
+      "name": "HPLC-MS Combined Analysis",
+      "category": "CORE",
+      "description": "Dual-method analysis combining HPLC purity with MS identity.",
+      "typicalLabs": "Most labs"
+    },
+    {
+      "code": "COAV",
+      "name": "COA Verification",
+      "category": "CORE",
+      "description": "Independent verification of a supplier-provided COA.",
+      "typicalLabs": "KOV, TPA, ETH"
+    },
+    {
+      "code": "IDC",
+      "name": "Identity Confirmation",
+      "category": "CORE",
+      "description": "Confirms the peptide is what it claims to be.",
+      "typicalLabs": "MZB, BRG, BVD"
+    },
+    {
+      "code": "CONC",
+      "name": "Concentration / Quantitation",
+      "category": "CORE",
+      "description": "Measures actual peptide content (mg) vs labeled amount.",
+      "typicalLabs": "All labs"
+    },
+    {
+      "code": "ENDO",
+      "name": "Bacterial Endotoxin (LAL)",
+      "category": "SAFETY",
+      "description": "LAL test for endotoxin contamination. Required for injectables.",
+      "typicalLabs": "ETH, ILS, FRD"
+    },
+    {
+      "code": "STER",
+      "name": "Sterility Testing",
+      "category": "SAFETY",
+      "description": "USP <71> sterility test.",
+      "typicalLabs": "ILS, FRD, TPA"
+    },
+    {
+      "code": "MICR",
+      "name": "Microbial Limits",
+      "category": "SAFETY",
+      "description": "Total aerobic count, yeast/mold, pathogens.",
+      "typicalLabs": "FRD, ILS"
+    },
+    {
+      "code": "RSOL",
+      "name": "Residual Solvents",
+      "category": "COMPOSITION",
+      "description": "GC analysis for residual solvents. USP <467>.",
+      "typicalLabs": "AFL, TPA"
+    },
+    {
+      "code": "KF",
+      "name": "Water Content (Karl Fischer)",
+      "category": "COMPOSITION",
+      "description": "Karl Fischer titration for moisture content.",
+      "typicalLabs": "AFL, BRG, TPA"
+    },
+    {
+      "code": "NPC",
+      "name": "Net Peptide Content",
+      "category": "COMPOSITION",
+      "description": "Adjusts for counter-ions and water for true net peptide mass.",
+      "typicalLabs": "AFL, MZB"
+    },
+    {
+      "code": "AAC",
+      "name": "Amino Acid Composition",
+      "category": "COMPOSITION",
+      "description": "Acid hydrolysis + AAA for composition confirmation.",
+      "typicalLabs": "BVD, MZB"
+    },
+    {
+      "code": "PH",
+      "name": "pH Measurement",
+      "category": "PHYSICAL",
+      "description": "pH of reconstituted solution.",
+      "typicalLabs": "Most labs"
+    },
+    {
+      "code": "APP",
+      "name": "Appearance / Visual",
+      "category": "PHYSICAL",
+      "description": "Visual inspection of lyophilized cake and reconstituted solution.",
+      "typicalLabs": "All labs"
+    },
+    {
+      "code": "SOL",
+      "name": "Solubility",
+      "category": "PHYSICAL",
+      "description": "Solubility check in bacteriostatic water or specified diluent.",
+      "typicalLabs": "Most labs"
+    }
+  ]
+}
