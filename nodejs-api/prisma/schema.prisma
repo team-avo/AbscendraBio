@@ -2334,6 +2334,7 @@ model Supplier {
   contactEmail String?
   phone        String?
   country      String?
+  state        String?
   notes        String?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())

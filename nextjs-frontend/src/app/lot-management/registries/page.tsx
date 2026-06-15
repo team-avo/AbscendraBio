@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Country, State } from "country-state-city";
 import { toast } from "sonner";
 
 type Tab = "peptides" | "suppliers" | "labs" | "services";
@@ -75,8 +77,8 @@ export default function RegistriesPage() {
           </Table>
         ) : tab === "suppliers" ? (
           <Table>
-            <TableHeader className="bg-muted/30"><TableRow><TableHead>Name</TableHead><TableHead>Code</TableHead><TableHead>Country</TableHead><TableHead>Email</TableHead></TableRow></TableHeader>
-            <TableBody>{rows.map((s) => (<TableRow key={s.id}><TableCell className="font-medium">{s.name}</TableCell><TableCell className="font-mono text-xs">{s.code}</TableCell><TableCell>{s.country || "—"}</TableCell><TableCell className="text-xs">{s.contactEmail || "—"}</TableCell></TableRow>))}</TableBody>
+            <TableHeader className="bg-muted/30"><TableRow><TableHead>Name</TableHead><TableHead>Code</TableHead><TableHead>Country</TableHead><TableHead>State</TableHead><TableHead>Email</TableHead></TableRow></TableHeader>
+            <TableBody>{rows.map((s) => (<TableRow key={s.id}><TableCell className="font-medium">{s.name}</TableCell><TableCell className="font-mono text-xs">{s.code}</TableCell><TableCell>{s.country || "—"}</TableCell><TableCell>{s.state || "—"}</TableCell><TableCell className="text-xs">{s.contactEmail || "—"}</TableCell></TableRow>))}</TableBody>
           </Table>
         ) : tab === "labs" ? (
           <Table>
@@ -107,19 +109,49 @@ function AddRegistryRecord({ tab, onAdded }: { tab: Tab; onAdded: () => void }) 
     } finally { setSaving(false); }
   };
   const fields: Record<string, { k: string; label: string }[]> = {
-    suppliers: [{ k: "name", label: "Name" }, { k: "code", label: "Code" }, { k: "country", label: "Country" }, { k: "contactEmail", label: "Email" }, { k: "phone", label: "Phone" }],
+    suppliers: [{ k: "name", label: "Name" }, { k: "code", label: "Code" }, { k: "country", label: "Country" }, { k: "state", label: "State / Province" }, { k: "contactEmail", label: "Email" }, { k: "phone", label: "Phone" }],
     labs: [{ k: "name", label: "Name" }, { k: "code", label: "Code" }, { k: "methodsOffered", label: "Methods" }, { k: "turnaround", label: "Turnaround" }],
     services: [{ k: "code", label: "Code" }, { k: "name", label: "Service Name" }, { k: "category", label: "Category (CORE/SAFETY/COMPOSITION/PHYSICAL)" }, { k: "description", label: "Description" }],
   };
+  const countryIso = Country.getAllCountries().find((c) => c.name === f.country)?.isoCode;
+  const states = countryIso ? State.getStatesOfCountry(countryIso) : [];
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button size="sm">+ Add</Button></DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Add {tab.slice(0, -1)}</DialogTitle></DialogHeader>
         <div className="space-y-3 mt-2">
-          {fields[tab].map((fl) => (
-            <div key={fl.k} className="space-y-1.5"><Label className="text-xs">{fl.label}</Label><Input value={f[fl.k] || ""} onChange={(e) => setF({ ...f, [fl.k]: e.target.value })} /></div>
-          ))}
+          {fields[tab].map((fl) => {
+            if (tab === "suppliers" && fl.k === "country") {
+              return (
+                <div key="country" className="space-y-1.5">
+                  <Label className="text-xs">Country</Label>
+                  <Select value={f.country || ""} onValueChange={(v) => setF({ ...f, country: v, state: "" })}>
+                    <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+                    <SelectContent className="max-h-64">
+                      {Country.getAllCountries().map((c) => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            }
+            if (tab === "suppliers" && fl.k === "state") {
+              return (
+                <div key="state" className="space-y-1.5">
+                  <Label className="text-xs">State / Province</Label>
+                  <Select value={f.state || ""} onValueChange={(v) => setF({ ...f, state: v })} disabled={!countryIso || states.length === 0}>
+                    <SelectTrigger><SelectValue placeholder={!countryIso ? "Pick a country first" : states.length ? "Select state" : "No states listed"} /></SelectTrigger>
+                    <SelectContent className="max-h-64">
+                      {states.map((s) => <SelectItem key={s.isoCode} value={s.name}>{s.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            }
+            return (
+              <div key={fl.k} className="space-y-1.5"><Label className="text-xs">{fl.label}</Label><Input value={f[fl.k] || ""} onChange={(e) => setF({ ...f, [fl.k]: e.target.value })} /></div>
+            );
+          })}
         </div>
         <div className="flex justify-end gap-2 mt-4"><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Add"}</Button></div>
       </DialogContent>

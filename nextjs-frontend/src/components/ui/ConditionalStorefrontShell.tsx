@@ -13,6 +13,7 @@ import FooterBlue from "@/components/landing/FooterBlue";
 const ADMIN_ROUTE_PREFIXES = [
   "/admin",
   "/admin-dashboard",
+  "/lot-management",
   "/orders",
   "/products",
   "/customers",
