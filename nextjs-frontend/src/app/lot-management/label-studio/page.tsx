@@ -2,15 +2,19 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
-// Product catalog, sourced from nodejs-api/public/Ascendra_Inventory.pdf
-// (ASCENDRA BIO — Product / Specification). Picking one fills the label.
-const INVENTORY: { name: string; spec: string }[] = [
+type Item = { name: string; spec: string };
+
+// Default product catalog, sourced from nodejs-api/public/Ascendra_Inventory.pdf
+// (ASCENDRA BIO — Product / Specification). Picking one fills the label. This is
+// the seed list; "Edit items" lets the user change it (persisted in the browser).
+const DEFAULT_INVENTORY: Item[] = [
   { name: "5-amino-1MQ", spec: "10mg" },
   { name: "Acetic Acid 1%", spec: "3ml" },
   { name: "AOD-9604", spec: "10mg" },
@@ -66,6 +70,9 @@ const INVENTORY: { name: string; spec: string }[] = [
   { name: "Tirzepatide", spec: "60mg" },
 ];
 
+// Where the user-edited product list is saved (browser-local for now).
+const LS_KEY = "ascendra_label_inventory_v1";
+
 // Inventory specs are like "10mg"; on a vial label that reads "10 mg/vial".
 // Non-mg specs (ml, blends) pass through unchanged for manual tweaking.
 const toVialStrength = (spec: string) => {
@@ -116,6 +123,22 @@ export default function LabelStudioPage() {
   const [vals, setVals] = useState<Vals>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Vals>(DEFAULTS);
+  const [inventory, setInventory] = useState<Item[]>(DEFAULT_INVENTORY);
+  const [itemsOpen, setItemsOpen] = useState(false);
+  const [itemDraft, setItemDraft] = useState<Item[]>([]);
+
+  // Load any saved (edited) product list from the browser.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) setInventory(parsed);
+      }
+    } catch {
+      /* ignore malformed storage; fall back to the default list */
+    }
+  }, []);
 
   const draw = useCallback((v: Vals) => {
     const canvas = canvasRef.current;
@@ -208,9 +231,26 @@ export default function LabelStudioPage() {
     if (ready) draw(vals);
   }, [ready, vals, draw]);
 
-  const selectedIdx = INVENTORY.findIndex((it) => it.name === draft.name && toVialStrength(it.spec) === draft.strength);
+  const selectedIdx = inventory.findIndex((it) => it.name === draft.name && toVialStrength(it.spec) === draft.strength);
   const openEditor = () => { setDraft(vals); setOpen(true); };
   const saveEditor = () => { setVals(draft); setOpen(false); toast.success("Label updated"); };
+
+  // Drawer item editor.
+  const openItemsEditor = () => { setItemDraft(inventory.map((it) => ({ ...it }))); setItemsOpen(true); };
+  const updateItem = (i: number, key: keyof Item, value: string) =>
+    setItemDraft((d) => d.map((it, idx) => (idx === i ? { ...it, [key]: value } : it)));
+  const addItem = () => setItemDraft((d) => [...d, { name: "", spec: "" }]);
+  const removeItem = (i: number) => setItemDraft((d) => d.filter((_, idx) => idx !== i));
+  const saveItems = () => {
+    const cleaned = itemDraft
+      .map((it) => ({ name: it.name.trim(), spec: it.spec.trim() }))
+      .filter((it) => it.name);
+    if (!cleaned.length) { toast.error("Add at least one product"); return; }
+    setInventory(cleaned);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(cleaned)); } catch { /* storage may be unavailable */ }
+    setItemsOpen(false);
+    toast.success("Products updated");
+  };
 
   const downloadPdf = () => {
     const canvas = canvasRef.current;
@@ -244,6 +284,7 @@ export default function LabelStudioPage() {
 
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={openEditor}>Edit text</Button>
+          <Button variant="outline" onClick={openItemsEditor}>Edit items</Button>
           <Button onClick={downloadPdf} disabled={!ready}>Download PDF</Button>
           <span className="text-xs text-muted-foreground ml-auto">2.00 in × 0.75 in · {W}×{H}px artwork</span>
         </div>
@@ -255,10 +296,10 @@ export default function LabelStudioPage() {
           <div className="space-y-3 mt-1">
             <div className="space-y-1.5">
               <Label className="text-xs">Product (from inventory)</Label>
-              <Select value={selectedIdx >= 0 ? String(selectedIdx) : undefined} onValueChange={(v) => { const it = INVENTORY[Number(v)]; if (it) setDraft({ name: it.name, strength: toVialStrength(it.spec) }); }}>
+              <Select value={selectedIdx >= 0 ? String(selectedIdx) : undefined} onValueChange={(v) => { const it = inventory[Number(v)]; if (it) setDraft({ name: it.name, strength: toVialStrength(it.spec) }); }}>
                 <SelectTrigger><SelectValue placeholder="Select a product…" /></SelectTrigger>
                 <SelectContent className="max-h-72">
-                  {INVENTORY.map((it, i) => <SelectItem key={i} value={String(i)}>{it.name} — {it.spec}</SelectItem>)}
+                  {inventory.map((it, i) => <SelectItem key={i} value={String(i)}>{it.name} — {it.spec}</SelectItem>)}
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground">Sets the product name and strength on the label.</p>
@@ -267,6 +308,30 @@ export default function LabelStudioPage() {
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={saveEditor}>Save</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={itemsOpen} onOpenChange={setItemsOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Edit items</DialogTitle></DialogHeader>
+          <p className="text-[11px] text-muted-foreground -mt-1">Edit the products shown in the dropdown. Name is required; strength is optional.</p>
+          <div className="mt-2 max-h-[55vh] overflow-y-auto pr-1 space-y-2">
+            {itemDraft.map((it, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input className="flex-1" value={it.name} placeholder="Product name" onChange={(e) => updateItem(i, "name", e.target.value)} />
+                <Input className="w-28" value={it.spec} placeholder="Strength" onChange={(e) => updateItem(i, "spec", e.target.value)} />
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeItem(i)} title="Remove">✕</Button>
+              </div>
+            ))}
+            {itemDraft.length === 0 && <p className="text-xs text-muted-foreground py-4 text-center">No products. Add one below.</p>}
+          </div>
+          <div className="flex items-center justify-between gap-2 mt-3">
+            <Button variant="outline" size="sm" onClick={addItem}>+ Add item</Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setItemsOpen(false)}>Cancel</Button>
+              <Button onClick={saveItems}>Save</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
