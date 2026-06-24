@@ -83,6 +83,7 @@ function PaymentPageContent() {
   const [resultSuccess, setResultSuccess] = useState<boolean | null>(null);
   const [resultMessage, setResultMessage] = useState<string>("");
   const [isManualResult, setIsManualResult] = useState(false);
+  const [manualOrderNumber, setManualOrderNumber] = useState<string | null>(null);
   const [manualCountdown, setManualCountdown] = useState<number | null>(null);
   const navigateAfterMs = 1800;
 
@@ -547,6 +548,13 @@ function PaymentPageContent() {
           throw new Error(orderResponse.error || 'Failed to create order');
         }
         orderIdToUse = orderResponse.data.id;
+        setManualOrderNumber((orderResponse.data as any)?.orderNumber ?? null);
+      } else {
+        // Order was pre-created (orderId in URL); fetch its order number for display
+        try {
+          const existing = await api.getOrder(orderIdToUse);
+          setManualOrderNumber((existing?.data as any)?.orderNumber ?? null);
+        } catch { setManualOrderNumber(null); }
       }
 
       try { await clear(); } catch { }
@@ -873,6 +881,28 @@ function PaymentPageContent() {
               {resultSuccess ? (isManualResult ? 'Order Placed Successfully' : 'Payment Successful') : 'Payment Failed'}
             </h3>
             <p className="text-sm text-muted-foreground">{resultMessage}</p>
+            {resultSuccess && isManualResult && manualOrderNumber && (
+              <div className="w-full bg-blue-50 border border-blue-200 rounded-lg p-4 mt-1 text-left space-y-2">
+                {selectedPaymentMethod === 'zelle' && (
+                  <p className="text-sm text-blue-900">
+                    To complete your purchase, please send your payment via Zelle to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>). In the Zelle memo or notes field, include <strong>ONLY your order number</strong>, nothing else. This helps us match your payment to your order quickly and keeps processing fast and accurate.
+                  </p>
+                )}
+                <div className="flex items-center justify-between gap-2 bg-white border border-blue-200 rounded-md px-3 py-2">
+                  <div className="text-sm">
+                    <span className="text-blue-700">Your order number is:</span>{' '}
+                    <strong className="text-blue-900 tracking-wide">{manualOrderNumber}</strong>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-blue-600 underline shrink-0"
+                    onClick={() => { try { navigator.clipboard.writeText(manualOrderNumber); } catch {} }}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
             {resultSuccess && isManualResult && manualCountdown !== null && (
               <div className="flex flex-col items-center gap-1 mt-1">
                 <p className="text-xs text-gray-500">Navigating to your orders in {manualCountdown}s…</p>
@@ -960,7 +990,10 @@ function PaymentPageContent() {
                     </div>
                     <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
                       <li>
-                        Open your bank&apos;s app and scan the QR code above, or send a Zelle payment manually to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>). Include your order number in the memo field.
+                        Open your bank&apos;s app and scan the QR code above, or send a Zelle payment manually to <strong>ASCENDRA BIO, LLC</strong> (handle: <strong>ascendrabio</strong>).
+                      </li>
+                      <li>
+                        In the Zelle memo or notes field, include <strong>ONLY your order number</strong>, nothing else. This helps us match your payment to your order quickly and keeps processing fast and accurate. Your order number is shown on the confirmation screen right after you place this order.
                       </li>
                       <li>
                         Kindly forward a screenshot of the payment confirmation to <strong>accounts@ascendrabio.com</strong> for cross-verification.
