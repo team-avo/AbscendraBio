@@ -1071,6 +1071,8 @@ router.put(
       .isBoolean()
       .withMessage("isApproved must be boolean"),
     body("tags").optional().isArray().withMessage("Tags must be an array"),
+    body("smsTransactionalConsent").optional().isBoolean(),
+    body("smsMarketingConsent").optional().isBoolean(),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {
@@ -1085,6 +1087,8 @@ router.put(
       isActive,
       isApproved,
       tags,
+      smsTransactionalConsent,
+      smsMarketingConsent,
     } = req.body;
     const { companyName, licenseNumber, city, zip } = req.body;
     const cleanedCompanyName =
@@ -1156,6 +1160,18 @@ router.put(
         updateData.isApproved = isApproved;
         updateData.approvalStatus = isApproved ? "APPROVED" : "DEACTIVATED";
         updateData.isActive = isApproved; // active when approved, inactive when deactivated
+      }
+      // SMS consent: stamp the time/source whenever either consent changes.
+      if (smsTransactionalConsent !== undefined)
+        updateData.smsTransactionalConsent = smsTransactionalConsent === true;
+      if (smsMarketingConsent !== undefined)
+        updateData.smsMarketingConsent = smsMarketingConsent === true;
+      if (
+        smsTransactionalConsent !== undefined ||
+        smsMarketingConsent !== undefined
+      ) {
+        updateData.smsConsentAt = new Date();
+        updateData.smsConsentSource = "profile";
       }
 
       await tx.customer.update({

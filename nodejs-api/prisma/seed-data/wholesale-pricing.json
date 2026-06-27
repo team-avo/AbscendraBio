@@ -1,0 +1,416 @@
+[
+  {
+    "name": "5-amino-1MQ",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 86.25,
+    "m2": 56.06,
+    "m5": 43.13,
+    "m10": 34.5
+  },
+  {
+    "name": "AOD-9604",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 86.25,
+    "m2": 56.06,
+    "m5": 43.13,
+    "m10": 34.5
+  },
+  {
+    "name": "Ara-290",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 73.75,
+    "m2": 47.94,
+    "m5": 36.88,
+    "m10": 29.5
+  },
+  {
+    "name": "B12",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 43.75,
+    "m2": 28.44,
+    "m5": 21.88,
+    "m10": 17.5
+  },
+  {
+    "name": "BPC-157",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 60.0,
+    "m2": 39.0,
+    "m5": 30.0,
+    "m10": 24.0
+  },
+  {
+    "name": "BPC-157 / TB-500 (Wolverine)",
+    "strength": "5/5 mg",
+    "category": "Research Peptides",
+    "reg": 60.0,
+    "m2": 39.0,
+    "m5": 34.38,
+    "m10": 24.0
+  },
+  {
+    "name": "BPC-157 / TB-500 (Wolverine)",
+    "strength": "10/10 mg",
+    "category": "Research Peptides",
+    "reg": 98.75,
+    "m2": 64.19,
+    "m5": 49.38,
+    "m10": 39.5
+  },
+  {
+    "name": "Cagrilintide",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 123.75,
+    "m2": 80.44,
+    "m5": 61.88,
+    "m10": 49.5
+  },
+  {
+    "name": "CJC-1295 / Ipamorelin (No DAC)",
+    "strength": "5/5 mg",
+    "category": "Research Peptides",
+    "reg": 73.75,
+    "m2": 47.94,
+    "m5": 36.88,
+    "m10": 29.5
+  },
+  {
+    "name": "CJC-1295 / Ipamorelin (No DAC)",
+    "strength": "10/10 mg",
+    "category": "Research Peptides",
+    "reg": 113.75,
+    "m2": 73.94,
+    "m5": 56.88,
+    "m10": 45.5
+  },
+  {
+    "name": "DSIP",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 56.25,
+    "m2": 36.56,
+    "m5": 28.13,
+    "m10": 22.5
+  },
+  {
+    "name": "Epithalon",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 43.75,
+    "m2": 28.44,
+    "m5": 21.88,
+    "m10": 17.5
+  },
+  {
+    "name": "GHK-Cu",
+    "strength": "50 mg",
+    "category": "Research Peptides",
+    "reg": 36.25,
+    "m2": 23.56,
+    "m5": 18.13,
+    "m10": 14.5
+  },
+  {
+    "name": "GHK-Cu",
+    "strength": "100 mg",
+    "category": "Research Peptides",
+    "reg": 56.25,
+    "m2": 36.56,
+    "m5": 28.13,
+    "m10": 22.5
+  },
+  {
+    "name": "GHK / BPC-157 / TB-500 (GLOW)",
+    "strength": "70 mg",
+    "category": "Research Peptides",
+    "reg": 111.25,
+    "m2": 72.31,
+    "m5": 55.63,
+    "m10": 44.5
+  },
+  {
+    "name": "GHK / KPV / BPC-157 / TB-500 (KLOW)",
+    "strength": "80 mg",
+    "category": "Research Peptides",
+    "reg": 136.25,
+    "m2": 88.56,
+    "m5": 68.13,
+    "m10": 54.5
+  },
+  {
+    "name": "Glutathione",
+    "strength": "600 mg",
+    "category": "Research Peptides",
+    "reg": 36.25,
+    "m2": 31.69,
+    "m5": 18.13,
+    "m10": 14.5
+  },
+  {
+    "name": "Glutathione",
+    "strength": "1500 mg",
+    "category": "Research Peptides",
+    "reg": 68.75,
+    "m2": 44.69,
+    "m5": 34.38,
+    "m10": 27.5
+  },
+  {
+    "name": "KPV",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 61.25,
+    "m2": 39.81,
+    "m5": 30.63,
+    "m10": 24.5
+  },
+  {
+    "name": "Melanotan 1",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 43.75,
+    "m2": 20.31,
+    "m5": 15.63,
+    "m10": 17.5
+  },
+  {
+    "name": "Melanotan 2",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 43.75,
+    "m2": 28.44,
+    "m5": 21.88,
+    "m10": 17.5
+  },
+  {
+    "name": "MOTS-c",
+    "strength": "20 mg",
+    "category": "Research Peptides",
+    "reg": 79.59,
+    "m2": 51.73,
+    "m5": 39.79,
+    "m10": 31.84
+  },
+  {
+    "name": "NAD+",
+    "strength": "500 mg",
+    "category": "Research Peptides",
+    "reg": 55.0,
+    "m2": 35.75,
+    "m5": 27.5,
+    "m10": 22.0
+  },
+  {
+    "name": "NAD+",
+    "strength": "1000 mg",
+    "category": "Research Peptides",
+    "reg": 106.25,
+    "m2": 69.06,
+    "m5": 53.13,
+    "m10": 42.5
+  },
+  {
+    "name": "PT-141",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 46.25,
+    "m2": 30.06,
+    "m5": 23.13,
+    "m10": 18.5
+  },
+  {
+    "name": "Selank",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 43.31,
+    "m2": 28.15,
+    "m5": 21.66,
+    "m10": 17.33
+  },
+  {
+    "name": "Semax",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 41.13,
+    "m2": 26.74,
+    "m5": 20.56,
+    "m10": 16.45
+  },
+  {
+    "name": "Semax / Selank",
+    "strength": "10/10 mg",
+    "category": "Research Peptides",
+    "reg": 111.25,
+    "m2": 72.31,
+    "m5": 55.63,
+    "m10": 44.5
+  },
+  {
+    "name": "SS-31",
+    "strength": "50 mg",
+    "category": "Research Peptides",
+    "reg": 173.75,
+    "m2": 112.94,
+    "m5": 86.88,
+    "m10": 69.5
+  },
+  {
+    "name": "TA-1 (Thymosin Alpha-1)",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 81.25,
+    "m2": 52.81,
+    "m5": 40.63,
+    "m10": 32.5
+  },
+  {
+    "name": "TB-500",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 61.25,
+    "m2": 39.81,
+    "m5": 30.63,
+    "m10": 24.5
+  },
+  {
+    "name": "Tesamorelin",
+    "strength": "10 mg",
+    "category": "Research Peptides",
+    "reg": 87.44,
+    "m2": 56.84,
+    "m5": 43.73,
+    "m10": 34.98
+  },
+  {
+    "name": "Tesamorelin / Ipamorelin",
+    "strength": "10/3 mg",
+    "category": "Research Peptides",
+    "reg": 123.75,
+    "m2": 80.44,
+    "m5": 61.88,
+    "m10": 49.5
+  },
+  {
+    "name": "Retatrutide",
+    "strength": "10 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 73.13,
+    "m2": 47.54,
+    "m5": 36.56,
+    "m10": 29.25
+  },
+  {
+    "name": "Retatrutide",
+    "strength": "20 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 124.94,
+    "m2": 81.21,
+    "m5": 62.48,
+    "m10": 49.98
+  },
+  {
+    "name": "Retatrutide",
+    "strength": "50 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 236.25,
+    "m2": 153.56,
+    "m5": 118.13,
+    "m10": 94.5
+  },
+  {
+    "name": "Retatrutide",
+    "strength": "60 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 273.75,
+    "m2": 177.94,
+    "m5": 136.88,
+    "m10": 109.5
+  },
+  {
+    "name": "Semaglutide",
+    "strength": "5 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 48.75,
+    "m2": 31.69,
+    "m5": 24.38,
+    "m10": 19.5
+  },
+  {
+    "name": "Semaglutide",
+    "strength": "10 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 68.75,
+    "m2": 44.69,
+    "m5": 34.38,
+    "m10": 27.5
+  },
+  {
+    "name": "Semaglutide",
+    "strength": "20 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 86.25,
+    "m2": 56.06,
+    "m5": 43.13,
+    "m10": 34.5
+  },
+  {
+    "name": "Semaglutide",
+    "strength": "30 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 123.75,
+    "m2": 80.44,
+    "m5": 61.88,
+    "m10": 49.5
+  },
+  {
+    "name": "Tirzepatide",
+    "strength": "5 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 30.63,
+    "m2": 19.91,
+    "m5": 15.31,
+    "m10": 12.25
+  },
+  {
+    "name": "Tirzepatide",
+    "strength": "10 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 61.25,
+    "m2": 39.81,
+    "m5": 30.63,
+    "m10": 24.5
+  },
+  {
+    "name": "Tirzepatide",
+    "strength": "20 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 106.25,
+    "m2": 69.06,
+    "m5": 53.13,
+    "m10": 42.5
+  },
+  {
+    "name": "Tirzepatide",
+    "strength": "40 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 161.25,
+    "m2": 104.81,
+    "m5": 80.63,
+    "m10": 64.5
+  },
+  {
+    "name": "Tirzepatide",
+    "strength": "60 mg",
+    "category": "GLP-1 Receptor Agonists",
+    "reg": 186.25,
+    "m2": 121.06,
+    "m5": 93.13,
+    "m10": 74.5
+  }
+]

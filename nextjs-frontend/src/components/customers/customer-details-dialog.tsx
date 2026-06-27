@@ -210,6 +210,18 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCommentA
                       {fullCustomer?.zip || customer.zip || '-'}
                     </p>
                   </div>
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium text-muted-foreground">SMS Enrollment</label>
+                    <p className="text-sm break-words">
+                      Account texts: <span className="font-medium">{(fullCustomer?.smsTransactionalConsent ?? (customer as any).smsTransactionalConsent) ? 'Enrolled' : 'Not enrolled'}</span>
+                      {' · '}Marketing texts: <span className="font-medium">{(fullCustomer?.smsMarketingConsent ?? (customer as any).smsMarketingConsent) ? 'Enrolled' : 'Not enrolled'}</span>
+                    </p>
+                    {(fullCustomer?.smsConsentAt) && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Consent recorded {new Date(fullCustomer.smsConsentAt).toLocaleDateString()}{fullCustomer?.smsConsentSource ? ` · via ${fullCustomer.smsConsentSource}` : ''}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

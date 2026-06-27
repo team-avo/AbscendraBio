@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,89 +10,57 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
-type Item = { name: string; spec: string };
-
-// Default product catalog, sourced from nodejs-api/public/Ascendra_Inventory.pdf
-// (ASCENDRA BIO — Product / Specification). Picking one fills the label. This is
-// the seed list; "Edit items" lets the user change it (persisted in the browser).
-const DEFAULT_INVENTORY: Item[] = [
-  { name: "5-amino-1MQ", spec: "10mg" },
-  { name: "Acetic Acid 1%", spec: "3ml" },
-  { name: "AOD-9604", spec: "10mg" },
-  { name: "Ara-290", spec: "10mg" },
-  { name: "B12", spec: "mg/ml 10ml vial" },
-  { name: "Bac Water (Hospira)", spec: "30ml" },
-  { name: "Bacteriostatic Water", spec: "3ml" },
-  { name: "Bacteriostatic Water", spec: "10ml" },
-  { name: "BPC + TB Blend", spec: "10mg (5+5)" },
-  { name: "BPC + TB Blend", spec: "20mg (10+10)" },
-  { name: "BPC-157", spec: "10mg" },
-  { name: "Cagrilintide", spec: "10mg" },
-  { name: "CJC-1295 No DAC + Ipamorelin", spec: "10mg (5+5)" },
-  { name: "CJC-1295 No DAC + Ipamorelin", spec: "20mg (10+10)" },
-  { name: "DSIP", spec: "10mg" },
-  { name: "Epithalon", spec: "10mg" },
-  { name: "GHK-Cu", spec: "50mg" },
-  { name: "GHK-Cu", spec: "100mg" },
-  { name: "GLOW Blend", spec: "70mg" },
-  { name: "Glutathione", spec: "600mg" },
-  { name: "Glutathione", spec: "1500mg" },
-  { name: "KLOW Blend", spec: "80mg" },
-  { name: "KPV", spec: "10mg" },
-  { name: "MLT II", spec: "10mg" },
-  { name: "MOTS-c", spec: "20mg" },
-  { name: "MT-1 (Melanotan 1)", spec: "10mg" },
-  { name: "MT-2 (Melanotan 2)", spec: "10mg" },
-  { name: "NAD+", spec: "500mg" },
-  { name: "NAD+", spec: "1000mg" },
-  { name: "PT-141", spec: "10mg" },
-  { name: "Retatrutide", spec: "5mg" },
-  { name: "Retatrutide", spec: "10mg" },
-  { name: "Retatrutide", spec: "20mg" },
-  { name: "Retatrutide", spec: "50mg" },
-  { name: "Retatrutide", spec: "60mg" },
-  { name: "Selank", spec: "10mg" },
-  { name: "Semaglutide", spec: "5mg" },
-  { name: "Semaglutide", spec: "10mg" },
-  { name: "Semaglutide", spec: "20mg" },
-  { name: "Semaglutide", spec: "30mg" },
-  { name: "Semax", spec: "10mg" },
-  { name: "Semax / Selank", spec: "20mg (10+10)" },
-  { name: "SS-31", spec: "50mg" },
-  { name: "TB-500", spec: "10mg" },
-  { name: "Tesamorelin", spec: "10mg" },
-  { name: "Tesamorelin / Ipamorelin", spec: "13mg (10+3)" },
-  { name: "Thymosin Alpha-1", spec: "10mg" },
-  { name: "Tirzepatide", spec: "5mg" },
-  { name: "Tirzepatide", spec: "10mg" },
-  { name: "Tirzepatide", spec: "20mg" },
-  { name: "Tirzepatide", spec: "30mg" },
-  { name: "Tirzepatide", spec: "40mg" },
-  { name: "Tirzepatide", spec: "60mg" },
-];
-
-// Where the user-edited product list is saved (browser-local for now).
-const LS_KEY = "ascendra_label_inventory_v1";
-
-// Inventory specs are like "10mg"; on a vial label that reads "10 mg/vial".
-// Non-mg specs (ml, blends) pass through unchanged for manual tweaking.
-const toVialStrength = (spec: string) => {
-  const m = spec.match(/^(\d+(?:\.\d+)?)\s*mg\b(.*)$/i);
-  return m ? `${m[1]} mg/vial${m[2]}` : spec;
+// The label maker pulls its data live from the Lot Management registry, which is
+// the single source of truth. Picking a peptide autofills the name, strength
+// options, chemical formula, CAS number and molecular weight. Picking a lot
+// autofills the lot number and manufacturing date. Every field stays editable.
+type Strength = { id?: string; label: string; code: string };
+type Peptide = {
+  id: string;
+  name: string;
+  code: string;
+  casNumber?: string | null;
+  chemicalFormula?: string | null;
+  molecularMass?: string | null;
+  strengths?: Strength[];
+};
+type Lot = {
+  id: string;
+  lotNumber: string;
+  mfgDate?: string | null;
+  peptideStrengthId?: string | null;
+  strength?: Strength | null;
 };
 
-// Base artwork is the finished label; the two editable lines are white-blocked
-// and redrawn so the canvas (and therefore the exported PDF) match exactly.
+// Strength labels in the registry read like "10 mg"; on a vial label they read
+// "10 mg/vial". Non-mg values (ml, blends) pass through unchanged.
+const toVialStrength = (s: string) => {
+  const m = (s || "").match(/^(\d+(?:\.\d+)?)\s*mg\b(.*)$/i);
+  return m ? `${m[1]} mg/vial${m[2] ? " " + m[2].trim() : ""}` : s;
+};
+
+// Manufacturing date comes back as an ISO string; show it as MM/DD/YYYY.
+const fmtDate = (iso?: string | null) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${mm}/${dd}/${d.getFullYear()}`;
+};
+
+// Base artwork is the finished label; the editable lines are white-blocked and
+// redrawn so the canvas (and therefore the exported PDF) match exactly.
 const IMG_SRC = "/Ascendra_label_BPC-157_highres.png";
 const W = 2400;
 const H = 900;
 const LABEL_W_IN = 2;
 const LABEL_H_IN = 0.75;
 
-// The client wants the logo, product name, strength and PURITY badge all
-// centered on the label. The logo is already centered in the source art (cx1200);
-// the badge (which leans right at cx1386) and the two text lines are re-centered
-// here on CENTER, and the left side text is nudged inward so it is not clipped.
+// The logo, product name, strength and PURITY badge are all centered on the
+// label. The logo is already centered in the source art (cx1200); the badge
+// (which leans right) and the two text lines are re-centered here on CENTER,
+// and the left side text is nudged inward so it is not clipped.
 const CENTER = 1200;
 // The navy footer bar begins here; all re-centering edits stay above it.
 const FOOTER_TOP = 772;
@@ -102,18 +71,30 @@ const BADGE = { sx: 914, sy: 620, w: 944, h: 125 };
 const SIDE_TEXT = "Not for human, veterinary or diagnostic use";
 const SIDE_STRIP_W = 200; // left area cleared before the text is redrawn
 
-// Editable fields, in source-image pixels. `box` is whited out, then the text is
-// drawn centered on CENTER at `baseline`, auto-shrunk to fit `maxW`. Measured
-// from the source PNG: name caps span y354-475 (size ~168); strength "5 mg/vial"
-// spans y520-594 (size ~80, baseline 578). The PURITY badge top sits at y620.
+// Editable name/strength fields, in source-image pixels. `box` is whited out,
+// then the text is drawn centered on CENTER at `baseline`, auto-shrunk to fit
+// `maxW`. Name caps span y354-475 (size ~168); strength "5 mg/vial" spans
+// y520-594 (size ~80, baseline 578). The PURITY badge top sits at y620.
 type FieldDef = { box: { x: number; y: number; w: number; h: number }; baseline: number; size: number; maxW: number };
 const FIELDS: Record<"name" | "strength", FieldDef> = {
   name: { box: { x: 900, y: 338, w: 820, h: 152 }, baseline: 475, size: 169, maxW: 1500 },
   strength: { box: { x: 900, y: 500, w: 760, h: 118 }, baseline: 578, size: 80, maxW: 1100 },
 };
 
-type Vals = { name: string; strength: string };
-const DEFAULTS: Vals = { name: "BPC-157", strength: "5 mg/vial" };
+// The chemistry and lot details render in the empty lower-left white column,
+// left of the centered name, below the side text. Only non-empty lines draw.
+const INFO = { x: 215, top: 430, lineH: 60, maxW: 470, size: 42 };
+
+type Vals = {
+  name: string;
+  strength: string;
+  formula: string;
+  cas: string;
+  mw: string;
+  lot: string;
+  mfg: string;
+};
+const DEFAULTS: Vals = { name: "BPC-157", strength: "5 mg/vial", formula: "", cas: "", mw: "", lot: "", mfg: "" };
 
 export default function LabelStudioPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -123,21 +104,26 @@ export default function LabelStudioPage() {
   const [vals, setVals] = useState<Vals>(DEFAULTS);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Vals>(DEFAULTS);
-  const [inventory, setInventory] = useState<Item[]>(DEFAULT_INVENTORY);
-  const [itemsOpen, setItemsOpen] = useState(false);
-  const [itemDraft, setItemDraft] = useState<Item[]>([]);
 
-  // Load any saved (edited) product list from the browser.
+  // Live registry data (single source of truth).
+  const [peptides, setPeptides] = useState<Peptide[]>([]);
+  const [lots, setLots] = useState<Lot[]>([]);
+  const [selPeptideId, setSelPeptideId] = useState<string>("");
+  const [selStrengthCode, setSelStrengthCode] = useState<string>("");
+  const [selLotId, setSelLotId] = useState<string>("");
+  const [loadingLots, setLoadingLots] = useState(false);
+  const [qty, setQty] = useState(1);
+
+  // Load the peptide registry once.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length) setInventory(parsed);
+    (async () => {
+      try {
+        const r = await api.lmGetPeptides(true);
+        if (r.success && Array.isArray(r.data)) setPeptides(r.data as Peptide[]);
+      } catch {
+        /* registry unavailable; the dialog still allows manual entry */
       }
-    } catch {
-      /* ignore malformed storage; fall back to the default list */
-    }
+    })();
   }, []);
 
   const draw = useCallback((v: Vals) => {
@@ -193,6 +179,33 @@ export default function LabelStudioPage() {
       ctx.fillStyle = navyRef.current;
       ctx.fillText(text, CENTER, f.baseline);
     });
+
+    // Chemistry + lot details in the empty lower-left column. Only non-empty
+    // lines render, so a label with no peptide picked looks unchanged.
+    const info: { k: string; val: string }[] = [
+      { k: "Lot", val: v.lot },
+      { k: "Mfg", val: v.mfg },
+      { k: "CAS", val: v.cas },
+      { k: "MW", val: v.mw },
+      { k: "Formula", val: v.formula },
+    ].filter((r) => (r.val || "").trim());
+    if (info.length) {
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = navyRef.current;
+      let y = INFO.top;
+      for (const r of info) {
+        const line = `${r.k}: ${r.val.trim()}`;
+        let size = INFO.size;
+        ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
+        while (ctx.measureText(line).width > INFO.maxW && size > 16) {
+          size -= 1;
+          ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
+        }
+        ctx.fillText(line, INFO.x, y);
+        y += INFO.lineH;
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -231,26 +244,71 @@ export default function LabelStudioPage() {
     if (ready) draw(vals);
   }, [ready, vals, draw]);
 
-  const selectedIdx = inventory.findIndex((it) => it.name === draft.name && toVialStrength(it.spec) === draft.strength);
-  const openEditor = () => { setDraft(vals); setOpen(true); };
+  const openEditor = () => {
+    setDraft(vals);
+    // Best-effort: re-sync the selects to the current peptide/strength so the
+    // dropdowns reflect what is on the label when re-opening.
+    const p = peptides.find((pp) => pp.name === vals.name);
+    setSelPeptideId(p?.id || "");
+    setSelStrengthCode("");
+    setSelLotId("");
+    setLots([]);
+    if (p) void loadLots(p.id);
+    setOpen(true);
+  };
   const saveEditor = () => { setVals(draft); setOpen(false); toast.success("Label updated"); };
 
-  // Drawer item editor.
-  const openItemsEditor = () => { setItemDraft(inventory.map((it) => ({ ...it }))); setItemsOpen(true); };
-  const updateItem = (i: number, key: keyof Item, value: string) =>
-    setItemDraft((d) => d.map((it, idx) => (idx === i ? { ...it, [key]: value } : it)));
-  const addItem = () => setItemDraft((d) => [...d, { name: "", spec: "" }]);
-  const removeItem = (i: number) => setItemDraft((d) => d.filter((_, idx) => idx !== i));
-  const saveItems = () => {
-    const cleaned = itemDraft
-      .map((it) => ({ name: it.name.trim(), spec: it.spec.trim() }))
-      .filter((it) => it.name);
-    if (!cleaned.length) { toast.error("Add at least one product"); return; }
-    setInventory(cleaned);
-    try { localStorage.setItem(LS_KEY, JSON.stringify(cleaned)); } catch { /* storage may be unavailable */ }
-    setItemsOpen(false);
-    toast.success("Products updated");
+  const loadLots = async (peptideId: string) => {
+    setLoadingLots(true);
+    try {
+      const r = await api.lmGetLots({ peptideId, limit: 100 });
+      const rows = (r?.data?.data || r?.data || []) as Lot[];
+      setLots(Array.isArray(rows) ? rows : []);
+    } catch {
+      setLots([]);
+    } finally {
+      setLoadingLots(false);
+    }
   };
+
+  // Picking a peptide autofills name + chemistry, offers its strengths, and
+  // loads its lots. Existing manual edits to other fields are preserved.
+  const onPeptide = (id: string) => {
+    setSelPeptideId(id);
+    setSelStrengthCode("");
+    setSelLotId("");
+    const p = peptides.find((pp) => pp.id === id);
+    if (!p) return;
+    const firstStrength = (p.strengths || [])[0];
+    setDraft((d) => ({
+      ...d,
+      name: p.name,
+      formula: p.chemicalFormula || "",
+      cas: p.casNumber || "",
+      mw: p.molecularMass || "",
+      strength: firstStrength ? toVialStrength(firstStrength.label) : d.strength,
+      lot: "",
+      mfg: "",
+    }));
+    if (firstStrength) setSelStrengthCode(firstStrength.code);
+    void loadLots(id);
+  };
+
+  const onStrength = (code: string) => {
+    setSelStrengthCode(code);
+    const p = peptides.find((pp) => pp.id === selPeptideId);
+    const st = (p?.strengths || []).find((s) => s.code === code);
+    if (st) setDraft((d) => ({ ...d, strength: toVialStrength(st.label) }));
+  };
+
+  const onLot = (id: string) => {
+    setSelLotId(id);
+    if (id === "__none") { setDraft((d) => ({ ...d, lot: "", mfg: "" })); return; }
+    const lot = lots.find((l) => l.id === id);
+    if (lot) setDraft((d) => ({ ...d, lot: lot.lotNumber, mfg: fmtDate(lot.mfgDate) }));
+  };
+
+  const setField = (k: keyof Vals, value: string) => setDraft((d) => ({ ...d, [k]: value }));
 
   const downloadPdf = () => {
     const canvas = canvasRef.current;
@@ -263,10 +321,35 @@ export default function LabelStudioPage() {
     toast.success("PDF downloaded");
   };
 
+  // Print ready sheet for the die-cut label printer: two labels per row, one row
+  // per page (the gap sensor re-registers each row, preventing vertical drift).
+  // Geometry, in inches: page 4.125 x 0.75; label 2.0 x 0.75; column gap 0.125;
+  // left label at x=0, right at x=2.125. Fill left to right, top to bottom.
+  const SHEET = { pageW: 4.125, pageH: 0.75, labelW: 2.0, labelH: 0.75, gap: 0.125 };
+  const downloadPrintSheet = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const n = Math.max(1, Math.min(1000, Math.floor(qty) || 1));
+    const dataUrl = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ unit: "in", format: [SHEET.pageW, SHEET.pageH], orientation: "landscape" });
+    for (let i = 0; i < n; i++) {
+      const col = i % 2;
+      if (i > 0 && col === 0) pdf.addPage([SHEET.pageW, SHEET.pageH], "landscape");
+      const x = col * (SHEET.labelW + SHEET.gap);
+      pdf.addImage(dataUrl, "PNG", x, 0, SHEET.labelW, SHEET.labelH);
+    }
+    const slug = (vals.name || "label").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "");
+    pdf.save(`${slug || "label"}_sheet_${n}.pdf`);
+    toast.success(`Print sheet (${n} ${n === 1 ? "label" : "labels"}) downloaded`);
+  };
+
+  const selPeptide = peptides.find((p) => p.id === selPeptideId);
+  const strengthOptions = selPeptide?.strengths || [];
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Click the label to edit the product name and strength, preview, then download a print ready PDF at exactly 2 x 0.75 inches.
+        Click the label to edit it. Pick a peptide to autofill the name, strength, chemical formula, CAS number and molecular weight from the registry, and pick a lot to autofill the lot number and manufacturing date. Every field stays editable. Then download a print ready PDF at exactly 2 x 0.75 inches.
       </p>
 
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 space-y-4 max-w-3xl">
@@ -283,55 +366,77 @@ export default function LabelStudioPage() {
         </button>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" onClick={openEditor}>Edit text</Button>
-          <Button variant="outline" onClick={openItemsEditor}>Edit items</Button>
-          <Button onClick={downloadPdf} disabled={!ready}>Download PDF</Button>
-          <span className="text-xs text-muted-foreground ml-auto">2.00 in × 0.75 in · {W}×{H}px artwork</span>
+          <Button variant="outline" onClick={openEditor}>Edit label</Button>
+          <Button variant="outline" onClick={downloadPdf} disabled={!ready}>Download single PDF</Button>
+          <div className="flex items-center gap-1.5">
+            <Label className="text-xs text-muted-foreground">Qty</Label>
+            <Input
+              type="number"
+              min={1}
+              max={1000}
+              value={qty}
+              onChange={(e) => setQty(Math.max(1, Math.min(1000, parseInt(e.target.value || "1", 10) || 1)))}
+              className="w-20 h-9"
+            />
+            <Button onClick={downloadPrintSheet} disabled={!ready}>Download print sheet</Button>
+          </div>
+          <span className="text-xs text-muted-foreground ml-auto">Sheet: 2 labels per row · 4.125 in × 0.75 in page</span>
         </div>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Edit label</DialogTitle></DialogHeader>
-          <div className="space-y-3 mt-1">
+          <div className="space-y-3 mt-1 max-h-[70vh] overflow-y-auto pr-1">
             <div className="space-y-1.5">
-              <Label className="text-xs">Product (from inventory)</Label>
-              <Select value={selectedIdx >= 0 ? String(selectedIdx) : undefined} onValueChange={(v) => { const it = inventory[Number(v)]; if (it) setDraft({ name: it.name, strength: toVialStrength(it.spec) }); }}>
-                <SelectTrigger><SelectValue placeholder="Select a product…" /></SelectTrigger>
+              <Label className="text-xs">Peptide (from registry)</Label>
+              <Select value={selPeptideId || undefined} onValueChange={onPeptide}>
+                <SelectTrigger><SelectValue placeholder={peptides.length ? "Select a peptide…" : "No registry data"} /></SelectTrigger>
                 <SelectContent className="max-h-72">
-                  {inventory.map((it, i) => <SelectItem key={i} value={String(i)}>{it.name} — {it.spec}</SelectItem>)}
+                  {peptides.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">Sets the product name and strength on the label.</p>
+              <p className="text-[11px] text-muted-foreground">Autofills name, formula, CAS and MW. Manage these in Registries → Peptides.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Strength</Label>
+                <Select value={selStrengthCode || undefined} onValueChange={onStrength} disabled={!strengthOptions.length}>
+                  <SelectTrigger><SelectValue placeholder={strengthOptions.length ? "Select…" : "Pick peptide first"} /></SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    {strengthOptions.map((s) => <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Lot (optional)</Label>
+                <Select value={selLotId || undefined} onValueChange={onLot} disabled={!selPeptideId || loadingLots}>
+                  <SelectTrigger><SelectValue placeholder={loadingLots ? "Loading…" : lots.length ? "Select a lot…" : "No lots"} /></SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    <SelectItem value="__none">None</SelectItem>
+                    {lots.map((l) => <SelectItem key={l.id} value={l.id}>{l.lotNumber}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="border-t pt-3 space-y-3">
+              <p className="text-[11px] text-muted-foreground -mb-1">Fields on the label (editable):</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5"><Label className="text-xs">Name</Label><Input value={draft.name} onChange={(e) => setField("name", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label className="text-xs">Strength</Label><Input value={draft.strength} onChange={(e) => setField("strength", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label className="text-xs">Chemical formula</Label><Input value={draft.formula} onChange={(e) => setField("formula", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label className="text-xs">CAS #</Label><Input value={draft.cas} onChange={(e) => setField("cas", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label className="text-xs">Molecular weight</Label><Input value={draft.mw} onChange={(e) => setField("mw", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label className="text-xs">Lot #</Label><Input value={draft.lot} onChange={(e) => setField("lot", e.target.value)} /></div>
+                <div className="space-y-1.5 col-span-2"><Label className="text-xs">Mfg date</Label><Input value={draft.mfg} onChange={(e) => setField("mfg", e.target.value)} placeholder="MM/DD/YYYY" /></div>
+              </div>
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={saveEditor}>Save</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={itemsOpen} onOpenChange={setItemsOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Edit items</DialogTitle></DialogHeader>
-          <p className="text-[11px] text-muted-foreground -mt-1">Edit the products shown in the dropdown. Name is required; strength is optional.</p>
-          <div className="mt-2 max-h-[55vh] overflow-y-auto pr-1 space-y-2">
-            {itemDraft.map((it, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <Input className="flex-1" value={it.name} placeholder="Product name" onChange={(e) => updateItem(i, "name", e.target.value)} />
-                <Input className="w-28" value={it.spec} placeholder="Strength" onChange={(e) => updateItem(i, "spec", e.target.value)} />
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeItem(i)} title="Remove">✕</Button>
-              </div>
-            ))}
-            {itemDraft.length === 0 && <p className="text-xs text-muted-foreground py-4 text-center">No products. Add one below.</p>}
-          </div>
-          <div className="flex items-center justify-between gap-2 mt-3">
-            <Button variant="outline" size="sm" onClick={addItem}>+ Add item</Button>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setItemsOpen(false)}>Cancel</Button>
-              <Button onClick={saveItems}>Save</Button>
-            </div>
           </div>
         </DialogContent>
       </Dialog>

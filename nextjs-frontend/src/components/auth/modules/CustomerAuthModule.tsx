@@ -35,6 +35,8 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
   const [licenseNumber, setLicenseNumber] = useState('');
   const [city, setCity] = useState('');
   const [zip, setZip] = useState('');
+  const [smsTransactionalConsent, setSmsTransactionalConsent] = useState(false);
+  const [smsMarketingConsent, setSmsMarketingConsent] = useState(false);
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin');
   const [showPassword, setShowPassword] = useState(false);
@@ -257,6 +259,8 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
           licenseNumber: licenseNumber.trim() || undefined,
           city: city.trim() || undefined,
           zip: zip.trim() || undefined,
+          smsTransactionalConsent,
+          smsMarketingConsent,
         });
         if (registered) {
           // registered is the full API response — check if email was actually sent
@@ -492,7 +496,7 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
           <SignInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} showPassword={showPassword} setShowPassword={setShowPassword} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} portalMismatch={portalMismatch} setPortalMismatch={setPortalMismatch} onSubmit={handleSubmit} onForgotPassword={handleForgotPassword} onSwitchToOtp={handleSwitchToOtpMode} clearErrors={(field) => setErrors(prev => ({ ...prev, [field]: undefined }))} />
         )
       ) : (
-        <SignUpForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} firstName={firstName} setFirstName={setFirstName} lastName={lastName} setLastName={setLastName} mobile={mobile} setMobile={setMobile} companyName={companyName} setCompanyName={setCompanyName} licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber} city={city} setCity={setCity} zip={zip} setZip={setZip} showPassword={showPassword} setShowPassword={setShowPassword} setShowPasswordValidation={setShowPasswordValidation} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} onSubmit={handleSubmit} onSwitchToOtp={() => { setTab('signin'); handleSwitchToOtpMode(); }} />
+        <SignUpForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} firstName={firstName} setFirstName={setFirstName} lastName={lastName} setLastName={setLastName} mobile={mobile} setMobile={setMobile} companyName={companyName} setCompanyName={setCompanyName} licenseNumber={licenseNumber} setLicenseNumber={setLicenseNumber} city={city} setCity={setCity} zip={zip} setZip={setZip} smsTransactionalConsent={smsTransactionalConsent} setSmsTransactionalConsent={setSmsTransactionalConsent} smsMarketingConsent={smsMarketingConsent} setSmsMarketingConsent={setSmsMarketingConsent} showPassword={showPassword} setShowPassword={setShowPassword} setShowPasswordValidation={setShowPasswordValidation} errors={errors} isSubmitting={isSubmitting} isLoading={isLoading} mounted={mounted} onSubmit={handleSubmit} onSwitchToOtp={() => { setTab('signin'); handleSwitchToOtpMode(); }} />
       )}
 
       <ForgotPasswordDialog open={forgotOpen} onOpenChange={setForgotOpen} email={forgotEmail} setEmail={setForgotEmail} loading={forgotLoading} onReset={handlePasswordReset} />

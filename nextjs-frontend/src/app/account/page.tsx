@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { api, Customer, Order, formatCurrency, formatDate, getCustomCountries, getCustomStates, getCustomCities, createCustomLocation } from "@/lib/api";
 import logger from "@/lib/logger";
@@ -34,6 +35,8 @@ export default function AccountHomePage() {
     mobile: "",
     companyName: "",
     licenseNumber: "",
+    smsTransactionalConsent: false,
+    smsMarketingConsent: false,
   });
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
   const [totalOrders, setTotalOrders] = useState<number>(0);
@@ -84,6 +87,8 @@ export default function AccountHomePage() {
               mobile: (res.data as any).mobile || "",
               companyName: res.data.companyName || "",
               licenseNumber: res.data.licenseNumber || "",
+              smsTransactionalConsent: !!(res.data as any).smsTransactionalConsent,
+              smsMarketingConsent: !!(res.data as any).smsMarketingConsent,
             });
 
             // Set total orders count
@@ -163,6 +168,8 @@ export default function AccountHomePage() {
         mobile: profile.mobile,
         companyName: profile.companyName.trim() ? profile.companyName.trim() : undefined,
         licenseNumber: profile.licenseNumber.trim() ? profile.licenseNumber.trim() : undefined,
+        smsTransactionalConsent: profile.smsTransactionalConsent,
+        smsMarketingConsent: profile.smsMarketingConsent,
       });
       const refreshed = await api.getCustomer(user.customerId);
       if (refreshed.success && refreshed.data) setCustomer(refreshed.data);
@@ -473,6 +480,13 @@ export default function AccountHomePage() {
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">City / ZIP</p>
                     <p className="text-gray-900 mt-0.5">{customer?.city || '—'} {customer?.zip ? `• ${customer.zip}` : ''}</p>
                   </div>
+                  <div className="sm:col-span-2">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Text Messages</p>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      <Badge variant={customer?.smsTransactionalConsent ? 'default' : 'outline'}>Account texts: {customer?.smsTransactionalConsent ? 'On' : 'Off'}</Badge>
+                      <Badge variant={customer?.smsMarketingConsent ? 'default' : 'outline'}>Marketing texts: {customer?.smsMarketingConsent ? 'On' : 'Off'}</Badge>
+                    </div>
+                  </div>
                   {customer && (
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Account Type</p>
@@ -692,6 +706,22 @@ export default function AccountHomePage() {
                     onChange={(val) => setProfile({ ...profile, mobile: val })}
                     placeholder="Enter phone number"
                   />
+                </div>
+                <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
+                  <p className="text-sm font-semibold">Text message updates (optional)</p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox id="profile-sms-transactional" checked={profile.smsTransactionalConsent} onCheckedChange={(v) => setProfile({ ...profile, smsTransactionalConsent: v === true })} className="mt-0.5" />
+                    <Label htmlFor="profile-sms-transactional" className="text-xs font-normal leading-snug text-muted-foreground cursor-pointer">
+                      Receive account and order texts (order confirmations, payment reminders, shipping updates) from Ascendra Bio. Message frequency varies. Message and data rates may apply.
+                    </Label>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Checkbox id="profile-sms-marketing" checked={profile.smsMarketingConsent} onCheckedChange={(v) => setProfile({ ...profile, smsMarketingConsent: v === true })} className="mt-0.5" />
+                    <Label htmlFor="profile-sms-marketing" className="text-xs font-normal leading-snug text-muted-foreground cursor-pointer">
+                      Receive marketing and promotional texts from Ascendra Bio. Consent is not a condition of purchase. Message and data rates may apply.
+                    </Label>
+                  </div>
+                  <p className="text-[11px] leading-snug text-muted-foreground">Reply HELP for help and STOP to unsubscribe at any time.</p>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setShowEditProfile(false)}>Cancel</Button>

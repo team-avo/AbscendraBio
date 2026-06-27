@@ -151,6 +151,10 @@ export interface Customer {
   emailVerified: boolean;
   mobileVerified?: boolean;
   approvalStatus?: "PENDING" | "APPROVED" | "DEACTIVATED";
+  smsTransactionalConsent?: boolean;
+  smsMarketingConsent?: boolean;
+  smsConsentAt?: string | null;
+  smsConsentSource?: string | null;
   createdAt: string;
   updatedAt: string;
   addresses?: Address[];

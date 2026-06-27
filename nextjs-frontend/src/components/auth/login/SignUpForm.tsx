@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -44,6 +45,10 @@ interface SignUpFormProps {
     setCity: (val: string) => void;
     zip: string;
     setZip: (val: string) => void;
+    smsTransactionalConsent: boolean;
+    setSmsTransactionalConsent: (val: boolean) => void;
+    smsMarketingConsent: boolean;
+    setSmsMarketingConsent: (val: boolean) => void;
     showPassword: boolean;
     setShowPassword: (val: boolean) => void;
     setShowPasswordValidation: (val: boolean) => void;
@@ -81,6 +86,10 @@ export function SignUpForm({
     setCity,
     zip,
     setZip,
+    smsTransactionalConsent,
+    setSmsTransactionalConsent,
+    smsMarketingConsent,
+    setSmsMarketingConsent,
     showPassword,
     setShowPassword,
     setShowPasswordValidation,
@@ -229,6 +238,37 @@ export function SignUpForm({
                     </button>
                 </div>
                 {errors.password && (<p className="mt-1 text-sm text-red-600">{errors.password}</p>)}
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50/60 p-4">
+                <p className="text-sm font-semibold text-gray-700">Text message updates (optional)</p>
+                <div className="flex items-start gap-3">
+                    <Checkbox
+                        id="sms-transactional"
+                        checked={smsTransactionalConsent}
+                        onCheckedChange={(v) => setSmsTransactionalConsent(v === true)}
+                        className="mt-0.5"
+                    />
+                    <Label htmlFor="sms-transactional" className="text-xs font-normal leading-snug text-gray-600 cursor-pointer">
+                        I agree to receive account and order text messages (such as order confirmations, payment reminders and shipping updates) from Ascendra Bio at the mobile number provided. Message frequency varies. Message and data rates may apply.
+                    </Label>
+                </div>
+                <div className="flex items-start gap-3">
+                    <Checkbox
+                        id="sms-marketing"
+                        checked={smsMarketingConsent}
+                        onCheckedChange={(v) => setSmsMarketingConsent(v === true)}
+                        className="mt-0.5"
+                    />
+                    <Label htmlFor="sms-marketing" className="text-xs font-normal leading-snug text-gray-600 cursor-pointer">
+                        I agree to receive marketing and promotional text messages from Ascendra Bio at the mobile number provided. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply.
+                    </Label>
+                </div>
+                <p className="text-[11px] leading-snug text-gray-500">
+                    Reply HELP for help and STOP to unsubscribe at any time. See our{' '}
+                    <a href="/landing/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">Privacy Policy</a>{' '}and{' '}
+                    <a href="/landing/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">Terms of Service</a>. We do not share your number with third parties except SMS providers.
+                </p>
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isSubmitting || (mounted && isLoading)}>

@@ -87,6 +87,8 @@ export const createCustomerMethods = (client: ApiClient) => ({
             emailVerified?: boolean;
             mobileVerified?: boolean;
             tags?: string[];
+            smsTransactionalConsent?: boolean;
+            smsMarketingConsent?: boolean;
         }
     ): Promise<ApiResponse<Customer>> {
         return client.put(`/customers/${id}`, customerData);

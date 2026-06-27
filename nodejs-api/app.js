@@ -278,6 +278,9 @@ app.use("/api/public-pages", publicContentRoutes);
 // Backward-compatible alias: /api/public-content
 app.use("/api/public-content", publicContentRoutes);
 app.use("/api/public-third-party-reports", publicThirdPartyReportsRoutes);
+// Wholesale pricing: public read powers the /pricing page; admin CRUD is gated.
+app.use("/api/public-pricing", require("./routes/public-pricing"));
+app.use("/api/wholesale-pricing", authMiddleware, require("./routes/wholesale-pricing"));
 app.use("/api/sales-reps", authMiddleware, salesRepRoutes);
 app.use("/api/sales-managers", authMiddleware, salesManagerRoutes);
 // Inquiries (public)

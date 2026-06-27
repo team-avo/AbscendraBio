@@ -94,6 +94,11 @@ const navItems: NavItem[] = [
         ]
     },
     {
+        title: "Wholesale Pricing",
+        href: "/wholesale-pricing",
+        icon: Tag,
+    },
+    {
         title: "Customers",
         href: "/customers",
         icon: Users,

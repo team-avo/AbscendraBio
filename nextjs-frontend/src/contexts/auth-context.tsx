@@ -25,6 +25,8 @@ interface AuthContextType {
     licenseNumber?: string;
     city?: string;
     zip?: string;
+    smsTransactionalConsent?: boolean;
+    smsMarketingConsent?: boolean;
   }) => Promise<boolean>;
   refreshUser: () => Promise<void>;
   hasPermission: (module: string, action: string) => boolean;
@@ -148,6 +150,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     licenseNumber?: string;
     city?: string;
     zip?: string;
+    smsTransactionalConsent?: boolean;
+    smsMarketingConsent?: boolean;
   }): Promise<boolean> => {
     try {
       setIsLoading(true);

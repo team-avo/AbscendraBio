@@ -119,6 +119,8 @@ router.post(
         return digits.length >= 10 && digits.length <= 15;
       })
       .withMessage("Mobile number must be between 10 and 15 digits"),
+    body("smsTransactionalConsent").optional().isBoolean(),
+    body("smsMarketingConsent").optional().isBoolean(),
 
     validateRequest,
   ],
@@ -136,6 +138,8 @@ router.post(
       role = "STAFF",
       mobile,
       customerType,
+      smsTransactionalConsent,
+      smsMarketingConsent,
     } = req.body;
 
     const trimmedCompanyName =
@@ -176,6 +180,8 @@ router.post(
           throw new Error("Customer already exists with this email or mobile");
         }
 
+        const wantsTransactional = smsTransactionalConsent === true;
+        const wantsMarketing = smsMarketingConsent === true;
         const customer = await tx.customer.create({
           data: {
             firstName,
@@ -191,6 +197,10 @@ router.post(
             isActive: false, // start inactive until approval
             isApproved: false,
             approvalStatus: "PENDING",
+            smsTransactionalConsent: wantsTransactional,
+            smsMarketingConsent: wantsMarketing,
+            smsConsentAt: wantsTransactional || wantsMarketing ? new Date() : null,
+            smsConsentSource: wantsTransactional || wantsMarketing ? "signup" : null,
           },
         });
 

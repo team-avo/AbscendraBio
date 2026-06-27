@@ -56,7 +56,7 @@ export default function RegistriesPage() {
             </button>
           ))}
         </div>
-        {tab !== "peptides" && <AddRegistryRecord tab={tab} onAdded={load} />}
+        {tab === "peptides" ? <PeptideForm onSaved={load} /> : <AddRegistryRecord tab={tab} onAdded={load} />}
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-x-auto">
@@ -64,7 +64,7 @@ export default function RegistriesPage() {
           <div className="flex justify-center py-16"><LoadingSpinner size={28} /></div>
         ) : tab === "peptides" ? (
           <Table>
-            <TableHeader className="bg-muted/30"><TableRow><TableHead>Name</TableHead><TableHead>Code</TableHead><TableHead>Category</TableHead><TableHead>Strengths</TableHead><TableHead>CAS</TableHead></TableRow></TableHeader>
+            <TableHeader className="bg-muted/30"><TableRow><TableHead>Name</TableHead><TableHead>Code</TableHead><TableHead>Category</TableHead><TableHead>Strengths</TableHead><TableHead>CAS</TableHead><TableHead>Formula</TableHead><TableHead>MW</TableHead><TableHead className="text-right">Edit</TableHead></TableRow></TableHeader>
             <TableBody>{rows.map((p) => (
               <TableRow key={p.id}>
                 <TableCell className="font-medium">{p.name}</TableCell>
@@ -72,6 +72,9 @@ export default function RegistriesPage() {
                 <TableCell><Badge variant="outline" className="text-[10px]">{p.category.replace(/_/g, " ")}</Badge></TableCell>
                 <TableCell className="text-xs">{(p.strengths || []).map((s: any) => s.code).join(", ")}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">{p.casNumber || "—"}</TableCell>
+                <TableCell className="font-mono text-[11px] text-muted-foreground">{p.chemicalFormula || "—"}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{p.molecularMass || "—"}</TableCell>
+                <TableCell className="text-right"><PeptideForm peptide={p} onSaved={load} /></TableCell>
               </TableRow>
             ))}</TableBody>
           </Table>
@@ -154,6 +157,105 @@ function AddRegistryRecord({ tab, onAdded }: { tab: Tab; onAdded: () => void }) 
           })}
         </div>
         <div className="flex justify-end gap-2 mt-4"><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Add"}</Button></div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const PEPTIDE_CATEGORIES = ["RESEARCH", "RESEARCH_BLEND", "GLP1"];
+
+// Add or edit a peptide and its strengths. Peptide chemistry (formula, CAS, MW)
+// is the source the Label Studio autofills from, so it is maintained here.
+function PeptideForm({ peptide, onSaved }: { peptide?: any; onSaved: () => void }) {
+  const isEdit = !!peptide;
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [f, setF] = useState<any>({ category: "RESEARCH" });
+  const [strengths, setStrengths] = useState<{ label: string; code: string }[]>([]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (peptide) {
+      setF({
+        name: peptide.name || "",
+        code: peptide.code || "",
+        category: peptide.category || "RESEARCH",
+        chemicalFormula: peptide.chemicalFormula || "",
+        casNumber: peptide.casNumber || "",
+        molecularMass: peptide.molecularMass || "",
+        sequence: peptide.sequence || "",
+      });
+      setStrengths((peptide.strengths || []).map((s: any) => ({ label: s.label, code: s.code })));
+    } else {
+      setF({ category: "RESEARCH" });
+      setStrengths([]);
+    }
+  }, [open, peptide]);
+
+  const save = async () => {
+    if (!f.name?.trim() || !f.code?.trim()) { toast.error("Name and code are required"); return; }
+    setSaving(true);
+    try {
+      const cleanStrengths = strengths
+        .map((s) => ({ label: s.label.trim(), code: s.code.trim() }))
+        .filter((s) => s.label && s.code);
+      const payload = { ...f, strengths: cleanStrengths };
+      const r = isEdit ? await api.lmUpdatePeptide(peptide.id, payload) : await api.lmCreatePeptide(payload);
+      if (r.success) { toast.success(isEdit ? "Saved" : "Added"); setOpen(false); onSaved(); }
+      else toast.error(r.error || (isEdit ? "Failed to save" : "Failed to add"));
+    } finally { setSaving(false); }
+  };
+
+  const setStrength = (i: number, key: "label" | "code", value: string) =>
+    setStrengths((s) => s.map((it, idx) => (idx === i ? { ...it, [key]: value } : it)));
+  const addStrength = () => setStrengths((s) => [...s, { label: "", code: "" }]);
+  const removeStrength = (i: number) => setStrengths((s) => s.filter((_, idx) => idx !== i));
+
+  const text = (k: string, label: string, placeholder?: string) => (
+    <div className="space-y-1.5"><Label className="text-xs">{label}</Label><Input value={f[k] || ""} placeholder={placeholder} onChange={(e) => setF({ ...f, [k]: e.target.value })} /></div>
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {isEdit ? <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">Edit</Button> : <Button size="sm">+ Add</Button>}
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>{isEdit ? "Edit peptide" : "Add peptide"}</DialogTitle></DialogHeader>
+        <div className="space-y-3 mt-2 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 gap-3">
+            {text("name", "Name")}
+            {text("code", "Code")}
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Category</Label>
+            <Select value={f.category || "RESEARCH"} onValueChange={(v) => setF({ ...f, category: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{PEPTIDE_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c.replace(/_/g, " ")}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          {text("chemicalFormula", "Chemical formula", "e.g. C62H98N16O22")}
+          <div className="grid grid-cols-2 gap-3">
+            {text("casNumber", "CAS #", "e.g. 137525-51-0")}
+            {text("molecularMass", "Molecular weight", "e.g. ~1419.5 Da")}
+          </div>
+          {text("sequence", "Sequence (optional)")}
+          <div className="border-t pt-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Strengths</Label>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={addStrength}>+ Add strength</Button>
+            </div>
+            {strengths.map((s, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input className="flex-1" value={s.label} placeholder="Label (e.g. 10 mg)" onChange={(e) => setStrength(i, "label", e.target.value)} />
+                <Input className="w-28" value={s.code} placeholder="Code (10MG)" onChange={(e) => setStrength(i, "code", e.target.value)} />
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeStrength(i)} title="Remove">✕</Button>
+              </div>
+            ))}
+            {strengths.length === 0 && <p className="text-[11px] text-muted-foreground">No strengths yet.</p>}
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 mt-4"><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save} disabled={saving}>{saving ? "Saving..." : isEdit ? "Save" : "Add"}</Button></div>
       </DialogContent>
     </Dialog>
   );

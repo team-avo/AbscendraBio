@@ -94,6 +94,12 @@ model Customer {
   emailVerified  Boolean                @default(false)
   mobileVerified Boolean                @default(false)
   approvalStatus CustomerApprovalStatus @default(PENDING)
+  // SMS / text-message consent (A2P compliant: transactional and marketing are
+  // tracked separately; neither is required to create an account).
+  smsTransactionalConsent Boolean   @default(false)
+  smsMarketingConsent     Boolean   @default(false)
+  smsConsentAt            DateTime?
+  smsConsentSource        String?
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
 
@@ -2489,4 +2495,25 @@ model PatternConfig {
   updatedAt DateTime @updatedAt
 
   @@map("lm_pattern_configs")
+}
+
+// Wholesale pricing rows powering the public /pricing page. The page reads these
+// live, so prices are maintained here (and in the admin), never in code.
+// reg = list price; m2/m5/m10 = the three wholesale tier prices.
+model WholesalePrice {
+  id           String   @id @default(cuid())
+  name         String
+  strength     String
+  category     String   @default("Research Peptides")
+  reg          Float
+  m2           Float
+  m5           Float
+  m10          Float
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([name, strength])
+  @@map("wholesale_prices")
 }

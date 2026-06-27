@@ -23,6 +23,8 @@ export const createAuthMethods = (client: ApiClient) => ({
     licenseNumber?: string;
     city?: string;
     zip?: string;
+    smsTransactionalConsent?: boolean;
+    smsMarketingConsent?: boolean;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
     return client.post("/auth/register", userData);
   },
