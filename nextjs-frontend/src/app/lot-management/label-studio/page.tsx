@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { jsPDF } from "jspdf";
+import QRCode from "qrcode";
 import { toast } from "sonner";
 
 // The label maker pulls its data live from the Lot Management registry, which is
@@ -30,6 +31,7 @@ type Lot = {
   mfgDate?: string | null;
   peptideStrengthId?: string | null;
   strength?: Strength | null;
+  coas?: { coaNumber: number; status?: string | null }[] | null;
 };
 
 // Strength labels in the registry read like "10 mg"; on a vial label they read
@@ -85,6 +87,10 @@ const FIELDS: Record<"name" | "strength", FieldDef> = {
 // left of the centered name, below the side text. Only non-empty lines draw.
 const INFO = { x: 215, top: 430, lineH: 60, maxW: 470, size: 42 };
 
+// QR code (links to the COA page) sits in the empty upper-right white area.
+// Only drawn when a COA number is present.
+const QR = { x: 1930, y: 70, size: 420 };
+
 type Vals = {
   name: string;
   strength: string;
@@ -93,12 +99,14 @@ type Vals = {
   mw: string;
   lot: string;
   mfg: string;
+  coa: string;
 };
-const DEFAULTS: Vals = { name: "BPC-157", strength: "5 mg/vial", formula: "", cas: "", mw: "", lot: "", mfg: "" };
+const DEFAULTS: Vals = { name: "BPC-157", strength: "5 mg/vial", formula: "", cas: "", mw: "", lot: "", mfg: "", coa: "" };
 
 export default function LabelStudioPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const qrImgRef = useRef<HTMLImageElement | null>(null);
   const navyRef = useRef<string>("rgb(22,54,107)");
   const [ready, setReady] = useState(false);
   const [vals, setVals] = useState<Vals>(DEFAULTS);
@@ -206,6 +214,17 @@ export default function LabelStudioPage() {
         y += INFO.lineH;
       }
     }
+
+    // QR code to the COA page, in the upper-right white area. Pre-rendered into
+    // qrImgRef when a COA number is set; a small caption sits beneath it.
+    if (v.coa && v.coa.trim() && qrImgRef.current) {
+      ctx.drawImage(qrImgRef.current, QR.x, QR.y, QR.size, QR.size);
+      ctx.fillStyle = navyRef.current;
+      ctx.font = "bold 34px Arial, Helvetica, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText("Scan for COA", QR.x + QR.size / 2, QR.y + QR.size + 40);
+    }
   }, []);
 
   useEffect(() => {
@@ -242,6 +261,26 @@ export default function LabelStudioPage() {
 
   useEffect(() => {
     if (ready) draw(vals);
+  }, [ready, vals, draw]);
+
+  // Generate the COA QR code whenever the COA number changes, then redraw.
+  // The QR encodes the public COA page URL for that COA number.
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    const coa = (vals.coa || "").trim();
+    if (!coa) { qrImgRef.current = null; draw(vals); return; }
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${origin}/coa/${encodeURIComponent(coa)}`;
+    QRCode.toDataURL(url, { margin: 1, width: 512 })
+      .then((dataUrl) => {
+        if (cancelled) return;
+        const img = new window.Image();
+        img.onload = () => { if (!cancelled) { qrImgRef.current = img; draw(vals); } };
+        img.src = dataUrl;
+      })
+      .catch(() => { if (!cancelled) { qrImgRef.current = null; draw(vals); } });
+    return () => { cancelled = true; };
   }, [ready, vals, draw]);
 
   const openEditor = () => {
@@ -289,6 +328,7 @@ export default function LabelStudioPage() {
       strength: firstStrength ? toVialStrength(firstStrength.label) : d.strength,
       lot: "",
       mfg: "",
+      coa: "",
     }));
     if (firstStrength) setSelStrengthCode(firstStrength.code);
     void loadLots(id);
@@ -303,9 +343,19 @@ export default function LabelStudioPage() {
 
   const onLot = (id: string) => {
     setSelLotId(id);
-    if (id === "__none") { setDraft((d) => ({ ...d, lot: "", mfg: "" })); return; }
+    if (id === "__none") { setDraft((d) => ({ ...d, lot: "", mfg: "", coa: "" })); return; }
     const lot = lots.find((l) => l.id === id);
-    if (lot) setDraft((d) => ({ ...d, lot: lot.lotNumber, mfg: fmtDate(lot.mfgDate) }));
+    if (lot) {
+      // Use the lot's COA number for the QR (prefer an approved one if present).
+      const coas = lot.coas || [];
+      const chosen = coas.find((c) => (c.status || "").toUpperCase() === "APPROVED") || coas[0];
+      setDraft((d) => ({
+        ...d,
+        lot: lot.lotNumber,
+        mfg: fmtDate(lot.mfgDate),
+        coa: chosen?.coaNumber != null ? String(chosen.coaNumber) : "",
+      }));
+    }
   };
 
   const setField = (k: keyof Vals, value: string) => setDraft((d) => ({ ...d, [k]: value }));
@@ -430,7 +480,8 @@ export default function LabelStudioPage() {
                 <div className="space-y-1.5"><Label className="text-xs">CAS #</Label><Input value={draft.cas} onChange={(e) => setField("cas", e.target.value)} /></div>
                 <div className="space-y-1.5"><Label className="text-xs">Molecular weight</Label><Input value={draft.mw} onChange={(e) => setField("mw", e.target.value)} /></div>
                 <div className="space-y-1.5"><Label className="text-xs">Lot #</Label><Input value={draft.lot} onChange={(e) => setField("lot", e.target.value)} /></div>
-                <div className="space-y-1.5 col-span-2"><Label className="text-xs">Mfg date</Label><Input value={draft.mfg} onChange={(e) => setField("mfg", e.target.value)} placeholder="MM/DD/YYYY" /></div>
+                <div className="space-y-1.5"><Label className="text-xs">Mfg date</Label><Input value={draft.mfg} onChange={(e) => setField("mfg", e.target.value)} placeholder="MM/DD/YYYY" /></div>
+                <div className="space-y-1.5"><Label className="text-xs">COA # (QR)</Label><Input value={draft.coa} onChange={(e) => setField("coa", e.target.value)} placeholder="links to /coa/…" /></div>
               </div>
             </div>
           </div>
