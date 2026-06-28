@@ -13,7 +13,7 @@ export default function TermsPage() {
           ← Back to Home
         </Link>
         <h1 className="text-4xl font-black tracking-tight text-[#070B14] mb-2">Terms of Service</h1>
-        <p className="text-sm text-gray-400 mb-10">Last updated: January 1, 2025</p>
+        <p className="text-sm text-gray-400 mb-10">Last updated: June 28, 2026</p>
 
         <div className="prose prose-sm max-w-none text-gray-700 space-y-8">
           <section>
@@ -65,7 +65,29 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">6. Intellectual Property</h2>
+            <h2 className="text-lg font-bold text-[#070B14] mb-3">6. SMS / Text Message Program</h2>
+            <p className="leading-relaxed">
+              Ascendra Bio Sciences offers an optional text (SMS) messaging program. If you opt in, we may send two
+              types of messages to the mobile number you provide: account and order messages (such as order
+              confirmations, payment reminders, and shipping updates) and, with separate consent, marketing and
+              promotional messages. Consent to receive text messages is not a condition of any purchase, and you must
+              be at least 18 years of age to enroll.
+            </p>
+            <p className="leading-relaxed mt-2">
+              Message frequency varies. Message and data rates may apply. You can cancel the SMS service at any time by
+              replying <strong>STOP</strong> to any message; after you send STOP we will stop sending you text messages.
+              For help, reply <strong>HELP</strong> or contact us at{" "}
+              <a href="mailto:support@ascendrabio.com" className="text-[#4D7DF2] hover:underline">support@ascendrabio.com</a>.
+            </p>
+            <p className="leading-relaxed mt-2">
+              Carriers are not liable for delayed or undelivered messages. For details on how we handle the information
+              associated with this program, see our{" "}
+              <Link href="/landing/privacy" className="text-[#4D7DF2] hover:underline">Privacy Policy</Link>.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#070B14] mb-3">7. Intellectual Property</h2>
             <p className="leading-relaxed">
               All content on this website, including text, images, graphics, and logos, is the property of Ascendra Bio
               Sciences and is protected by applicable intellectual property laws. You may not reproduce, distribute, or
@@ -74,7 +96,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">7. Limitation of Liability</h2>
+            <h2 className="text-lg font-bold text-[#070B14] mb-3">8. Limitation of Liability</h2>
             <p className="leading-relaxed">
               Ascendra Bio Sciences shall not be liable for any indirect, incidental, special, or consequential damages
               arising from the use or inability to use our products or services. Our maximum liability is limited to the
@@ -83,7 +105,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">8. Contact</h2>
+            <h2 className="text-lg font-bold text-[#070B14] mb-3">9. Contact</h2>
             <p className="leading-relaxed">
               Questions about these Terms of Service may be directed to{" "}
               <a href="mailto:legal@ascendrabio.com" className="text-[#4D7DF2] hover:underline">

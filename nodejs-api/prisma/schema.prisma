@@ -85,7 +85,7 @@ model Customer {
   companyName    String?
   licenseNumber  String?
   email          String                 @unique
-  mobile         String                 @unique
+  mobile         String?                @unique
   city           String?
   zip            String?
   customerType   CustomerType           @default(B2C)

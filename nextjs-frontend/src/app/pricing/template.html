@@ -494,9 +494,9 @@ const ORDER_REF='AB-'+Math.random().toString(36).slice(2,6).toUpperCase();
 
 /* ---- Editable destinations (swap these for your live Go High Level URLs) ---- */
 const LINKS={
-  apply:   'https://www.ascendrabio.com/wholesale-access',            // GHL wholesale application funnel
-  call:    'https://www.ascendrabio.com/book-a-call',                 // GHL booking / calendar link
-  testing: 'https://www.ascendrabio.com/landing/third-party-testing'  // third-party testing (login required)
+  apply:   '/login?tab=signup',                                                 // Create Account (wholesale access)
+  call:    'https://api.leadconnectorhq.com/widget/booking/FUYzxMhJ60TRsoYqLVgS', // GHL booking / calendar link
+  testing: '/landing/third-party-testing'                                       // third-party testing (login required; public mirror TBD)
 };
 
 DATA.forEach((d,i)=>{ d.id='sku'+i; state[d.id]=0; });

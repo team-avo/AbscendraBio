@@ -209,9 +209,8 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
       if (!firstName) newErrors.firstName = 'First name is required';
       if (!lastName) newErrors.lastName = 'Last name is required';
 
-      if (!mobile || !mobile.trim()) {
-        newErrors.mobile = 'Mobile number is required';
-      } else {
+      // Mobile is optional. Only validate the format when a number is entered.
+      if (mobile && mobile.trim()) {
         const digitsOnly = mobile.replace(/\D/g, '');
         if (digitsOnly.slice(-10).length !== 10) newErrors.mobile = 'Mobile number must be exactly 10 digits';
       }

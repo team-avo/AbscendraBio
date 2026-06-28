@@ -172,7 +172,7 @@ export function SignUpForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="mobile" className="text-sm font-semibold text-gray-700 ml-1 block">Mobile Number <span className="text-red-500">*</span></Label>
+                <Label htmlFor="mobile" className="text-sm font-semibold text-gray-700 ml-1 block">Mobile Number <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <div className="relative group">
                     <PhoneInputWithFlag
                         id="mobile"

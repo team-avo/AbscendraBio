@@ -108,12 +108,11 @@ router.post(
       .optional()
       .isIn(["ADMIN", "MANAGER", "STAFF", "CUSTOMER"])
       .withMessage("Invalid role"),
+    // Mobile is optional (A2P guidance: phone must not be required to create an
+    // account). When provided, it must still be a valid 10 to 15 digit number.
     body("mobile")
-      .if(body("role").equals("CUSTOMER"))
-      .notEmpty()
+      .optional({ checkFalsy: true })
       .trim()
-      .withMessage("Mobile number is required for customer registration")
-      .if(body("role").equals("CUSTOMER"))
       .custom((val) => {
         const digits = (val || "").replace(/\D/g, "");
         return digits.length >= 10 && digits.length <= 15;
@@ -192,7 +191,7 @@ router.post(
             city: trimmedCity || null,
             zip: trimmedZip || null,
             email,
-            mobile,
+            mobile: mobile && mobile.trim() ? mobile.trim() : null,
             customerType: customerType || "B2C",
             isActive: false, // start inactive until approval
             isApproved: false,
