@@ -270,6 +270,15 @@ router.post(
         console.error("Failed to send verification email:", e?.message);
       }
 
+      // Fire-and-forget: sync the new customer to GoHighLevel so the pipeline
+      // advances on signup (no-op if GHL is not configured; never throws).
+      try {
+        const { syncAccountCreated } = require("../services/ghl");
+        syncAccountCreated({ email, firstName, lastName, mobile });
+      } catch (e) {
+        console.error("[ghl] account_created dispatch failed:", e?.message);
+      }
+
       res.status(201).json({
         success: true,
         emailSent,

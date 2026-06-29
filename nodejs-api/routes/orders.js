@@ -2481,6 +2481,19 @@ router.post(
       }
     })();
 
+    // Sync the order to GoHighLevel so the pipeline reflects the conversion
+    // (non-blocking, no-op if GHL is not configured).
+    (async () => {
+      try {
+        const { syncOrderPlaced } = require("../services/ghl");
+        await syncOrderPlaced(completeOrder, completeOrder.customer);
+      } catch (err) {
+        logger.error("[Orders] GHL order sync failed", {
+          error: err?.message || err,
+        });
+      }
+    })();
+
     // Trigger Odoo sync for affected products (non-blocking)
     // This updates Odoo with the new available quantity after reserved qty increased
     (async () => {
