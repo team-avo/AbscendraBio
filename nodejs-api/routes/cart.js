@@ -5,6 +5,7 @@ const validateRequest = require("../middleware/validateRequest");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { requireRole } = require("../middleware/auth");
 const { getPricingCustomerType } = require("../utils/pricingMapper");
+const { bulkUnitPrice, isRetailPricing } = require("../utils/bulkTiers");
 
 const router = express.Router();
 
@@ -110,7 +111,7 @@ function computeUnitPrice(variant, customerType) {
  * @returns {Decimal} The applicable unit price
  */
 function computeApplicablePrice(variant, quantity, customerType) {
-  // Check bulk pricing first if quantity qualifies
+  // Explicit admin-set per-variant bulk prices take precedence when present.
   if (variant.bulkPrices && variant.bulkPrices.length > 0) {
     // Find the applicable bulk price tier
     // bulkPrices are ordered by minQty ascending
@@ -130,7 +131,15 @@ function computeApplicablePrice(variant, quantity, customerType) {
     }
   }
 
-  // Fall back to customer type-based pricing
+  // Public retail bulk-quantity discount: retail (B2C / guest) only, computed
+  // off the regular listed price. Wholesale/enterprise account pricing is left
+  // untouched so the two systems stay distinct.
+  const pricingCustomerType = getPricingCustomerType(customerType);
+  if (isRetailPricing(pricingCustomerType)) {
+    return bulkUnitPrice(variant.regularPrice, quantity);
+  }
+
+  // Fall back to customer type-based (segment) pricing.
   return computeUnitPrice(variant, customerType);
 }
 

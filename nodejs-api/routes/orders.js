@@ -23,6 +23,7 @@ const {
 } = require("../services/warehouseService");
 const { createShipmentForOrder } = require("../services/shipmentService");
 const { calculatePriceWithBulk } = require("./bulkPrices");
+const { bulkUnitPrice: retailBulkUnitPrice, isRetailPricing } = require("../utils/bulkTiers");
 const { queueProductSync } = require("../integrations/skydell_odoo");
 const { getPSTFinancialRange } = require("../utils/timezoneUtils");
 const { generateOrdersExcel } = require("../services/reportService");
@@ -1910,14 +1911,26 @@ router.post(
         );
 
         // IMPORTANT: Keep unitPrice as regular/segment price for comparison
-        // Only populate bulkUnitPrice and bulkTotalPrice when bulk pricing applies
+        // Only populate bulkUnitPrice and bulkTotalPrice when a discount applies
         const unitPrice = regularUnitPrice; // Always use regular/segment price from DB
-        const bulkUnitPrice = bulkPricing.isBulkPrice
+        let bulkUnitPrice = bulkPricing.isBulkPrice
           ? bulkPricing.unitPrice
           : null;
-        const bulkTotalPrice = bulkPricing.isBulkPrice
+        let bulkTotalPrice = bulkPricing.isBulkPrice
           ? bulkPricing.totalPrice
           : null;
+
+        // Public retail bulk-quantity discount: retail (B2C / guest) only,
+        // computed off the regular listed price, applied when it beats the
+        // current unit price. Wholesale/enterprise accounts are untouched so
+        // the two pricing systems stay distinct.
+        if (isRetailPricing(pricingCustomerType)) {
+          const tierUnit = retailBulkUnitPrice(variant.regularPrice, item.quantity);
+          if (tierUnit < Number(regularUnitPrice)) {
+            bulkUnitPrice = tierUnit;
+            bulkTotalPrice = tierUnit * item.quantity;
+          }
+        }
 
         return {
           ...item,

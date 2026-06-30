@@ -6,6 +6,7 @@ import logger from '@/lib/logger';
 import { useAuth } from '@/contexts/auth-context';
 import { calculateHighValueDiscount, type DiscountInfo } from '@/utils/discount';
 import { getPricingCustomerType } from '@/utils/pricingMapper';
+import { bulkUnitPrice } from '@/lib/bulkTiers';
 
 type GuestCartItem = { variantId: string; quantity: number; unitPrice?: number };
 type CartItem = { id?: string; variantId: string; quantity: number; unitPrice?: number; variant?: ProductVariant & { product?: any } };
@@ -49,8 +50,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // Map customer type to pricing tier (B2B->B2C, ENTERPRISE_2->ENTERPRISE_1)
     const pricingType = getPricingCustomerType(customerType);
 
+    // Retail buyers (B2C / guest) get the public bulk-quantity discount; only
+    // enterprise/wholesale accounts are excluded.
+    const isWholesale = !!pricingType && pricingType !== 'B2C';
+
     return items.reduce((sum, it) => {
       let basePrice: number = 0;
+
+      // PUBLIC RETAIL BULK TIER: recompute off the regular listed price using
+      // the line's CURRENT quantity, so quantity changes in the cart re-band
+      // correctly. Computed here (not from a stored unitPrice) for retail only.
+      const regularPrice = Number((it as any)?.variant?.regularPrice ?? 0);
+      if (!isWholesale && regularPrice > 0) {
+        return sum + bulkUnitPrice(regularPrice, it.quantity) * it.quantity;
+      }
 
       // PRIORITY 1: Use unitPrice from backend if available (it's already calculated with latest pricing)
       // The backend GET /cart endpoint now returns unitPrice calculated using:

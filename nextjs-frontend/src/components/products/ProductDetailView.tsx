@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
 import { CartSidebar } from "@/components/cart/CartSidebar";
+import { BULK_TIERS, bulkTierForQty, isRetailPricing, bulkTierRangeLabel } from "@/lib/bulkTiers";
 import { Button as CartButton } from "@/components/ui/button";
 import { BulkQuoteRequestDialog } from "@/components/products/bulk-quote-request-dialog";
 import { getPricingCustomerType } from "@/utils/pricingMapper";
@@ -165,17 +166,27 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
 
     if (!isBulkPrice) {
       const pricingType = getPricingCustomerType(customerType);
-      const segPrices = (selectedVariant as any)?.segmentPrices as any[] | undefined;
-      const seg = segPrices && pricingType ? segPrices.find((sp: any) => sp.customerType === pricingType) : null;
-
-      if (seg) {
-        const segSale = toPrice(seg.salePrice), segReg = toPrice(seg.regularPrice);
-        if (segSale > 0 && segSale < segReg) { price = segSale; originalPrice = segReg; }
-        else { price = segReg; originalPrice = null; }
+      if (isRetailPricing(pricingType)) {
+        // Public retail bulk-quantity discount: off the regular listed price,
+        // banded by the selected quantity. Separate from wholesale pricing.
+        const varReg = toPrice(selectedVariant?.regularPrice);
+        const tier = bulkTierForQty(quantity);
+        price = varReg * (1 - tier.discount);
+        originalPrice = tier.discount > 0 ? varReg : null;
+        isBulkPrice = tier.discount > 0;
       } else {
-        const varSale = toPrice(selectedVariant?.salePrice), varReg = toPrice(selectedVariant?.regularPrice);
-        if (varSale > 0 && varSale < varReg) { price = varSale; originalPrice = varReg; }
-        else { price = varReg; originalPrice = null; }
+        // Enterprise/wholesale segment pricing (unchanged).
+        const segPrices = (selectedVariant as any)?.segmentPrices as any[] | undefined;
+        const seg = segPrices ? segPrices.find((sp: any) => sp.customerType === pricingType) : null;
+        if (seg) {
+          const segSale = toPrice(seg.salePrice), segReg = toPrice(seg.regularPrice);
+          if (segSale > 0 && segSale < segReg) { price = segSale; originalPrice = segReg; }
+          else { price = segReg; originalPrice = null; }
+        } else {
+          const varSale = toPrice(selectedVariant?.salePrice), varReg = toPrice(selectedVariant?.regularPrice);
+          if (varSale > 0 && varSale < varReg) { price = varSale; originalPrice = varReg; }
+          else { price = varReg; originalPrice = null; }
+        }
       }
     }
 
@@ -556,6 +567,27 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                   <button onClick={() => setQuantity(q => Math.min(q + 1, ui.availableQty || 999))} className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
                     <Plus className="w-3 h-3 text-gray-600" />
                   </button>
+                </div>
+              </div>
+
+              {/* Public bulk-quantity discount tiers (per item, off list price) */}
+              <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-2">Buy more, save more · per item</p>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {BULK_TIERS.map((t) => {
+                    const active = quantity >= t.min && (t.max == null || quantity <= t.max);
+                    return (
+                      <div
+                        key={t.min}
+                        className={`rounded-lg px-2 py-1.5 text-center border ${active ? "border-emerald-300 bg-emerald-50" : "border-gray-200 bg-white"}`}
+                      >
+                        <div className="text-[11px] font-black text-[#070B14] tabular-nums">{bulkTierRangeLabel(t)}</div>
+                        <div className={`text-[10px] font-bold ${t.discount > 0 ? "text-emerald-600" : "text-gray-400"}`}>
+                          {t.discount > 0 ? `${Math.round(t.discount * 100)}% off` : "Regular"}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
