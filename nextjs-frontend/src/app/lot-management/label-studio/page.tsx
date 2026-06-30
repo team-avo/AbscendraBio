@@ -64,14 +64,6 @@ const LABEL_H_IN = 0.75;
 // (which leans right) and the two text lines are re-centered here on CENTER,
 // and the left side text is nudged inward so it is not clipped.
 const CENTER = 1200;
-// The navy footer bar begins here; all re-centering edits stay above it.
-const FOOTER_TOP = 772;
-// PURITY badge bounding box, measured in the source art.
-const BADGE = { sx: 914, sy: 620, w: 944, h: 125 };
-// In the source art this vertical text is jammed against the top edge (its
-// trailing "use" gets clipped), so it is redrawn with margins top and bottom.
-const SIDE_TEXT = "Not for human, veterinary or diagnostic use";
-const SIDE_STRIP_W = 200; // left area cleared before the text is redrawn
 
 // Editable name/strength fields, in source-image pixels. `box` is whited out,
 // then the text is drawn centered on CENTER at `baseline`, auto-shrunk to fit
@@ -79,17 +71,20 @@ const SIDE_STRIP_W = 200; // left area cleared before the text is redrawn
 // y520-594 (size ~80, baseline 578). The PURITY badge top sits at y620.
 type FieldDef = { box: { x: number; y: number; w: number; h: number }; baseline: number; size: number; maxW: number };
 const FIELDS: Record<"name" | "strength", FieldDef> = {
-  name: { box: { x: 900, y: 338, w: 820, h: 152 }, baseline: 475, size: 169, maxW: 1500 },
-  strength: { box: { x: 900, y: 500, w: 760, h: 118 }, baseline: 578, size: 80, maxW: 1100 },
+  name: { box: { x: 850, y: 322, w: 920, h: 150 }, baseline: 452, size: 150, maxW: 1500 },
+  strength: { box: { x: 900, y: 492, w: 760, h: 78 }, baseline: 552, size: 70, maxW: 1100 },
 };
 
-// The chemistry and lot details render in the empty lower-left white column,
-// left of the centered name, below the side text. Only non-empty lines draw.
-const INFO = { x: 215, top: 430, lineH: 60, maxW: 470, size: 42 };
+// Left technical panel. The FORMULA / CAS / MW labels are part of the base art;
+// only the values are drawn, left-aligned beneath each label.
+const LEFTVAL = { x: 390, maxW: 390, size: 37, formulaY: 261, casY: 458, mwY: 655 };
+
+// Footer (navy bar) LOT and MFG, drawn white and centered in each half.
+const FOOT = { y: 843, size: 36, lotX: 1096, mfgX: 1568 };
 
 // QR code (links to the COA page) sits in the empty upper-right white area.
 // Only drawn when a COA number is present.
-const QR = { x: 1930, y: 70, size: 420 };
+const QR = { x: 1900, y: 96, size: 352 };
 
 type Vals = {
   name: string;
@@ -143,31 +138,8 @@ export default function LabelStudioPage() {
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(img, 0, 0, W, H);
 
-    // Re-center the PURITY badge: white out the original, paste it on CENTER.
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(BADGE.sx - 14, BADGE.sy - 12, BADGE.w + 28, BADGE.h + 28);
-    ctx.drawImage(img, BADGE.sx, BADGE.sy, BADGE.w, BADGE.h, Math.round(CENTER - BADGE.w / 2), BADGE.sy, BADGE.w, BADGE.h);
-
-    // Redraw the left "Not for human..." text fully inside the label, vertically
-    // centered with margins so the trailing "use" no longer clips at the top.
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, SIDE_STRIP_W, FOOTER_TOP);
-    ctx.save();
-    const sideTopM = 40, sideBotM = 24;
-    const sideAvail = FOOTER_TOP - sideBotM - sideTopM;
-    ctx.translate(74, sideTopM + sideAvail / 2);
-    ctx.rotate(-Math.PI / 2);
-    let ss = 50;
-    ctx.font = `bold ${ss}px Arial, Helvetica, sans-serif`;
-    while (ctx.measureText(SIDE_TEXT).width > sideAvail && ss > 10) {
-      ss -= 1;
-      ctx.font = `bold ${ss}px Arial, Helvetica, sans-serif`;
-    }
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = navyRef.current;
-    ctx.fillText(SIDE_TEXT, 0, 0);
-    ctx.restore();
+    // The PURITY badge and the vertical "Not for human..." warning are baked
+    // into the template art (already correctly placed), so nothing to redraw.
 
     // Product name and strength, centered on CENTER.
     ctx.textAlign = "center";
@@ -188,32 +160,38 @@ export default function LabelStudioPage() {
       ctx.fillText(text, CENTER, f.baseline);
     });
 
-    // Chemistry + lot details in the empty lower-left column. Only non-empty
-    // lines render, so a label with no peptide picked looks unchanged.
-    const info: { k: string; val: string }[] = [
-      { k: "Lot", val: v.lot },
-      { k: "Mfg", val: v.mfg },
-      { k: "CAS", val: v.cas },
-      { k: "MW", val: v.mw },
-      { k: "Formula", val: v.formula },
-    ].filter((r) => (r.val || "").trim());
-    if (info.length) {
+    // Left technical panel values, drawn beneath the baked FORMULA / CAS / MW
+    // labels. Left-aligned, dark, auto-shrunk to fit the panel. Only if present.
+    const drawLeft = (text: string, y: number) => {
+      const t = (text || "").trim();
+      if (!t) return;
+      let size = LEFTVAL.size;
+      ctx.font = `${size}px Arial, Helvetica, sans-serif`;
+      while (ctx.measureText(t).width > LEFTVAL.maxW && size > 16) {
+        size -= 1;
+        ctx.font = `${size}px Arial, Helvetica, sans-serif`;
+      }
+      ctx.fillStyle = "#111111";
       ctx.textAlign = "left";
       ctx.textBaseline = "alphabetic";
-      ctx.fillStyle = navyRef.current;
-      let y = INFO.top;
-      for (const r of info) {
-        const line = `${r.k}: ${r.val.trim()}`;
-        let size = INFO.size;
-        ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-        while (ctx.measureText(line).width > INFO.maxW && size > 16) {
-          size -= 1;
-          ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-        }
-        ctx.fillText(line, INFO.x, y);
-        y += INFO.lineH;
-      }
-    }
+      ctx.fillText(t, LEFTVAL.x, y);
+    };
+    drawLeft(v.formula, LEFTVAL.formulaY);
+    drawLeft(v.cas, LEFTVAL.casY);
+    drawLeft(v.mw, LEFTVAL.mwY);
+
+    // Footer LOT / MFG, white text centered in each half of the navy bar.
+    const drawFoot = (label: string, val: string, x: number) => {
+      const t = (val || "").trim();
+      if (!t) return;
+      ctx.fillStyle = "#ffffff";
+      ctx.font = `${FOOT.size}px Arial, Helvetica, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(`${label}: ${t}`, x, FOOT.y);
+    };
+    drawFoot("LOT", v.lot, FOOT.lotX);
+    drawFoot("MFG", v.mfg, FOOT.mfgX);
 
     // QR code to the COA page, in the upper-right white area. Pre-rendered into
     // qrImgRef when a COA number is set; a small caption sits beneath it.
