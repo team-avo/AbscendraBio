@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { jsPDF } from "jspdf";
+import { PDFDocument, type PDFPage } from "pdf-lib";
 import QRCode from "qrcode";
 import { toast } from "sonner";
 
@@ -354,21 +355,52 @@ export default function LabelStudioPage() {
   // Geometry, in inches: page 4.125 x 0.75; label 2.0 x 0.75; column gap 0.125;
   // left label at x=0, right at x=2.125. Fill left to right, top to bottom.
   const SHEET = { pageW: 4.125, pageH: 0.75, labelW: 2.0, labelH: 0.75, gap: 0.125 };
-  const downloadPrintSheet = () => {
+  const PT = 72; // 1 inch = 72 PDF points
+  const downloadPrintSheet = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const n = Math.max(1, Math.min(1000, Math.floor(qty) || 1));
-    const dataUrl = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({ unit: "in", format: [SHEET.pageW, SHEET.pageH], orientation: "landscape" });
-    for (let i = 0; i < n; i++) {
-      const col = i % 2;
-      if (i > 0 && col === 0) pdf.addPage([SHEET.pageW, SHEET.pageH], "landscape");
-      const x = col * (SHEET.labelW + SHEET.gap);
-      pdf.addImage(dataUrl, "PNG", x, 0, SHEET.labelW, SHEET.labelH);
+    try {
+      // 1) Build the single source label PDF: 2 x 0.75 in, 1200-DPI canvas PNG.
+      const dataUrl = canvas.toDataURL("image/png");
+      const single = new jsPDF({ unit: "in", format: [LABEL_W_IN, LABEL_H_IN], orientation: "landscape" });
+      single.addImage(dataUrl, "PNG", 0, 0, LABEL_W_IN, LABEL_H_IN);
+      const singleBytes = single.output("arraybuffer");
+
+      // 2) Assemble the sheet with pdf-lib: embed the source label page as a form
+      //    XObject (vector/quality preserved, no re-rasterization) and stamp it
+      //    two-up per page, one row per page so the die-cut gap sensor
+      //    re-registers each row. Geometry in PDF points.
+      const PAGE_W = SHEET.pageW * PT;            // 297
+      const PAGE_H = SHEET.pageH * PT;            // 54
+      const LW = SHEET.labelW * PT;               // 144
+      const LH = SHEET.labelH * PT;               // 54
+      const STEP = (SHEET.labelW + SHEET.gap) * PT; // 153
+      const out = await PDFDocument.create();
+      const [emb] = await out.embedPdf(singleBytes, [0]);
+      let page: PDFPage | null = null;
+      for (let i = 0; i < n; i++) {
+        const col = i % 2; // 0 = left, 1 = right
+        if (col === 0) page = out.addPage([PAGE_W, PAGE_H]);
+        page!.drawPage(emb, { x: col * STEP, y: 0, width: LW, height: LH });
+      }
+      const bytes = await out.save();
+
+      // 3) Download
+      const slug = (vals.name || "label").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "");
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${slug || "label"}_sheet_${n}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(`Print sheet (${n} ${n === 1 ? "label" : "labels"}) downloaded`);
+    } catch (err) {
+      toast.error("Could not build the print sheet");
     }
-    const slug = (vals.name || "label").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "");
-    pdf.save(`${slug || "label"}_sheet_${n}.pdf`);
-    toast.success(`Print sheet (${n} ${n === 1 ? "label" : "labels"}) downloaded`);
   };
 
   const selPeptide = peptides.find((p) => p.id === selPeptideId);
