@@ -62,6 +62,13 @@ export const createLotManagementMethods = (client: ApiClient) => ({
     return client.postFormData("/lot-management/label-templates/artwork", fd);
   },
 
+  // Auto-link a generated vial mockup to the matching product SKU (variant + product image)
+  lmApplyLabelImage: (d: { peptideStrengthId: string; imageUrl: string; altText?: string }) =>
+    client.post<{ applied: boolean; sku?: string; variantId?: string; productId?: string; reason?: string }>(
+      "/lot-management/labels/apply-image",
+      d,
+    ),
+
   // Dashboard
   lmGetDashboard: (companyId?: string) =>
     client.get<any>(`/lot-management/dashboard${companyId ? `?companyId=${companyId}` : ""}`),

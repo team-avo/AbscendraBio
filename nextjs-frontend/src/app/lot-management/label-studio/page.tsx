@@ -339,15 +339,104 @@ export default function LabelStudioPage() {
 
   const setField = (k: keyof Vals, value: string) => setDraft((d) => ({ ...d, [k]: value }));
 
+  const slugFor = (name: string) => (name || "label").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "");
+
+  // ── Vial mockup: wrap the generated label onto a blank vial (public/vial-base.png) ──
+  // Label region = the blank white label face on the 1024x1024 base image.
+  const VIAL = { region: { x0: 313, y0: 430, x1: 697, y1: 802 }, arc: Math.PI * 1.12 };
+
+  const loadImage = (src: string) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+
+  // Composite the current label canvas onto the vial base with a horizontal cylinder
+  // wrap (center face-on, edges compressed and darkened) → a PNG blob.
+  const buildVialMockup = useCallback(async (): Promise<Blob | null> => {
+    const label = canvasRef.current;
+    if (!label) return null;
+    const base = await loadImage("/vial-base.png").catch(() => null);
+    if (!base) return null;
+    const out = document.createElement("canvas");
+    out.width = base.width;
+    out.height = base.height;
+    const ctx = out.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(base, 0, 0);
+
+    const { x0, y0, x1, y1 } = VIAL.region;
+    const rw = x1 - x0;
+    const rh = y1 - y0;
+    const half = VIAL.arc / 2;
+    const sinHalf = Math.sin(half);
+    for (let i = 0; i < rw; i++) {
+      const t = rw <= 1 ? 0.5 : i / (rw - 1);                 // 0..1 across the region
+      const theta = (t - 0.5) * VIAL.arc;                     // -half..half
+      const srcT = (Math.sin(theta) / sinHalf) * 0.5 + 0.5;   // cylinder projection
+      const srcX = Math.max(0, Math.min(label.width - 1, srcT * (label.width - 1)));
+      const ox = x0 + i;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(label, srcX, 0, 1, label.height, ox, y0, 1, rh); // 1px vertical slice
+      const shade = 1 - Math.cos(theta);                      // darker toward the wrap edges
+      if (shade > 0.001) {
+        ctx.globalAlpha = Math.min(0.5, shade * 0.65);
+        ctx.fillStyle = "#0a1420";
+        ctx.fillRect(ox, y0, 1, rh);
+      }
+    }
+    ctx.globalAlpha = 1;
+    return await new Promise<Blob | null>((res) => out.toBlob((b) => res(b), "image/png"));
+  }, []);
+
+  const downloadVialMockup = async () => {
+    const blob = await buildVialMockup();
+    if (!blob) { toast.error("Could not build the vial mockup"); return; }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slugFor(vals.name)}_vial.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success("Vial mockup downloaded");
+  };
+
+  // Fully automatic: on label generation, push the vial mockup onto the matching
+  // product SKU (variant + product image). No-op if no peptide/strength is picked
+  // from the registry or nothing matches.
+  const publishToProduct = useCallback(async () => {
+    if (!selPeptideId || !selStrengthCode) return;
+    const pep = peptides.find((p) => p.id === selPeptideId);
+    const strengthId = (pep?.strengths || []).find((s) => s.code === selStrengthCode)?.id;
+    if (!strengthId) return;
+    try {
+      const blob = await buildVialMockup();
+      if (!blob) return;
+      const file = new File([blob], `${slugFor(vals.name)}_vial.png`, { type: "image/png" });
+      const up = await api.uploadFile(file);
+      if (!up.success || !up.data?.url) { toast.error("Vial image upload failed"); return; }
+      const res = await api.lmApplyLabelImage({ peptideStrengthId: strengthId, imageUrl: up.data.url });
+      if (res.success && res.data?.applied) toast.success(`Product image updated for SKU ${res.data.sku}`);
+      else toast.message("Vial mockup made — no matching product to link yet");
+    } catch {
+      toast.error("Could not update the product image");
+    }
+  }, [selPeptideId, selStrengthCode, peptides, vals.name, buildVialMockup]);
+
   const downloadPdf = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const dataUrl = canvas.toDataURL("image/png");
     const pdf = new jsPDF({ unit: "in", format: [LABEL_W_IN, LABEL_H_IN], orientation: "landscape" });
     pdf.addImage(dataUrl, "PNG", 0, 0, LABEL_W_IN, LABEL_H_IN);
-    const slug = (vals.name || "label").replace(/[^a-z0-9]+/gi, "_").replace(/^_+|_+$/g, "");
+    const slug = slugFor(vals.name);
     pdf.save(`${slug || "label"}_label.pdf`);
     toast.success("PDF downloaded");
+    void publishToProduct();
   };
 
   // Print ready sheet for the die-cut label printer: two labels per row, one row
@@ -398,6 +487,7 @@ export default function LabelStudioPage() {
       a.remove();
       URL.revokeObjectURL(url);
       toast.success(`Print sheet (${n} ${n === 1 ? "label" : "labels"}) downloaded`);
+      void publishToProduct();
     } catch (err) {
       toast.error("Could not build the print sheet");
     }
@@ -428,6 +518,7 @@ export default function LabelStudioPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={openEditor}>Edit label</Button>
           <Button variant="outline" onClick={downloadPdf} disabled={!ready}>Download single PDF</Button>
+          <Button variant="outline" onClick={downloadVialMockup} disabled={!ready}>Download vial mockup</Button>
           <div className="flex items-center gap-1.5">
             <Label className="text-xs text-muted-foreground">Qty</Label>
             <Input
