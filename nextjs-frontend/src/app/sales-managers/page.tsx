@@ -244,7 +244,7 @@ export default function SalesManagersPage() {
     <DashboardLayout>
       <div className="space-y-5">
         {/* Dark hero strip */}
-        <div className="bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
+        <div className="bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
           {/* Grid texture */}
           <div
             className="absolute inset-0 opacity-[0.07]"
@@ -275,7 +275,7 @@ export default function SalesManagersPage() {
                 <Button
                   disabled={!selectedManagerId || loading}
                   onClick={handleSaveAssignments}
-                  className="h-8 px-4 bg-white hover:bg-gray-100 text-[#070B14] rounded-xl text-xs font-semibold"
+                  className="h-8 px-4 bg-white hover:bg-gray-100 text-[#043061] rounded-xl text-xs font-semibold"
                 >
                   Save Assignments
                 </Button>

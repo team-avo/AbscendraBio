@@ -75,18 +75,18 @@ export default function LandingPageBlue() {
   ];
 
   return (
-    <div className={`flex flex-col min-h-screen bg-white text-[#070B14] relative overflow-hidden ${barlow.className}`}>
+    <div className={`flex flex-col min-h-screen bg-white text-[#043061] relative overflow-hidden ${barlow.className}`}>
 
       {/* ═══════════════════════════════════════════ */}
       {/* HERO — FULL-WIDTH PRODUCT BANNER            */}
       {/* ═══════════════════════════════════════════ */}
-      <main className="relative z-20 min-h-[92vh] w-full overflow-hidden bg-[#4D7DF2]">
+      <main className="relative z-20 min-h-[92vh] w-full overflow-hidden bg-[#5A9ADA]">
 
         {/* Background: product image fills the right / bottom */}
         <div className="absolute inset-0 z-0">
           {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#4D7DF2] via-[#4D7DF2] to-transparent" style={{ backgroundSize: '100% 100%', backgroundImage: 'linear-gradient(to right, #4D7DF2 0%, #4D7DF2 42%, transparent 72%)' }} />
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#4D7DF2] via-transparent to-[#4D7DF2]/40 lg:hidden" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#5A9ADA] via-[#5A9ADA] to-transparent" style={{ backgroundSize: '100% 100%', backgroundImage: 'linear-gradient(to right, #5A9ADA 0%, #5A9ADA 42%, transparent 72%)' }} />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#5A9ADA] via-transparent to-[#5A9ADA]/40 lg:hidden" />
 
           {/* Product image */}
           <motion.div
@@ -176,7 +176,7 @@ export default function LandingPageBlue() {
             >
               <button
                 onClick={() => setIsContactOpen(true)}
-                className="flex items-center gap-3 bg-white hover:bg-gray-100 text-[#4D7DF2] px-7 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 shadow-lg shadow-black/20"
+                className="flex items-center gap-3 bg-white hover:bg-gray-100 text-[#5A9ADA] px-7 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 shadow-lg shadow-black/20"
               >
                 Start Research
                 <ArrowRight className="w-4 h-4" />
@@ -228,12 +228,12 @@ export default function LandingPageBlue() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-4 mb-4">
-                <span className="w-8 h-[1px] bg-[#4D7DF2]/40" />
-                <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">
+                <span className="w-8 h-[1px] bg-[#5A9ADA]/40" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">
                   Catalog
                 </span>
               </div>
-              <h2 className={`text-3xl sm:text-4xl font-bold text-[#070B14] tracking-tight ${barlow.className}`}>
+              <h2 className={`text-3xl sm:text-4xl font-bold text-[#043061] tracking-tight ${barlow.className}`}>
                 Popular Peptides
               </h2>
               <p className="mt-3 text-base text-gray-500 font-medium max-w-lg">
@@ -258,12 +258,12 @@ export default function LandingPageBlue() {
             className="mb-14"
           >
             <div className="flex items-center gap-4 mb-4">
-              <span className="w-8 h-[1px] bg-[#4D7DF2]/40" />
-              <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">
+              <span className="w-8 h-[1px] bg-[#5A9ADA]/40" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">
                 Why Ascendra
               </span>
             </div>
-            <h2 className={`text-3xl sm:text-4xl font-bold text-[#070B14] tracking-tight ${barlow.className}`}>
+            <h2 className={`text-3xl sm:text-4xl font-bold text-[#043061] tracking-tight ${barlow.className}`}>
               Built for Research Excellence
             </h2>
           </motion.div>
@@ -279,10 +279,10 @@ export default function LandingPageBlue() {
                 className="group"
               >
                 <div className="bg-white border border-gray-100 rounded-2xl p-7 h-full transition-all duration-300 hover:shadow-md hover:border-blue-100">
-                  <div className="mb-5 w-12 h-12 rounded-xl bg-[#4D7DF2]/5 border border-[#4D7DF2]/10 flex items-center justify-center group-hover:bg-[#4D7DF2]/10 transition-colors duration-300">
-                    <item.icon className="w-5 h-5 text-[#4D7DF2]" strokeWidth={1.5} />
+                  <div className="mb-5 w-12 h-12 rounded-xl bg-[#5A9ADA]/5 border border-[#5A9ADA]/10 flex items-center justify-center group-hover:bg-[#5A9ADA]/10 transition-colors duration-300">
+                    <item.icon className="w-5 h-5 text-[#5A9ADA]" strokeWidth={1.5} />
                   </div>
-                  <h3 className={`text-lg font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>
+                  <h3 className={`text-lg font-bold text-[#043061] tracking-tight mb-2 ${barlow.className}`}>
                     {item.label}
                   </h3>
                   <p className="text-sm text-gray-500 font-medium leading-relaxed">
@@ -306,7 +306,7 @@ export default function LandingPageBlue() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-[#4D7DF2]/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-[#5A9ADA]/80 backdrop-blur-xl"
               onClick={() => setIsContactOpen(false)}
             />
 
@@ -401,7 +401,7 @@ export default function LandingPageBlue() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 px-6 rounded-xl text-sm font-bold text-[#4D7DF2]
+                    className="w-full py-4 px-6 rounded-xl text-sm font-bold text-[#5A9ADA]
                       bg-white hover:bg-gray-100 disabled:opacity-50
                       transition-all duration-300 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                   >

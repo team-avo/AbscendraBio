@@ -34,6 +34,18 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  /* Ascendra pricing-page palette exposed as utilities: bg-navy, text-azure, border-line, ... */
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-azure: var(--azure);
+  --color-azure-soft: var(--azure-soft);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-mist: var(--mist);
+  --color-mist-2: var(--mist-2);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-paper: var(--paper);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -46,59 +58,85 @@
 
 :root {
   --radius: 1.25rem; /* Increased default radius */
-  --background: #ffffff;
-  --foreground: #1B2D4F; /* Primary Dark Blue */
-  --card: #ffffff;
-  --card-foreground: #1B2D4F;
-  --popover: #ffffff;
-  --popover-foreground: #1B2D4F;
-  --primary: #1B2D4F;
+
+  /* ── Ascendra brand primitives (extracted from the /pricing page — single source of truth) ── */
+  --navy: #043061;        /* primary brand */
+  --navy-deep: #022246;   /* darkest, gradient start */
+  --azure: #5A9ADA;       /* light-blue accent: icons, focus, links, highlights */
+  --azure-soft: #a9cbeb;  /* soft accent */
+  --ink: #10233b;         /* primary text */
+  --slate: #6b7d93;       /* secondary / muted text */
+  --mist: #f3f7fc;        /* light background */
+  --mist-2: #eaf1fa;      /* light background 2 / chips */
+  --line: #e4ebf4;        /* border */
+  --line-2: #d3deec;      /* stronger border */
+  --paper: #ffffff;       /* surface */
+  --brand-gradient: linear-gradient(135deg, var(--navy-deep), var(--navy) 75%, #0b4f96);
+  --shadow-brand: 0 18px 50px -22px rgba(4, 48, 97, .40);
+  --shadow-brand-sm: 0 8px 24px -14px rgba(4, 48, 97, .40);
+  --ease-brand: cubic-bezier(.22, .61, .36, 1);
+
+  /* ── Semantic (shadcn) tokens mapped onto the brand primitives ── */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #F0F4F8;
-  --secondary-foreground: #1B2D4F;
-  --muted: #F8FAFC;
-  --muted-foreground: #5A6B80;
-  --accent: #E9EEF4;
-  --accent-foreground: #1B2D4F;
+  --secondary: var(--mist);
+  --secondary-foreground: var(--navy);
+  --muted: var(--mist);
+  --muted-foreground: var(--slate);
+  --accent: var(--mist-2);
+  --accent-foreground: var(--navy);
   --destructive: #d4183d;
-  --border: rgba(27, 45, 79, 0.1); /* Soft brand border */
-  --input: #F0F4F8;
-  --ring: #3A6FA0; /* Accent Blue */
-  --chart-1: #3A6FA0;
-  --chart-2: #7EB3D8;
-  --chart-3: #1B2D4F;
-  --chart-4: #A8D4F0;
-  --chart-5: #2C4A6E;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1B2D4F;
-  --sidebar-primary: #1B2D4F;
+  --border: var(--line);
+  --input: var(--mist-2);
+  --ring: var(--azure);
+  --chart-1: var(--azure);
+  --chart-2: var(--azure-soft);
+  --chart-3: var(--navy);
+  --chart-4: #9cc1e8;
+  --chart-5: #0b4f96;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--navy);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #F0F4F8;
-  --sidebar-accent-foreground: #1B2D4F;
-  --sidebar-border: rgba(27, 45, 79, 0.08);
-  --sidebar-ring: #3A6FA0;
+  --sidebar-accent: var(--mist);
+  --sidebar-accent-foreground: var(--navy);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--azure);
 }
 
 .dark {
   /* Enforce light mode colors even in dark mode for consistency */
-  --background: #ffffff;
-  --foreground: #1B2D4F;
-  --card: #ffffff;
-  --card-foreground: #1B2D4F;
-  --popover: #ffffff;
-  --popover-foreground: #1B2D4F;
-  --primary: #1B2D4F;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #F0F4F8;
-  --secondary-foreground: #1B2D4F;
-  --muted: #F8FAFC;
-  --muted-foreground: #5A6B80;
-  --accent: #E9EEF4;
-  --accent-foreground: #1B2D4F;
+  --secondary: var(--mist);
+  --secondary-foreground: var(--navy);
+  --muted: var(--mist);
+  --muted-foreground: var(--slate);
+  --accent: var(--mist-2);
+  --accent-foreground: var(--navy);
   --destructive: #d4183d;
-  --border: rgba(27, 45, 79, 0.1);
-  --input: #F0F4F8;
-  --ring: #3A6FA0;
+  --border: var(--line);
+  --input: var(--mist-2);
+  --ring: var(--azure);
+}
+
+/* Brand surface helpers (design-system utilities, not one-off inline gradients) */
+@layer utilities {
+  .bg-brand-gradient { background-image: var(--brand-gradient); }
+  .shadow-brand { box-shadow: var(--shadow-brand); }
+  .shadow-brand-sm { box-shadow: var(--shadow-brand-sm); }
 }
 
 @layer base {
@@ -121,24 +159,24 @@
 
 /* Force light theme scope: keeps pages white even if app is in .dark */
 .force-light, .dark .force-light, .landing-theme, .dark .landing-theme {
-  --background: #ffffff;
-  --foreground: #1B2D4F;
-  --card: #ffffff;
-  --card-foreground: #1B2D4F;
-  --popover: #ffffff;
-  --popover-foreground: #1B2D4F;
-  --primary: #1B2D4F;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #F0F4F8;
-  --secondary-foreground: #1B2D4F;
-  --muted: #F8FAFC;
-  --muted-foreground: #5A6B80;
-  --accent: #E9EEF4;
-  --accent-foreground: #1B2D4F;
+  --secondary: var(--mist);
+  --secondary-foreground: var(--navy);
+  --muted: var(--mist);
+  --muted-foreground: var(--slate);
+  --accent: var(--mist-2);
+  --accent-foreground: var(--navy);
   --destructive: #d4183d;
-  --border: rgba(27, 45, 79, 0.1);
-  --input: #F0F4F8;
-  --ring: #3A6FA0;
+  --border: var(--line);
+  --input: var(--mist-2);
+  --ring: var(--azure);
 }
 
 @layer utilities {

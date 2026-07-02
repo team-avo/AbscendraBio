@@ -231,7 +231,7 @@ export default function DeliveredOrdersPage() {
       <DashboardLayout>
         <div className="space-y-0">
           {/* Dark hero strip */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
             <div className="relative z-10 px-6 py-6 sm:px-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -240,13 +240,13 @@ export default function DeliveredOrdersPage() {
                     <CheckCircle className="h-4 w-4 text-emerald-400" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-black text-white tracking-tight">Delivered Orders</h1>
+                    <h1 className="text-xl font-black text-[#043061] tracking-tight">Delivered Orders</h1>
                     <p className="text-xs text-gray-500 mt-0.5">Successfully delivered orders</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{totalOrders.toLocaleString()} orders</span>
-                  <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest">
+                  <Button onClick={() => setShowCreateDialog(true)} className="h-9 px-5 bg-[#043061] text-white hover:bg-[#0b4f96] rounded-xl text-xs font-black uppercase tracking-widest">
                     <Plus className="mr-1.5 h-3.5 w-3.5" /> New Order
                   </Button>
                 </div>

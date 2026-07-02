@@ -76,7 +76,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className={`flex flex-col min-h-screen bg-white text-[#070B14] relative overflow-hidden ${barlow.className}`}>
+    <div className={`flex flex-col min-h-screen bg-white text-[#043061] relative overflow-hidden ${barlow.className}`}>
 
       {/* ═══════════════════════════════════════════ */}
       {/* HERO — FULL-WIDTH PRODUCT BANNER            */}
@@ -112,7 +112,7 @@ export default function LandingPage() {
           <div
             className="absolute inset-0 z-[5] opacity-30 blur-[100px] pointer-events-none"
             style={{
-              background: "radial-gradient(circle at 20% 50%, #4D7DF2 0%, transparent 50%), radial-gradient(circle at 80% 30%, #7EB3D8 0%, transparent 40%)",
+              background: "radial-gradient(circle at 20% 50%, #5A9ADA 0%, transparent 50%), radial-gradient(circle at 80% 30%, #a9cbeb 0%, transparent 40%)",
             }}
           />
         </div>
@@ -127,14 +127,14 @@ export default function LandingPage() {
               transition={{ duration: 0.35 }}
               className="flex items-center gap-3 mb-6"
             >
-              <span className="w-8 h-[1px] bg-[#4D7DF2]" />
-              <span className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-[#4D7DF2] uppercase">
+              <span className="w-8 h-[1px] bg-[#5A9ADA]" />
+              <span className="text-[10px] sm:text-xs font-bold tracking-[0.3em] text-[#5A9ADA] uppercase">
                 {branding.eyebrow}
               </span>
             </motion.div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-[#070B14]">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] tracking-tighter text-[#043061]">
               <motion.span
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -147,7 +147,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
-                className="block text-[#4D7DF2]"
+                className="block text-[#5A9ADA]"
               >
                 Bio-Research
               </motion.span>
@@ -155,7 +155,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.15 }}
-                className="block font-extralight text-[#070B14]/50"
+                className="block font-extralight text-[#043061]/50"
               >
                 Purity Redefined.
               </motion.span>
@@ -180,7 +180,7 @@ export default function LandingPage() {
             >
               <button
                 onClick={() => setIsContactOpen(true)}
-                className="flex items-center gap-3 bg-[#4D7DF2] hover:bg-[#3D6DE2] text-white px-7 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 shadow-lg shadow-[#4D7DF2]/20"
+                className="flex items-center gap-3 bg-[#5A9ADA] hover:bg-[#3f7fc4] text-white px-7 py-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-200 shadow-lg shadow-[#5A9ADA]/20"
               >
                 Start Research
                 <ArrowRight className="w-4 h-4" />
@@ -188,7 +188,7 @@ export default function LandingPage() {
 
               <Link
                 href="/landing/third-party-testing"
-                className="flex items-center gap-2 text-sm font-bold text-[#070B14]/60 hover:text-[#070B14] px-7 py-4 rounded-xl border border-[#070B14]/10 hover:border-[#070B14]/20 transition-all duration-200"
+                className="flex items-center gap-2 text-sm font-bold text-[#043061]/60 hover:text-[#043061] px-7 py-4 rounded-xl border border-[#043061]/10 hover:border-[#043061]/20 transition-all duration-200"
               >
                 Review Lab Reports
               </Link>
@@ -207,8 +207,8 @@ export default function LandingPage() {
                 { value: '30+', label: 'Peptides' },
               ].map((stat, i) => (
                 <div key={i} className="flex items-baseline gap-2">
-                  <span className="text-xl font-black text-[#070B14] tracking-tight">{stat.value}</span>
-                  <span className="text-xs font-bold text-[#070B14]/40 uppercase tracking-widest">{stat.label}</span>
+                  <span className="text-xl font-black text-[#043061] tracking-tight">{stat.value}</span>
+                  <span className="text-xs font-bold text-[#043061]/40 uppercase tracking-widest">{stat.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -232,12 +232,12 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-4 mb-4">
-                <span className="w-8 h-[1px] bg-[#4D7DF2]/40" />
-                <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">
+                <span className="w-8 h-[1px] bg-[#5A9ADA]/40" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">
                   Catalog
                 </span>
               </div>
-              <h2 className={`text-3xl sm:text-4xl font-bold text-[#070B14] tracking-tight ${barlow.className}`}>
+              <h2 className={`text-3xl sm:text-4xl font-bold text-[#043061] tracking-tight ${barlow.className}`}>
                 Popular Peptides
               </h2>
               <p className="mt-3 text-base text-gray-500 font-medium max-w-lg">
@@ -262,12 +262,12 @@ export default function LandingPage() {
             className="mb-14"
           >
             <div className="flex items-center gap-4 mb-4">
-              <span className="w-8 h-[1px] bg-[#4D7DF2]/40" />
-              <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">
+              <span className="w-8 h-[1px] bg-[#5A9ADA]/40" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">
                 Why Ascendra
               </span>
             </div>
-            <h2 className={`text-3xl sm:text-4xl font-bold text-[#070B14] tracking-tight ${barlow.className}`}>
+            <h2 className={`text-3xl sm:text-4xl font-bold text-[#043061] tracking-tight ${barlow.className}`}>
               Built for Research Excellence
             </h2>
           </motion.div>
@@ -283,10 +283,10 @@ export default function LandingPage() {
                 className="group"
               >
                 <div className="bg-white border border-gray-100 rounded-2xl p-7 h-full transition-all duration-300 hover:shadow-md hover:border-blue-100">
-                  <div className="mb-5 w-12 h-12 rounded-xl bg-[#4D7DF2]/5 border border-[#4D7DF2]/10 flex items-center justify-center group-hover:bg-[#4D7DF2]/10 transition-colors duration-300">
-                    <item.icon className="w-5 h-5 text-[#4D7DF2]" strokeWidth={1.5} />
+                  <div className="mb-5 w-12 h-12 rounded-xl bg-[#5A9ADA]/5 border border-[#5A9ADA]/10 flex items-center justify-center group-hover:bg-[#5A9ADA]/10 transition-colors duration-300">
+                    <item.icon className="w-5 h-5 text-[#5A9ADA]" strokeWidth={1.5} />
                   </div>
-                  <h3 className={`text-lg font-bold text-[#070B14] tracking-tight mb-2 ${barlow.className}`}>
+                  <h3 className={`text-lg font-bold text-[#043061] tracking-tight mb-2 ${barlow.className}`}>
                     {item.label}
                   </h3>
                   <p className="text-sm text-gray-500 font-medium leading-relaxed">
@@ -310,7 +310,7 @@ export default function LandingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-[#070B14]/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-[#043061]/80 backdrop-blur-xl"
               onClick={() => setIsContactOpen(false)}
             />
 
@@ -356,7 +356,7 @@ export default function LandingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider ml-1">
-                        Email <span className="text-[#3A6FA0]">*</span>
+                        Email <span className="text-[#5A9ADA]">*</span>
                       </label>
                       <input
                         type="email"
@@ -387,7 +387,7 @@ export default function LandingPage() {
 
                   <div>
                     <label className="block text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider ml-1">
-                      Message <span className="text-[#3A6FA0]">*</span>
+                      Message <span className="text-[#5A9ADA]">*</span>
                     </label>
                     <textarea
                       name="message"
@@ -405,7 +405,7 @@ export default function LandingPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 px-6 rounded-xl text-sm font-bold text-[#070B14]
+                    className="w-full py-4 px-6 rounded-xl text-sm font-bold text-[#043061]
                       bg-white hover:bg-gray-100 disabled:opacity-50
                       transition-all duration-300 mt-4 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                   >

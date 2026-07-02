@@ -173,8 +173,8 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
         <DialogContent className="sm:max-w-[580px] max-h-[90vh] w-[calc(100vw-2rem)] p-0 gap-0 overflow-hidden rounded-2xl">
 
           {/* ── DARK HEADER ── */}
-          <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-            <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+            <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
             <div className="relative z-10 flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -331,11 +331,11 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
                         className={cn(
                           "p-3 rounded-xl border-2 text-left transition-all",
                           formData.customerType === 'B2C'
-                            ? 'border-[#1B2D4F] bg-[#1B2D4F]/5'
+                            ? 'border-[#043061] bg-[#043061]/5'
                             : 'border-slate-100 bg-slate-50 hover:border-slate-200'
                         )}
                       >
-                        <p className={cn("text-xs font-bold", formData.customerType === 'B2C' ? 'text-[#1B2D4F]' : 'text-slate-600')}>Wholesale</p>
+                        <p className={cn("text-xs font-bold", formData.customerType === 'B2C' ? 'text-[#043061]' : 'text-slate-600')}>Wholesale</p>
                         <p className="text-[10px] text-slate-400 mt-0.5">Standard pricing</p>
                       </button>
                       <button
@@ -344,11 +344,11 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
                         className={cn(
                           "p-3 rounded-xl border-2 text-left transition-all",
                           formData.customerType === 'ENTERPRISE_1'
-                            ? 'border-[#1B2D4F] bg-[#1B2D4F]/5'
+                            ? 'border-[#043061] bg-[#043061]/5'
                             : 'border-slate-100 bg-slate-50 hover:border-slate-200'
                         )}
                       >
-                        <p className={cn("text-xs font-bold", formData.customerType === 'ENTERPRISE_1' ? 'text-[#1B2D4F]' : 'text-slate-600')}>Enterprise</p>
+                        <p className={cn("text-xs font-bold", formData.customerType === 'ENTERPRISE_1' ? 'text-[#043061]' : 'text-slate-600')}>Enterprise</p>
                         <p className="text-[10px] text-slate-400 mt-0.5">Custom pricing</p>
                       </button>
                     </div>
@@ -384,7 +384,7 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
               type="submit"
               form="create-customer-form"
               disabled={loading || !isFormValid()}
-              className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
+              className="bg-[#043061] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
             >
               {loading ? 'Creating...' : 'Create Customer'}
             </Button>

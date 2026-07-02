@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, FlaskConical } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -80,7 +81,7 @@ export function Footer() {
   };
 
   return (
-    <footer className={`relative bg-[#070B14] text-white overflow-hidden ${barlow.className}`}>
+    <footer className={`relative bg-brand-gradient text-white overflow-hidden ${barlow.className}`}>
 
       {/* ── CTA Banner ── */}
       <div className="relative border-b border-white/[0.06]">
@@ -105,7 +106,7 @@ export function Footer() {
               <Button
                 onClick={handleInquiry}
                 disabled={isSendingInquiry}
-                className="bg-[#4D7DF2] hover:bg-[#3D6DE2] text-white border-0 rounded-xl px-6 h-12 text-sm font-bold tracking-wide transition-all duration-200 shrink-0"
+                className="bg-[#5A9ADA] hover:bg-[#2f5a82] text-white border-0 rounded-xl px-6 h-12 text-sm font-bold tracking-wide transition-all duration-200 shrink-0"
               >
                 {isSendingInquiry ? 'Sending...' : 'Get Started'}
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -122,10 +123,13 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 space-y-5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#4D7DF2]/10 flex items-center justify-center">
-                <FlaskConical className="w-4 h-4 text-[#4D7DF2]" />
-              </div>
-              <span className="text-lg font-bold tracking-tight">{footerSettings?.siteTitle || 'ASCENDRA BIO'}</span>
+              <Image
+                src="/logo.png"
+                alt={footerSettings?.siteTitle || 'Ascendra Bio'}
+                width={160}
+                height={40}
+                className="h-9 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-[260px]">
               {footerSettings?.siteDescription || '99%+ purity research peptides. COA-verified, GMP manufactured, trusted by researchers nationwide.'}
@@ -156,7 +160,7 @@ export function Footer() {
                 ))
               )}
               <li>
-                <Link href="/landing/products" className="text-sm text-[#4D7DF2] font-semibold hover:text-[#6D9BFF] transition-colors duration-200">
+                <Link href="/landing/products" className="text-sm text-[#5A9ADA] font-semibold hover:text-[#a9cbeb] transition-colors duration-200">
                   View All &rarr;
                 </Link>
               </li>

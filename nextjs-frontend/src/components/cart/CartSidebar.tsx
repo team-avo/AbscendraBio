@@ -92,11 +92,11 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#070B14] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#043061] flex items-center justify-center">
               <ShoppingBag className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h2 className="text-base font-black text-[#070B14]">Your Cart</h2>
+              <h2 className="text-base font-black text-[#043061]">Your Cart</h2>
               <p className="text-[10px] text-gray-400 font-medium">{items.reduce((s, it) => s + it.quantity, 0)} {items.reduce((s, it) => s + it.quantity, 0) === 1 ? 'item' : 'items'}</p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#4D7DF2] animate-spin" />
+              <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#5A9ADA] animate-spin" />
             </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
@@ -136,7 +136,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-[#070B14] line-clamp-1 uppercase tracking-tight">
+                    <p className="text-xs font-black text-[#043061] line-clamp-1 uppercase tracking-tight">
                       {it.variant?.product?.name ?? 'Product'}
                     </p>
                     <p className="text-[10px] text-gray-400 mt-0.5">{it.variant?.name}</p>
@@ -153,7 +153,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                         >
                           <Minus className="w-3 h-3 text-gray-600" />
                         </button>
-                        <span className="w-6 text-center text-xs font-black text-[#070B14]">{it.quantity}</span>
+                        <span className="w-6 text-center text-xs font-black text-[#043061]">{it.quantity}</span>
                         <button
                           onClick={async () => {
                             try { await update(it.variantId, it.quantity + 1) }
@@ -168,7 +168,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                       {/* Price + remove */}
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <p className="text-sm font-black text-[#070B14]">${price.toFixed(2)}</p>
+                          <p className="text-sm font-black text-[#043061]">${price.toFixed(2)}</p>
                           {isBulkPrice && savings > 0 && (
                             <p className="text-[9px] text-emerald-600 font-bold">Bulk price</p>
                           )}
@@ -199,7 +199,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
           <div className="border-t border-gray-100 px-6 py-5 space-y-3 bg-white">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-500 font-medium">Subtotal</span>
-              <span className="font-black text-[#070B14]">{formatCurrency(subtotal)}</span>
+              <span className="font-black text-[#043061]">{formatCurrency(subtotal)}</span>
             </div>
 
             {discount.isEligible && discount.discountAmount > 0 && (
@@ -210,8 +210,8 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
                 </div>
                 <Separator className="bg-gray-100" />
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-[#070B14]">Total</span>
-                  <span className="text-lg font-black text-[#070B14]">{formatCurrency(total)}</span>
+                  <span className="text-sm font-black text-[#043061]">Total</span>
+                  <span className="text-lg font-black text-[#043061]">{formatCurrency(total)}</span>
                 </div>
               </>
             )}
@@ -223,7 +223,7 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
             )}
 
             <Button
-              className="w-full h-12 rounded-2xl bg-[#070B14] hover:bg-[#1a2540] text-white font-black uppercase tracking-widest text-[10px] shadow-lg transition-all duration-300"
+              className="w-full h-12 rounded-2xl bg-[#043061] hover:bg-[#0b4f96] text-white font-black uppercase tracking-widest text-[10px] shadow-lg transition-all duration-300"
               disabled={items.length === 0 || hasOutOfStockItems}
               onClick={() => {
                 if (!isAuthenticated) { setAuthOpen(true); return; }

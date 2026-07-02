@@ -32,7 +32,7 @@ export function SignInForm({
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-2xl font-black text-[#070B14] tracking-tight">Welcome back</h3>
+                <h3 className="text-2xl font-black text-[#043061] tracking-tight">Welcome back</h3>
                 <p className="text-sm text-gray-400 mt-1.5">Sign in to your account to continue</p>
             </div>
 
@@ -53,7 +53,7 @@ export function SignInForm({
                             className={`w-full h-12 pl-11 pr-4 rounded-2xl text-sm font-medium transition-all outline-none border ${
                                 errors.email
                                     ? 'bg-red-50 border-red-200 text-red-800 placeholder:text-red-300'
-                                    : 'bg-gray-50 border-gray-100 text-[#070B14] placeholder:text-gray-400 focus:bg-white focus:border-[#4D7DF2]/40 focus:ring-4 focus:ring-[#4D7DF2]/5'
+                                    : 'bg-gray-50 border-gray-100 text-[#043061] placeholder:text-gray-400 focus:bg-white focus:border-[#5A9ADA]/40 focus:ring-4 focus:ring-[#5A9ADA]/5'
                             }`}
                         />
                     </div>
@@ -68,7 +68,7 @@ export function SignInForm({
                 <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                         <label className="text-xs font-bold text-gray-600 uppercase tracking-widest">Password</label>
-                        <button type="button" onClick={onForgotPassword} className="text-xs text-[#4D7DF2] font-semibold hover:underline">
+                        <button type="button" onClick={onForgotPassword} className="text-xs text-[#5A9ADA] font-semibold hover:underline">
                             Forgot password?
                         </button>
                     </div>
@@ -85,7 +85,7 @@ export function SignInForm({
                             className={`w-full h-12 pl-11 pr-12 rounded-2xl text-sm font-medium transition-all outline-none border ${
                                 errors.password || portalMismatch
                                     ? 'bg-red-50 border-red-200 text-red-800 placeholder:text-red-300'
-                                    : 'bg-gray-50 border-gray-100 text-[#070B14] placeholder:text-gray-400 focus:bg-white focus:border-[#4D7DF2]/40 focus:ring-4 focus:ring-[#4D7DF2]/5'
+                                    : 'bg-gray-50 border-gray-100 text-[#043061] placeholder:text-gray-400 focus:bg-white focus:border-[#5A9ADA]/40 focus:ring-4 focus:ring-[#5A9ADA]/5'
                             }`}
                         />
                         <button
@@ -105,7 +105,7 @@ export function SignInForm({
                         <p className="flex items-center gap-1.5 text-xs text-red-500 font-medium">
                             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                             Admin accounts must use the{' '}
-                            <a href="/admin/login" className="underline text-[#4D7DF2]">Admin login</a>
+                            <a href="/admin/login" className="underline text-[#5A9ADA]">Admin login</a>
                         </p>
                     )}
                 </div>
@@ -114,7 +114,7 @@ export function SignInForm({
                 <button
                     type="submit"
                     disabled={isSubmitting || (mounted && isLoading)}
-                    className="w-full h-13 py-3.5 rounded-2xl bg-[#070B14] text-white text-xs font-black uppercase tracking-widest transition-all hover:bg-[#1a2540] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                    className="w-full h-13 py-3.5 rounded-2xl bg-[#043061] text-white text-xs font-black uppercase tracking-widest transition-all hover:bg-[#0b4f96] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                 >
                     {isSubmitting ? (
                         <><LoadingSpinner size={14} className="text-white" />Signing in…</>
@@ -124,7 +124,7 @@ export function SignInForm({
 
             {/* OTP link */}
             <div className="text-center">
-                <button type="button" onClick={onSwitchToOtp} className="text-xs text-gray-400 hover:text-[#4D7DF2] transition-colors font-medium">
+                <button type="button" onClick={onSwitchToOtp} className="text-xs text-gray-400 hover:text-[#5A9ADA] transition-colors font-medium">
                     Sign in with a one-time code instead →
                 </button>
             </div>

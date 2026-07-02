@@ -24,7 +24,7 @@ export function TestimonialsSection() {
   const prevTestimonial = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <section className="py-32 bg-[#070B14] relative overflow-hidden" suppressHydrationWarning>
+    <section className="py-32 bg-[#043061] relative overflow-hidden" suppressHydrationWarning>
       <div className="absolute inset-0">
         <motion.div className="absolute inset-0 opacity-0" />
       </div>
@@ -43,7 +43,7 @@ export function TestimonialsSection() {
                     <div className="relative backdrop-blur-2xl bg-white/[0.03] border border-white/[0.08] shadow-[0_20px_40px_rgba(0,0,0,0.4)] rounded-3xl p-12 mx-4 overflow-hidden">
                       <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-white/[0.02]" />
                       <motion.div className="absolute top-8 left-8 w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
-                        <Quote className="w-8 h-8 text-[#4D7DF2]/60" />
+                        <Quote className="w-8 h-8 text-[#5A9ADA]/60" />
                       </motion.div>
                       <div className="relative z-10 text-center">
                         <div className="flex justify-center gap-1 mb-6">
@@ -59,7 +59,7 @@ export function TestimonialsSection() {
                         <div className="flex items-center justify-center gap-6">
                           <div className="text-center">
                             <motion.h4 className="text-lg font-bold text-white mb-1">{testimonial.name}</motion.h4>
-                            <p className="text-[#4D7DF2] font-semibold">{testimonial.title}</p>
+                            <p className="text-[#5A9ADA] font-semibold">{testimonial.title}</p>
                             {/* <p className="text-muted-foreground text-sm">{testimonial.company}</p> */}
                           </div>
                         </div>

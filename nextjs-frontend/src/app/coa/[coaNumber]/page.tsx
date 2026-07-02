@@ -41,7 +41,7 @@ export default function CoaTracePage() {
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="bg-[#070B14] px-6 py-5 text-white">
+            <div className="bg-[#043061] px-6 py-5 text-white">
               <div className="text-xs uppercase tracking-widest text-blue-300/70">Certificate of Analysis</div>
               <div className="text-2xl font-bold mt-1">{d.peptide}</div>
               <div className="text-blue-200/80 text-sm">{d.strength}</div>
@@ -71,7 +71,7 @@ export default function CoaTracePage() {
                 </div>
               )}
               {d.fileUrl && (
-                <a href={d.fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-[#4D7DF2] hover:underline">
+                <a href={d.fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-[#5A9ADA] hover:underline">
                   📄 View full COA document
                 </a>
               )}

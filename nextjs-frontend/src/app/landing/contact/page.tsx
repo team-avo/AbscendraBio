@@ -36,14 +36,14 @@ export default function ContactPage() {
   return (
     <div className={`min-h-screen bg-white ${barlow.className}`}>
       {/* Hero */}
-      <div className="bg-[#070B14] text-white py-24 px-6">
+      <div className="bg-[#043061] text-white py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#4D7DF2] hover:underline mb-8 block">
+          <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#5A9ADA] hover:underline mb-8 block">
             ← Back to Home
           </Link>
           <div className="flex items-center gap-3 mb-6">
-            <span className="w-8 h-[1px] bg-[#4D7DF2]" />
-            <span className="text-[10px] font-bold tracking-[0.3em] text-[#4D7DF2] uppercase">Clinical Inquiry</span>
+            <span className="w-8 h-[1px] bg-[#5A9ADA]" />
+            <span className="text-[10px] font-bold tracking-[0.3em] text-[#5A9ADA] uppercase">Clinical Inquiry</span>
           </div>
           <h1 className="text-5xl font-black tracking-tight mb-4">Contact Us</h1>
           <p className="text-lg text-gray-300">Submit a clinical inquiry and our team will respond within 24 hours.</p>
@@ -59,11 +59,11 @@ export default function ContactPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-black text-[#070B14] mb-2">Message Sent</h2>
+            <h2 className="text-2xl font-black text-[#043061] mb-2">Message Sent</h2>
             <p className="text-gray-500 mb-8">We'll get back to you within 24 hours.</p>
             <button
               onClick={() => setStatus("idle")}
-              className="text-[#4D7DF2] font-bold text-sm hover:underline"
+              className="text-[#5A9ADA] font-bold text-sm hover:underline"
             >
               Send another message
             </button>
@@ -77,13 +77,13 @@ export default function ContactPage() {
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 placeholder="Dr. Jane Smith"
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#070B14] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4D7DF2]/20 focus:border-[#4D7DF2] transition-all"
+                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#043061] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5A9ADA]/20 focus:border-[#5A9ADA] transition-all"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
-                  Email <span className="text-[#4D7DF2]">*</span>
+                  Email <span className="text-[#5A9ADA]">*</span>
                 </label>
                 <input
                   type="email"
@@ -91,7 +91,7 @@ export default function ContactPage() {
                   value={form.email}
                   onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
                   placeholder="email@clinic.com"
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#070B14] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4D7DF2]/20 focus:border-[#4D7DF2] transition-all"
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#043061] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5A9ADA]/20 focus:border-[#5A9ADA] transition-all"
                 />
               </div>
               <div>
@@ -101,13 +101,13 @@ export default function ContactPage() {
                   value={form.phone}
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#070B14] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4D7DF2]/20 focus:border-[#4D7DF2] transition-all"
+                  className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#043061] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5A9ADA]/20 focus:border-[#5A9ADA] transition-all"
                 />
               </div>
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
-                Message <span className="text-[#4D7DF2]">*</span>
+                Message <span className="text-[#5A9ADA]">*</span>
               </label>
               <textarea
                 required
@@ -115,7 +115,7 @@ export default function ContactPage() {
                 onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
                 placeholder="Tell us about your practice and peptide research needs..."
                 rows={5}
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#070B14] placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-[#4D7DF2]/20 focus:border-[#4D7DF2] transition-all"
+                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-[#043061] placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-[#5A9ADA]/20 focus:border-[#5A9ADA] transition-all"
               />
             </div>
             {status === "error" && (
@@ -124,7 +124,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-3 bg-[#4D7DF2] hover:bg-[#3D6DE2] disabled:opacity-50 text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all cursor-pointer"
+              className="flex items-center gap-3 bg-[#5A9ADA] hover:bg-[#3f7fc4] disabled:opacity-50 text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all cursor-pointer"
             >
               {submitting ? "Sending..." : "Submit Inquiry"}
               <ArrowRight className="w-4 h-4" />

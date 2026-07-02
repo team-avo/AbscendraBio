@@ -311,9 +311,9 @@ export function AnalyticsContent() {
                 description="Enter the email address where you want to receive the filtered analytics report."
             />
             {/* Dark hero strip */}
-            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
                 <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                     {/* Title row + actions */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
@@ -323,7 +323,7 @@ export function AnalyticsContent() {
                                     <BarChart2 className="h-3 w-3" /> Analytics
                                 </span>
                             </div>
-                            <h1 className="text-xl font-black text-white tracking-tight">Analytics</h1>
+                            <h1 className="text-xl font-black text-[#043061] tracking-tight">Analytics</h1>
                             <p className="text-xs text-gray-500 mt-0.5">Sales performance and business intelligence</p>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">

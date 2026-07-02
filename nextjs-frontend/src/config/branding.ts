@@ -13,10 +13,10 @@ export const branding = {
 
   // Colors extracted from the actual logo (/public/logo.png)
   colors: {
-    navy: "#1B2D4F",
-    steelBlue: "#3A6FA0",
-    lightSteel: "#7EB3D8",
-    dark: "#070B14",
+    navy: "#043061",
+    steelBlue: "#5A9ADA",
+    lightSteel: "#a9cbeb",
+    dark: "#043061",
     darkCard: "#0D1320",
   },
 

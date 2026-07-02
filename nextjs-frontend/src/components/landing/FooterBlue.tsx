@@ -80,7 +80,7 @@ export function FooterBlue() {
   };
 
   return (
-    <footer className={`relative bg-[#4D7DF2] text-white overflow-hidden ${barlow.className}`}>
+    <footer className={`relative bg-[#5A9ADA] text-white overflow-hidden ${barlow.className}`}>
 
       {/* ── CTA Banner ── */}
       <div className="relative border-b border-white/[0.15]">
@@ -105,7 +105,7 @@ export function FooterBlue() {
               <Button
                 onClick={handleInquiry}
                 disabled={isSendingInquiry}
-                className="bg-white hover:bg-gray-100 text-[#4D7DF2] border-0 rounded-xl px-6 h-12 text-sm font-bold tracking-wide transition-all duration-200 shrink-0"
+                className="bg-white hover:bg-gray-100 text-[#5A9ADA] border-0 rounded-xl px-6 h-12 text-sm font-bold tracking-wide transition-all duration-200 shrink-0"
               >
                 {isSendingInquiry ? 'Sending...' : 'Get Started'}
                 <ArrowRight className="w-4 h-4 ml-2" />

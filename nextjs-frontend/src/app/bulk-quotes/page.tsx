@@ -225,11 +225,11 @@ export default function BulkQuotesPage() {
 
           {/* Dark Hero Strip */}
           <div
-            className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
+            className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
             style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
           >
             {/* Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="relative px-5 py-5 sm:px-7 sm:py-6 space-y-4">
               {/* Top row */}

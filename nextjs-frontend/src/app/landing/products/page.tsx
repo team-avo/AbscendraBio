@@ -163,19 +163,19 @@ export default function LandingProductsPage() {
     <div className={`force-light min-h-screen bg-[#F7F9FC] ${barlow.className}`}>
 
       {/* ── Hero Banner ── */}
-      <div className="relative bg-[#070B14] overflow-hidden">
+      <div className="relative bg-[#043061] overflow-hidden">
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
         {/* Blue glow */}
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#4D7DF2]/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#5A9ADA]/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-14">
           <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
 
             {/* Left — Title */}
             <div>
-              <span className="inline-block text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-[#4D7DF2] mb-5">
+              <span className="inline-block text-xs sm:text-sm font-black uppercase tracking-[0.3em] text-[#5A9ADA] mb-5">
                 Research Catalog
               </span>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none text-white">
@@ -193,8 +193,8 @@ export default function LandingProductsPage() {
             <div className="flex flex-row lg:flex-col gap-4 lg:gap-3 pb-1">
               {trustBadges.map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#4D7DF2]/10 border border-[#4D7DF2]/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-[#4D7DF2]" />
+                  <div className="w-10 h-10 rounded-lg bg-[#5A9ADA]/10 border border-[#5A9ADA]/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-[#5A9ADA]" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white leading-none">{label}</p>
@@ -207,14 +207,14 @@ export default function LandingProductsPage() {
         </div>
 
         {/* Bottom fade into page bg */}
-        <div className="h-8 bg-gradient-to-b from-[#070B14] to-[#F7F9FC]" />
+        <div className="h-8 bg-gradient-to-b from-[#043061] to-[#F7F9FC]" />
       </div>
 
       {/* ── Products Content ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <div className="w-12 h-12 rounded-full border-2 border-[#4D7DF2]/20 border-t-[#4D7DF2] animate-spin" />
+            <div className="w-12 h-12 rounded-full border-2 border-[#5A9ADA]/20 border-t-[#5A9ADA] animate-spin" />
             <p className="text-sm text-gray-400 font-medium">Loading products…</p>
           </div>
         ) : (
@@ -223,7 +223,7 @@ export default function LandingProductsPage() {
             {page < totalPages && (
               <div ref={sentinelRef} className="py-10 flex justify-center">
                 <div className="flex items-center gap-3 text-sm text-gray-400">
-                  <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-[#4D7DF2] animate-spin" />
+                  <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-[#5A9ADA] animate-spin" />
                   Loading more products…
                 </div>
               </div>

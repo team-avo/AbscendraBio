@@ -14,12 +14,12 @@ export default function BlueLandingLayout({ children }: { children: React.ReactN
         document.body.classList.remove("dark");
         document.body.setAttribute("data-theme", "light");
         document.body.style.backgroundColor = "#ffffff";
-        document.body.style.color = "#000000";
+        document.body.style.color = "#10233b";
       }
     } catch { }
   }, []);
   return (
-    <div className="force-light min-h-screen bg-white text-black landing-theme pt-20 sm:pt-28" suppressHydrationWarning>
+    <div className="force-light min-h-screen bg-white text-ink landing-theme pt-20 sm:pt-28" suppressHydrationWarning>
       {children}
     </div>
   );

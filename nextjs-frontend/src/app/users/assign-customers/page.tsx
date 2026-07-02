@@ -161,20 +161,20 @@ export default function AssignCustomersPage() {
                 <div className="space-y-0">
 
                     {/* ════════ DARK HERO STRIP ════════ */}
-                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
                         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div>
-                                    <h1 className="text-xl font-black text-white tracking-tight">Assign Customers</h1>
+                                    <h1 className="text-xl font-black text-[#043061] tracking-tight">Assign Customers</h1>
                                     <p className="text-xs text-gray-500 mt-0.5">Assign customers to sales representatives</p>
                                 </div>
-                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                                    <Users className="h-4 w-4 text-[#4D7DF2]" />
+                                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                                    <Users className="h-4 w-4 text-[#5A9ADA]" />
                                     <div>
                                         <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Customers</p>
-                                        <p className="text-base font-black text-white tabular-nums leading-tight">{pagination.total.toLocaleString()}</p>
+                                        <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{pagination.total.toLocaleString()}</p>
                                     </div>
                                 </div>
                             </div>
@@ -249,7 +249,7 @@ export default function AssignCustomersPage() {
                                 </div>
                                 <div className="flex gap-2 w-full lg:w-auto">
                                     <Button
-                                        className="w-full lg:w-auto h-10 sm:h-11 shadow-sm h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                                        className="w-full lg:w-auto h-10 sm:h-11 shadow-sm h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium"
                                         disabled={!selectedUserId || loading}
                                         onClick={handleSaveAssignments}
                                     >

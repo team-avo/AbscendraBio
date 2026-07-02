@@ -104,8 +104,8 @@ export function CreateSalesManagerDialog({ open, onOpenChange, onSuccess }: Crea
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] p-0 rounded-2xl overflow-hidden border-gray-200">
-        <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+        <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+          <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
           <div className="flex items-center gap-3 relative z-10">
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -153,7 +153,7 @@ export function CreateSalesManagerDialog({ open, onOpenChange, onSuccess }: Crea
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting || !selectedUserId} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+            <Button type="submit" disabled={isSubmitting || !selectedUserId} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

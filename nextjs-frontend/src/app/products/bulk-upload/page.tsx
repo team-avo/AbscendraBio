@@ -71,9 +71,9 @@ export default function ProductsBulkUploadPage() {
       <DashboardLayout>
         <div className="space-y-0 w-full max-w-[100vw] overflow-x-hidden">
           {/* ════════ DARK HERO STRIP ════════ */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
@@ -81,11 +81,11 @@ export default function ProductsBulkUploadPage() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Back to Products
                   </button>
-                  <h1 className="text-xl font-black text-white tracking-tight">Bulk Upload Products</h1>
+                  <h1 className="text-xl font-black text-[#043061] tracking-tight">Bulk Upload Products</h1>
                   <p className="text-xs text-gray-500 mt-0.5">Upload Excel file and preview data before importing</p>
                 </div>
-                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                  <Upload className="h-4 w-4 text-[#4D7DF2]" />
+                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                  <Upload className="h-4 w-4 text-[#5A9ADA]" />
                   <div>
                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Products</p>
                     <p className="text-xs font-bold text-white leading-tight mt-0.5">Bulk Import</p>
@@ -142,7 +142,7 @@ export default function ProductsBulkUploadPage() {
                     onViewRow={(r) => setViewRow(r)}
                   />
                   <div className="flex justify-end w-full">
-                    <Button onClick={handleSubmit} disabled={uploading} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                    <Button onClick={handleSubmit} disabled={uploading} className="w-full sm:w-auto bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                       {uploading ? (
                         <>
                           <LoadingSpinner size={16} className="mr-2" /> Uploading...

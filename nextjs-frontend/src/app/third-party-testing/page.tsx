@@ -128,7 +128,7 @@ const ThirdPartyTestingOverviewPage = () => {
       <DashboardLayout>
         <div className="space-y-5">
           {/* Dark hero strip */}
-          <div className="bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
+          <div className="bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden relative">
             {/* Grid texture */}
             <div
               className="absolute inset-0 opacity-[0.07]"

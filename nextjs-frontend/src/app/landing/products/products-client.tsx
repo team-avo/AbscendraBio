@@ -194,7 +194,7 @@ export default function ProductsClient({ products }: Props) {
   if (!isAuthenticated) {
     return (
       <div className={`${barlow.className} pt-6 pb-20`}>
-        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="relative bg-[#043061] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
           {/* Grid texture */}
           <div
             className="absolute inset-0 opacity-[0.03]"
@@ -204,17 +204,17 @@ export default function ProductsClient({ products }: Props) {
             }}
           />
           {/* Blue glow */}
-          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/10 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#3A6FA0]/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative z-10 px-6 py-14 sm:px-10 sm:py-20 text-center">
             <div className="w-16 h-16 rounded-2xl bg-white/[0.08] border border-white/[0.10] flex items-center justify-center mx-auto mb-6">
               <Lock className="w-7 h-7 text-white/80" />
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">
-              <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
-              <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">Verified Researchers Only</span>
-              <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+              <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">Verified Researchers Only</span>
+              <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight max-w-xl mx-auto">
               Sign in to browse the full catalog
@@ -225,7 +225,7 @@ export default function ProductsClient({ products }: Props) {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={() => openLoginModal?.()}
-                className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#070B14] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
+                className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#043061] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
               >
                 <LogIn className="w-4 h-4" />
                 Sign In
@@ -280,7 +280,7 @@ export default function ProductsClient({ products }: Props) {
               onClick={() => { setSelectedCategory(cat); updateParams({ cat }) }}
               className={`whitespace-nowrap px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-200 shrink-0 ${
                 selectedCategory === cat
-                  ? 'bg-[#070B14] text-white'
+                  ? 'bg-[#043061] text-white'
                   : 'bg-white text-gray-400 hover:text-gray-700 border border-gray-200'
               }`}
             >
@@ -304,17 +304,17 @@ export default function ProductsClient({ products }: Props) {
       {/* ── Results Bar ── */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-[#4D7DF2]/10 flex items-center justify-center">
-            <FlaskConical className="w-3 h-3 text-[#4D7DF2]" />
+          <div className="w-6 h-6 rounded-lg bg-[#5A9ADA]/10 flex items-center justify-center">
+            <FlaskConical className="w-3 h-3 text-[#5A9ADA]" />
           </div>
-          <span className="text-sm font-black text-[#070B14]">{filtered.length}</span>
+          <span className="text-sm font-black text-[#043061]">{filtered.length}</span>
           <span className="text-sm text-gray-400 font-medium">
             {filtered.length === 1 ? 'product' : 'products'}
             {(searchTerm || selectedCategory !== 'All' || inStockOnly) ? ' found' : ''}
           </span>
         </div>
         {(searchTerm || selectedCategory !== 'All' || inStockOnly) && (
-          <button onClick={clearAll} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#070B14] transition-colors px-3 py-1.5 rounded-full hover:bg-gray-100">
+          <button onClick={clearAll} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-[#043061] transition-colors px-3 py-1.5 rounded-full hover:bg-gray-100">
             Clear filters
           </button>
         )}
@@ -342,11 +342,11 @@ export default function ProductsClient({ products }: Props) {
           <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <FlaskConical className="w-6 h-6 text-gray-300" />
           </div>
-          <h3 className="text-base font-black text-[#070B14] mb-2">No products found</h3>
+          <h3 className="text-base font-black text-[#043061] mb-2">No products found</h3>
           <p className="text-sm text-gray-400 mb-6">Try adjusting your search or filters.</p>
           <Button
             onClick={clearAll}
-            className="bg-[#070B14] hover:bg-[#1a2540] text-white border-0 rounded-2xl h-11 px-8 font-black uppercase tracking-widest text-[10px]"
+            className="bg-[#043061] hover:bg-[#0b4f96] text-white border-0 rounded-2xl h-11 px-8 font-black uppercase tracking-widest text-[10px]"
           >
             Clear All Filters
           </Button>
@@ -375,7 +375,7 @@ function FiltersPopover({
       <PopoverTrigger asChild>
         <button className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
           activeFilterCount > 0
-            ? 'bg-[#070B14] text-white border-[#070B14]'
+            ? 'bg-[#043061] text-white border-[#043061]'
             : 'bg-white text-gray-500 border-gray-200 hover:text-gray-800 hover:border-gray-300'
         }`}>
           <SlidersHorizontal className="w-3 h-3" />
@@ -395,9 +395,9 @@ function FiltersPopover({
       >
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-widest text-[#070B14]">Filters</h3>
+            <h3 className="text-xs font-black uppercase tracking-widest text-[#043061]">Filters</h3>
             {activeFilterCount > 0 && (
-              <button onClick={onClear} className="text-[10px] font-bold text-gray-400 hover:text-[#070B14] transition-colors">
+              <button onClick={onClear} className="text-[10px] font-bold text-gray-400 hover:text-[#043061] transition-colors">
                 Reset all
               </button>
             )}
@@ -416,7 +416,7 @@ function FiltersPopover({
               onValueChange={(v) => onPriceChange(v as [number, number])}
               max={maxPrice}
               step={10}
-              className="[&_[data-slot=slider-range]]:bg-[#4D7DF2] [&_[data-slot=slider-thumb]]:border-[#4D7DF2] [&_[data-slot=slider-thumb]]:bg-white"
+              className="[&_[data-slot=slider-range]]:bg-[#5A9ADA] [&_[data-slot=slider-thumb]]:border-[#5A9ADA] [&_[data-slot=slider-thumb]]:bg-white"
             />
           </div>
 
@@ -428,7 +428,7 @@ function FiltersPopover({
             </div>
             <button
               onClick={() => onStockChange(!inStockOnly)}
-              className={`w-9 h-5 rounded-full transition-all duration-200 relative ${inStockOnly ? 'bg-[#4D7DF2]' : 'bg-gray-200'}`}
+              className={`w-9 h-5 rounded-full transition-all duration-200 relative ${inStockOnly ? 'bg-[#5A9ADA]' : 'bg-gray-200'}`}
             >
               <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${inStockOnly ? 'left-[18px]' : 'left-0.5'}`} />
             </button>

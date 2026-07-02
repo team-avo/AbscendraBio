@@ -312,15 +312,15 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                             "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                             "w-full text-left",
                             level > 0 && "ml-6 text-xs",
-                            isActive && !isChildActive && "bg-[#3A6FA0]/15 text-white border-l-2 border-[#3A6FA0]",
-                            isChildActive && "text-white/90 font-semibold",
-                            !isActive && "text-slate-400 hover:bg-white/5 hover:text-white"
+                            isActive && !isChildActive && "bg-[#043061] text-white",
+                            isChildActive && "text-[#043061] font-semibold",
+                            !isActive && "text-[#6b7d93] hover:bg-white hover:text-[#043061]"
                         )}
                         aria-current={isActive ? "page" : undefined}
                     >
                         <item.icon className={cn(
                             "h-[18px] w-[18px] flex-shrink-0",
-                            isActive && !isChildActive ? "text-[#3A6FA0]" : "text-current opacity-70"
+                            isActive && !isChildActive ? "text-[#5A9ADA]" : "text-current opacity-70"
                         )} />
                         <span className="flex-1 truncate">{item.title}</span>
                         {item.badge && (
@@ -333,7 +333,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 ml-1 text-white/30 hover:text-white/60 hover:bg-transparent flex-shrink-0"
+                            className="h-8 w-8 p-0 ml-1 text-[#6b7d93] hover:text-[#043061] hover:bg-transparent flex-shrink-0"
                             onClick={() => toggleExpanded(item.title)}
                             tabIndex={-1}
                         >
@@ -346,7 +346,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                     )}
                 </div>
                 {hasChildren && isExpanded && (
-                    <div className="ml-4 pl-4 border-l border-white/10 space-y-0.5 mt-0.5">
+                    <div className="ml-4 pl-4 border-l border-line space-y-0.5 mt-0.5">
                         {item.children?.map(child => renderNavItem(child, level + 1))}
                     </div>
                 )}
@@ -360,22 +360,22 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
             open ? "translate-x-0" : "-translate-x-full",
             "lg:translate-x-0"
         )}>
-            <div className="flex h-full flex-col bg-[#0F1A2E]">
+            <div className="flex h-full flex-col bg-mist border-r border-line">
                 {/* Logo Header */}
-                <div className="px-6 py-5 flex items-center justify-between border-b border-white/10 flex-shrink-0">
+                <div className="px-6 py-5 flex items-center justify-between border-b border-line flex-shrink-0">
                     <Link href="/">
                         <Image
                             src="/logo.png"
                             alt="Ascendra Bio"
                             width={130}
                             height={36}
-                            className="h-8 w-auto brightness-0 invert"
+                            className="h-8 w-auto"
                         />
                     </Link>
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="lg:hidden h-8 w-8 p-0 text-white/50 hover:text-white hover:bg-white/10 rounded-lg"
+                        className="lg:hidden h-8 w-8 p-0 text-[#6b7d93] hover:text-[#043061] hover:bg-mist-2 rounded-lg"
                         onClick={() => onOpenChange(false)}
                     >
                         <X className="h-5 w-5" />
@@ -385,11 +385,11 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                 {/* Search */}
                 <div className="px-4 pt-4 pb-2 flex-shrink-0">
                     <div className="relative">
-                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7d93]" />
                         <input
                             type="text"
                             placeholder="Search..."
-                            className="w-full bg-white/[0.08] border border-white/10 rounded-lg py-2.5 pl-9 pr-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#3A6FA0]/60 transition-all"
+                            className="w-full bg-white border border-line rounded-lg py-2.5 pl-9 pr-3 text-xs text-ink placeholder:text-[#6b7d93] focus:outline-none focus:border-[#5A9ADA] transition-all"
                         />
                     </div>
                 </div>
@@ -426,22 +426,22 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                 </div>
 
                 {/* User Footer */}
-                <div className="p-4 border-t border-white/10 flex-shrink-0">
+                <div className="p-4 border-t border-line flex-shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#043061] to-[#5A9ADA] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                             {user?.email?.[0].toUpperCase() || 'A'}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-white truncate">
+                            <p className="text-xs font-semibold text-[#043061] truncate">
                                 {user?.role === 'CUSTOMER' ? 'Account' : (user?.role?.replace(/_/g, ' ') || 'Admin')}
                             </p>
-                            <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
+                            <p className="text-[10px] text-[#6b7d93] truncate">{user?.email}</p>
                         </div>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => logout()}
-                            className="h-8 w-8 p-0 rounded-lg hover:bg-red-500/20 hover:text-red-400 text-white/40 transition-colors"
+                            className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 hover:text-red-600 text-[#6b7d93] transition-colors"
                         >
                             <LogOut className="h-4 w-4" />
                         </Button>

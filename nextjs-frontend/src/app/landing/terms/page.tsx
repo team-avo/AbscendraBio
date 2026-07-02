@@ -9,15 +9,15 @@ export default function TermsPage() {
   return (
     <div className={`min-h-screen bg-white ${barlow.className}`}>
       <div className="max-w-3xl mx-auto px-6 py-20">
-        <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#4D7DF2] hover:underline mb-8 block">
+        <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#5A9ADA] hover:underline mb-8 block">
           ← Back to Home
         </Link>
-        <h1 className="text-4xl font-black tracking-tight text-[#070B14] mb-2">Terms of Service</h1>
+        <h1 className="text-4xl font-black tracking-tight text-[#043061] mb-2">Terms of Service</h1>
         <p className="text-sm text-gray-400 mb-10">Last updated: June 28, 2026</p>
 
         <div className="prose prose-sm max-w-none text-gray-700 space-y-8">
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">1. Acceptance of Terms</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">1. Acceptance of Terms</h2>
             <p className="leading-relaxed">
               By accessing or using the Ascendra Bio Sciences website and purchasing our products, you agree to be bound
               by these Terms of Service. If you do not agree to these terms, please do not use our services.
@@ -25,8 +25,8 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">2. Professional Use Only</h2>
-            <p className="leading-relaxed font-semibold text-[#070B14]">
+            <h2 className="text-lg font-bold text-[#043061] mb-3">2. Professional Use Only</h2>
+            <p className="leading-relaxed font-semibold text-[#043061]">
               ALL PRODUCTS SOLD BY ASCENDRA BIO SCIENCES ARE INTENDED FOR PROFESSIONAL USE ONLY.
             </p>
             <p className="leading-relaxed mt-2">
@@ -38,7 +38,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">3. Account Registration</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">3. Account Registration</h2>
             <p className="leading-relaxed">
               Access to purchase products requires account registration and verification of professional credentials.
               You are responsible for maintaining the confidentiality of your account credentials and for all activities
@@ -47,7 +47,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">4. Orders and Payment</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">4. Orders and Payment</h2>
             <p className="leading-relaxed">
               All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order.
               Prices are subject to change without notice. Payment is due at time of order. We accept ACH/bank transfer,
@@ -56,7 +56,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">5. Shipping and Returns</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">5. Shipping and Returns</h2>
             <p className="leading-relaxed">
               We aim to process and ship all orders within 1–2 business days. Due to the nature of research peptides and
               biological products, all sales are final. Returns are only accepted for products damaged during shipping.
@@ -65,7 +65,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">6. SMS / Text Message Program</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">6. SMS / Text Message Program</h2>
             <p className="leading-relaxed">
               Ascendra Bio Sciences offers an optional text (SMS) messaging program. If you opt in, we may send two
               types of messages to the mobile number you provide: account and order messages (such as order
@@ -77,17 +77,17 @@ export default function TermsPage() {
               Message frequency varies. Message and data rates may apply. You can cancel the SMS service at any time by
               replying <strong>STOP</strong> to any message; after you send STOP we will stop sending you text messages.
               For help, reply <strong>HELP</strong> or contact us at{" "}
-              <a href="mailto:support@ascendrabio.com" className="text-[#4D7DF2] hover:underline">support@ascendrabio.com</a>.
+              <a href="mailto:support@ascendrabio.com" className="text-[#5A9ADA] hover:underline">support@ascendrabio.com</a>.
             </p>
             <p className="leading-relaxed mt-2">
               Carriers are not liable for delayed or undelivered messages. For details on how we handle the information
               associated with this program, see our{" "}
-              <Link href="/landing/privacy" className="text-[#4D7DF2] hover:underline">Privacy Policy</Link>.
+              <Link href="/landing/privacy" className="text-[#5A9ADA] hover:underline">Privacy Policy</Link>.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">7. Intellectual Property</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">7. Intellectual Property</h2>
             <p className="leading-relaxed">
               All content on this website, including text, images, graphics, and logos, is the property of Ascendra Bio
               Sciences and is protected by applicable intellectual property laws. You may not reproduce, distribute, or
@@ -96,7 +96,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">8. Limitation of Liability</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">8. Limitation of Liability</h2>
             <p className="leading-relaxed">
               Ascendra Bio Sciences shall not be liable for any indirect, incidental, special, or consequential damages
               arising from the use or inability to use our products or services. Our maximum liability is limited to the
@@ -105,10 +105,10 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#070B14] mb-3">9. Contact</h2>
+            <h2 className="text-lg font-bold text-[#043061] mb-3">9. Contact</h2>
             <p className="leading-relaxed">
               Questions about these Terms of Service may be directed to{" "}
-              <a href="mailto:legal@ascendrabio.com" className="text-[#4D7DF2] hover:underline">
+              <a href="mailto:legal@ascendrabio.com" className="text-[#5A9ADA] hover:underline">
                 legal@ascendrabio.com
               </a>
               .

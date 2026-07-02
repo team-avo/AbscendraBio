@@ -17,14 +17,14 @@ export default function AboutPage() {
   return (
     <div className={`min-h-screen bg-white ${barlow.className}`}>
       {/* Hero */}
-      <div className="bg-[#070B14] text-white py-24 px-6">
+      <div className="bg-[#043061] text-white py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#4D7DF2] hover:underline mb-8 block">
+          <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-[#5A9ADA] hover:underline mb-8 block">
             ← Back to Home
           </Link>
           <div className="flex items-center gap-3 mb-6">
-            <span className="w-8 h-[1px] bg-[#4D7DF2]" />
-            <span className="text-[10px] font-bold tracking-[0.3em] text-[#4D7DF2] uppercase">Our Mission</span>
+            <span className="w-8 h-[1px] bg-[#5A9ADA]" />
+            <span className="text-[10px] font-bold tracking-[0.3em] text-[#5A9ADA] uppercase">Our Mission</span>
           </div>
           <h1 className="text-5xl font-black tracking-tight mb-6">About Ascendra Bio</h1>
           <p className="text-lg text-gray-300 leading-relaxed max-w-2xl">
@@ -37,7 +37,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-black text-[#070B14] tracking-tight mb-4">Who We Are</h2>
+        <h2 className="text-2xl font-black text-[#043061] tracking-tight mb-4">Who We Are</h2>
         <p className="text-gray-600 leading-relaxed mb-6">
           Founded by researchers for researchers, Ascendra Bio Sciences was built on a simple principle: the scientific
           community deserves access to the purest, most reliable research compounds available. We partner with GMP-certified
@@ -53,14 +53,14 @@ export default function AboutPage() {
       {/* Pillars */}
       <div className="bg-[#F9FBFF] py-16 px-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-black text-[#070B14] tracking-tight mb-10 text-center">Our Standards</h2>
+          <h2 className="text-2xl font-black text-[#043061] tracking-tight mb-10 text-center">Our Standards</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {pillars.map((p, i) => (
               <div key={i} className="bg-white border border-gray-100 rounded-2xl p-7">
-                <div className="mb-4 w-11 h-11 rounded-xl bg-[#4D7DF2]/5 border border-[#4D7DF2]/10 flex items-center justify-center">
-                  <p.icon className="w-5 h-5 text-[#4D7DF2]" strokeWidth={1.5} />
+                <div className="mb-4 w-11 h-11 rounded-xl bg-[#5A9ADA]/5 border border-[#5A9ADA]/10 flex items-center justify-center">
+                  <p.icon className="w-5 h-5 text-[#5A9ADA]" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-base font-bold text-[#070B14] mb-2">{p.title}</h3>
+                <h3 className="text-base font-bold text-[#043061] mb-2">{p.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{p.desc}</p>
               </div>
             ))}
@@ -70,11 +70,11 @@ export default function AboutPage() {
 
       {/* CTA */}
       <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-        <h2 className="text-2xl font-black text-[#070B14] mb-4">Ready to Partner With Us?</h2>
+        <h2 className="text-2xl font-black text-[#043061] mb-4">Ready to Partner With Us?</h2>
         <p className="text-gray-500 mb-8">Contact our team to learn more about our products and institutional pricing.</p>
         <Link
           href="/landing/contact"
-          className="inline-flex items-center gap-2 bg-[#4D7DF2] hover:bg-[#3D6DE2] text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all"
+          className="inline-flex items-center gap-2 bg-[#5A9ADA] hover:bg-[#3f7fc4] text-white px-8 py-4 rounded-xl text-sm font-bold tracking-wide transition-all"
         >
           Get in Touch
         </Link>

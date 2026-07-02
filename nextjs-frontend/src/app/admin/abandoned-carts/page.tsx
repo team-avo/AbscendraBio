@@ -132,22 +132,22 @@ export default function AbandonedCartsPage() {
                 <div className="space-y-0">
 
                     {/* ════════ DARK HERO STRIP ════════ */}
-                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
                         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div>
-                                    <h1 className="text-xl font-black text-white tracking-tight">Abandoned Carts</h1>
+                                    <h1 className="text-xl font-black text-[#043061] tracking-tight">Abandoned Carts</h1>
                                     <p className="text-xs text-gray-500 mt-0.5">Recover lost sales by notifying inactive customers</p>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
                                         <ShoppingCart className="h-4 w-4 text-orange-400" />
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Carts</p>
-                                            <p className="text-base font-black text-white tabular-nums leading-tight">{carts.length.toLocaleString()}</p>
+                                            <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{carts.length.toLocaleString()}</p>
                                         </div>
                                     </div>
                                     <Button
@@ -161,7 +161,7 @@ export default function AbandonedCartsPage() {
                                     <Button
                                         onClick={handleSendAllClick}
                                         disabled={loading || sendingAll || carts.length === 0}
-                                        className="h-9 px-5 bg-white text-[#070B14] hover:bg-gray-100 rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-50"
+                                        className="h-9 px-5 bg-[#043061] text-white hover:bg-[#0b4f96] rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-50"
                                     >
                                         {sendingAll ? <LoadingSpinner size={14} className="mr-1.5" /> : <Mail className="h-3.5 w-3.5 mr-1.5" />}
                                         Notify All
@@ -176,7 +176,7 @@ export default function AbandonedCartsPage() {
                         <div className="overflow-x-auto">
                             {loading ? (
                                 <div className="flex justify-center items-center py-16">
-                                    <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                                    <div className="w-8 h-8 border-2 border-[#5A9ADA]/30 border-t-[#5A9ADA] rounded-full animate-spin" />
                                 </div>
                             ) : carts.length === 0 ? (
                                 <div className="text-center py-16 text-gray-400 text-sm">No abandoned carts found for this time window.</div>
@@ -218,7 +218,7 @@ export default function AbandonedCartsPage() {
                                                         size="sm"
                                                         onClick={() => handleSendEmailClick(cart)}
                                                         disabled={sendingEmailId === cart.id}
-                                                        className="h-8 px-3 bg-[#070B14] hover:bg-[#1a2540] text-white rounded-xl text-xs font-bold"
+                                                        className="h-8 px-3 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-xs font-bold"
                                                     >
                                                         {sendingEmailId === cart.id ? (
                                                             <LoadingSpinner size={12} className="mr-1.5" />

@@ -220,7 +220,7 @@ export function DashboardHeader() {
                 </Button>
 
                 {/* User avatar */}
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white font-semibold text-xs shrink-0 cursor-pointer">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#043061] to-[#5A9ADA] flex items-center justify-center text-white font-semibold text-xs shrink-0 cursor-pointer">
                     {user?.email?.[0].toUpperCase() ?? "A"}
                 </div>
             </div>

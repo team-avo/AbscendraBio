@@ -1636,8 +1636,8 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
         )}>
 
           {/* ── DARK HEADER ── */}
-          <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+            <div className="absolute -top-8 -right-8 w-32 h-32 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
             <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
             <div className="relative z-10 flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -1673,7 +1673,7 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
                     >
                       <div className={cn(
                         "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all",
-                        isActive ? "bg-[#1B2D4F] text-white" :
+                        isActive ? "bg-[#043061] text-white" :
                         isDone ? "bg-emerald-500 text-white" :
                         "bg-slate-100 text-slate-400"
                       )}>
@@ -1681,7 +1681,7 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
                       </div>
                       <span className={cn(
                         "text-xs font-semibold whitespace-nowrap",
-                        isActive ? "text-[#1B2D4F]" : isDone ? "text-emerald-600" : "text-slate-400"
+                        isActive ? "text-[#043061]" : isDone ? "text-emerald-600" : "text-slate-400"
                       )}>{label}</span>
                     </button>
                     {i < 2 && (
@@ -2768,7 +2768,7 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
                     <Button
                       onClick={() => setStep(2)}
                       disabled={!canProceedToStep2}
-                      className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
+                      className="bg-[#043061] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
                     >
                       Next: Add Products →
                     </Button>
@@ -2777,13 +2777,13 @@ export function CreateOrderDialog({ open, onOpenChange, onSuccess }: CreateOrder
                     <Button
                       onClick={() => setStep(3)}
                       disabled={!canProceedToStep3}
-                      className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
+                      className="bg-[#043061] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 disabled:opacity-40"
                     >
                       Review Order ({orderItems.length} items) →
                     </Button>
                   )}
                   {step === 3 && (
-                    <Button onClick={handleSubmit} disabled={loading} className="bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 font-semibold disabled:opacity-40">
+                    <Button onClick={handleSubmit} disabled={loading} className="bg-[#043061] hover:bg-[#16243f] text-white rounded-xl px-6 text-sm h-9 font-semibold disabled:opacity-40">
                       {loading ? 'Creating...' : '✓ Confirm & Create Order'}
                     </Button>
                   )}

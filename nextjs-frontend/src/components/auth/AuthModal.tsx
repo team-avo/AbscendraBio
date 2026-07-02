@@ -40,7 +40,7 @@ function SuccessScreen() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="text-lg font-black text-[#070B14] tracking-tight"
+          className="text-lg font-black text-[#043061] tracking-tight"
         >
           Signed in successfully
         </motion.p>
@@ -93,13 +93,13 @@ export function AuthModal({ isOpen, onOpenChange, defaultView = 'customer' }: Au
         <div className="flex h-full" style={{ maxHeight: '90vh' }}>
 
           {/* ── Left Dark Panel ── */}
-          <div className="hidden md:flex w-[38%] bg-[#070B14] flex-col justify-between p-10 relative overflow-y-auto shrink-0">
+          <div className="hidden md:flex w-[38%] bg-brand-gradient flex-col justify-between p-10 relative overflow-y-auto shrink-0">
             {/* Grid texture */}
             <div className="absolute inset-0 opacity-[0.04]"
               style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.8) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
             {/* Blue glow */}
-            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#4D7DF2]/20 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-[#4D7DF2]/10 rounded-full blur-[60px] pointer-events-none" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#5A9ADA]/20 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-[#5A9ADA]/10 rounded-full blur-[60px] pointer-events-none" />
 
             <div className="relative z-10">
               <Image src="/logo.png" alt="Ascendra Bio" width={140} height={32} className="h-7 w-auto brightness-0 invert" priority />
@@ -119,8 +119,8 @@ export function AuthModal({ isOpen, onOpenChange, defaultView = 'customer' }: Au
               <div className="space-y-3">
                 {trustPoints.map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#4D7DF2]/15 border border-[#4D7DF2]/20 flex items-center justify-center shrink-0">
-                      <Icon className="w-3.5 h-3.5 text-[#4D7DF2]" />
+                    <div className="w-7 h-7 rounded-lg bg-[#5A9ADA]/15 border border-[#5A9ADA]/20 flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5 text-[#5A9ADA]" />
                     </div>
                     <span className="text-xs text-gray-400 font-medium">{text}</span>
                   </div>

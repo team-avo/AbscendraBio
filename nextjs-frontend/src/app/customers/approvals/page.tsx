@@ -208,22 +208,22 @@ export default function CustomerApprovalsPage() {
         <div className="space-y-0">
 
           {/* ════════ DARK HERO STRIP ════════ */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                  <h1 className="text-xl font-black text-white tracking-tight">Customer Approvals</h1>
+                  <h1 className="text-xl font-black text-[#043061] tracking-tight">Customer Approvals</h1>
                   <p className="text-xs text-gray-500 mt-0.5">Review and approve new customer registrations</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                  <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
                     <Clock className="h-4 w-4 text-amber-400" />
                     <div>
                       <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Pending</p>
-                      <p className="text-base font-black text-white tabular-nums leading-tight">{stats.pending.toLocaleString()}</p>
+                      <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{stats.pending.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export default function CustomerApprovalsPage() {
             <div className="overflow-x-auto">
               {loading ? (
                 <div className="flex justify-center items-center py-16">
-                  <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                  <div className="w-8 h-8 border-2 border-[#5A9ADA]/30 border-t-[#5A9ADA] rounded-full animate-spin" />
                 </div>
               ) : filteredCustomers.length === 0 ? (
                 <div className="text-center py-16 text-gray-400 text-sm">No customers found matching the criteria.</div>
@@ -305,7 +305,7 @@ export default function CustomerApprovalsPage() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9 rounded-xl">
-                              <AvatarFallback className="rounded-xl bg-[#070B14] text-white text-xs font-black">
+                              <AvatarFallback className="rounded-xl bg-[#043061] text-white text-xs font-black">
                                 {getInitials(customer.firstName, customer.lastName)}
                               </AvatarFallback>
                             </Avatar>
@@ -406,13 +406,13 @@ export default function CustomerApprovalsPage() {
             <Dialog open={!!selectedCustomer} onOpenChange={(o) => !o && setSelectedCustomer(null)}>
               <DialogContent className="max-w-lg rounded-2xl">
                 <DialogHeader>
-                  <DialogTitle className="font-black text-[#070B14]">Customer Details</DialogTitle>
+                  <DialogTitle className="font-black text-[#043061]">Customer Details</DialogTitle>
                   <DialogDescription>Review registration information</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 mt-2">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-14 w-14 rounded-2xl">
-                      <AvatarFallback className="rounded-2xl bg-[#070B14] text-white text-lg font-black">
+                      <AvatarFallback className="rounded-2xl bg-[#043061] text-white text-lg font-black">
                         {getInitials(selectedCustomer.firstName, selectedCustomer.lastName)}
                       </AvatarFallback>
                     </Avatar>

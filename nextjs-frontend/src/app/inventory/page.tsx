@@ -274,21 +274,21 @@ export default function InventoryPage() {
             <DashboardLayout>
                 <div className="space-y-0">
                     {/* Dark hero strip */}
-                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
                         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                             {/* Title row + stat chip */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                 <div>
-                                    <h1 className="text-xl font-black text-white tracking-tight">Inventory</h1>
+                                    <h1 className="text-xl font-black text-[#043061] tracking-tight">Inventory</h1>
                                     <p className="text-xs text-gray-500 mt-0.5">Stock levels, variants, and reorder management</p>
                                 </div>
-                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
                                     <BarChart2 className="h-4 w-4 text-blue-400" />
                                     <div>
                                         <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Total SKUs</p>
-                                        <p className="text-base font-black text-white tabular-nums leading-tight">{totalCounts.all.toLocaleString()}</p>
+                                        <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{totalCounts.all.toLocaleString()}</p>
                                     </div>
                                 </div>
                             </div>
@@ -312,7 +312,7 @@ export default function InventoryPage() {
                                                 key={pill.key}
                                                 onClick={() => setActiveFilter(pill.key as FilterTab)}
                                                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                                                    pill.key === 'all' && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                                                    pill.key === 'all' && isActive ? 'bg-[#043061] text-white ring-1 ring-[#043061]/20'
                                                     : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
                                                     : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
                                                 }`}

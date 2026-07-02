@@ -179,8 +179,8 @@ export function SalesRepManagerDialogs({
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent className="p-0 rounded-2xl overflow-hidden border-gray-200">
                     {/* Dark header */}
-                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                         <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
                         <div className="flex items-center gap-3 relative z-10">
                             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -238,7 +238,7 @@ export function SalesRepManagerDialogs({
                         </div>
                         <DialogFooter className="mt-6">
                             <Button variant="outline" className="rounded-xl" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                            <Button onClick={handleCreate} disabled={loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                            <Button onClick={handleCreate} disabled={loading} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                 {loading ? 'Creating...' : 'Create Sales Rep'}
                             </Button>
                         </DialogFooter>
@@ -250,8 +250,8 @@ export function SalesRepManagerDialogs({
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent className="p-0 rounded-2xl overflow-hidden border-gray-200">
                     {/* Dark header */}
-                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                         <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
                         <div className="flex items-center gap-3 relative z-10">
                             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -287,7 +287,7 @@ export function SalesRepManagerDialogs({
                         </div>
                         <DialogFooter className="mt-6">
                             <Button variant="outline" className="rounded-xl" onClick={() => setIsEditOpen(false)}>Cancel</Button>
-                            <Button onClick={handleEdit} disabled={loading} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                            <Button onClick={handleEdit} disabled={loading} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                 {loading ? 'Saving...' : 'Save Changes'}
                             </Button>
                         </DialogFooter>
@@ -299,8 +299,8 @@ export function SalesRepManagerDialogs({
             <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
                 <DialogContent className="p-0 rounded-2xl overflow-hidden border-gray-200">
                     {/* Dark header */}
-                    <div className="bg-[#1B2D4F] px-6 py-5 relative overflow-hidden flex-shrink-0">
-                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#3A6FA0]/25 rounded-full blur-2xl pointer-events-none" />
+                    <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
+                        <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                         <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
                         <div className="flex items-center gap-3 relative z-10">
                             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -346,7 +346,7 @@ export function SalesRepManagerDialogs({
                         </div>
                         <DialogFooter className="mt-6">
                             <Button variant="outline" className="rounded-xl" onClick={() => setIsPasswordOpen(false)}>Cancel</Button>
-                            <Button onClick={handleChangePassword} disabled={loading || !newPassword} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                            <Button onClick={handleChangePassword} disabled={loading || !newPassword} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                 {loading ? 'Updating...' : 'Update Password'}
                             </Button>
                         </DialogFooter>

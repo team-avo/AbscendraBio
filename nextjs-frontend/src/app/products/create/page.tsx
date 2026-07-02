@@ -731,9 +731,9 @@ export default function CreateProductPage() {
       <DashboardLayout>
         <div className="space-y-0">
           {/* ════════ DARK HERO STRIP ════════ */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
@@ -741,11 +741,11 @@ export default function CreateProductPage() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Back to Products
                   </button>
-                  <h1 className="text-xl font-black text-white tracking-tight">Create New Product</h1>
+                  <h1 className="text-xl font-black text-[#043061] tracking-tight">Create New Product</h1>
                   <p className="text-xs text-gray-500 mt-0.5">Add a new product to your catalog with variants and details</p>
                 </div>
-                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                  <Package className="h-4 w-4 text-[#4D7DF2]" />
+                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                  <Package className="h-4 w-4 text-[#5A9ADA]" />
                   <div>
                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Products</p>
                     <p className="text-xs font-bold text-white leading-tight mt-0.5">New Product</p>

@@ -1,44 +1,75 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+
+type Particle = {
+  id: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  duration: number;
+  delay: number;
+};
 
 export function HeroBackground() {
+  // Generate the random particle motion values on the client only, after mount.
+  // The server and the first client render both output no particles, so the
+  // markup matches and there is no React hydration mismatch. The animated
+  // particles then fade in once the effect runs.
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 8 }, (_, i) => ({
+        id: i,
+        startX: Math.random() * 100,
+        startY: Math.random() * 100,
+        endX: Math.random() * 100,
+        endY: Math.random() * 100,
+        duration: 25 + Math.random() * 15,
+        delay: i * 1.5,
+      }))
+    );
+  }, []);
+
   return (
     <div className="absolute inset-0 z-0 pointer-events-none bg-[#F9FBFF]">
       {/* Moving Gradient Video-Effect */}
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           backgroundPosition: ["0% 0%", "100% 100%"]
         }}
         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         className="absolute inset-0 opacity-40 blur-[120px]"
-        style={{ 
-          background: "radial-gradient(circle at 10% 20%, #4D7DF2 0%, transparent 50%), radial-gradient(circle at 90% 80%, #7EB3D8 0%, transparent 50%)",
+        style={{
+          background: "radial-gradient(circle at 10% 20%, #5A9ADA 0%, transparent 50%), radial-gradient(circle at 90% 80%, #a9cbeb 0%, transparent 50%)",
           backgroundSize: "150% 150%"
         }}
       />
 
-      {/* Dynamic Molecular Particles */}
-      {[...Array(8)].map((_, i) => (
+      {/* Dynamic Molecular Particles (client-only to avoid hydration mismatch) */}
+      {particles.map((p) => (
         <motion.div
-          key={i}
-          initial={{ 
-            x: Math.random() * 100 + "%", 
-            y: Math.random() * 100 + "%",
-            opacity: 0 
+          key={p.id}
+          initial={{
+            x: `${p.startX}%`,
+            y: `${p.startY}%`,
+            opacity: 0
           }}
-          animate={{ 
-            x: [null, Math.random() * 100 + "%"],
-            y: [null, Math.random() * 100 + "%"],
+          animate={{
+            x: [null, `${p.endX}%`],
+            y: [null, `${p.endY}%`],
             opacity: [0, 0.2, 0],
             rotate: [0, 360],
             scale: [0.5, 1.5, 0.5]
           }}
-          transition={{ 
-            duration: 25 + Math.random() * 15, 
-            repeat: Infinity, 
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
             ease: "linear",
-            delay: i * 1.5
+            delay: p.delay
           }}
           className="absolute w-32 h-32 sm:w-64 sm:h-64"
         >

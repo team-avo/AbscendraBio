@@ -186,11 +186,11 @@ export default function SalesUsersPage() {
 
         {/* Dark Hero Strip */}
         <div
-          className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
+          className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden"
           style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
         >
           {/* Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative px-5 py-5 sm:px-7 sm:py-6 space-y-4">
             {/* Top row */}
@@ -210,7 +210,7 @@ export default function SalesUsersPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-white text-[#070B14] border-white hover:bg-white/90 font-semibold rounded-xl h-9 px-4 text-sm"
+                    className="bg-[#043061] text-white border-white hover:bg-white/90 font-semibold rounded-xl h-9 px-4 text-sm"
                     onClick={() => window.location.href = `/analytics/person?salesRepId=${selectedRep.id}`}
                   >
                     View Analytics
@@ -295,7 +295,7 @@ export default function SalesUsersPage() {
                 <Button
                   disabled={!selectedUserId || loading}
                   onClick={handleSaveAssignments}
-                  className="w-full lg:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white h-10 sm:h-11 rounded-xl shadow-sm"
+                  className="w-full lg:w-auto bg-[#043061] hover:bg-[#0b4f96] text-white h-10 sm:h-11 rounded-xl shadow-sm"
                 >
                   Save Assignments
                 </Button>

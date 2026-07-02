@@ -407,22 +407,22 @@ export default function AccountHomePage() {
     <ProtectedRoute requiredRoles={["CUSTOMER"]}>
       <div className="space-y-8">
         {/* Dark Hero Strip */}
-        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
           {/* Grid texture */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
           {/* Blue glow */}
-          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-black text-white tracking-tight">MY ACCOUNT</h1>
-                <p className="text-xs text-white/40 mt-1">Manage your profile and orders</p>
+                <h1 className="text-2xl font-black text-[#043061] tracking-tight">MY ACCOUNT</h1>
+                <p className="text-xs text-[#6b7d93] mt-1">Manage your profile and orders</p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/account/orders" className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all">
+                <Link href="/account/orders" className="inline-flex items-center gap-1.5 bg-white border border-line rounded-xl px-4 py-2 text-xs font-medium text-[#043061] hover:bg-mist-2 transition-all">
                   View Orders
                 </Link>
-                <Link href="/account/favorites" className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all">
+                <Link href="/account/favorites" className="inline-flex items-center gap-1.5 bg-[#5A9ADA] hover:bg-[#0b4f96] rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all">
                   Favorites
                 </Link>
               </div>
@@ -450,7 +450,7 @@ export default function AccountHomePage() {
             ) : !editingProfile ? (
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-12 h-12 rounded-full bg-[#1B2D4F] flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#043061] flex items-center justify-center shrink-0">
                   <span className="text-white font-bold text-base">
                     {(customer?.firstName || user?.firstName || '?')[0]?.toUpperCase()}{(customer?.lastName || user?.lastName || '')[0]?.toUpperCase()}
                   </span>
@@ -495,7 +495,7 @@ export default function AccountHomePage() {
                   )}
                   <div>
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Total Orders</p>
-                    <p className="font-semibold text-[#1B2D4F] mt-0.5">{totalOrders}</p>
+                    <p className="font-semibold text-[#043061] mt-0.5">{totalOrders}</p>
                   </div>
                   {customer?.salesAssignments && customer.salesAssignments.length > 0 && (
                     <div className="sm:col-span-2">
@@ -524,7 +524,7 @@ export default function AccountHomePage() {
               <p className="text-sm font-semibold text-gray-900">Orders</p>
               <div className="flex gap-2">
                 <Link href="/account/favorites" className="inline-flex items-center border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-all">My Favorites</Link>
-                <Link href="/account/orders" className="inline-flex items-center bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all">View Orders</Link>
+                <Link href="/account/orders" className="inline-flex items-center bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all">View Orders</Link>
               </div>
             </div>
             <div className="space-y-4">
@@ -579,7 +579,7 @@ export default function AccountHomePage() {
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-gray-900">Addresses</p>
-              <button className="inline-flex items-center bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all" onClick={() => {
+              <button className="inline-flex items-center bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl px-3 py-1.5 text-xs font-semibold transition-all" onClick={() => {
                 setEditingAddressId(null);
                 setAddressForm({
                   type: 'SHIPPING',

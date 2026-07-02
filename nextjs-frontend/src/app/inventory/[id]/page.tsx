@@ -284,9 +284,9 @@ export default function InventoryDetailPage() {
             <DashboardLayout>
                 <div className="space-y-0">
                     {/* ════════ DARK HERO STRIP ════════ */}
-                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
                         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <div className="flex items-start gap-4">
@@ -300,30 +300,30 @@ export default function InventoryDetailPage() {
                                             <ArrowLeft className="h-3.5 w-3.5" />
                                             Back to Inventory
                                         </button>
-                                        <h1 className="text-xl font-black text-white tracking-tight">{product.productName}</h1>
+                                        <h1 className="text-xl font-black text-[#043061] tracking-tight">{product.productName}</h1>
                                         {product.variantName && (
                                             <p className="text-xs text-gray-400 mt-0.5">{product.variantName}</p>
                                         )}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2.5 flex-wrap">
-                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Committed</p>
-                                            <p className="text-base font-black text-white tabular-nums leading-tight cursor-pointer hover:text-[#4D7DF2] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
+                                            <p className="text-base font-black text-[#043061] tabular-nums leading-tight cursor-pointer hover:text-[#5A9ADA] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
+                                    <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Available</p>
-                                            <p className="text-base font-black text-white tabular-nums leading-tight">{product.available}</p>
+                                            <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{product.available}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                                        <Package className="h-4 w-4 text-[#4D7DF2]" />
+                                    <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                                        <Package className="h-4 w-4 text-[#5A9ADA]" />
                                         <div>
                                             <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">On Hand</p>
-                                            <p className="text-base font-black text-white tabular-nums leading-tight">{product.onHand}</p>
+                                            <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{product.onHand}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -367,7 +367,7 @@ export default function InventoryDetailPage() {
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-left">
                                     <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest leading-none mb-2">Committed</p>
-                                    <p className="text-3xl font-black text-gray-800 tabular-nums underline cursor-pointer hover:text-[#1B2D4F] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
+                                    <p className="text-3xl font-black text-gray-800 tabular-nums underline cursor-pointer hover:text-[#043061] transition-colors" onClick={handleCommittedClick}>{product.committed}</p>
                                     <p className="text-xs text-gray-400 mt-1">In orders</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-left">
@@ -420,7 +420,7 @@ export default function InventoryDetailPage() {
                                                 className="bg-background"
                                             />
                                             {detailsEdited.barcode !== undefined && (
-                                                <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                                                <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                                     {savingDetails ? 'Saving...' : 'Save'}
                                                 </Button>
                                             )}
@@ -450,7 +450,7 @@ export default function InventoryDetailPage() {
                                     </div>
                                     {detailsEdited.sellWhenOutOfStock !== undefined && (
                                         <div className="flex justify-end">
-                                            <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                                            <Button size="sm" onClick={handleDetailsSave} disabled={savingDetails} className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                                 {savingDetails ? 'Saving...' : 'Save Changes'}
                                             </Button>
                                         </div>
@@ -501,7 +501,7 @@ export default function InventoryDetailPage() {
                                                             )}
                                                         </TableCell>
                                                         <TableCell className="text-right">
-                                                            <span className="text-sm font-bold text-gray-700 underline cursor-pointer hover:text-[#1B2D4F] transition-colors" onClick={handleCommittedClick}>
+                                                            <span className="text-sm font-bold text-gray-700 underline cursor-pointer hover:text-[#043061] transition-colors" onClick={handleCommittedClick}>
                                                                 {currentCommitted}
                                                             </span>
                                                         </TableCell>
@@ -524,7 +524,7 @@ export default function InventoryDetailPage() {
                                                                     <Button variant="outline" size="sm" onClick={() => handleLocationCancel(location.locationId)} disabled={saving === location.locationId} className="rounded-xl">
                                                                         Cancel
                                                                     </Button>
-                                                                    <Button size="sm" onClick={() => handleLocationSave(location)} disabled={saving === location.locationId} className="gap-1 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl">
+                                                                    <Button size="sm" onClick={() => handleLocationSave(location)} disabled={saving === location.locationId} className="gap-1 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl">
                                                                         <Check className="h-3 w-3" />
                                                                         {saving === location.locationId ? "Saving..." : "Save"}
                                                                     </Button>
@@ -604,7 +604,7 @@ export default function InventoryDetailPage() {
                                                             className="h-8 group"
                                                         >
                                                             <span className="hidden sm:inline mr-1 text-xs font-semibold">View</span>
-                                                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#1B2D4F] transition-colors" />
+                                                            <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#043061] transition-colors" />
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>

@@ -894,9 +894,9 @@ export default function EditProductPage() {
       <DashboardLayout>
         <div className="space-y-0">
           {/* ════════ DARK HERO STRIP ════════ */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
@@ -904,11 +904,11 @@ export default function EditProductPage() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Back to Products
                   </button>
-                  <h1 className="text-xl font-black text-white tracking-tight">Edit Product</h1>
+                  <h1 className="text-xl font-black text-[#043061] tracking-tight">Edit Product</h1>
                   <p className="text-xs text-gray-500 mt-0.5">{product.name}</p>
                 </div>
-                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                  <Package className="h-4 w-4 text-[#4D7DF2]" />
+                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                  <Package className="h-4 w-4 text-[#5A9ADA]" />
                   <div>
                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Product</p>
                     <p className="text-xs font-bold text-white leading-tight mt-0.5">Edit Mode</p>
@@ -940,12 +940,12 @@ export default function EditProductPage() {
                 }} className="w-full">
                   <div className="overflow-x-auto pb-0 scrollbar-hide border-b border-gray-200">
                     <TabsList className="flex w-max sm:w-full sm:grid sm:grid-cols-6 min-w-full bg-transparent h-auto p-0 gap-0 rounded-none">
-                      <TabsTrigger value="basic" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Basic Info</TabsTrigger>
-                      <TabsTrigger value="variants" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Variants</TabsTrigger>
-                      <TabsTrigger value="images" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Images</TabsTrigger>
-                      <TabsTrigger value="categories" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Categories</TabsTrigger>
-                      <TabsTrigger value="related" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Related</TabsTrigger>
-                      <TabsTrigger value="reviews" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1B2D4F] data-[state=active]:text-[#1B2D4F] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Reviews</TabsTrigger>
+                      <TabsTrigger value="basic" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Basic Info</TabsTrigger>
+                      <TabsTrigger value="variants" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Variants</TabsTrigger>
+                      <TabsTrigger value="images" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Images</TabsTrigger>
+                      <TabsTrigger value="categories" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Categories</TabsTrigger>
+                      <TabsTrigger value="related" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Related</TabsTrigger>
+                      <TabsTrigger value="reviews" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#043061] data-[state=active]:text-[#043061] data-[state=active]:bg-transparent data-[state=active]:shadow-none bg-transparent text-gray-500 hover:text-gray-700 font-medium text-sm py-3 px-4 transition-colors">Reviews</TabsTrigger>
                     </TabsList>
                   </div>
 
@@ -1018,7 +1018,7 @@ export default function EditProductPage() {
                           setErrors(newErrors);
                           if (Object.keys(newErrors).length === 0) setCurrentTab('variants');
                         }}
-                        className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium"
+                        className="h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium"
                       >
                         Variants →
                       </Button>
@@ -1131,7 +1131,7 @@ export default function EditProductPage() {
                       <Button type="button" variant="outline" onClick={() => setCurrentTab('variants')} className="h-9 px-4 rounded-xl text-sm font-medium">
                         ← Variants
                       </Button>
-                      <Button type="button" onClick={() => setCurrentTab('categories')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                      <Button type="button" onClick={() => setCurrentTab('categories')} className="h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium">
                         Categories →
                       </Button>
                     </div>
@@ -1264,7 +1264,7 @@ export default function EditProductPage() {
                       <Button type="button" variant="outline" onClick={() => setCurrentTab('images')} className="h-9 px-4 rounded-xl text-sm font-medium">
                         ← Images
                       </Button>
-                      <Button type="button" onClick={() => setCurrentTab('related')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                      <Button type="button" onClick={() => setCurrentTab('related')} className="h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium">
                         Related →
                       </Button>
                     </div>
@@ -1370,7 +1370,7 @@ export default function EditProductPage() {
                       <Button type="button" variant="outline" onClick={() => setCurrentTab('basic')} className="h-9 px-4 rounded-xl text-sm font-medium">
                         ← Basic Info
                       </Button>
-                      <Button type="button" onClick={() => setCurrentTab('images')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                      <Button type="button" onClick={() => setCurrentTab('images')} className="h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium">
                         Images →
                       </Button>
                     </div>
@@ -1567,7 +1567,7 @@ export default function EditProductPage() {
                       <Button type="button" variant="outline" onClick={() => setCurrentTab('categories')} className="h-9 px-4 rounded-xl text-sm font-medium">
                         ← Categories
                       </Button>
-                      <Button type="button" onClick={() => setCurrentTab('reviews')} className="h-9 px-4 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl text-sm font-medium">
+                      <Button type="button" onClick={() => setCurrentTab('reviews')} className="h-9 px-4 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-sm font-medium">
                         Reviews →
                       </Button>
                     </div>
@@ -1667,7 +1667,7 @@ export default function EditProductPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl font-semibold">
+                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl font-semibold">
                     {isSubmitting ? (
                       <>
                         <LoadingSpinner size={16} className="mr-2" />
@@ -1929,7 +1929,7 @@ export default function EditProductPage() {
 
                   {/* Active Status */}
                   <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
-                    <input type="checkbox" id="variant-active" checked={variantFormData.isActive} onChange={(e) => setVariantFormData(prev => ({ ...prev, isActive: e.target.checked }))} className="rounded border-gray-300 accent-[#1B2D4F]" />
+                    <input type="checkbox" id="variant-active" checked={variantFormData.isActive} onChange={(e) => setVariantFormData(prev => ({ ...prev, isActive: e.target.checked }))} className="rounded border-gray-300 accent-[#043061]" />
                     <label htmlFor="variant-active" className="text-sm font-semibold text-gray-700 cursor-pointer">Active</label>
                   </div>
 
@@ -1938,7 +1938,7 @@ export default function EditProductPage() {
                     <button type="button" onClick={closeVariantForm} className="h-9 px-5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
                       Cancel
                     </button>
-                    <button type="button" onClick={handleVariantSubmit} className="h-9 px-5 rounded-xl bg-[#1B2D4F] hover:bg-[#243d6b] text-white text-sm font-semibold transition-colors">
+                    <button type="button" onClick={handleVariantSubmit} className="h-9 px-5 rounded-xl bg-[#043061] hover:bg-[#0b4f96] text-white text-sm font-semibold transition-colors">
                       {editingVariant ? 'Update Variant' : 'Create Variant'}
                     </button>
                   </div>

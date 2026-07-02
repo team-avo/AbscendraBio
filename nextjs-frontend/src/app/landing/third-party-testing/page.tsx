@@ -161,7 +161,7 @@ export default function LandingThirdPartyTestingPage() {
   };
 
   return (
-    <div className="force-light min-h-screen bg-white text-black">
+    <div className="force-light min-h-screen bg-white text-ink">
 
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 py-14 sm:py-18">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -200,7 +200,7 @@ export default function LandingThirdPartyTestingPage() {
                       key={c.key}
                       variant={active ? "default" : "outline"}
                       onClick={() => setFilter(c.key)}
-                      className={active ? "bg-black text-white hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"}
+                      className={active ? "bg-[#043061] text-white hover:bg-[#0b4f96]" : "border-gray-300 text-gray-700 hover:bg-gray-50"}
                     >
                       {c.label}
                     </Button>

@@ -67,11 +67,11 @@ function ProductDetail({ product, onEdit }: { product: Product; onEdit?: () => v
   return (
     <div className="space-y-0 -mt-2">
       {/* Dark Hero Header */}
-      <div className="relative bg-[#070B14] rounded-xl overflow-hidden mb-4">
+      <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-xl overflow-hidden mb-4">
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-        <div className="absolute top-0 right-0 w-[300px] h-[120px] bg-[#4D7DF2]/10 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[300px] h-[120px] bg-[#5A9ADA]/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="relative z-10 px-5 py-4 flex items-start gap-4">
-          <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-white border border-line flex items-center justify-center overflow-hidden flex-shrink-0">
             {primaryImage ? (
               <img src={resolveImageUrl(primaryImage.url)} alt={primaryImage.altText || product.name} className="w-full h-full object-cover" />
             ) : (
@@ -79,11 +79,11 @@ function ProductDetail({ product, onEdit }: { product: Product; onEdit?: () => v
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-black text-white text-base leading-snug break-words">{product.name}</div>
+            <div className="font-black text-[#043061] text-base leading-snug break-words">{product.name}</div>
             <div className="text-xs text-gray-400 mt-0.5 break-words line-clamp-2 leading-snug">{product.description || 'No description'}</div>
             <div className="mt-2 flex flex-wrap gap-1">
               {(product.categories || []).slice(0, 4).map((c, i) => (
-                <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-gray-300 font-medium border border-white/10">{c.name}</span>
+                <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-md bg-white text-[10px] text-gray-600 font-medium border border-line">{c.name}</span>
               ))}
             </div>
           </div>
@@ -111,7 +111,7 @@ function ProductDetail({ product, onEdit }: { product: Product; onEdit?: () => v
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-2 mb-4 pb-4 border-b border-gray-100">
         <a href={frontendUrl} target="_blank" rel="noopener noreferrer">
-          <button className="flex items-center gap-1.5 h-8 px-3 bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-lg text-xs font-semibold transition-colors">
+          <button className="flex items-center gap-1.5 h-8 px-3 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-lg text-xs font-semibold transition-colors">
             <Eye className="h-3.5 w-3.5" />
             View in Store
           </button>

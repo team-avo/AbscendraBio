@@ -140,21 +140,21 @@ export default function AssignCustomersPage() {
         <div className="space-y-0">
 
           {/* ════════ DARK HERO STRIP ════════ */}
-          <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+          <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h1 className="text-xl font-black text-white tracking-tight">Assign Customers</h1>
+                  <h1 className="text-xl font-black text-[#043061] tracking-tight">Assign Customers</h1>
                   <p className="text-xs text-gray-500 mt-0.5">Claim unassigned customers to your portfolio</p>
                 </div>
-                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                  <UserPlus className="h-4 w-4 text-[#4D7DF2]" />
+                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                  <UserPlus className="h-4 w-4 text-[#5A9ADA]" />
                   <div>
                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Unassigned</p>
-                    <p className="text-base font-black text-white tabular-nums leading-tight">{pagination.total.toLocaleString()}</p>
+                    <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{pagination.total.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function AssignCustomersPage() {
             <div className="overflow-x-auto">
               {loading ? (
                 <div className="flex justify-center items-center py-16">
-                  <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                  <div className="w-8 h-8 border-2 border-[#5A9ADA]/30 border-t-[#5A9ADA] rounded-full animate-spin" />
                 </div>
               ) : customers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
@@ -214,7 +214,7 @@ export default function AssignCustomersPage() {
                           </TableCell>
                           <TableCell className="text-xs text-gray-500">{customer.email}</TableCell>
                           <TableCell>
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-[#070B14]/5 text-[#070B14] border border-[#070B14]/10">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-[#043061]/5 text-[#043061] border border-[#043061]/10">
                               {getCustomerTypeBadge(customer.customerType).label}
                             </span>
                           </TableCell>
@@ -243,7 +243,7 @@ export default function AssignCustomersPage() {
                               size="sm"
                               onClick={() => handleAssign(customer.id)}
                               disabled={assigningId === customer.id || (customer.salesAssignments && customer.salesAssignments.length > 0)}
-                              className="h-8 px-3 bg-[#070B14] hover:bg-[#1a2540] text-white rounded-xl text-xs font-bold disabled:opacity-40"
+                              className="h-8 px-3 bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl text-xs font-bold disabled:opacity-40"
                             >
                               <UserPlus className="h-3.5 w-3.5 mr-1.5" />
                               {assigningId === customer.id ? 'Assigning…' : 'Assign to Me'}

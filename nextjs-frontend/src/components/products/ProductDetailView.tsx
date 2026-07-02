@@ -249,7 +249,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
     return (
       <div className={`${isModal ? "bg-white w-full flex flex-col" : "force-light min-h-screen bg-white"} ${barlow.className}`}>
         <div className={isModal ? "p-4" : "max-w-3xl mx-auto px-4 sm:px-6 py-10"}>
-          <div className="relative bg-[#070B14] rounded-2xl overflow-hidden">
+          <div className="relative bg-[#043061] rounded-2xl overflow-hidden">
             {/* Grid texture */}
             <div
               className="absolute inset-0 opacity-[0.03]"
@@ -259,17 +259,17 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
               }}
             />
             {/* Blue glow */}
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/10 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#3A6FA0]/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 text-center">
               <div className="w-16 h-16 rounded-2xl bg-white/[0.08] border border-white/[0.10] flex items-center justify-center mx-auto mb-6">
                 <Lock className="w-7 h-7 text-white/80" />
               </div>
               <div className="flex items-center justify-center gap-3 mb-4">
-                <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
-                <span className="text-[10px] font-bold tracking-[0.4em] text-[#4D7DF2] uppercase">Verified Researchers Only</span>
-                <span className="w-8 h-[1px] bg-[#4D7DF2]/50" />
+                <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">Verified Researchers Only</span>
+                <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-lg mx-auto">
                 Sign in to view this peptide
@@ -280,7 +280,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => openLoginModal?.('customer')}
-                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#070B14] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
+                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#043061] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
                 >
                   <LogIn className="w-4 h-4" />
                   Sign In
@@ -301,13 +301,13 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
 
   return (
     <div className={`relative ${isModal ? "bg-white w-full h-[85vh] max-h-[800px] flex flex-col overflow-hidden" : "force-light min-h-screen bg-white"} ${barlow.className}`}>
-      <main className={isModal ? "flex-1 flex flex-col min-h-0 w-full" : "max-w-4xl mx-auto px-6 py-12"}>
+      <main className={isModal ? "flex-1 flex flex-col min-h-0 w-full" : "max-w-6xl mx-auto px-4 sm:px-6 py-10"}>
 
         {/* Loading */}
         {loading && (
           <div className="flex-1 flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#4D7DF2] animate-spin" />
+              <div className="w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#5A9ADA] animate-spin" />
               <span className="text-xs text-gray-400 font-medium">Loading product…</span>
             </div>
           </div>
@@ -320,14 +320,13 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
           </div>
         )}
 
-        {!loading && !error && (
-          <>
-            {/* ── Header ── */}
+        {!loading && !error && (() => {
+          const header = (
             <div className="shrink-0 px-5 pt-5 pb-4 border-b border-gray-100">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{ui.category}</span>
-                  <h1 className="text-lg font-black text-[#070B14] tracking-tight leading-tight uppercase mt-0.5 pr-2">
+                  <h1 className="text-lg font-black text-[#043061] tracking-tight leading-tight uppercase mt-0.5 pr-2">
                     {ui.name}
                   </h1>
                 </div>
@@ -341,205 +340,187 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                 </div>
               </div>
             </div>
+          );
 
-            {/* ── Scrollable Body ── */}
-            <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <div className="p-5 space-y-5">
+          const imageBlock = (
+            <div className="relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 aspect-[4/3] flex items-center justify-center">
+              <img
+                src={heroSrc}
+                alt={ui.name}
+                className="object-contain w-full h-full p-6 transition-all duration-500"
+                onError={() => setHeroSrc(resolveImageUrl("/products/peptide-1.jpg"))}
+              />
+              {galleryImgs.length > 1 && (
+                <>
+                  <button
+                    onClick={() => { const i = (currentImgIndex - 1 + galleryImgs.length) % galleryImgs.length; setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 border border-gray-100 shadow-sm flex items-center justify-center hover:bg-white transition-colors"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5 text-gray-600" />
+                  </button>
+                  <button
+                    onClick={() => { const i = (currentImgIndex + 1) % galleryImgs.length; setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 border border-gray-100 shadow-sm flex items-center justify-center hover:bg-white transition-colors"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
+                  </button>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                    {galleryImgs.map((_: any, i: number) => (
+                      <button key={i} onClick={() => { setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
+                        className={`rounded-full transition-all ${i === currentImgIndex ? 'w-3 h-1.5 bg-[#5A9ADA]' : 'w-1.5 h-1.5 bg-gray-300'}`} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
 
-                {/* Image */}
-                <div className="relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 aspect-[4/3] flex items-center justify-center">
-                  <img
-                    src={heroSrc}
-                    alt={ui.name}
-                    className="object-contain w-full h-full p-6 transition-all duration-500"
-                    onError={() => setHeroSrc(resolveImageUrl("/products/peptide-1.jpg"))}
-                  />
-                  {galleryImgs.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => { const i = (currentImgIndex - 1 + galleryImgs.length) % galleryImgs.length; setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 border border-gray-100 shadow-sm flex items-center justify-center hover:bg-white transition-colors"
-                      >
-                        <ChevronLeft className="w-3.5 h-3.5 text-gray-600" />
-                      </button>
-                      <button
-                        onClick={() => { const i = (currentImgIndex + 1) % galleryImgs.length; setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 border border-gray-100 shadow-sm flex items-center justify-center hover:bg-white transition-colors"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-                      </button>
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                        {galleryImgs.map((_: any, i: number) => (
-                          <button key={i} onClick={() => { setCurrentImgIndex(i); setHeroSrc(resolveImageUrl(galleryImgs[i].url)); }}
-                            className={`rounded-full transition-all ${i === currentImgIndex ? 'w-3 h-1.5 bg-[#4D7DF2]' : 'w-1.5 h-1.5 bg-gray-300'}`} />
+          const descriptionBlock = product?.description ? (
+            <p className="text-sm text-gray-500 leading-relaxed">{product.description}</p>
+          ) : null;
+
+          const variantPicker = ui.variants.length > 1 ? (
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Size / Configuration</label>
+              <div className="flex flex-wrap gap-2">
+                {ui.variants.map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVariantId(v.id)}
+                    className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wide transition-all ${
+                      selectedVariantId === v.id
+                        ? 'bg-[#043061] border-[#043061] text-white'
+                        : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400'
+                    }`}
+                  >
+                    {v.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null;
+
+          // Unified feature cards: one base color, steel-blue icons, soft blue-tint hover
+          const featureCards = (
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { icon: ShieldCheck, label: '99%+ Purity', sub: 'HPLC verified' },
+                { icon: Truck, label: 'Cold Chain', sub: 'Priority shipping' },
+                { icon: Microscope, label: 'GMP Facility', sub: 'USA certified' },
+                { icon: Award, label: 'COA Included', sub: 'Every batch' },
+              ].map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="p-3 rounded-xl flex items-center gap-2.5 bg-slate-50 border border-slate-100 transition-colors hover:bg-[#043061]/[0.04] hover:border-[#043061]/20">
+                  <Icon className="w-3.5 h-3.5 shrink-0 text-[#5A9ADA]" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase text-[#043061]">{label}</p>
+                    <p className="text-[9px] text-gray-400">{sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+
+          const labReportsBlock = filteredReports.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Lab Reports (COA)</p>
+              <div className="space-y-1.5">
+                {filteredReports.slice(0, 3).map((r) => (
+                  <div key={r.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100">
+                    <div>
+                      <p className="text-xs font-bold text-[#043061] truncate max-w-[180px]">{r.name}</p>
+                      <p className="text-[9px] text-gray-400">Certificate of Analysis</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const res = await getPublicReportDownloadUrl(r.id, 'inline');
+                        if (res.success && res.data?.url) window.open(res.data.url, '_blank');
+                      }}
+                      className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#5A9ADA] hover:text-white text-gray-500 transition-all"
+                    >
+                      <Eye className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null;
+
+          const sciProfileBlock = (product?.name && SCIENTIFIC_PROFILES[product.name]) ? (() => {
+            const profile = SCIENTIFIC_PROFILES[product.name];
+            return (
+              <div className="rounded-2xl border border-gray-100 overflow-hidden">
+                <button
+                  onClick={() => setSciProfileOpen(o => !o)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <FlaskConical className="w-3.5 h-3.5 text-[#5A9ADA]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#043061]">Scientific Profile</span>
+                  </div>
+                  <span className="text-[10px] text-gray-400">{sciProfileOpen ? '▲' : '▼'}</span>
+                </button>
+                {sciProfileOpen && (
+                  <div className="px-4 py-4 space-y-3 bg-white">
+                    <p className="text-xs text-gray-600 leading-relaxed">{profile.overview}</p>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Mechanism</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">{profile.mechanism}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Research Applications</p>
+                      <ul className="space-y-1">
+                        {profile.applications.map((app, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-xs text-gray-500">
+                            <span className="text-[#5A9ADA] mt-0.5 shrink-0">·</span>
+                            {app}
+                          </li>
                         ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Description */}
-                {product?.description && (
-                  <p className="text-sm text-gray-500 leading-relaxed">{product.description}</p>
-                )}
-
-                {/* Variant picker */}
-                {ui.variants.length > 1 && (
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Size / Configuration</label>
-                    <div className="flex flex-wrap gap-2">
-                      {ui.variants.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setSelectedVariantId(v.id)}
-                          className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wide transition-all ${
-                            selectedVariantId === v.id
-                              ? 'bg-[#070B14] border-[#070B14] text-white'
-                              : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400'
-                          }`}
-                        >
-                          {v.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Trust specs */}
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { icon: ShieldCheck, label: '99%+ Purity', sub: 'HPLC verified', color: 'emerald' },
-                    { icon: Truck, label: 'Cold Chain', sub: 'Priority shipping', color: 'blue' },
-                    { icon: Microscope, label: 'GMP Facility', sub: 'USA certified', color: 'gray' },
-                    { icon: Award, label: 'COA Included', sub: 'Every batch', color: 'dark' },
-                  ].map(({ icon: Icon, label, sub, color }) => (
-                    <div key={label} className={`p-3 rounded-xl flex items-center gap-2.5 ${
-                      color === 'emerald' ? 'bg-emerald-50 border border-emerald-100' :
-                      color === 'blue' ? 'bg-blue-50 border border-blue-100' :
-                      color === 'dark' ? 'bg-[#070B14] border border-[#070B14]' :
-                      'bg-gray-50 border border-gray-100'
-                    }`}>
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${
-                        color === 'emerald' ? 'text-emerald-600' :
-                        color === 'blue' ? 'text-blue-500' :
-                        color === 'dark' ? 'text-white/70' :
-                        'text-gray-400'
-                      }`} />
-                      <div>
-                        <p className={`text-[10px] font-black uppercase ${color === 'dark' ? 'text-white' : 'text-[#070B14]'}`}>{label}</p>
-                        <p className={`text-[9px] ${color === 'dark' ? 'text-white/40' : 'text-gray-400'}`}>{sub}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Lab reports */}
-                {filteredReports.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Lab Reports (COA)</p>
-                    <div className="space-y-1.5">
-                      {filteredReports.slice(0, 3).map((r) => (
-                        <div key={r.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100">
-                          <div>
-                            <p className="text-xs font-bold text-[#070B14] truncate max-w-[180px]">{r.name}</p>
-                            <p className="text-[9px] text-gray-400">Certificate of Analysis</p>
-                          </div>
-                          <button
-                            onClick={async () => {
-                              const res = await getPublicReportDownloadUrl(r.id, 'inline');
-                              if (res.success && res.data?.url) window.open(res.data.url, '_blank');
-                            }}
-                            className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-[#4D7DF2] hover:text-white text-gray-500 transition-all"
-                          >
-                            <Eye className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Scientific Profile */}
-                {product?.name && SCIENTIFIC_PROFILES[product.name] && (() => {
-                  const profile = SCIENTIFIC_PROFILES[product.name];
-                  return (
-                    <div className="rounded-2xl border border-gray-100 overflow-hidden">
-                      <button
-                        onClick={() => setSciProfileOpen(o => !o)}
-                        className="w-full flex items-center justify-between px-4 py-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] transition-colors"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FlaskConical className="w-3.5 h-3.5 text-[#4D7DF2]" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-[#070B14]">Scientific Profile</span>
-                        </div>
-                        <span className="text-[10px] text-gray-400">{sciProfileOpen ? '▲' : '▼'}</span>
-                      </button>
-                      {sciProfileOpen && (
-                        <div className="px-4 py-4 space-y-3 bg-white">
-                          <p className="text-xs text-gray-600 leading-relaxed">{profile.overview}</p>
-                          <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Mechanism</p>
-                            <p className="text-xs text-gray-500 leading-relaxed">{profile.mechanism}</p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">Research Applications</p>
-                            <ul className="space-y-1">
-                              {profile.applications.map((app, i) => (
-                                <li key={i} className="flex items-start gap-1.5 text-xs text-gray-500">
-                                  <span className="text-[#4D7DF2] mt-0.5 shrink-0">·</span>
-                                  {app}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                {/* Frequently Paired With */}
-                {relatedProducts.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Dna className="w-3 h-3 text-gray-400" />
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Frequently Paired With</p>
-                    </div>
-                    <div className="grid gap-2">
-                      {relatedProducts.map((rp) => {
-                        const img = (rp as any).images?.[0]?.url;
-                        return (
-                          <Link
-                            key={rp.id}
-                            href={`/landing/products/${rp.id}`}
-                            className="flex items-center gap-3 p-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] rounded-xl border border-gray-100 transition-colors group"
-                          >
-                            {img && (
-                              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-gray-100 shrink-0">
-                                <img src={resolveImageUrl(img)} alt={rp.name} className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                            <span className="text-xs font-bold text-[#070B14] flex-1 truncate">{rp.name}</span>
-                            <ArrowRight className="w-3 h-3 text-gray-300 group-hover:text-[#4D7DF2] transition-colors shrink-0" />
-                          </Link>
-                        );
-                      })}
+                      </ul>
                     </div>
                   </div>
                 )}
               </div>
+            );
+          })() : null;
+
+          const relatedBlock = relatedProducts.length > 0 ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Dna className="w-3 h-3 text-gray-400" />
+                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Frequently Paired With</p>
+              </div>
+              <div className="grid gap-2">
+                {relatedProducts.map((rp) => {
+                  const img = (rp as any).images?.[0]?.url;
+                  return (
+                    <Link
+                      key={rp.id}
+                      href={`/landing/products/${rp.id}`}
+                      className="flex items-center gap-3 p-3 bg-[#F9FBFF] hover:bg-[#F0F5FF] rounded-xl border border-gray-100 transition-colors group"
+                    >
+                      {img && (
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-gray-100 shrink-0">
+                          <img src={resolveImageUrl(img)} alt={rp.name} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <span className="text-xs font-bold text-[#043061] flex-1 truncate">{rp.name}</span>
+                      <ArrowRight className="w-3 h-3 text-gray-300 group-hover:text-[#5A9ADA] transition-colors shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
+          ) : null;
 
-            {/* ── Sticky Footer ── */}
-            <div className="shrink-0 px-5 py-4 border-t border-gray-100 bg-white space-y-3">
-
+          const pricingBlock = (
+            <div className="space-y-3">
               {/* Price + Qty row */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-0.5">Price</p>
                   {isAuthenticated ? (
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-[#070B14] tabular-nums">
+                      <span className="text-2xl font-black text-[#043061] tabular-nums">
                         ${(ui.price * quantity).toFixed(2)}
                       </span>
                       {ui.originalPrice && (
@@ -563,7 +544,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                   <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
                     <Minus className="w-3 h-3 text-gray-600" />
                   </button>
-                  <span className="w-8 text-center text-sm font-black text-[#070B14]">{quantity}</span>
+                  <span className="w-8 text-center text-sm font-black text-[#043061]">{quantity}</span>
                   <button onClick={() => setQuantity(q => Math.min(q + 1, ui.availableQty || 999))} className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors">
                     <Plus className="w-3 h-3 text-gray-600" />
                   </button>
@@ -581,7 +562,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                         key={t.min}
                         className={`rounded-lg px-2 py-1.5 text-center border ${active ? "border-emerald-300 bg-emerald-50" : "border-gray-200 bg-white"}`}
                       >
-                        <div className="text-[11px] font-black text-[#070B14] tabular-nums">{bulkTierRangeLabel(t)}</div>
+                        <div className="text-[11px] font-black text-[#043061] tabular-nums">{bulkTierRangeLabel(t)}</div>
                         <div className={`text-[10px] font-bold ${t.discount > 0 ? "text-emerald-600" : "text-gray-400"}`}>
                           {t.discount > 0 ? `${Math.round(t.discount * 100)}% off` : "Regular"}
                         </div>
@@ -594,7 +575,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
               {/* CTA button — or qty controls if already in cart */}
               {currentCartQty > 0 ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 flex-1 bg-[#070B14] rounded-2xl p-1">
+                  <div className="flex items-center gap-1 flex-1 bg-[#043061] rounded-2xl p-1">
                     <button onClick={() => handleCartQtyChange(currentCartQty - 1)} className="flex-1 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                       <Minus className="w-3.5 h-3.5 text-white" />
                     </button>
@@ -609,7 +590,7 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                   className={`w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all ${
                     justAdded
                       ? 'bg-emerald-500 hover:bg-emerald-500 text-white'
-                      : 'bg-[#070B14] hover:bg-[#1a2540] text-white'
+                      : 'bg-[#043061] hover:bg-[#0b4f96] text-white'
                   }`}
                   disabled={!ui.inStock || !ui.currentVariantId || addingToCart}
                   onClick={handleAddToCart}
@@ -628,8 +609,56 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                 </Button>
               )}
             </div>
-          </>
-        )}
+          );
+
+          // MODAL (quick view): keep the compact stacked layout with a sticky footer.
+          if (isModal) {
+            return (
+              <>
+                {header}
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                  <div className="p-5 space-y-5">
+                    {imageBlock}
+                    {descriptionBlock}
+                    {variantPicker}
+                    {featureCards}
+                    {labReportsBlock}
+                    {sciProfileBlock}
+                    {relatedBlock}
+                  </div>
+                </div>
+                <div className="shrink-0 px-5 py-4 border-t border-gray-100 bg-white">
+                  {pricingBlock}
+                </div>
+              </>
+            );
+          }
+
+          // FULL PAGE: peptide image on the left; containers then pricing on the right.
+          return (
+            <>
+              {header}
+              <div className="px-5 py-6 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-8 items-start">
+                <div className="lg:sticky lg:top-24">
+                  {imageBlock}
+                </div>
+                <div className="space-y-5">
+                  {variantPicker}
+                  {featureCards}
+                  <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                    {pricingBlock}
+                  </div>
+                </div>
+              </div>
+              <div className="px-5 pb-10 space-y-5 max-w-3xl">
+                {descriptionBlock}
+                {labReportsBlock}
+                {sciProfileBlock}
+                {relatedBlock}
+              </div>
+            </>
+          );
+        })()}
       </main>
 
       <CartSidebar

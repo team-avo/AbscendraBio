@@ -421,34 +421,34 @@ export function DashboardContent() {
         <div className="space-y-4">
 
             {/* ── GREETING HERO ────────────────────────────────── */}
-            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                 {/* Grid texture */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                 {/* Blue glow */}
-                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
                 <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-xl font-black text-white tracking-tight">
+                            <h1 className="text-xl font-black text-[#043061] tracking-tight">
                                 {greeting}{user?.firstName ? `, ${user.firstName}` : ''}!
                             </h1>
                             <p className="text-xs text-white/40 mt-0.5">{formattedDate}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
                             <button
-                                className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all"
+                                className="inline-flex items-center gap-1.5 bg-white border border-line rounded-xl px-3 py-1.5 text-xs font-medium text-[#043061] hover:bg-mist-2 transition-all"
                                 onClick={handleViewStore}
                             >
                                 View Store
                             </button>
                             <button
-                                className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all"
+                                className="inline-flex items-center gap-1.5 bg-white border border-line rounded-xl px-3 py-1.5 text-xs font-medium text-[#043061] hover:bg-mist-2 transition-all"
                                 onClick={handleAddCustomer}
                             >
                                 + Customer
                             </button>
                             <button
-                                className="inline-flex items-center gap-1.5 bg-[#3A6FA0] hover:bg-[#2d5a87] rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-all"
+                                className="inline-flex items-center gap-1.5 bg-[#5A9ADA] hover:bg-[#0b4f96] rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-all"
                                 onClick={handleCreateOrder}
                             >
                                 + New Order
@@ -462,9 +462,9 @@ export function DashboardContent() {
             <div className="grid grid-cols-12 gap-4">
 
                 {/* Revenue Hero — dark tile, col-span-5 */}
-                <div className="col-span-12 md:col-span-5 bg-[#1B2D4F] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+                <div className="col-span-12 md:col-span-5 bg-[#043061] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[220px]">
                     {/* Decorative blobs */}
-                    <div className="absolute -top-10 -right-10 w-44 h-44 bg-[#3A6FA0]/20 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute -top-10 -right-10 w-44 h-44 bg-[#5A9ADA]/20 rounded-full blur-2xl pointer-events-none" />
                     <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/5 rounded-full pointer-events-none" />
 
                     <div className="relative z-10">
@@ -489,11 +489,11 @@ export function DashboardContent() {
                             <AreaChart data={normalizedSalesData} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="heroSparkGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#3A6FA0" stopOpacity={0.5} />
-                                        <stop offset="100%" stopColor="#3A6FA0" stopOpacity={0} />
+                                        <stop offset="0%" stopColor="#5A9ADA" stopOpacity={0.5} />
+                                        <stop offset="100%" stopColor="#5A9ADA" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <Area type="monotone" dataKey="revenue" stroke="#3A6FA0" strokeWidth={2} fill="url(#heroSparkGrad)" dot={false} />
+                                <Area type="monotone" dataKey="revenue" stroke="#5A9ADA" strokeWidth={2} fill="url(#heroSparkGrad)" dot={false} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -549,7 +549,7 @@ export function DashboardContent() {
                         <div className="h-[110px]">
                             <ChartContainer
                                 id="trend-chart"
-                                config={{ revenue: { label: "Revenue", color: "#1B2D4F" }, orders: { label: "Orders", color: "#3A6FA0" } }}
+                                config={{ revenue: { label: "Revenue", color: "#043061" }, orders: { label: "Orders", color: "#5A9ADA" } }}
                                 className="h-full w-full"
                             >
                                 <ResponsiveContainer width="100%" height="100%">
@@ -559,8 +559,8 @@ export function DashboardContent() {
                                         <YAxis yAxisId="revenue" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={44} tickFormatter={(v) => formatCompactCurrency(v)} />
                                         <YAxis yAxisId="orders" orientation="right" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} width={28} />
                                         <RechartsTooltipWrapper content={<ChartTooltipContent />} />
-                                        <Bar yAxisId="revenue" dataKey="revenue" fill="#1B2D4F" radius={[3, 3, 0, 0]} maxBarSize={32} name="Revenue" />
-                                        <Line yAxisId="orders" dataKey="orders" stroke="#3A6FA0" strokeWidth={2} dot={{ fill: '#3A6FA0', r: 2.5 }} name="Orders" />
+                                        <Bar yAxisId="revenue" dataKey="revenue" fill="#043061" radius={[3, 3, 0, 0]} maxBarSize={32} name="Revenue" />
+                                        <Line yAxisId="orders" dataKey="orders" stroke="#5A9ADA" strokeWidth={2} dot={{ fill: '#5A9ADA', r: 2.5 }} name="Orders" />
                                     </ComposedChart>
                                 </ResponsiveContainer>
                             </ChartContainer>
@@ -603,7 +603,7 @@ export function DashboardContent() {
                     </div>
                     <button
                         onClick={() => router.push('/analytics/customers')}
-                        className="mt-5 text-xs text-[#3A6FA0] hover:text-[#1B2D4F] font-semibold transition-colors"
+                        className="mt-5 text-xs text-[#5A9ADA] hover:text-[#043061] font-semibold transition-colors"
                     >
                         View insights →
                     </button>
@@ -615,7 +615,7 @@ export function DashboardContent() {
                         <h3 className="text-sm font-semibold text-slate-800">Recent Orders</h3>
                         <button
                             onClick={() => router.push('/orders')}
-                            className="text-xs text-[#3A6FA0] hover:text-[#1B2D4F] font-semibold transition-colors"
+                            className="text-xs text-[#5A9ADA] hover:text-[#043061] font-semibold transition-colors"
                         >
                             View all →
                         </button>
@@ -628,7 +628,7 @@ export function DashboardContent() {
                             </div>
                             <p className="text-sm font-medium text-slate-400">No orders yet</p>
                             <p className="text-xs text-slate-300 mt-1">Orders will appear here once placed</p>
-                            <Button size="sm" className="mt-4 text-xs h-8 bg-[#1B2D4F] hover:bg-[#16243f] text-white rounded-lg" onClick={handleCreateOrder}>
+                            <Button size="sm" className="mt-4 text-xs h-8 bg-[#043061] hover:bg-[#16243f] text-white rounded-lg" onClick={handleCreateOrder}>
                                 Create first order
                             </Button>
                         </div>
@@ -636,7 +636,7 @@ export function DashboardContent() {
                         <div className="space-y-1">
                             {dashboardData.recentOrders.map((order) => (
                                 <div key={order.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
-                                    <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#1B2D4F] to-[#3A6FA0] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                    <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#043061] to-[#5A9ADA] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                                         {order.customer?.[0]?.toUpperCase() ?? '?'}
                                     </div>
                                     <div className="flex-1 min-w-0">

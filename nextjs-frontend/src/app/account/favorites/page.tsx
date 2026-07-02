@@ -42,19 +42,19 @@ export default function AccountFavoritesPage() {
     <ProtectedRoute requiredRoles={["CUSTOMER"]}>
       <div className="space-y-6">
         {/* Dark Hero Strip */}
-        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
           {/* Grid texture */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
           {/* Blue glow */}
-          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-black text-white tracking-tight">MY FAVORITES</h1>
-                <p className="text-xs text-white/40 mt-1">Your saved products</p>
+                <h1 className="text-2xl font-black text-[#043061] tracking-tight">MY FAVORITES</h1>
+                <p className="text-xs text-[#6b7d93] mt-1">Your saved products</p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/landing/products" className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all">
+                <Link href="/landing/products" className="inline-flex items-center gap-1.5 bg-white border border-line rounded-xl px-4 py-2 text-xs font-medium text-[#043061] hover:bg-mist-2 transition-all">
                   Explore Products
                 </Link>
               </div>
@@ -68,7 +68,7 @@ export default function AccountFavoritesPage() {
           <div className="py-16 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-700 mb-4"><Heart className="w-4 h-4" /> No favorites yet</div>
             <p className="text-gray-600 mb-6">Browse products and tap the heart to save them here.</p>
-            <Link href="/landing/products" className="inline-flex items-center bg-[#1B2D4F] text-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-[#243d6b] transition-all">
+            <Link href="/landing/products" className="inline-flex items-center bg-[#043061] text-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:bg-[#0b4f96] transition-all">
               Explore Products
             </Link>
           </div>
@@ -99,7 +99,7 @@ export default function AccountFavoritesPage() {
                       {original != null && (<span className="text-sm text-gray-500 line-through">${Number(original).toFixed(2)}</span>)}
                     </div>
                     <div className="mt-3 flex gap-2">
-                      <Link href={`/landing/products/${product.id}`} className="flex-1 inline-flex items-center justify-center bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl px-3 py-2 text-sm font-semibold transition-all">View</Link>
+                      <Link href={`/landing/products/${product.id}`} className="flex-1 inline-flex items-center justify-center bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl px-3 py-2 text-sm font-semibold transition-all">View</Link>
                       <button className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFavorite(id); }}>Remove</button>
                     </div>
                   </div>

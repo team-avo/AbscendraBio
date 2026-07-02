@@ -124,11 +124,11 @@ export function ProductCard({
             />
 
             {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-[#070B14]/5 opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-[#043061]/5 opacity-50" />
 
             {/* Price badge */}
             <div className="absolute top-2.5 right-2.5 z-20">
-              <div className="bg-[#070B14]/90 text-white backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-lg min-w-[52px] flex items-center justify-center">
+              <div className="bg-[#043061]/90 text-white backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-lg min-w-[52px] flex items-center justify-center">
                 {isAuthenticated ? (
                   <span className="text-[11px] font-black tabular-nums leading-none">${pricing.price.toFixed(2)}</span>
                 ) : (
@@ -160,7 +160,7 @@ export function ProductCard({
             <span className="text-[8px] font-bold uppercase tracking-widest text-gray-400 leading-none block mb-1">
               {product.category || 'Research Peptide'}
             </span>
-            <h3 className={`text-[13px] font-extrabold text-[#070B14] leading-tight tracking-tight line-clamp-2 uppercase flex-1 ${barlow.className}`}>
+            <h3 className={`text-[13px] font-extrabold text-[#043061] leading-tight tracking-tight line-clamp-2 uppercase flex-1 ${barlow.className}`}>
               {product.name}
             </h3>
 
@@ -175,7 +175,7 @@ export function ProductCard({
               {currentQty > 0 ? (
                 /* ── Quantity stepper ── */
                 <div
-                  className="flex items-center gap-0.5 bg-[#070B14] rounded-xl p-0.5"
+                  className="flex items-center gap-0.5 bg-[#043061] rounded-xl p-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -200,7 +200,7 @@ export function ProductCard({
                   className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed
                     ${justAdded
                       ? 'bg-emerald-500 shadow-lg shadow-emerald-500/20'
-                      : 'bg-[#070B14] hover:bg-[#1a2540] shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                      : 'bg-[#043061] hover:bg-[#0b4f96] shadow-md hover:shadow-lg hover:-translate-y-0.5'
                     }`}
                 >
                   {addingToCart ? (

@@ -5,7 +5,7 @@ import Link from "next/link";
 export function AnnouncementBanner() {
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-black text-white">
+    <div className="sticky top-0 z-50 w-full bg-[#043061] text-white">
       <style>{`
         @keyframes depthPulse {
           0%, 100% {

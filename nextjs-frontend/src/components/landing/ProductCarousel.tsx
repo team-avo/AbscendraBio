@@ -86,12 +86,12 @@ export function ProductCarousel() {
           </div>
           {items.length > 1 && (
             <Button onClick={() => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-md md:hidden z-30" size="icon" aria-label="Previous">
-              <ChevronLeft className="w-5 h-5 text-[#070B14]" />
+              <ChevronLeft className="w-5 h-5 text-[#043061]" />
             </Button>
           )}
           {items.length > 1 && (
             <Button onClick={() => setCurrentIndex((prev) => (prev + 1) % items.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-md md:hidden z-30" size="icon" aria-label="Next">
-              <ChevronRight className="w-5 h-5 text-[#070B14]" />
+              <ChevronRight className="w-5 h-5 text-[#043061]" />
             </Button>
           )}
         </div>
@@ -101,10 +101,10 @@ export function ProductCarousel() {
           {items.length > pageSize && (
             <>
               <Button onClick={() => setPageIndex((prev) => (prev - 1 + totalPages) % totalPages)} className="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-lg z-30" size="icon" aria-label="Previous">
-                <ChevronLeft className="w-6 h-6 text-[#070B14]" />
+                <ChevronLeft className="w-6 h-6 text-[#043061]" />
               </Button>
               <Button onClick={() => setPageIndex((prev) => (prev + 1) % totalPages)} className="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-gray-50 border border-gray-100 shadow-lg z-30" size="icon" aria-label="Next">
-                <ChevronRight className="w-6 h-6 text-[#070B14]" />
+                <ChevronRight className="w-6 h-6 text-[#043061]" />
               </Button>
             </>
           )}

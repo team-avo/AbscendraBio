@@ -189,14 +189,14 @@ export function SalesRepDashboard() {
     return (
       <div className="space-y-6">
         {/* Dark hero strip — loading state */}
-        <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+        <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-black text-white tracking-tight">Sales Rep Dashboard</h1>
-                <p className="text-xs text-white/40 mt-1">Loading your assigned customers and notifications...</p>
+                <h1 className="text-2xl font-black text-[#043061] tracking-tight">Sales Rep Dashboard</h1>
+                <p className="text-xs text-[#6b7d93] mt-1">Loading your assigned customers and notifications...</p>
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" onClick={fetchData} disabled className="rounded-xl">
@@ -217,14 +217,14 @@ export function SalesRepDashboard() {
   return (
     <div className="space-y-6">
       {/* Dark hero strip */}
-      <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+      <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">Sales Rep Dashboard</h1>
-              <p className="text-xs text-white/40 mt-1">Your performance overview and assigned customers</p>
+              <h1 className="text-2xl font-black text-[#043061] tracking-tight">Sales Rep Dashboard</h1>
+              <p className="text-xs text-[#6b7d93] mt-1">Your performance overview and assigned customers</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -372,7 +372,7 @@ export function SalesRepDashboard() {
                         <Button
                           size="sm"
                           disabled={upgradingCustomer === notification.customer?.id}
-                          className="text-xs bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
+                          className="text-xs bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl"
                         >
                           {upgradingCustomer === notification.customer?.id ? (
                             <>
@@ -401,7 +401,7 @@ export function SalesRepDashboard() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleUpgradeCustomer(notification.customer?.id!, notification.id)}
-                            className="bg-[#1B2D4F] hover:bg-[#243d6b] text-white rounded-xl"
+                            className="bg-[#043061] hover:bg-[#0b4f96] text-white rounded-xl"
                           >
                             Upgrade Customer
                           </AlertDialogAction>

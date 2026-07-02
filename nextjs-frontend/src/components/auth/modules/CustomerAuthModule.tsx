@@ -435,7 +435,7 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
                 {resendingVerification ? 'Sending…' : 'Resend verification email'}
               </Button>
             )}
-            <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowApprovalModal(false)}>Got it</Button>
+            <Button className="w-full rounded-2xl h-11 bg-[#043061]" onClick={() => setShowApprovalModal(false)}>Got it</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -467,7 +467,7 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
             >
               {resendingVerification ? 'Sending…' : 'Resend verification email'}
             </Button>
-            <Button className="w-full rounded-2xl h-11 bg-[#070B14]" onClick={() => setShowEmailVerificationModal(false)}>Got it</Button>
+            <Button className="w-full rounded-2xl h-11 bg-[#043061]" onClick={() => setShowEmailVerificationModal(false)}>Got it</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -476,13 +476,13 @@ export function CustomerAuthModule({ onSwitchToAdmin, onSuccess, isModal = false
       <div className="flex items-center gap-1.5 bg-gray-100 rounded-2xl p-1.5 mb-8">
         <button
           onClick={() => { setTab('signin'); setErrors({}); if (portalMismatch) setPortalMismatch(null); }}
-          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signin' ? 'bg-white text-[#070B14] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signin' ? 'bg-white text-[#043061] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Sign In
         </button>
         <button
           onClick={() => { setTab('signup'); setErrors({}); if (portalMismatch) setPortalMismatch(null); }}
-          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signup' ? 'bg-white text-[#070B14] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'signup' ? 'bg-white text-[#043061] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Create Account
         </button>

@@ -135,21 +135,21 @@ export default function AdminCommentsPage() {
                 <div className="space-y-0">
 
                     {/* ════════ DARK HERO STRIP ════════ */}
-                    <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+                    <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
 
                         <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                 <div>
-                                    <h1 className="text-xl font-black text-white tracking-tight">Customer Comments</h1>
+                                    <h1 className="text-xl font-black text-[#043061] tracking-tight">Customer Comments</h1>
                                     <p className="text-xs text-gray-500 mt-0.5">Manage and moderate customer feedback</p>
                                 </div>
-                                <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-                                    <MessageSquare className="h-4 w-4 text-[#4D7DF2]" />
+                                <div className="flex items-center gap-2.5 bg-white border border-line rounded-xl px-4 py-2">
+                                    <MessageSquare className="h-4 w-4 text-[#5A9ADA]" />
                                     <div>
                                         <p className="text-[9px] text-gray-500 font-medium uppercase tracking-widest leading-none">Comments</p>
-                                        <p className="text-base font-black text-white tabular-nums leading-tight">{comments.length.toLocaleString()}</p>
+                                        <p className="text-base font-black text-[#043061] tabular-nums leading-tight">{comments.length.toLocaleString()}</p>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@ export default function AdminCommentsPage() {
                                             key={pill.key}
                                             onClick={() => { setTypeFilter(pill.key); setPage(1); }}
                                             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                                                isAll && isActive ? 'bg-white/15 text-white ring-1 ring-white/20'
+                                                isAll && isActive ? 'bg-[#043061] text-white ring-1 ring-[#043061]/20'
                                                 : isActive && c ? `${c.bg} ${c.text} ring-1 ${c.ring}`
                                                 : 'bg-white/[0.04] text-gray-500 hover:bg-white/[0.08] hover:text-gray-300'
                                             }`}
@@ -205,7 +205,7 @@ export default function AdminCommentsPage() {
                         <div className="overflow-x-auto">
                             {loading ? (
                                 <div className="flex justify-center items-center py-16">
-                                    <div className="w-8 h-8 border-2 border-[#4D7DF2]/30 border-t-[#4D7DF2] rounded-full animate-spin" />
+                                    <div className="w-8 h-8 border-2 border-[#5A9ADA]/30 border-t-[#5A9ADA] rounded-full animate-spin" />
                                 </div>
                             ) : comments.length === 0 ? (
                                 <div className="text-center py-16 text-gray-400 text-sm">No comments found matching your search.</div>
@@ -226,7 +226,7 @@ export default function AdminCommentsPage() {
                                                 <TableCell>
                                                     <div className="flex items-center gap-3">
                                                         <Avatar className="h-8 w-8 rounded-xl">
-                                                            <AvatarFallback className="rounded-xl bg-[#070B14] text-white text-xs font-black">
+                                                            <AvatarFallback className="rounded-xl bg-[#043061] text-white text-xs font-black">
                                                                 {comment.customer ? `${comment.customer.firstName?.[0]}${comment.customer.lastName?.[0]}`.toUpperCase() : '?'}
                                                             </AvatarFallback>
                                                         </Avatar>
@@ -286,7 +286,7 @@ export default function AdminCommentsPage() {
                         <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
                             <DialogContent className="max-w-lg rounded-2xl">
                                 <DialogHeader>
-                                    <DialogTitle className="font-black text-[#070B14]">Comment Details</DialogTitle>
+                                    <DialogTitle className="font-black text-[#043061]">Comment Details</DialogTitle>
                                     <DialogDescription>Full comment information</DialogDescription>
                                 </DialogHeader>
                                 <div className="space-y-4 mt-2">

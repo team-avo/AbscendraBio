@@ -202,19 +202,19 @@ export default function AccountOrdersPage() {
         ) : (
           <>
             {/* Dark Hero Strip */}
-            <div className="relative bg-[#070B14] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
+            <div className="relative bg-mist border border-line border-t-2 border-t-[#5A9ADA] rounded-2xl mx-1 sm:mx-0 overflow-hidden">
               {/* Grid texture */}
               <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
               {/* Blue glow */}
-              <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#4D7DF2]/8 rounded-full blur-[100px] pointer-events-none" />
+              <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/8 rounded-full blur-[100px] pointer-events-none" />
               <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl font-black text-white tracking-tight">MY ORDERS</h1>
-                    <p className="text-xs text-white/40 mt-1">Track and manage your orders</p>
+                    <h1 className="text-2xl font-black text-[#043061] tracking-tight">MY ORDERS</h1>
+                    <p className="text-xs text-[#6b7d93] mt-1">Track and manage your orders</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <a href="/account" className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/[0.10] hover:text-white transition-all">
+                    <a href="/account" className="inline-flex items-center gap-1.5 bg-white border border-line rounded-xl px-4 py-2 text-xs font-medium text-[#043061] hover:bg-mist-2 transition-all">
                       ← Back to Account
                     </a>
                   </div>
@@ -238,7 +238,7 @@ export default function AccountOrdersPage() {
                   <button
                     key={tab.key}
                     onClick={() => { setStatus(tab.key); setCurrentPage(1); }}
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${isActive ? 'bg-[#1B2D4F] text-white border-[#1B2D4F]' : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${isActive ? 'bg-[#043061] text-white border-[#043061]' : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}`}
                   >
                     <span>{tab.label}</span>
                     <span className={`inline-flex items-center justify-center text-xs px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>{count}</span>
