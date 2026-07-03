@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import SeoScripts from "@/components/seo/scripts";
+import LeadConnectorChat from "@/components/integrations/LeadConnectorChat";
 import { CartProvider } from "@/contexts/cart-context";
 import { GooglePlacesProvider } from "@/contexts/google-places-context";
 import { Suspense } from "react";
@@ -53,6 +54,7 @@ export default function RootLayout({
         style={{ '--font-heading': 'var(--font-barlow)' } as React.CSSProperties}
       >
         <SeoScripts />
+        <LeadConnectorChat />
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
