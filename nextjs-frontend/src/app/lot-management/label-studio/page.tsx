@@ -52,13 +52,44 @@ const fmtDate = (iso?: string | null) => {
   return `${mm}/${dd}/${d.getFullYear()}`;
 };
 
-// Base artwork is the finished label; the editable lines are white-blocked and
-// redrawn so the canvas (and therefore the exported PDF) match exactly.
-const IMG_SRC = "/Ascendra_label_BPC-157_highres.png";
-const W = 2400;
-const H = 900;
+// The label is the finished design PNG (identical to the vial labels) used as the
+// canvas base; only the editable values are swapped in — the old values are erased
+// and a transparent data overlay is composited on top. This reproduces the final
+// design pixel for pixel (the whole-SVG render came out slightly different).
+const BASE_SRC = "/Ascendra_BPC157_final_label.png";
+const DATA_SVG_SRC = "/Ascendra_label_data.svg";
+const W = 2048;
+const H = 768;
+// Regions of the base to clear before drawing new values: body (white), footer (navy).
+const BODY_ERASE: [number, number, number, number][] = [
+  [328, 188, 650, 236], [328, 356, 630, 402], [328, 524, 630, 570],
+  [852, 276, 1700, 406], [852, 405, 1320, 484],
+];
+const FOOTER_ERASE: [number, number][] = [[742, 1132], [1212, 1474]];
 const LABEL_W_IN = 2;
 const LABEL_H_IN = 0.75;
+
+const xmlEsc = (s: string) =>
+  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// A chemical formula ("C62H98N16O22") -> SVG with subscript element counts.
+function formulaMarkup(f: string): string {
+  if (!f) return "";
+  let out = "";
+  const re = /([A-Z][a-z]?)(\d*)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(f)) !== null) {
+    if (!m[1]) continue;
+    out += m[1] + (m[2] ? `<tspan baseline-shift="sub" font-size="24">${m[2]}</tspan>` : "");
+  }
+  return out;
+}
+
+// Shrink the product-name font for long names so it stays on one line.
+function nameFontSize(name: string): number {
+  const size = Math.min(126, Math.floor(1080 / (Math.max(1, name.length) * 0.68)));
+  return Math.max(44, size);
+}
 
 // The logo, product name, strength and PURITY badge are all centered on the
 // label. The logo is already centered in the source art (cx1200); the badge
@@ -99,8 +130,96 @@ type Vals = {
 };
 const DEFAULTS: Vals = { name: "BPC-157", strength: "5 mg/vial", formula: "", cas: "", mw: "", lot: "", mfg: "", coa: "" };
 
+// Purity claim printed on the physical label (part of the base artwork there).
+const PURITY_TEXT = "≥99% by HPLC";
+
+function roundRectPath(x: CanvasRenderingContext2D, X: number, Y: number, w: number, h: number, r: number) {
+  x.beginPath();
+  x.moveTo(X + r, Y);
+  x.arcTo(X + w, Y, X + w, Y + h, r);
+  x.arcTo(X + w, Y + h, X, Y + h, r);
+  x.arcTo(X, Y + h, X, Y, r);
+  x.arcTo(X, Y, X + w, Y, r);
+  x.closePath();
+}
+
+// The print label is a wide 2 x 0.75 in landscape; a vial's label area is a tall
+// near-square band. Rather than distort the print art onto the vial, this renders
+// the same registry data in a portrait layout that fills the band cleanly.
+function buildVialLabelCanvas(vals: Vals, navy: string): HTMLCanvasElement {
+  const PW = 1000, PH = 968;
+  const c = document.createElement("canvas");
+  c.width = PW; c.height = PH;
+  const x = c.getContext("2d")!;
+  x.fillStyle = "#fff"; x.fillRect(0, 0, PW, PH);
+  const L = 96, R = PW - 96;
+
+  // Wordmark: letter-spaced ASCENDRA over BIO, with an underline rule.
+  x.fillStyle = navy; x.textBaseline = "alphabetic";
+  x.save(); x.translate(PW / 2, 118);
+  const word = "ASCENDRA", ls = 10; x.font = "700 60px Arial";
+  let tw = 0; for (const ch of word) tw += x.measureText(ch).width + ls; tw -= ls;
+  let wx = -tw / 2; x.textAlign = "left";
+  for (const ch of word) { x.fillText(ch, wx, 0); wx += x.measureText(ch).width + ls; }
+  x.restore();
+  x.textAlign = "center"; x.font = "600 26px Arial"; x.fillText("B I O", PW / 2, 158);
+  x.strokeStyle = navy; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(L, 190); x.lineTo(R, 190); x.stroke();
+
+  // Name + strength.
+  x.textAlign = "left";
+  x.font = "800 150px Arial"; x.fillStyle = navy; x.fillText(vals.name, L, 360);
+  x.font = "600 92px Arial"; x.fillText(vals.strength, L, 470);
+
+  // Technical values (only those present).
+  x.font = "40px Arial"; let ty = 585;
+  const line = (lab: string, v: string) => {
+    if (!v) return;
+    x.fillStyle = "#6b7c93"; x.fillText(lab, L, ty);
+    const lw = x.measureText(lab).width;
+    x.fillStyle = navy; x.fillText(v, L + lw + 14, ty);
+    ty += 62;
+  };
+  line("CAS", vals.cas);
+  line("FORMULA", vals.formula);
+  line("MW", vals.mw);
+
+  // Purity pill.
+  const py = ty + 6, ph = 74, pw = 560;
+  x.strokeStyle = navy; x.lineWidth = 3; roundRectPath(x, L, py, pw, ph, 10); x.stroke();
+  x.font = "700 34px Arial"; x.fillStyle = navy; x.textBaseline = "middle";
+  x.fillText("PURITY", L + 26, py + ph / 2);
+  x.textAlign = "right"; x.fillText(PURITY_TEXT, L + pw - 26, py + ph / 2);
+  x.textAlign = "left"; x.textBaseline = "alphabetic";
+
+  // LOT / MFG side box (rotated), only when values are present.
+  if (vals.lot || vals.mfg) {
+    const bw = 74, bh = 300, bx = R - bw, by = 300;
+    x.strokeStyle = navy; x.lineWidth = 3; x.strokeRect(bx, by, bw, bh);
+    x.save(); x.translate(bx + bw / 2, by + bh / 2); x.rotate(-Math.PI / 2);
+    x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = navy; x.font = "700 24px Arial";
+    if (vals.lot) x.fillText(`LOT ${vals.lot}`, 0, vals.mfg ? -14 : 0);
+    if (vals.mfg) x.fillText(`MFG ${vals.mfg}`, 0, vals.lot ? 14 : 0);
+    x.restore(); x.textBaseline = "alphabetic";
+  }
+
+  // Left vertical caution text.
+  x.save(); x.translate(52, PH - 150); x.rotate(-Math.PI / 2);
+  x.textAlign = "left"; x.font = "24px Arial"; x.fillStyle = "#6b7c93";
+  x.fillText("Not for human, veterinary or diagnostic use.", 0, 0);
+  x.restore();
+
+  // Navy footer bar.
+  x.fillStyle = navy; x.fillRect(0, PH - 90, PW, 90);
+  x.fillStyle = "#fff"; x.textAlign = "center"; x.font = "700 40px Arial";
+  x.textBaseline = "middle"; x.fillText("FOR RESEARCH USE ONLY", PW / 2, PH - 45);
+  x.textAlign = "left"; x.textBaseline = "alphabetic";
+  return c;
+}
+
 export default function LabelStudioPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const templateRef = useRef<string>("");
   const imgRef = useRef<HTMLImageElement | null>(null);
   const qrImgRef = useRef<HTMLImageElement | null>(null);
   const navyRef = useRef<string>("rgb(22,54,107)");
@@ -130,112 +249,65 @@ export default function LabelStudioPage() {
     })();
   }, []);
 
+  // Draw the finished-design base PNG, erase the old values, then composite a
+  // transparent overlay of the current values on top — so the output is pixel
+  // identical to the finished label with only the data swapped.
   const draw = useCallback((v: Vals) => {
     const canvas = canvasRef.current;
-    const img = imgRef.current;
-    if (!canvas || !img) return;
+    const base = imgRef.current;
+    const tmpl = templateRef.current;
+    if (!canvas || !base || !tmpl) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
     ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(img, 0, 0, W, H);
+    ctx.drawImage(base, 0, 0, W, H);
+    ctx.fillStyle = "rgb(254,254,254)";
+    for (const [x0, y0, x1, y1] of BODY_ERASE) ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+    ctx.fillStyle = "rgb(0,50,108)";
+    for (const [x0, x1] of FOOTER_ERASE) ctx.fillRect(x0, 692, x1 - x0, 56);
 
-    // The PURITY badge and the vertical "Not for human..." warning are baked
-    // into the template art (already correctly placed), so nothing to redraw.
+    const svg = tmpl
+      .replace("{{NAME}}", xmlEsc(v.name || ""))
+      .replace("{{NAMESIZE}}", String(nameFontSize(v.name || "")))
+      .replace("{{STRENGTH}}", xmlEsc(v.strength || ""))
+      .replace("{{FORMULA}}", formulaMarkup((v.formula || "").trim()))
+      .replace("{{CAS}}", xmlEsc((v.cas || "").trim()))
+      .replace("{{MW}}", xmlEsc((v.mw || "").trim()))
+      .replace("{{LOT}}", v.lot && v.lot.trim() ? `LOT: ${xmlEsc(v.lot.trim())}` : "")
+      .replace("{{MFG}}", v.mfg && v.mfg.trim() ? `MFG: ${xmlEsc(v.mfg.trim())}` : "");
 
-    // Product name and strength, centered on CENTER.
-    ctx.textAlign = "center";
-    ctx.textBaseline = "alphabetic";
-    (Object.keys(FIELDS) as (keyof typeof FIELDS)[]).forEach((k) => {
-      const f = FIELDS[k];
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(f.box.x, f.box.y, f.box.w, f.box.h);
-      const text = (v[k] || "").trim();
-      if (!text) return;
-      let size = f.size;
-      ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-      while (ctx.measureText(text).width > f.maxW && size > 12) {
-        size -= 2;
-        ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-      }
-      ctx.fillStyle = navyRef.current;
-      ctx.fillText(text, CENTER, f.baseline);
-    });
-
-    // Left technical panel values, drawn beneath the baked FORMULA / CAS / MW
-    // labels. Left-aligned, dark, auto-shrunk to fit the panel. Only if present.
-    const drawLeft = (text: string, y: number) => {
-      const t = (text || "").trim();
-      if (!t) return;
-      let size = LEFTVAL.size;
-      ctx.font = `${size}px Arial, Helvetica, sans-serif`;
-      while (ctx.measureText(t).width > LEFTVAL.maxW && size > 16) {
-        size -= 1;
-        ctx.font = `${size}px Arial, Helvetica, sans-serif`;
-      }
-      ctx.fillStyle = "#111111";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText(t, LEFTVAL.x, y);
+    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const overlay = new window.Image();
+    overlay.onload = () => {
+      ctx.drawImage(overlay, 0, 0, W, H);
+      URL.revokeObjectURL(url);
     };
-    drawLeft(v.formula, LEFTVAL.formulaY);
-    drawLeft(v.cas, LEFTVAL.casY);
-    drawLeft(v.mw, LEFTVAL.mwY);
-
-    // Footer LOT / MFG, white text centered in each half of the navy bar.
-    const drawFoot = (label: string, val: string, x: number) => {
-      const t = (val || "").trim();
-      if (!t) return;
-      ctx.fillStyle = "#ffffff";
-      ctx.font = `${FOOT.size}px Arial, Helvetica, sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText(`${label}: ${t}`, x, FOOT.y);
-    };
-    drawFoot("LOT", v.lot, FOOT.lotX);
-    drawFoot("MFG", v.mfg, FOOT.mfgX);
-
-    // QR code to the COA page, in the upper-right white area. Pre-rendered into
-    // qrImgRef when a COA number is set; a small caption sits beneath it.
-    if (v.coa && v.coa.trim() && qrImgRef.current) {
-      ctx.drawImage(qrImgRef.current, QR.x, QR.y, QR.size, QR.size);
-      ctx.fillStyle = navyRef.current;
-      ctx.font = "bold 34px Arial, Helvetica, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText("Scan for COA", QR.x + QR.size / 2, QR.y + QR.size + 40);
-    }
+    overlay.onerror = () => URL.revokeObjectURL(url);
+    overlay.src = url;
   }, []);
 
+  // Load the base design PNG and the data overlay template once.
   useEffect(() => {
-    const img = new window.Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      imgRef.current = img;
-      // Sample the heading navy: darkest bluish pixel inside the product-name box.
-      try {
-        const c = document.createElement("canvas");
-        c.width = W;
-        c.height = H;
-        const cx = c.getContext("2d");
-        if (cx) {
-          cx.drawImage(img, 0, 0, W, H);
-          const f = FIELDS.name.box;
-          const d = cx.getImageData(f.x, f.y, f.w, f.h).data;
-          let best = 1e9;
-          let nr = 22, ng = 54, nb = 107;
-          for (let i = 0; i < d.length; i += 4) {
-            const r = d[i], g = d[i + 1], b = d[i + 2];
-            const lum = r + g + b;
-            if (b > r && lum < best) { best = lum; nr = r; ng = g; nb = b; }
-          }
-          navyRef.current = `rgb(${nr},${ng},${nb})`;
-        }
-      } catch {
-        /* sampling is best-effort; fall back to default navy */
-      }
-      setReady(true);
+    let cancelled = false;
+    const base = new window.Image();
+    base.onload = () => {
+      imgRef.current = base;
+      if (templateRef.current && !cancelled) setReady(true);
     };
-    img.src = IMG_SRC;
+    base.src = BASE_SRC;
+    fetch(DATA_SVG_SRC)
+      .then((r) => r.text())
+      .then((t) => {
+        if (cancelled) return;
+        templateRef.current = t;
+        if (imgRef.current) setReady(true);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -353,11 +425,11 @@ export default function LabelStudioPage() {
       img.src = src;
     });
 
-  // Composite the current label canvas onto the vial base with a horizontal cylinder
-  // wrap (center face-on, edges compressed and darkened) → a PNG blob.
+  // Composite a portrait vial label (rendered from the current registry values)
+  // onto the vial base with a horizontal cylinder wrap (center face-on, edges
+  // compressed and gently darkened) → a PNG blob.
   const buildVialMockup = useCallback(async (): Promise<Blob | null> => {
-    const label = canvasRef.current;
-    if (!label) return null;
+    const label = buildVialLabelCanvas(vals, navyRef.current);
     const base = await loadImage("/vial-base.png").catch(() => null);
     if (!base) return null;
     const out = document.createElement("canvas");
@@ -372,6 +444,11 @@ export default function LabelStudioPage() {
     const rh = y1 - y0;
     const half = VIAL.arc / 2;
     const sinHalf = Math.sin(half);
+    // Preserve the label's aspect ratio: the art is a wide print label, the vial
+    // area is near-square, so fit its full width across the region and center it
+    // vertically (band) instead of stretching it tall.
+    const drawnH = Math.min(rh, Math.round(rw / (label.width / label.height)));
+    const yTop = y0 + Math.round((rh - drawnH) / 2);
     for (let i = 0; i < rw; i++) {
       const t = rw <= 1 ? 0.5 : i / (rw - 1);                 // 0..1 across the region
       const theta = (t - 0.5) * VIAL.arc;                     // -half..half
@@ -379,17 +456,20 @@ export default function LabelStudioPage() {
       const srcX = Math.max(0, Math.min(label.width - 1, srcT * (label.width - 1)));
       const ox = x0 + i;
       ctx.globalAlpha = 1;
-      ctx.drawImage(label, srcX, 0, 1, label.height, ox, y0, 1, rh); // 1px vertical slice
-      const shade = 1 - Math.cos(theta);                      // darker toward the wrap edges
-      if (shade > 0.001) {
-        ctx.globalAlpha = Math.min(0.5, shade * 0.65);
+      ctx.drawImage(label, srcX, 0, 1, label.height, ox, yTop, 1, drawnH); // 1px vertical slice
+      // Gentle cylinder shading: keep the front face clean white and only darken
+      // the outer edges as they curve away (subtle, so the label stays legible).
+      const e = Math.abs(theta) / half;                       // 0 center .. 1 edge
+      const a = e < 0.55 ? 0 : Math.pow((e - 0.55) / 0.45, 2) * 0.3;
+      if (a > 0.001) {
+        ctx.globalAlpha = a;
         ctx.fillStyle = "#0a1420";
-        ctx.fillRect(ox, y0, 1, rh);
+        ctx.fillRect(ox, yTop, 1, drawnH);
       }
     }
     ctx.globalAlpha = 1;
     return await new Promise<Blob | null>((res) => out.toBlob((b) => res(b), "image/png"));
-  }, []);
+  }, [vals]);
 
   const downloadVialMockup = async () => {
     const blob = await buildVialMockup();
