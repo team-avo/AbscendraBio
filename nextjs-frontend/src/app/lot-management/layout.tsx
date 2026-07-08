@@ -13,6 +13,7 @@ const TABS = [
   { href: "/lot-management/registries", label: "Registries" },
   { href: "/lot-management/labels", label: "Labels" },
   { href: "/lot-management/label-studio", label: "Label Studio" },
+  { href: "/lot-management/vial-studio", label: "Vial Studio" },
 ];
 
 export default function LotManagementLayout({ children }: { children: React.ReactNode }) {
