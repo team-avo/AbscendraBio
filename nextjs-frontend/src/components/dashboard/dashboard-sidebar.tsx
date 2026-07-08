@@ -424,7 +424,7 @@ export function DashboardSidebar({ open, onOpenChange }: DashboardSidebarProps) 
                                         // Hide personal/return for non-customers, hide sensitive for non-admins
                                         if (item.title === 'Personal' || item.title === 'Return to Shop') return false;
                                         // Margin Forecaster exposes cost/margin data: admins only (not STAFF/MANAGER).
-                                        if (item.title === 'Margin Forecaster') return user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+                                        if (item.title === 'Margin Forecaster') return ['ADMIN', 'SUPER_ADMIN'].includes(user?.role ?? '');
                                         return !['Tier Upgrades', 'Assign Customers', 'Analytics'].includes(item.title);
                                     })
                             ).map(item => renderNavItem(item))}
