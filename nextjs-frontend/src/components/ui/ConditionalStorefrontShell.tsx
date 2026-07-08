@@ -14,6 +14,7 @@ const ADMIN_ROUTE_PREFIXES = [
   "/admin",
   "/admin-dashboard",
   "/lot-management",
+  "/margin-forecaster",
   "/orders",
   "/products",
   "/wholesale-pricing",

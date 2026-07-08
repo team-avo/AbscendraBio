@@ -162,6 +162,10 @@ function getPageMeta(pathname: string): { title: string; breadcrumbs: Breadcrumb
             title: "3rd Party Testing",
             breadcrumbs: [{ label: "3rd Party Testing" }],
         },
+        "/margin-forecaster": {
+            title: "Margin Forecaster",
+            breadcrumbs: [{ label: "Margin Forecaster" }],
+        },
     };
 
     return segments[pathname] ?? {
