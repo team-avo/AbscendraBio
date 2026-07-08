@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Vial mockup images (heavy; served locally, not committed — manifest.json is kept)
+/public/vial-mockups/*.png

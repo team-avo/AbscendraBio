@@ -1,0 +1,302 @@
+[
+  {
+    "product": "Epithalon",
+    "options": [
+      {
+        "sku": "EPI-10MG",
+        "strength": "10mg Vial",
+        "file": "EPI-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Cerebrolysin",
+    "options": [
+      {
+        "sku": "CEREBRO-30ML",
+        "strength": "30ml Solution",
+        "file": "CEREBRO-30ML.webp"
+      }
+    ]
+  },
+  {
+    "product": "CJC-1295 + Ipamorelin",
+    "options": [
+      {
+        "sku": "CJC-IPA-55MG",
+        "strength": "5mg/5mg Blend",
+        "file": "CJC-IPA-55MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "AOD-9604",
+    "options": [
+      {
+        "sku": "AOD-9604-5MG",
+        "strength": "5mg Vial",
+        "file": "AOD-9604-5MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "BPC-157",
+    "options": [
+      {
+        "sku": "BPC-157-10MG",
+        "strength": "10mg Vial",
+        "file": "BPC-157-10MG.webp"
+      },
+      {
+        "sku": "BPC-157-20MG",
+        "strength": "20mg Vial",
+        "file": "BPC-157-20MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "BPC-157 + TB-500 Blend",
+    "options": [
+      {
+        "sku": "BPC157-TB500-10-10MG",
+        "strength": "10mg/10mg Vial",
+        "file": "BPC157-TB500-10-10MG.webp"
+      },
+      {
+        "sku": "BPC157-TB500-5-5MG",
+        "strength": "5mg/5mg Vial",
+        "file": "BPC157-TB500-5-5MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Bacteriostatic Water (BW)",
+    "options": [
+      {
+        "sku": "BW-10ML",
+        "strength": "10ml Vial",
+        "file": "BW-10ML.webp"
+      },
+      {
+        "sku": "BW-3ML",
+        "strength": "3ml Vial",
+        "file": "BW-3ML.webp"
+      }
+    ]
+  },
+  {
+    "product": "Semax",
+    "options": [
+      {
+        "sku": "SEMAX-10MG",
+        "strength": "10mg Vial",
+        "file": "SEMAX-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "TB-500 (Thymosin Beta-4)",
+    "options": [
+      {
+        "sku": "TB500-10MG",
+        "strength": "10mg Vial",
+        "file": "TB500-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Semax + Selank Blend",
+    "options": [
+      {
+        "sku": "SEMAX-SELANK-10-10MG",
+        "strength": "10mg/10mg Vial",
+        "file": "SEMAX-SELANK-10-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "ION-2T",
+    "options": [
+      {
+        "sku": "ION2T-10MG",
+        "strength": "10mg Vial",
+        "file": "ION2T-10MG.webp"
+      },
+      {
+        "sku": "ION2T-40MG",
+        "strength": "40mg Vial",
+        "file": "ION2T-40MG.webp"
+      },
+      {
+        "sku": "ION2T-60MG",
+        "strength": "60mg Vial",
+        "file": "ION2T-60MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "BW-H (Branded)",
+    "options": [
+      {
+        "sku": "BW-H-BRAND",
+        "strength": "Standard Vial",
+        "file": "BW-H-BRAND.webp"
+      }
+    ]
+  },
+  {
+    "product": "Glutathione",
+    "options": [
+      {
+        "sku": "GLUTATHIONE-1500MG",
+        "strength": "1500mg Vial",
+        "file": "GLUTATHIONE-1500MG.webp"
+      },
+      {
+        "sku": "GLUTATHIONE-600MG",
+        "strength": "600mg Vial",
+        "file": "GLUTATHIONE-600MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "GHK-Cu (Copper Peptide)",
+    "options": [
+      {
+        "sku": "GHK-CU-100MG",
+        "strength": "100mg Vial",
+        "file": "GHK-CU-100MG.webp"
+      },
+      {
+        "sku": "GHK-CU-50MG",
+        "strength": "50mg Vial",
+        "file": "GHK-CU-50MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "CJC-1295 + Ipamorelin (No DAC)",
+    "options": [
+      {
+        "sku": "CJC-IPAMO-NODAC-5-5MG",
+        "strength": "5mg/5mg Vial",
+        "file": "CJC-IPAMO-NODAC-5-5MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "KPV",
+    "options": [
+      {
+        "sku": "KPV-10MG",
+        "strength": "10mg Vial",
+        "file": "KPV-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Thymosin Alpha-1",
+    "options": [
+      {
+        "sku": "THYMOSIN-A1-10MG",
+        "strength": "10mg Vial",
+        "file": "THYMOSIN-A1-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Tesamorelin + Ipamorelin Blend",
+    "options": [
+      {
+        "sku": "TESA-IPAMO-10-3MG",
+        "strength": "10mg/3mg Vial",
+        "file": "TESA-IPAMO-10-3MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "NAD+",
+    "options": [
+      {
+        "sku": "NAD-500MG",
+        "strength": "500mg Vial",
+        "file": "NAD-500MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "KLOW Blend",
+    "options": [
+      {
+        "sku": "KLOW-80MG",
+        "strength": "80mg Vial",
+        "file": "KLOW-80MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "GLOW Blend",
+    "options": [
+      {
+        "sku": "GLOW-70MG",
+        "strength": "70mg Vial",
+        "file": "GLOW-70MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "ION-3R",
+    "options": [
+      {
+        "sku": "ION3R-10MG",
+        "strength": "10mg Vial",
+        "file": "ION3R-10MG.webp"
+      },
+      {
+        "sku": "ION3R-20MG",
+        "strength": "20mg Vial",
+        "file": "ION3R-20MG.webp"
+      },
+      {
+        "sku": "ION3R-50MG",
+        "strength": "50mg Vial",
+        "file": "ION3R-50MG.webp"
+      },
+      {
+        "sku": "ION3R-60MG",
+        "strength": "60mg Vial",
+        "file": "ION3R-60MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "PT-141 (Bremelanotide)",
+    "options": [
+      {
+        "sku": "PT141-10MG",
+        "strength": "10mg Vial",
+        "file": "PT141-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Melanotan II (MLT II)",
+    "options": [
+      {
+        "sku": "MLTII-10MG",
+        "strength": "10mg Vial",
+        "file": "MLTII-10MG.webp"
+      }
+    ]
+  },
+  {
+    "product": "Tesamorelin (Tesa)",
+    "options": [
+      {
+        "sku": "TESA-10MG",
+        "strength": "10mg Vial",
+        "file": "TESA-10MG.webp"
+      }
+    ]
+  }
+]
