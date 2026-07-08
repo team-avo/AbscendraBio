@@ -168,8 +168,8 @@ export function FooterBlue() {
             <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/70 mb-5">Resources</h4>
             <ul className="space-y-3">
               {[
-                { title: 'Lab Reports', href: '/landing/third-party-testing' },
-                { title: 'Quality Analysis', href: '/landing/third-party-testing' },
+                { title: 'Lab Reports', href: '/landing/coas' },
+                { title: 'Quality Analysis', href: '/landing/coas' },
                 { title: 'Clinical Inquiry', href: '/landing/contact' },
                 { title: 'About Us', href: '/landing/about' },
               ].map((lnk, i) => (

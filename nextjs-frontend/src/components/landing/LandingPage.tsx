@@ -187,7 +187,7 @@ export default function LandingPage() {
               </button>
 
               <Link
-                href="/landing/third-party-testing"
+                href="/landing/coas"
                 className="flex items-center gap-2 text-sm font-bold text-[#043061]/60 hover:text-[#043061] px-7 py-4 rounded-xl border border-[#043061]/10 hover:border-[#043061]/20 transition-all duration-200"
               >
                 Review Lab Reports

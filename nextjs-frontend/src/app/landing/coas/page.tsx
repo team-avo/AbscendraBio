@@ -167,10 +167,10 @@ export default function LandingThirdPartyTestingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className={`text-5xl font-black mb-4 text-foreground ${barlow.className}`}>
-              3rd Party Testing
+              Certificates of Analysis
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              View third-party testing reports. You can preview files online and download them.
+              View and download our COAs — independent third-party lab reports (purity, endotoxicity, and sterility) for every batch.
             </p>
           </div>
         </div>

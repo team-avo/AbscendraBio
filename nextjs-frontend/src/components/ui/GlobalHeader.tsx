@@ -88,7 +88,7 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
 
   const isHome = pathname === "/" || pathname === "/landing" || pathname === "/landing/";
   const isProducts = pathname?.startsWith("/landing/products");
-  const isThirdPartyTesting = pathname?.startsWith("/landing/third-party-testing");
+  const isThirdPartyTesting = pathname?.startsWith("/landing/coas");
   const { isAuthenticated, hasRole, logout, user, openLoginModal } = useAuth();
   const { items } = useCart();
 
@@ -336,8 +336,8 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                           Products
                         </Link>
                       )}
-                      <Link href="/landing/third-party-testing" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
-                        3rd Party Testing
+                      <Link href="/landing/coas" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
+                        COAs
                       </Link>
                       <button onClick={() => setOpenContact(true)} className={`cursor-pointer px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
                         Contact
@@ -590,11 +590,11 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                        )}
 
                        <Link
-                         href="/landing/third-party-testing"
+                         href="/landing/coas"
                          onClick={() => setMobileMenuOpen(false)}
                          className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isThirdPartyTesting ? 'bg-gray-100 text-[#043061]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#043061]'}`}
                        >
-                         3rd Party Testing
+                         COAs
                        </Link>
 
                        <button

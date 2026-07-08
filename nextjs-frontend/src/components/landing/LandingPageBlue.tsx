@@ -183,7 +183,7 @@ export default function LandingPageBlue() {
               </button>
 
               <Link
-                href="/landing/third-party-testing"
+                href="/landing/coas"
                 className="flex items-center gap-2 text-sm font-bold text-white/70 hover:text-white px-7 py-4 rounded-xl border border-white/30 hover:border-white/50 transition-all duration-200"
               >
                 Review Lab Reports

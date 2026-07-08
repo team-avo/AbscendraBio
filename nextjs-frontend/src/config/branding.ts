@@ -31,6 +31,6 @@ export const branding = {
   // Navigation links for the landing page
   navLinks: [
     { label: "Products", href: "/landing/products" },
-    { label: "3rd Party Testing", href: "/landing/third-party-testing" },
+    { label: "COAs", href: "/landing/coas" },
   ],
 };
