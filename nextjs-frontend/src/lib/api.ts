@@ -3,6 +3,7 @@
 
 import { API_BASE_URL } from "./env";
 import { ApiClient } from "./api-client";
+import { isFrontendAsset } from "./image-assets";
 import { createAuthMethods } from "./api-auth";
 import { createOrderMethods } from "./api-orders";
 import { createProductMethods } from "./api-products";
@@ -91,7 +92,7 @@ export const resolveImageUrl = (url?: string | null): string => {
   if (/^https?:\/\//i.test(url)) return url;
 
   // If it's a known frontend asset directory, return as is
-  if (url.startsWith('/peptide-ab/') || url.startsWith('/products/') || url.startsWith('/avatars/') || url.startsWith('/logo')) {
+  if (isFrontendAsset(url)) {
     return url;
   }
 

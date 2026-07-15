@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "./env";
+import { isFrontendAsset } from "./image-assets";
 import { ApiResponse } from "./api-types";
 import logger from "./logger";
 
@@ -37,6 +38,7 @@ export const resolveImageUrl = (url?: string | null): string => {
   const fallback = "/peptide-vial-bpc157.png";
   if (!url) return fallback;
   if (/^https?:\/\//i.test(url)) return url;
+  if (isFrontendAsset(url)) return url;
   try {
     const base = API_BASE_URL.replace(/\/$/, "").replace(/\/api$/, "");
     const path = url.startsWith("/") ? url : `/${url}`;
