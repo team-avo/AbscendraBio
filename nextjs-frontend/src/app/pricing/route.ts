@@ -26,17 +26,34 @@ export async function GET() {
     const res = await fetch(`${API_BASE}/public-pricing/wholesale`, {
       cache: "no-store",
     });
+    if (!res.ok) throw new Error(`${API_BASE} returned HTTP ${res.status}`);
+
     const json = await res.json();
-    if (json?.success && Array.isArray(json.data) && json.data.length) {
-      const payload = JSON.stringify(json.data);
-      // Replace the single-line `const DATA = [...]` with the live data.
-      html = TEMPLATE.replace(
-        /const DATA = \[[\s\S]*?\];/,
-        () => `const DATA = ${payload};`,
+    if (!json?.success || !Array.isArray(json.data) || !json.data.length) {
+      throw new Error(
+        `unexpected payload: ${JSON.stringify(json)?.slice(0, 200)}`,
       );
     }
-  } catch {
-    // Backend unreachable: fall back to the template's baked-in prices.
+
+    const payload = JSON.stringify(json.data);
+    // Replace the single-line `const DATA = [...]` with the live data.
+    const injected = TEMPLATE.replace(
+      /const DATA = \[[\s\S]*?\];/,
+      () => `const DATA = ${payload};`,
+    );
+    // A non-match leaves the template untouched, which would serve the baked-in
+    // prices while the backend is healthy — indistinguishable from success.
+    if (injected === TEMPLATE) {
+      throw new Error("DATA marker not found in template.html");
+    }
+    html = injected;
+  } catch (err) {
+    // Still serve the baked-in prices rather than a broken page, but never let a
+    // stale price list masquerade as a live one.
+    console.error(
+      "[pricing] live price injection failed — serving baked-in fallback:",
+      err,
+    );
   }
   return new NextResponse(html, {
     headers: {
