@@ -1,0 +1,54 @@
+sheet_product,sheet_spec,stock,pricing_name,pricing_strength,priced,reg,category,vial_image,image_status
+5-amino-1MQ,10mg,200,5-amino-1MQ,10 mg,YES,86.25,Research Peptides,,MISSING
+Acetic Acid 1%,3ml,100,Acetic Acid 1%,3 ml,NO,,,,MISSING
+AOD-9604,10mg,200,AOD-9604,10 mg,YES,86.25,Research Peptides,AOD-9604-5MG,CHECK (dose/spec mismatch)
+Ara-290,10mg,50,Ara-290,10 mg,YES,73.75,Research Peptides,,MISSING
+B12,mg/ml 10ml vial,200,B12,mg/ml 10ml vial,NO,,,,MISSING
+Bac Water (Hospira),30ml,40,Bac Water (Hospira),30 ml,NO,,,BW-H-BRAND,CHECK (dose/spec mismatch)
+Bacteriostatic Water,3ml,340,Bacteriostatic Water,3 ml,NO,,,BW-3ML,OK
+Bacteriostatic Water,10ml,360,Bacteriostatic Water,10 ml,NO,,,BW-10ML,OK
+BPC + TB Blend,10mg (5+5),30,BPC-157 / TB-500 (Wolverine),5/5 mg,YES,60.00,Research Peptides,BPC157-TB500-5-5MG,OK
+BPC + TB Blend,20mg (10+10),230,BPC-157 / TB-500 (Wolverine),10/10 mg,YES,98.75,Research Peptides,BPC157-TB500-10-10MG,OK
+BPC-157,10mg,160,BPC-157,10 mg,YES,60.00,Research Peptides,BPC-157-10MG,OK
+Cagrilintide,10mg,100,Cagrilintide,10 mg,YES,123.75,Research Peptides,,MISSING
+CJC-1295 No DAC + Ipamorelin,10mg (5+5),130,CJC-1295 / Ipamorelin (No DAC),5/5 mg,YES,73.75,Research Peptides,CJC-IPAMO-NODAC-5-5MG,OK
+CJC-1295 No DAC + Ipamorelin,20mg (10+10),10,CJC-1295 / Ipamorelin (No DAC),10/10 mg,YES,113.75,Research Peptides,,MISSING
+DSIP,10mg,100,DSIP,10 mg,YES,56.25,Research Peptides,,MISSING
+Epithalon,10mg,100,Epithalon,10 mg,YES,43.75,Research Peptides,EPI-10MG,OK
+GHK-Cu,50mg,30,GHK-Cu,50 mg,YES,36.25,Research Peptides,GHK-CU-50MG,OK
+GHK-Cu,100mg,230,GHK-Cu,100 mg,YES,56.25,Research Peptides,GHK-CU-100MG,OK
+GLOW Blend,70mg,300,GHK / BPC-157 / TB-500 (GLOW),70 mg,YES,111.25,Research Peptides,GLOW-70MG,OK
+Glutathione,600mg,420,Glutathione,600 mg,YES,36.25,Research Peptides,GLUTATHIONE-600MG,OK
+Glutathione,1500mg,440,Glutathione,1500 mg,YES,68.75,Research Peptides,GLUTATHIONE-1500MG,OK
+KLOW Blend,80mg,220,GHK / KPV / BPC-157 / TB-500 (KLOW),80 mg,YES,136.25,Research Peptides,KLOW-80MG,OK
+KPV,10mg,70,KPV,10 mg,YES,61.25,Research Peptides,KPV-10MG,OK
+MLT II,10mg,20,MLT II,10 mg,NO,,,MLTII-10MG,OK
+MOTS-c,20mg,100,MOTS-c,20 mg,YES,79.59,Research Peptides,,MISSING
+MT-1 (Melanotan 1),10mg,50,Melanotan 1,10 mg,YES,43.75,Research Peptides,,MISSING
+MT-2 (Melanotan 2),10mg,100,Melanotan 2,10 mg,YES,43.75,Research Peptides,,MISSING
+NAD+,500mg,160,NAD+,500 mg,YES,55.00,Research Peptides,NAD-500MG,OK
+NAD+,1000mg,330,NAD+,1000 mg,YES,106.25,Research Peptides,,MISSING
+PT-141,10mg,160,PT-141,10 mg,YES,46.25,Research Peptides,PT141-10MG,OK
+Ascendra 3-R,5mg,10,Retatrutide,5 mg,NO,,,,MISSING
+Ascendra 3-R,10mg,240,Retatrutide,10 mg,YES,73.13,GLP-1 Receptor Agonists,ION3R-10MG,REBRAND (supplier name)
+Ascendra 3-R,20mg,450,Retatrutide,20 mg,YES,124.94,GLP-1 Receptor Agonists,ION3R-20MG,REBRAND (supplier name)
+Ascendra 3-R,50mg,20,Retatrutide,50 mg,YES,236.25,GLP-1 Receptor Agonists,ION3R-50MG,REBRAND (supplier name)
+Ascendra 3-R,60mg,230,Retatrutide,60 mg,YES,273.75,GLP-1 Receptor Agonists,ION3R-60MG,REBRAND (supplier name)
+Selank,10mg,130,Selank,10 mg,YES,43.31,Research Peptides,,MISSING
+Ascendra 1-S,5mg,50,Semaglutide,5 mg,YES,48.75,GLP-1 Receptor Agonists,,MISSING
+Ascendra 1-S,10mg,110,Semaglutide,10 mg,YES,68.75,GLP-1 Receptor Agonists,,MISSING
+Ascendra 1-S,20mg,120,Semaglutide,20 mg,YES,86.25,GLP-1 Receptor Agonists,,MISSING
+Ascendra 1-S,30mg,10,Semaglutide,30 mg,YES,123.75,GLP-1 Receptor Agonists,,MISSING
+Semax,10mg,330,Semax,10 mg,YES,41.13,Research Peptides,SEMAX-10MG,OK
+Semax / Selank,20mg (10+10),20,Semax / Selank,10/10 mg,YES,111.25,Research Peptides,SEMAX-SELANK-10-10MG,OK
+SS-31,50mg,200,SS-31,50 mg,YES,173.75,Research Peptides,,MISSING
+TB-500,10mg,40,TB-500,10 mg,YES,61.25,Research Peptides,TB500-10MG,OK
+Tesamorelin,10mg,130,Tesamorelin,10 mg,YES,87.44,Research Peptides,TESA-10MG,OK
+Tesamorelin / Ipamorelin,13mg (10+3),20,Tesamorelin / Ipamorelin,10/3 mg,YES,123.75,Research Peptides,TESA-IPAMO-10-3MG,OK
+Thymosin Alpha-1,10mg,70,TA-1 (Thymosin Alpha-1),10 mg,YES,81.25,Research Peptides,THYMOSIN-A1-10MG,OK
+Ascendra 2-T,5mg,410,Tirzepatide,5 mg,YES,30.63,GLP-1 Receptor Agonists,,MISSING
+Ascendra 2-T,10mg,80,Tirzepatide,10 mg,YES,61.25,GLP-1 Receptor Agonists,ION2T-10MG,REBRAND (supplier name)
+Ascendra 2-T,20mg,300,Tirzepatide,20 mg,YES,106.25,GLP-1 Receptor Agonists,,MISSING
+Ascendra 2-T,30mg,20,Tirzepatide,30 mg,NO,,,,MISSING
+Ascendra 2-T,40mg,20,Tirzepatide,40 mg,YES,161.25,GLP-1 Receptor Agonists,ION2T-40MG,REBRAND (supplier name)
+Ascendra 2-T,60mg,230,Tirzepatide,60 mg,YES,186.25,GLP-1 Receptor Agonists,ION2T-60MG,REBRAND (supplier name)
