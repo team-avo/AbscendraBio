@@ -48,6 +48,8 @@ function useScrolled(threshold = 20) {
   return scrolled;
 }
 
+const STORE_LIST_PATH = "/landing/products";
+
 export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: GlobalHeaderProps) {
   const pathname = usePathname();
   const isDashboardRoute = pathname.startsWith('/admin') || 
@@ -139,7 +141,13 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
       if (!val || val === 'All' || val === 'featured') params.delete(key);
       else params.set(key, val);
     });
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    // Only the product LIST reads these params. Reusing `pathname` meant that
+    // searching from a product detail route (/landing/products/<id>) produced
+    // /landing/products/<id>?q=… — a param that page ignores — so the shopper
+    // stayed on the product they were already looking at and the search looked
+    // broken. Send them to the list instead.
+    const target = pathname === STORE_LIST_PATH ? pathname : STORE_LIST_PATH;
+    router.replace(`${target}?${params.toString()}`, { scroll: false });
   };
 
 

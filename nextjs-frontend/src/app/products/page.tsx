@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
 import { ProtectedRoute } from '@/contexts/auth-context';
 import { ProductsTable } from '@/components/products/products-table';
@@ -32,15 +33,25 @@ export default function ProductsPage() {
   const [variantsProduct, setVariantsProduct] = useState<Product | null>(null);
   const [statusStats, setStatusStats] = useState<{ active: number; draft: number; inactive: number; archived: number } | null>(null);
 
+  // Typing fired one request per keystroke, and responses arrive out of order —
+  // measured on prod, "SS-31" fired 5 requests and the one that painted the table
+  // was "SS-". Whichever prefix lost the race won the screen, so a mistyped
+  // character (which matches nothing) could leave 0 results showing under a
+  // perfectly good search term. Debounce collapses the requests; the seq guard
+  // below makes sure a straggler can never overwrite a newer response.
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const latestRequest = useRef(0);
+
   const ITEMS_PER_PAGE = 10;
 
   const fetchProducts = async () => {
+    const seq = ++latestRequest.current;
     try {
       setLoading(true);
       const params = {
         page: currentPage,
         limit: ITEMS_PER_PAGE,
-        search: searchTerm || undefined,
+        search: debouncedSearch || undefined,
         status: statusFilter !== 'all' ? statusFilter : undefined,
         category: categoryFilter !== 'all' ? categoryFilter : undefined,
         sortBy: 'displayOrder',
@@ -48,6 +59,9 @@ export default function ProductsPage() {
       };
 
       const response = await api.getProducts(params);
+
+      // A slower earlier request must never overwrite a newer one's results.
+      if (seq !== latestRequest.current) return;
 
       if (response.success && response.data) {
         setProducts(response.data.products || []);
@@ -60,16 +74,17 @@ export default function ProductsPage() {
         }
       }
     } catch (error) {
+      if (seq !== latestRequest.current) return;
       logger.error('Failed to fetch products:', { error });
       toast.error('Failed to load products');
     } finally {
-      setLoading(false);
+      if (seq === latestRequest.current) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, searchTerm, statusFilter, categoryFilter]);
+  }, [currentPage, debouncedSearch, statusFilter, categoryFilter]);
 
   useEffect(() => {
     const loadCategories = async () => {

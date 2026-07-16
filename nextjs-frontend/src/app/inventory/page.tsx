@@ -326,12 +326,12 @@ export default function InventoryPage() {
                                 </div>
 
                                 <div className="relative w-full sm:w-72">
-                                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+                                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
                                     <Input
                                         placeholder="Search items..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9 h-9 bg-white/[0.06] border-white/[0.08] text-white placeholder:text-gray-500 rounded-xl text-xs focus:bg-white/[0.08] focus:border-white/20"
+                                        className="pl-9 h-9 bg-white border-gray-200 rounded-xl text-xs placeholder:text-gray-400"
                                     />
                                 </div>
                             </div>
