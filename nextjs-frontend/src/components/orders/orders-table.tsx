@@ -48,8 +48,7 @@ import {
   CreditCard,
   FileSpreadsheet,
   CheckSquare,
-  Mail,
-  MessageSquare
+  Mail
 } from 'lucide-react';
 import { Order } from '@/lib/api';
 import { format } from 'date-fns';
@@ -66,9 +65,6 @@ import { toast } from 'sonner';
 import logger from '@/lib/logger';
 import { Pagination } from '../ui/pagination';
 import { downloadOrdersExcel } from '@/lib/export-orders';
-import { OrderCommentsDialog } from './order-comments-dialog';
-import { CustomerCommentsDialog } from './customer-comments-dialog';
-import { CommentCountMap } from '@/lib/api-types';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 interface OrdersTableProps {
@@ -198,27 +194,6 @@ export function OrdersTable({
   const [statusHistoryOpen, setStatusHistoryOpen] = useState(false);
   const [orderItemsOpen, setOrderItemsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [commentCounts, setCommentCounts] = useState<CommentCountMap>({ orders: {}, customers: {} });
-  const [orderCommentsOpen, setOrderCommentsOpen] = useState(false);
-  const [customerCommentsOpen, setCustomerCommentsOpen] = useState(false);
-
-  const fetchCommentCounts = async () => {
-    if (orders.length === 0) return;
-    try {
-      const orderIds = orders.map(o => o.id);
-      const customerIds = orders.map(o => o.customerId).filter((id): id is string => !!id);
-      const res = await api.getCommentCounts({ orderIds, customerIds });
-      if (res.success && res.data) {
-        setCommentCounts(res.data);
-      }
-    } catch (error) {
-      logger.error('Error fetching comment counts:', { error });
-    }
-  };
-
-  useEffect(() => {
-    fetchCommentCounts();
-  }, [orders]);
 
   const handleDelete = (orderId: string) => {
     setDeletingId(orderId);
@@ -312,8 +287,6 @@ export function OrdersTable({
                 <TableHead>Total</TableHead>
                 <TableHead className="hidden md:table-cell">Source</TableHead>
                 <TableHead className="table-cell">Date</TableHead>
-                <TableHead className="table-cell text-center min-w-[120px] px-2">Order comments</TableHead>
-                <TableHead className="table-cell text-center min-w-[120px] px-2">Customer comments</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -345,12 +318,6 @@ export function OrdersTable({
                   </TableCell>
                   <TableCell className="table-cell">
                     <Skeleton className="h-4 w-10" />
-                  </TableCell>
-                  <TableCell className="table-cell text-center">
-                    <Skeleton className="h-8 w-8 rounded-full mx-auto" />
-                  </TableCell>
-                  <TableCell className="table-cell text-center">
-                    <Skeleton className="h-8 w-8 rounded-full mx-auto" />
                   </TableCell>
                 </TableRow>
               ))}
@@ -478,8 +445,6 @@ export function OrdersTable({
               <TableHead>Total</TableHead>
               <TableHead className="table-cell">Channel</TableHead>
               <TableHead className="table-cell">Date</TableHead>
-              <TableHead className="table-cell text-center min-w-[120px] px-2">Order comments</TableHead>
-              <TableHead className="table-cell text-center min-w-[120px] px-2">Customer comments</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -500,11 +465,6 @@ export function OrdersTable({
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1.5">
                       <span className="font-mono text-sm">#{order.orderNumber}</span>
-                      {commentCounts.orders[order.id] > 0 && (
-                        <Badge variant="secondary" className="h-4 px-1 text-[9px] font-bold bg-blue-100 text-blue-700 border-blue-200">
-                          {commentCounts.orders[order.id]}
-                        </Badge>
-                      )}
                     </div>
                     {order.notes && Array.isArray(order.notes) && order.notes.length > 0 && (
                       <span className="text-xs text-muted-foreground">
@@ -537,11 +497,6 @@ export function OrdersTable({
                           `${order.customer.firstName} ${order.customer.lastName}` :
                           'Guest'
                         }
-                        {order.customer?.id && commentCounts.customers[order.customer.id] > 0 && (
-                          <Badge variant="secondary" className="h-4 px-1 text-[9px] font-bold bg-green-100 text-green-700 border-green-200">
-                            {commentCounts.customers[order.customer.id]}
-                          </Badge>
-                        )}
                       </span>
                       <span className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[100px] sm:max-w-[140px] lg:max-w-[180px]">
                         {order.customer?.email}
@@ -635,48 +590,6 @@ export function OrdersTable({
                   </div>
                 </TableCell>
 
-                <TableCell className="table-cell text-center min-w-[120px]">
-                  <div className="flex justify-center items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 relative"
-                      onClick={() => {
-                        setSelectedOrder(order);
-                        setOrderCommentsOpen(true);
-                      }}
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      {commentCounts.orders[order.id] > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
-                          {commentCounts.orders[order.id]}
-                        </span>
-                      )}
-                    </Button>
-                  </div>
-                </TableCell>
-
-                <TableCell className="table-cell text-center min-w-[120px]">
-                  <div className="flex justify-center items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 relative"
-                      onClick={() => {
-                        setSelectedOrder(order);
-                        setCustomerCommentsOpen(true);
-                      }}
-                      disabled={!order.customer}
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      {order.customer?.id && commentCounts.customers[order.customer.id] > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[9px] font-bold text-white">
-                          {commentCounts.customers[order.customer.id]}
-                        </span>
-                      )}
-                    </Button>
-                  </div>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -717,7 +630,6 @@ export function OrdersTable({
               order={selectedOrder}
               open={orderDetailsOpen}
               onClose={() => setOrderDetailsOpen(false)}
-              onCommentAdded={fetchCommentCounts}
             />
 
             <CustomerDetailsDialog
@@ -739,24 +651,6 @@ export function OrdersTable({
               open={orderItemsOpen}
               onClose={() => setOrderItemsOpen(false)}
             />
-
-            <OrderCommentsDialog
-              orderId={selectedOrder?.id || ''}
-              orderNumber={selectedOrder?.orderNumber || ''}
-              open={orderCommentsOpen}
-              onOpenChange={setOrderCommentsOpen}
-              onCommentAdded={fetchCommentCounts}
-            />
-
-            {selectedOrder.customer && (
-              <CustomerCommentsDialog
-                customerId={selectedOrder?.customer?.id || ''}
-                customerName={`${selectedOrder?.customer?.firstName || ''} ${selectedOrder?.customer?.lastName || ''}`}
-                open={customerCommentsOpen}
-                onOpenChange={setCustomerCommentsOpen}
-                onCommentAdded={fetchCommentCounts}
-              />
-            )}
           </>
         )
       }
