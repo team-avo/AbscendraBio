@@ -1025,9 +1025,9 @@ router.get(
         <div class='header'>
           <div class='header-row'>
             <div class='store-info'>
-              <h1>${storeInfo?.name || "Centre Labs"}</h1>
+              <h1>${storeInfo?.name || "Ascendra Bio, LLC"}</h1>
               <div class='store-details'>
-                ${storeInfo?.email || "info@centreresearch.org"}<br>
+                ${storeInfo?.email || "accounts@ascendrabio.com"}<br>
               </div>
             </div>
             <div class='invoice-box'>
@@ -1394,9 +1394,9 @@ router.get(
         <div class='header'>
           <div class='header-row'>
             <div class='store-info'>
-              <h1>${storeInfo?.name || "Centre Labs"}</h1>
+              <h1>${storeInfo?.name || "Ascendra Bio, LLC"}</h1>
               <div class='store-details'>
-                ${storeInfo?.email || "info@centreresearch.org"}<br>
+                ${storeInfo?.email || "accounts@ascendrabio.com"}<br>
                 ${storeInfo?.phone || ""}<br>
                 ${storeInfo?.addressLine1 || "5825 W Sunset Blvd"}${storeInfo?.addressLine2 ? ", " + storeInfo.addressLine2 : ", Suite 401"}, ${storeInfo?.city || "Los Angeles"}, ${storeInfo?.state || "CA"} ${storeInfo?.postalCode || "90028"}
               </div>
