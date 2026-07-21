@@ -95,7 +95,7 @@ const createTransporter = () => {
     port: config.port,
     secure: config.secure,
     user: config.auth.user,
-    from: process.env.EMAIL_FROM || "noreply@centreresearch.com",
+    from: process.env.EMAIL_FROM || "noreply@ascendrabio.com",
   });
 
   return nodemailer.createTransport(config);
@@ -158,7 +158,7 @@ const processEmailWithTemplateResend = async (
     // Create email header with logo
     const emailHeader = `
       <div style="text-align: center; padding: 20px 0; background-color: #ffffff; display: flex; justify-content: center; align-items: center; width: 100%;">
-        <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="max-width: 60px; width: auto; height: auto; display: block; margin: 0 auto;">
+        <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width: 150px; width: auto; height: auto; display: block; margin: 0 auto;">
       </div>
     `;
 
@@ -354,7 +354,7 @@ const processEmailWithTemplateResend = async (
       <body>
         <div class="container">
           <div class="email-header">
-            <img src="https://centrelabs.org/logo.png" alt="Centre Labs">
+            <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio">
           </div>
           <div class="content">
             ${htmlContent}
@@ -533,7 +533,7 @@ const processEmailWithTemplate = async (
     // Create email header with logo
     const emailHeader = `
       <div style="text-align: center; padding: 20px 0; background-color: #ffffff; display: flex; justify-content: center; align-items: center; width: 100%;">
-        <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="max-width: 60px; width: auto; height: auto; display: block; margin: 0 auto;">
+        <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width: 150px; width: auto; height: auto; display: block; margin: 0 auto;">
       </div>
     `;
 
@@ -729,7 +729,7 @@ const processEmailWithTemplate = async (
       <body>
         <div class="container">
           <div class="email-header">
-            <img src="https://centrelabs.org/logo.png" alt="Centre Labs">
+            <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio">
           </div>
           <div class="content">
             ${htmlContent}
@@ -800,7 +800,7 @@ const processRawEmail = async ({ to, subject, html, text, from }) => {
 
     // Prepare email options
     const mailOptions = {
-      from: from || process.env.EMAIL_FROM || "noreply@centreresearch.com",
+      from: from || process.env.EMAIL_FROM || "noreply@ascendrabio.com",
       to: to,
       subject: subject,
       html: html,
@@ -907,8 +907,8 @@ const sendOrderConfirmation = async (order, customer) => {
       orderTotal: `$${orderTotal}`,
       orderItems: orderItems,
       estimatedDelivery: "3-5 business days",
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
       orderLink: orderLink,
@@ -959,8 +959,8 @@ const sendShippingNotification = async (order, customer, shipment) => {
       trackingUrl,
       estimatedDelivery,
       orderItems: orderItems,
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
@@ -1000,8 +1000,8 @@ const sendOrderCancellation = async (
       orderTotal: `$${orderTotal}`,
       orderItems: orderItems,
       cancellationReason: cancellationReason,
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
@@ -1025,8 +1025,8 @@ const sendPaymentSuccess = async (order, customer, amount, method = 'Manual') =>
       orderTotal: `$${orderTotal}`,
       amountPaid: `$${Number(amount || 0).toFixed(2)}`,
       paymentMethod: method,
-      storeName: 'Centre Labs',
-      storeEmail: 'info@centreresearch.org',
+      storeName: 'Ascendra Bio',
+      storeEmail: 'info@ascendrabio.com',
       storePhone: '+1 (323) 299-6900',
       storeAddress: '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
     };
@@ -1048,8 +1048,8 @@ const sendWelcomeEmail = async (customer, verificationToken = null) => {
         : `${process.env.FRONTEND_URL}/login`,
       discountCode: "WELCOME10",
       discountAmount: "10%",
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
@@ -1069,14 +1069,14 @@ const sendLowInventoryAlert = async (product, currentStock, reorderPoint) => {
       currentStock: currentStock.toString(),
       reorderPoint: reorderPoint.toString(),
       supplierName: "Peptide Supply Co.",
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
 
     // Send to admin email
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@centreresearch.com";
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@ascendrabio.com";
     return await sendEmailWithTemplate("LOW_INVENTORY_ALERT", adminEmail, data);
   } catch (error) {
     console.error("Error sending low inventory alert:", error);
@@ -1156,8 +1156,8 @@ const sendStockAlertEmail = async (recipientEmail, lowStockItems = [], outOfStoc
     const alertTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     const data = {
-      storeName: storeInfo.name || 'Centre Labs',
-      storeEmail: storeInfo.email || 'info@centreresearch.org',
+      storeName: storeInfo.name || 'Ascendra Bio',
+      storeEmail: storeInfo.email || 'info@ascendrabio.com',
       storePhone: storeInfo.phone || '+1 (323) 299-6900',
       storeAddress: storeInfo.address || '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
       outOfStockCount: outOfStockItems.length.toString(),
@@ -1189,8 +1189,8 @@ const sendPasswordResetEmail = async (user, resetToken) => {
       customerEmail: user.email,
       resetLink: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
       resetPasswordLink: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
@@ -1209,8 +1209,8 @@ const sendAccountVerificationEmail = async (user, verificationToken) => {
       customerName: `${user.firstName} ${user.lastName}`,
       customerEmail: user.email,
       verificationLink: `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`,
-      storeName: "Centre Labs",
-      storeEmail: "info@centreresearch.org",
+      storeName: "Ascendra Bio",
+      storeEmail: "info@ascendrabio.com",
       storePhone: "+1 (323) 299-6900",
       storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
     };
@@ -1242,7 +1242,7 @@ const sendAbandonedCartEmail = async (cart, customer, checkoutUrl) => {
       </tr>`
     ).join('');
 
-    const subject = "You left something behind at Centre Labs";
+    const subject = "You left something behind at Ascendra Bio";
 
     // Hardcoded HTML Template
     const htmlContent = `
@@ -1265,7 +1265,7 @@ const sendAbandonedCartEmail = async (cart, customer, checkoutUrl) => {
       <body>
         <div class="container">
           <div class="header">
-             <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="max-width: 150px; height: auto;">
+             <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width: 150px; height: auto;">
           </div>
           
           <div class="content">
@@ -1292,7 +1292,7 @@ const sendAbandonedCartEmail = async (cart, customer, checkoutUrl) => {
           </div>
 
           <div class="footer">
-            <p>If you have any queries, please contact us at info@centreresearch.org</p>
+            <p>If you have any queries, please contact us at info@ascendrabio.com</p>
             <p>5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028</p>
           </div>
         </div>
@@ -1300,7 +1300,7 @@ const sendAbandonedCartEmail = async (cart, customer, checkoutUrl) => {
       </html>
     `;
 
-    const from = 'Centre Research | Notifications <notifications@centreresearch.org>';
+    const from = 'Ascendra Bio | Notifications <notifications@ascendrabio.com>';
     console.log("Queuing abandoned cart email via Resend...");
 
     return await sendRawEmail(customer.email, subject, htmlContent, null, from);
@@ -1371,7 +1371,7 @@ const buildOrderItemsTableHtml = (order) => {
 };
 
 const sendNewOrderToShippingManager = async (order, customer) => {
-  const to = (process.env.SHIPPING_MANAGER_EMAIL || 'noreply@centreresearch.com').trim();
+  const to = (process.env.SHIPPING_MANAGER_EMAIL || 'noreply@ascendrabio.com').trim();
   if (!to) return;
 
   const total = Number(order.totalAmount || 0).toFixed(2);
@@ -1382,7 +1382,7 @@ const sendNewOrderToShippingManager = async (order, customer) => {
     <div style="background:#f4f4f5; padding: 24px 0; margin:0;">
       <div style="max-width:640px; margin:0 auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
         <div style="text-align:center; padding: 20px 0; background:#ffffff;">
-          <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="max-width: 80px; width:auto; height:auto; display:block; margin:0 auto;" />
+          <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width: 150px; width:auto; height:auto; display:block; margin:0 auto;" />
         </div>
 
         <div style="padding: 0 24px 8px 24px;">
@@ -1428,7 +1428,7 @@ const sendNewOrderToShippingManager = async (order, customer) => {
 
   console.log('[Resend] Sending shipping manager notification...');
   await resend.emails.send({
-    from: 'Notifications | Centre Research <notifications@centreresearch.org>',
+    from: 'Notifications | Ascendra Bio <notifications@ascendrabio.com>',
     to,
     subject: `New Order: ${order.orderNumber}`,
     html,
@@ -1447,7 +1447,7 @@ const sendNewOrderToSalesRep = async (order, customer, salesRepUser) => {
     <div style="background:#f4f4f5; padding: 24px 0; margin:0;">
       <div style="max-width:640px; margin:0 auto; background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
         <div style="text-align:center; padding: 20px 0; background:#ffffff;">
-          <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="max-width: 80px; width:auto; height:auto; display:block; margin:0 auto;" />
+          <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width: 150px; width:auto; height:auto; display:block; margin:0 auto;" />
         </div>
 
         <div style="padding: 0 24px 8px 24px;">
@@ -1477,7 +1477,7 @@ const sendNewOrderToSalesRep = async (order, customer, salesRepUser) => {
 
   console.log('[Resend] Sending sales rep notification...');
   await resend.emails.send({
-    from: 'Notifications | Centre Research <notifications@centreresearch.org>',
+    from: 'Notifications | Ascendra Bio <notifications@ascendrabio.com>',
     to,
     subject: `Assigned Customer Order: ${order.orderNumber}`,
     html,
@@ -1502,7 +1502,7 @@ const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
         <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
           <tr>
             <td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-              <img src="https://centrelabs.org/logo.png" alt="Centre Labs" width="80" height="60" style="display:block;margin:0 auto;"/>
+              <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" width="150" style="display:block;margin:0 auto;"/>
               <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Your Login Code</h1>
               <p style="margin:0 0 24px 0;color:#6b7280;font-size:14px;">Hi ${firstName || 'there'}, use the code below to log in to your account.</p>
             </td>
@@ -1518,7 +1518,7 @@ const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
           </tr>
           <tr>
             <td style="padding:16px 24px 24px 24px;color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #f0f0f0;">
-              © ${new Date().getFullYear()} Centre Labs. All rights reserved.
+              © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
             </td>
           </tr>
         </table>
@@ -1527,9 +1527,9 @@ const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
     `;
 
     const response = await resend.emails.send({
-      from: 'Centre Research | Notifications <notifications@centreresearch.org>',
+      from: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
       to: toEmail,
-      subject: `Your login code is ${code} for centre Labs login`,
+      subject: `Your login code is ${code} for Ascendra Bio login`,
       html,
     });
 

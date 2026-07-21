@@ -53,11 +53,11 @@ const PLACEHOLDER_MAPPINGS = {
 
   // Store Information (from settings or environment)
   "{{storeName}}": (data) =>
-    data.store?.name || process.env.STORE_NAME || "Centre Physician Directed",
+    data.store?.name || process.env.STORE_NAME || "Ascendra Bio",
   "{{storeEmail}}": (data) =>
     data.store?.email ||
     process.env.STORE_EMAIL ||
-    "support@centreresearch.com",
+    "info@ascendrabio.com",
   "{{storePhone}}": (data) =>
     data.store?.phone || process.env.STORE_PHONE || "+1-555-0123",
   "{{storeAddress}}": (data) =>
@@ -67,7 +67,7 @@ const PLACEHOLDER_MAPPINGS = {
   "{{storeWebsite}}": (data) =>
     data.store?.website ||
     process.env.STORE_WEBSITE ||
-    "https://centrelabs.org",
+    "https://www.ascendrabio.com",
 
   // Account & Security
   "{{verificationLink}}": (data) =>
@@ -175,11 +175,11 @@ function generateSampleData(templateType) {
       mobile: "+1-555-0123",
     },
     store: {
-      name: "Centre Physician Directed",
-      email: "support@centreresearch.com",
+      name: "Ascendra Bio",
+      email: "info@ascendrabio.com",
       phone: "+1-555-0123",
       address: "123 Research Ave, Science City, SC 12345",
-      website: "https://centrelabs.org",
+      website: "https://www.ascendrabio.com",
     },
   };
 
@@ -225,7 +225,7 @@ function generateSampleData(templateType) {
     case "WELCOME_EMAIL":
       return {
         ...baseData,
-        verificationLink: "https://centrelabs.org/verify?token=abc123",
+        verificationLink: "https://www.ascendrabio.com/verify?token=abc123",
         promotion: {
           code: "WELCOME10",
           amount: "10%",
@@ -237,7 +237,7 @@ function generateSampleData(templateType) {
       return {
         ...baseData,
         resetPasswordLink:
-          "https://centrelabs.org/reset-password?token=reset123",
+          "https://www.ascendrabio.com/reset-password?token=reset123",
       };
 
     case "PARTNER_STATEMENT_GENERATED":

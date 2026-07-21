@@ -210,7 +210,7 @@ app.get("/health", (req, res) => {
 // API documentation endpoint
 app.get("/api", (req, res) => {
   res.json({
-    message: "Centre Research Peptide Store API",
+    message: "Ascendra Bio Store API",
     version: "1.0.0",
     endpoints: {
       auth: "/api/auth",
@@ -232,7 +232,7 @@ app.get("/api", (req, res) => {
       "public-pages": "/api/public-pages",
       "public-navigation": "/api/public-pages/navigation",
     },
-    documentation: "https://docs.centreresearch.com/api",
+    documentation: "https://docs.ascendrabio.com/api",
   });
 });
 
