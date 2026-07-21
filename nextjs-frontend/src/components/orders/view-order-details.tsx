@@ -398,13 +398,13 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
                         <div className="px-4 sm:px-6 pb-6 space-y-4">
                             {/* Order Summary */}
                             <Card className="border-none shadow-none sm:border sm:shadow-sm">
-                                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                                <CardHeader className="px-3 sm:px-6">
                                     <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                                         <ShoppingCart className="h-4 w-4" />
                                         Order Summary
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-3 sm:p-6 space-y-4">
+                                <CardContent className="px-3 sm:px-6 space-y-4">
                                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                                         <div className="space-y-1">
                                             <p className="text-[10px] sm:text-sm text-muted-foreground uppercase tracking-wider font-semibold">Status</p>
@@ -449,13 +449,13 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
 
                             {/* Customer Information */}
                             <Card className="border-none shadow-none sm:border sm:shadow-sm">
-                                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                                <CardHeader className="px-3 sm:px-6">
                                     <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                                         <User className="h-4 w-4" />
                                         Customer Information
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-3 sm:p-6">
+                                <CardContent className="px-3 sm:px-6">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <div>
@@ -487,13 +487,13 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
 
                             {/* Financial Summary */}
                             <Card className="border-none shadow-none sm:border sm:shadow-sm">
-                                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                                <CardHeader className="px-3 sm:px-6">
                                     <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                                         <DollarSign className="h-4 w-4" />
                                         Financial Summary
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-3 sm:p-6">
+                                <CardContent className="px-3 sm:px-6">
                                     <div className="space-y-2.5 sm:space-y-3 text-sm">
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">Subtotal</span>
@@ -530,13 +530,13 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
 
                     <TabsContent value="items" className="space-y-4 sm:space-y-6 m-0">
                         <Card className="border-none shadow-none sm:border sm:shadow-sm">
-                            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                            <CardHeader className="px-3 sm:px-6">
                                 <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                                     <Package className="h-4 w-4" />
                                     Order Items
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="p-3 sm:p-6">
+                            <CardContent className="px-3 sm:px-6">
                                 <div className="space-y-3 sm:space-y-4">
                                     {orderDetails.items.map((item, index) => (
                                         <div key={item.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 border rounded-lg bg-card/50">
