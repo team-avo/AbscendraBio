@@ -150,10 +150,6 @@ function getPageMeta(pathname: string): { title: string; breadcrumbs: Breadcrumb
             title: "Sales Managers",
             breadcrumbs: [{ label: "Users", href: "/users" }, { label: "Sales Managers" }],
         },
-        "/admin/comments": {
-            title: "Customer Comments",
-            breadcrumbs: [{ label: "Customer Comments" }],
-        },
         "/content": {
             title: "Content",
             breadcrumbs: [{ label: "Content" }],

@@ -73,7 +73,6 @@ const salesChannelRoutes = require("./routes/sales-channels");
 const thirdPartyReportsRoutes = require("./routes/third-party-reports");
 const publicThirdPartyReportsRoutes = require("./routes/public-third-party-reports");
 const loginAuditLogRoutes = require("./routes/loginAuditLogs");
-const commentsRoutes = require("./routes/comments");
 // Import stock alert scheduler
 const {
   initializeStockAlertScheduler,
@@ -305,7 +304,6 @@ app.use("/api/lot-management", authMiddleware, lotManagementRoutes);
 app.use("/api/public/coa", coaPublicRoutes); // public QR trace, no auth
 app.use("/api/sales-channels", salesChannelRoutes);
 app.use("/api/login-audit-logs", authMiddleware, loginAuditLogRoutes);
-app.use("/api/comments", authMiddleware, commentsRoutes);
 logger.info("Stock alerts routes registered successfully");
 // Odoo integration (auth required)
 logger.info("Registering Odoo integration routes...");

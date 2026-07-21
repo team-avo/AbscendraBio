@@ -9,16 +9,14 @@ import { Calendar, CreditCard, Package, User, MapPin, Phone, Mail } from 'lucide
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import logger from '@/lib/logger';
-import { CommentSection } from '../comments/comment-section';
 
 interface OrderDetailsDialogProps {
   order: any;
   open: boolean;
   onClose: () => void;
-  onCommentAdded?: () => void;
 }
 
-export function OrderDetailsDialog({ order, open, onClose, onCommentAdded }: OrderDetailsDialogProps) {
+export function OrderDetailsDialog({ order, open, onClose }: OrderDetailsDialogProps) {
   const [fullOrder, setFullOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -296,22 +294,6 @@ export function OrderDetailsDialog({ order, open, onClose, onCommentAdded }: Ord
                 </CardContent>
               </Card>
             )}
-            {/* Order Comments */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  Comments
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CommentSection
-                  type="ORDER"
-                  orderId={displayOrder.id}
-                  onCommentAdded={onCommentAdded}
-                />
-              </CardContent>
-            </Card>
           </div>
         )}
       </DialogContent>

@@ -11,9 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, User, Building, Crown, Mail, Phone, MapPin, Calendar, CreditCard, Shield, Users, MessageSquare } from 'lucide-react';
+import { Loader2, User, Building, Crown, Mail, Phone, MapPin, Calendar, CreditCard, Shield, Users } from 'lucide-react';
 import { Customer, api } from '@/lib/api';
-import { CommentSection } from '../comments/comment-section';
 import logger from '@/lib/logger';
 
 interface CustomerDetailsDialogProps {
@@ -53,7 +52,7 @@ const StatusBadge = ({ isApproved, approvalStatus }: { isApproved: boolean; appr
   return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
 };
 
-export function CustomerDetailsDialog({ customer, open, onOpenChange, onCommentAdded }: CustomerDetailsDialogProps) {
+export function CustomerDetailsDialog({ customer, open, onOpenChange }: CustomerDetailsDialogProps) {
   const [fullCustomer, setFullCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(false);
   const [salesRepUsers, setSalesRepUsers] = useState<Record<string, { firstName: string; lastName: string; email: string }>>({});
@@ -342,19 +341,6 @@ export function CustomerDetailsDialog({ customer, open, onOpenChange, onCommentA
                   <div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Comments Section */}
-            <Card className="border-blue-100 bg-blue-50/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-600">
-                  <MessageSquare className="h-5 w-5" />
-                  Staff Comments & Internal Notes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CommentSection type="CUSTOMER" customerId={customer.id} includeOrderComments={true} onCommentAdded={onCommentAdded} />
               </CardContent>
             </Card>
 

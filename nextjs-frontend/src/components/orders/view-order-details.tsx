@@ -29,7 +29,6 @@ import {
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import logger from '@/lib/logger';
-import { CommentSection } from '../comments/comment-section';
 
 interface OrderItem {
     id: string;
@@ -170,7 +169,7 @@ const PaymentBadge = ({ status }: { status: string }) => {
     );
 };
 
-export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }: ViewOrderDetailsProps) {
+export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetailsProps) {
     const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -392,7 +391,6 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
                             <TabsTrigger value="items" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Items</TabsTrigger>
                             <TabsTrigger value="shipping" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Shipping</TabsTrigger>
                             <TabsTrigger value="payment" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Payment</TabsTrigger>
-                            <TabsTrigger value="comments" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Comments</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -730,16 +728,6 @@ export function ViewOrderDetails({ open, onOpenChange, orderId, onCommentAdded }
                                 </CardContent>
                             </Card>
                         )}
-                    </TabsContent>
-
-                    <TabsContent value="comments" className="m-0">
-                        <div className="px-4 sm:px-6 pb-6 pt-4">
-                            <CommentSection
-                                type="ORDER"
-                                orderId={orderId}
-                                onCommentAdded={onCommentAdded}
-                            />
-                        </div>
                     </TabsContent>
                 </Tabs>
             </DialogContent>

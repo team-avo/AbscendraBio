@@ -12,7 +12,6 @@ import { createAdminMethods } from "./api-admin";
 import { createContentMethods } from "./api-content";
 import { createMarketingMethods } from "./api-marketing";
 import { createLocationMethods } from "./api-locations";
-import { createCommentMethods } from "./api-comments";
 import { createStockReceiptMethods } from "./api-stock-receipts";
 import { createZellePaymentMethods } from "./api-zelle-payments";
 import { createLotManagementMethods } from "./api-lot-management";
@@ -32,7 +31,6 @@ export const api = Object.assign(client, {
   ...createContentMethods(client),
   ...createMarketingMethods(client),
   ...createLocationMethods(client),
-  ...createCommentMethods(client),
   ...createStockReceiptMethods(client),
   ...createZellePaymentMethods(client),
   ...createLotManagementMethods(client),
@@ -72,9 +70,6 @@ export type {
   BulkQuote,
   CreateBulkQuoteRequest,
   TierUpgradeNotification,
-  Comment,
-  CommentType,
-  CommentCountMap,
 } from "./api-types";
 
 // ---------------------

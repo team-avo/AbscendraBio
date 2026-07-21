@@ -33,7 +33,6 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Dialog as UIDialog, DialogContent as UIDialogContent, DialogHeader as UIDialogHeader, DialogTitle as UIDialogTitle } from '@/components/ui/dialog';
 import { RecordPaymentDialog } from './record-payment-dialog';
-import { CommentSection } from '../comments/comment-section';
 import logger from '@/lib/logger';
 
 interface EditOrderDialogProps {
@@ -45,7 +44,7 @@ interface EditOrderDialogProps {
   onCommentAdded?: () => void;
 }
 
-export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete, onCommentAdded }: EditOrderDialogProps) {
+export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete }: EditOrderDialogProps) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -1005,7 +1004,6 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
                 <TabsTrigger value="items" className="flex-1 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">Items</TabsTrigger>
                 <TabsTrigger value="payments" className="flex-1 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">Payments</TabsTrigger>
                 <TabsTrigger value="shipping" className="flex-1 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">Shipping</TabsTrigger>
-                <TabsTrigger value="comments" className="flex-1 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap text-black data-[state=active]:text-black">Comments</TabsTrigger>
                 <TabsTrigger value="audit" className="flex-1 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap">Audit Trail</TabsTrigger>
               </TabsList>
 
@@ -1938,10 +1936,6 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
                     )}
                   </CardContent>
                 </Card>
-              </TabsContent>
-
-              <TabsContent value="comments" className="space-y-4 pt-4">
-                <CommentSection type="ORDER" orderId={order.id} onCommentAdded={onCommentAdded} />
               </TabsContent>
             </Tabs>
           </div>
