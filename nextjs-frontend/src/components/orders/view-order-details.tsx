@@ -315,7 +315,7 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
     if (loading) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[85vh] p-0 rounded-2xl overflow-hidden border-gray-200 flex flex-col">
                     <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
                       <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                       <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
@@ -343,7 +343,7 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
     if (!orderDetails) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+                <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[85vh] p-0 rounded-2xl overflow-hidden border-gray-200 flex flex-col">
                     <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
                       <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                       <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
@@ -369,7 +369,7 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[80vh] overflow-y-auto p-0 rounded-2xl overflow-hidden border-gray-200">
+            <DialogContent className="w-[96vw] sm:w-auto max-w-4xl max-h-[85vh] p-0 rounded-2xl overflow-hidden border-gray-200 flex flex-col">
                 <div className="bg-[#043061] px-6 py-5 relative overflow-hidden flex-shrink-0">
                   <div className="absolute -top-8 -right-8 w-28 h-28 bg-[#5A9ADA]/25 rounded-full blur-2xl pointer-events-none" />
                   <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
@@ -384,16 +384,17 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
                   </div>
                 </div>
 
-                <Tabs defaultValue="overview" className="w-full">
-                    <div className="px-4 sm:px-6 mb-4">
-                        <TabsList className="flex w-full overflow-x-auto overflow-y-hidden justify-start sm:grid sm:grid-cols-4 sm:justify-center p-1 scrollbar-hide">
-                            <TabsTrigger value="overview" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Overview</TabsTrigger>
-                            <TabsTrigger value="items" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Items</TabsTrigger>
-                            <TabsTrigger value="shipping" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Shipping</TabsTrigger>
-                            <TabsTrigger value="payment" className="flex-1 px-3 py-1.5 text-xs sm:text-sm">Payment</TabsTrigger>
+                <Tabs defaultValue="overview" className="w-full flex-1 flex flex-col min-h-0">
+                    <div className="px-4 sm:px-6 mb-4 flex-shrink-0">
+                        <TabsList className="flex w-full overflow-x-auto overflow-y-hidden justify-start sm:grid sm:grid-cols-4 sm:justify-center h-10 p-1 scrollbar-hide">
+                            <TabsTrigger value="overview" className="flex-1 px-3 text-xs sm:text-sm">Overview</TabsTrigger>
+                            <TabsTrigger value="items" className="flex-1 px-3 text-xs sm:text-sm">Items</TabsTrigger>
+                            <TabsTrigger value="shipping" className="flex-1 px-3 text-xs sm:text-sm">Shipping</TabsTrigger>
+                            <TabsTrigger value="payment" className="flex-1 px-3 text-xs sm:text-sm">Payment</TabsTrigger>
                         </TabsList>
                     </div>
 
+                    <div className="flex-1 overflow-y-auto min-h-0">
                     <TabsContent value="overview" className="m-0">
                         <div className="px-4 sm:px-6 pb-6 space-y-4">
                             {/* Order Summary */}
@@ -729,6 +730,7 @@ export function ViewOrderDetails({ open, onOpenChange, orderId }: ViewOrderDetai
                             </Card>
                         )}
                     </TabsContent>
+                    </div>
                 </Tabs>
             </DialogContent>
         </Dialog>
