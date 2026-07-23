@@ -579,6 +579,7 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
       const shipmentPayload = {
         orderId: order.id,
         shipment: {
+          carrier_id: selectedCarrier,
           service_code: selectedService,
           ship_to: {
             name: order.shippingAddress?.firstName && order.shippingAddress?.lastName
