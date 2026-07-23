@@ -1960,7 +1960,7 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
                   className="w-full sm:w-auto h-9 sm:h-10 text-xs sm:text-sm"
                 >
                   <Package className="h-4 w-4 mr-2" />
-                  {downloadingPackingSlip ? 'Downloading...' : 'Packing Slip'}
+                  {downloadingPackingSlip ? 'Downloading...' : 'Shipping Label'}
                 </Button>
                 <Button
                   variant="destructive"
