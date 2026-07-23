@@ -214,7 +214,7 @@ export function OrdersTable({
         orderId: markPaidOrder.id,
         amount: parseFloat(String(markPaidOrder.totalAmount)).toFixed(2),
         paymentStatus: 'COMPLETED',
-        paymentGatewayName: 'Manual',
+        paymentGatewayName: 'MANUAL',
       });
       if (res.success) {
         toast.success(`Payment marked as paid for #${markPaidOrder.orderNumber}`);
