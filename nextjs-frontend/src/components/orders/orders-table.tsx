@@ -40,6 +40,7 @@ import {
   Trash2,
   Eye,
   Package,
+  Truck,
   RefreshCw,
   ChevronLeft,
   ChevronRight,
@@ -445,6 +446,7 @@ export function OrdersTable({
               <TableHead>Total</TableHead>
               <TableHead className="table-cell">Channel</TableHead>
               <TableHead className="table-cell">Date</TableHead>
+              <TableHead className="table-cell text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -588,6 +590,19 @@ export function OrdersTable({
                       {order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : '??'}
                     </span>
                   </div>
+                </TableCell>
+
+                <TableCell className="table-cell text-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs whitespace-nowrap"
+                    title="Create shipment / print label"
+                    onClick={(e) => { e.stopPropagation(); onEdit(order); }}
+                  >
+                    <Truck className="h-3.5 w-3.5" />
+                    Ship
+                  </Button>
                 </TableCell>
 
               </TableRow>
