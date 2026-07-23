@@ -196,10 +196,39 @@ export function OrdersTable({
   const [orderItemsOpen, setOrderItemsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  // Manual "mark payment as paid" confirmation
+  const [markPaidOrder, setMarkPaidOrder] = useState<Order | null>(null);
+  const [markingPaid, setMarkingPaid] = useState(false);
+
   const handleDelete = (orderId: string) => {
     setDeletingId(orderId);
     onDelete(orderId);
     setDeletingId(null);
+  };
+
+  const handleMarkPaid = async () => {
+    if (!markPaidOrder) return;
+    setMarkingPaid(true);
+    try {
+      const res = await api.createTransaction({
+        orderId: markPaidOrder.id,
+        amount: parseFloat(String(markPaidOrder.totalAmount)).toFixed(2),
+        paymentStatus: 'COMPLETED',
+        paymentGatewayName: 'Manual',
+      });
+      if (res.success) {
+        toast.success(`Payment marked as paid for #${markPaidOrder.orderNumber}`);
+        setMarkPaidOrder(null);
+        onRefresh?.();
+      } else {
+        toast.error((res as any)?.error || 'Failed to mark payment as paid');
+      }
+    } catch (e) {
+      logger.error('Failed to mark payment as paid', { error: e });
+      toast.error('Failed to mark payment as paid');
+    } finally {
+      setMarkingPaid(false);
+    }
   };
 
   const handleRecordPayment = (order: Order) => {
@@ -531,7 +560,18 @@ export function OrdersTable({
                     {getStatusLabel(order.status)}
                   </Badge>
                 </TableCell>
-                <TableCell className="table-cell">
+                <TableCell
+                  className={cn("table-cell",
+                    (order.payments?.[0]?.status === 'COMPLETED' || order.payments?.[0]?.status === 'PAID')
+                      ? ""
+                      : "cursor-pointer hover:bg-muted/50 transition-colors"
+                  )}
+                  title={(order.payments?.[0]?.status === 'COMPLETED' || order.payments?.[0]?.status === 'PAID') ? undefined : "Mark payment as paid"}
+                  onClick={() => {
+                    const s = order.payments?.[0]?.status || 'PENDING';
+                    if (s !== 'COMPLETED' && s !== 'PAID') setMarkPaidOrder(order);
+                  }}
+                >
                   <Badge variant="outline" className={cn("text-[10px] sm:text-xs px-1.5 py-0 h-5 sm:h-6", getPaymentStatusColor(
                     order.payments && order.payments.length > 0
                       ? order.payments[0].status
@@ -636,6 +676,30 @@ export function OrdersTable({
           onRefresh?.();
         }}
       />
+
+      {/* Mark Payment as Paid confirmation */}
+      <AlertDialog open={!!markPaidOrder} onOpenChange={(o) => !o && setMarkPaidOrder(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark payment as successful?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This manually captures the payment
+              {markPaidOrder ? ` of $${parseFloat(String(markPaidOrder.totalAmount)).toFixed(2)}` : ''} for order
+              {markPaidOrder ? ` #${markPaidOrder.orderNumber}` : ''}. It's recorded as a Manual payment and unlocks
+              shipping-label creation. Only do this once the payment has actually been received.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={markingPaid}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleMarkPaid(); }}
+              disabled={markingPaid}
+            >
+              {markingPaid ? 'Marking…' : 'Confirm — mark as paid'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Dialog Components */}
       {
