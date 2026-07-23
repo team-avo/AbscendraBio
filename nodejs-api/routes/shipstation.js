@@ -335,7 +335,10 @@ router.post('/labels', async (req, res) => {
     const labelPayload = {
       shipment: finalShipment,
       validate_address: req.body.validate_address || process.env.SHIPSTATION_VALIDATE_ADDRESS || 'validate_and_clean',
-      test_label: test_label || false,
+      // Test vs real labels: honor an explicit client flag, otherwise fall back to
+      // the server env (SHIPSTATION_TEST_LABELS). This keeps the test/live switch a
+      // one-line env change and matches shipmentService.js — no hardcoded mode.
+      test_label: typeof test_label === 'boolean' ? test_label : process.env.SHIPSTATION_TEST_LABELS === 'true',
       label_format: label_format || 'pdf',
       label_layout: label_layout || '4x6',
       label_download_type: label_download_type || 'url'

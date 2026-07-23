@@ -653,7 +653,8 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
             },
           ],
         },
-        test_label: false,
+        // test vs real label is decided server-side by SHIPSTATION_TEST_LABELS
+        // (test labels locally, real labels in prod) — don't hardcode it here.
         label_format: labelFormat,
         label_layout: labelLayout,
         label_download_type: 'url'
