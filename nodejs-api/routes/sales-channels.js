@@ -339,12 +339,12 @@ router.get(
       const fullName =
         productName === v.name ? productName : `${productName} - ${v.name}`;
       // User requested to show regular price specifically
-      const centreResearchPrice = Number(v.regularPrice);
+      const basePrice = Number(v.regularPrice);
 
       worksheet.addRow({
         sku: v.sku,
         name: fullName,
-        price: priceMap.get(v.id) || centreResearchPrice || 0,
+        price: priceMap.get(v.id) || basePrice || 0,
       });
     });
 
@@ -432,7 +432,7 @@ router.post(
             name: variant.product
               ? `${variant.product.name} - ${variant.name}`
               : variant.name,
-            centreResearchPrice: Number(variant.regularPrice),
+            basePrice: Number(variant.regularPrice),
             channelPrice: item.price,
           });
         } else {

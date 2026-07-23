@@ -1054,7 +1054,7 @@ export default function EmailTemplatesPage() {
           estimatedDelivery: "3-5 business days",
           trackingNumber: "TRK123456789",
           carrier: "FedEx",
-          verificationLink: "https://centreresearch.com/verify?token=abc123",
+          verificationLink: "https://ascendrabio.com/verify?token=abc123",
           discountCode: "WELCOME10",
           discountAmount: "10%"
         }

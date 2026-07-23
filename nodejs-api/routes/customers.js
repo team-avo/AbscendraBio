@@ -824,15 +824,15 @@ router.post(
       try {
         const loginUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"
           }/login`;
-        const logoUrl = "https://centrelabs.org/logo.png";
+        const logoUrl = "https://www.ascendrabio.com/logo.png";
 
-        const subject = "Your Centre Labs account credentials";
+        const subject = "Your Ascendra Bio account credentials";
         const html = `
         <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;">
           <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
             <tr><td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-              <img src="https://centrelabs.org/logo.png" alt="Centre Labs" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
-              <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Centre Labs</h1>
+              <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
+              <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Ascendra Bio</h1>
               <p style="margin:0 0 16px 0;color:#6b7280;font-size:14px;">Hello ${firstName || ""
           }, your account has been created.</p>
             </td></tr>
@@ -852,7 +852,7 @@ router.post(
 
         console.log('[Resend] Sending customer credentials email...');
         await resend.emails.send({
-          from: 'Notifications | Centre Research <notifications@centreresearch.org>',
+          from: 'Notifications | Ascendra Bio <notifications@ascendrabio.com>',
           to: email,
           subject,
           html,
@@ -909,16 +909,16 @@ router.post(
       }/login`;
 
     // Use hosted logo for Resend
-    const logoUrl = "https://centrelabs.org/logo.png";
+    const logoUrl = "https://www.ascendrabio.com/logo.png";
 
-    const subject = "Your Centre Labs account credentials";
+    const subject = "Your Ascendra Bio account credentials";
     const html = `
   <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;">
     <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
       <tr>
         <td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-          <img src="${logoUrl}" alt="Centre Labs" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
-          <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Centre Labs</h1>
+          <img src="${logoUrl}" alt="Ascendra Bio" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
+          <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Ascendra Bio</h1>
           <p style="margin:0 0 16px 0;color:#6b7280;font-size:14px;">Hello ${customer.firstName || ""
       }, your account has been created.</p>
         </td>
@@ -944,7 +944,7 @@ router.post(
       </tr>
       <tr>
         <td style="padding:16px 24px 24px 24px;color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #f0f0f0;">
-          © ${new Date().getFullYear()} Centre Labs. All rights reserved.
+          © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
         </td>
       </tr>
     </table>
@@ -953,7 +953,7 @@ router.post(
     try {
       console.log('[Resend] Sending notified credentials email...');
       await resend.emails.send({
-        from: 'Notifications | Centre Research <notifications@centreresearch.org>',
+        from: 'Notifications | Ascendra Bio <notifications@ascendrabio.com>',
         to: customer.email,
         subject,
         html,
@@ -1239,18 +1239,18 @@ router.put(
           e?.message || e
         );
         try {
-          const subject = `Welcome to Centre Labs, ${customer.firstName || ""}`.trim();
+          const subject = `Welcome to Ascendra Bio, ${customer.firstName || ""}`.trim();
           const html = `
-          <h1>Welcome to Centre Labs</h1>
+          <h1>Welcome to Ascendra Bio</h1>
           <p>Hi ${customer.firstName || "there"},</p>
           <p>Your customer account has been approved. You can now log in and start exploring our products.</p>
           <p><a href="${process.env.FRONTEND_URL || "http://localhost:3000"
             }/login" style="display:inline-block;padding:10px 16px;background:#111;color:#fff;text-decoration:none;border-radius:6px">Sign in</a></p>
-          <p>Thank you,<br/>Centre Labs Team</p>
+          <p>Thank you,<br/>Ascendra Bio Team</p>
         `;
           console.log("[CUSTOMERS] Sending raw welcome email via Resend...");
           await resend.emails.send({
-            from: 'Notifications | Centre Research <notifications@centreresearch.org>',
+            from: 'Notifications | Ascendra Bio <notifications@ascendrabio.com>',
             to: customer.email,
             subject,
             html,

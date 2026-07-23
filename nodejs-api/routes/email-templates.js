@@ -22,13 +22,13 @@ router.post('/test', requirePermission('EMAIL_TEMPLATES', 'READ'), [
     // Test with a simple template
     const testData = {
       customerName: 'Test User',
-      storeName: 'Centre Labs',
+      storeName: 'Ascendra Bio',
       orderNumber: 'TEST-123',
       orderDate: new Date().toLocaleDateString(),
       orderTotal: '$99.99',
       orderItems: 'Test Product (1x)',
       estimatedDelivery: '3-5 business days',
-      storeEmail: 'contact@centreresearch.com',
+      storeEmail: 'contact@ascendrabio.com',
       storePhone: '+1 (555) 123-4567',
       storeAddress: '123 Research Ave, Science City, SC 12345'
     };
@@ -77,13 +77,13 @@ router.post('/test-service', requirePermission('EMAIL_TEMPLATES', 'READ'), [
     // Test the email service
     const testData = {
       customerName: 'Test User',
-      storeName: 'Centre Labs',
+      storeName: 'Ascendra Bio',
       orderNumber: 'TEST-123',
       orderDate: new Date().toLocaleDateString(),
       orderTotal: '$99.99',
       orderItems: 'Test Product (1x)',
       estimatedDelivery: '3-5 business days',
-      storeEmail: 'contact@centreresearch.com',
+      storeEmail: 'contact@ascendrabio.com',
       storePhone: '+1 (555) 123-4567',
       storeAddress: '123 Research Ave, Science City, SC 12345'
     };
@@ -118,7 +118,7 @@ router.get('/config', requirePermission('EMAIL_TEMPLATES', 'READ'), asyncHandler
       secure: process.env.EMAIL_SECURE === 'true',
       user: process.env.EMAIL_USER ? '***configured***' : '***missing***',
       password: process.env.EMAIL_PASSWORD ? '***configured***' : '***missing***',
-      from: process.env.EMAIL_FROM || 'noreply@centreresearch.com',
+      from: process.env.EMAIL_FROM || 'noreply@ascendrabio.com',
       isConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD)
     };
 

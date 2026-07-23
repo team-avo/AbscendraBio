@@ -54,7 +54,7 @@ async function run() {
                     <p><strong>Reason:</strong> Scheduled Expiry</p>
                 </div>
                 <div class="footer">
-                    This is an automated notification from Centre Labs.
+                    This is an automated notification from Ascendra Bio.
                 </div>
             </div>
         </body>
@@ -67,8 +67,8 @@ async function run() {
           "khush@advertout.in",
           "harshitdkanodia@gmail.com",
 
-          "nick@centreresearch.org",
-          "ben@centreresearch.org",
+          "nick@ascendrabio.com",
+          "ben@ascendrabio.com",
         ],
         subject: `[ALERT] Coupon Expired & Deleted: ${promo.code}`,
         html: html,

@@ -7,11 +7,11 @@ const logger = require('../utils/logger');
 // Hardcoded Black Friday campaign data
 const BLACK_FRIDAY_CONFIG = {
   discountCode: 'BLACKFRIDAY15',
-  shopLink: 'https://centreresearch.org',
+  shopLink: 'https://ascendrabio.com',
   saleStartDate: 'November 27, 2025 at 12:01 AM PST',
   saleEndDate: 'November 28, 2025',
-  storeName: 'Centre Labs',
-  storeEmail: process.env.STORE_EMAIL || 'info@centreresearch.org',
+  storeName: 'Ascendra Bio',
+  storeEmail: process.env.STORE_EMAIL || 'info@ascendrabio.com',
   storePhone: process.env.STORE_PHONE || '+1 (323) 299-6900',
   storeAddress: process.env.STORE_ADDRESS || '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028'
 };

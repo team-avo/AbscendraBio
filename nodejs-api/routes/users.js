@@ -300,13 +300,13 @@ router.post('/', requireRole(['ADMIN']), [
     });
     const loginUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`;
     const logoUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/logo.png`;
-    const subject = 'Your Centre Labs account credentials';
+    const subject = 'Your Ascendra Bio account credentials';
     const html = `
       <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;">
         <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
           <tr><td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-            <img src="${logoUrl}" alt="Centre Labs" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
-            <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Centre Labs</h1>
+            <img src="${logoUrl}" alt="Ascendra Bio" style="display:inline-block;width:120px;height:auto;margin:0 auto 8px auto;" />
+            <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Welcome to Ascendra Bio</h1>
             <p style="margin:0 0 16px 0;color:#6b7280;font-size:14px;">Hello ${firstName || ''}, your admin user has been created.</p>
           </td></tr>
           <tr><td style="padding:24px;">

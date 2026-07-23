@@ -776,7 +776,7 @@ router.delete(
                   <p><strong>Reason:</strong> Manual Deletion</p>
               </div>
               <div class="footer">
-                  This is an automated notification from Centre Labs.
+                  This is an automated notification from Ascendra Bio.
               </div>
           </div>
       </body>
@@ -788,8 +788,8 @@ router.delete(
           "nikhilranga43@gmail.com",
           "khush@advertout.in",
           "harshitdkanodia@gmail.com",
-          "nick@centreresearch.org",
-          "ben@centreresearch.org",
+          "nick@ascendrabio.com",
+          "ben@ascendrabio.com",
         ],
         subject: `[ALERT] Coupon Deactivated: ${promotion.code}`,
         html: html,

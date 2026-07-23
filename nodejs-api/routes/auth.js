@@ -23,7 +23,7 @@ const sendVerificationEmail = async (toEmail, firstName, verificationLink) => {
       <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
         <tr>
           <td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-            <img src="https://centrelabs.org/logo.png" alt="Verify" width="120" height="80"/>
+            <img src="https://www.ascendrabio.com/logo.png" alt="Verify" width="120" height="80"/>
             <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Confirm your email</h1>
             <p style="margin:0 0 24px 0;color:#6b7280;font-size:14px;">Hi ${
               firstName || "there"

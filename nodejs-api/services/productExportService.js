@@ -41,7 +41,7 @@ async function exportProductsToExcel() {
 
   // Create workbook
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "Centre Labs";
+  workbook.creator = "Ascendra Bio";
   workbook.created = new Date();
 
   // ============================================

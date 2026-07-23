@@ -354,8 +354,8 @@ router.patch('/:id/read', authMiddleware, requireRole(['ADMIN', 'MANAGER', 'SALE
         quantity: bulkQuote.quantity,
         requestDate: new Date(bulkQuote.createdAt).toLocaleDateString(),
         notes: bulkQuote.notes || '',
-        storeName: 'Centre Labs',
-        storeEmail: 'contact@centreresearch.com',
+        storeName: 'Ascendra Bio',
+        storeEmail: 'contact@ascendrabio.com',
         storePhone: '+1 (555) 123-4567',
         storeAddress: '123 Research Ave, Science City, SC 12345'
       };

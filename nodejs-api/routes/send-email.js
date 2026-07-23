@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
     <!-- Header -->
     <tr>
       <td align="center" bgcolor="#ffffff" style="padding: 40px 0 30px 0; border-bottom: 1px solid #dddddd;">
-        <h1 style="color: #333333; margin: 0; font-size: 28px; font-weight: bold;">Centre Labs</h1>
+        <h1 style="color: #333333; margin: 0; font-size: 28px; font-weight: bold;">Ascendra Bio</h1>
         <p style="color: #555555; font-size: 16px; margin-top: 10px;">New Inquiry</p>
       </td>
     </tr>
@@ -75,7 +75,7 @@ router.post('/', async (req, res) => {
 
     // Send the email (queued)
     const result = await sendRawEmail(
-      'info@centreresearch.org',
+      'info@ascendrabio.com',
       subject,
       html,
       message // plain text fallback

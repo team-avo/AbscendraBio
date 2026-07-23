@@ -232,9 +232,9 @@ router.get(
       return res.json({
         success: true,
         data: {
-          name: "Centre Labs",
+          name: "Ascendra Bio",
           description: "Premium peptides for research and development",
-          email: "contact@centreresearch.com",
+          email: "contact@ascendrabio.com",
           phone: "+1 (555) 123-4567",
           addressLine1: "123 Research Boulevard",
           addressLine2: "",
@@ -324,10 +324,10 @@ router.put(
     } else {
       storeInfo = await prisma.storeInformation.create({
         data: {
-          name: data.name || "Centre Labs",
+          name: data.name || "Ascendra Bio",
           description:
             data.description || "Premium peptides for research and development",
-          email: data.email || "contact@centreresearch.com",
+          email: data.email || "contact@ascendrabio.com",
           phone: data.phone || "+1 (555) 123-4567",
           addressLine1: data.addressLine1 || "123 Research Boulevard",
           addressLine2: data.addressLine2 || "",
@@ -377,10 +377,10 @@ router.post(
     } else {
       storeInfo = await prisma.storeInformation.create({
         data: {
-          name: "Centre Labs",
+          name: "Ascendra Bio",
           description:
             "Peptides made in America with the highest quality control standards possible.",
-          email: "info@centreresearch.org",
+          email: "info@ascendrabio.com",
           phone: "",
           addressLine1: "5825 W Sunset Blvd",
           addressLine2: "",
@@ -422,9 +422,9 @@ router.post(
     } else {
       await prisma.storeInformation.create({
         data: {
-          name: "Centre Labs",
+          name: "Ascendra Bio",
           description: "Premium peptides for research and development",
-          email: "info@centreresearch.org",
+          email: "info@ascendrabio.com",
           phone: "",
           addressLine1: "5825 W Sunset Blvd",
           addressLine2: "",

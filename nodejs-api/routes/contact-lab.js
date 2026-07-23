@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 
     // Fetch store email from StoreInformation
     const storeInfo = await prisma.storeInformation.findFirst();
-    const storeEmail = storeInfo?.email || process.env.ADMIN_EMAIL || 'admin@centreresearch.com';
+    const storeEmail = storeInfo?.email || process.env.ADMIN_EMAIL || 'admin@ascendrabio.com';
 
     const subject = `Lab Contact Request - ${email}`;
     const html = `
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || 'noreply@centreresearch.com',
+      from: process.env.EMAIL_FROM || 'noreply@ascendrabio.com',
       to: storeEmail,
       subject,
       html,

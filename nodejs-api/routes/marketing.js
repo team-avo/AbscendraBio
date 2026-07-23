@@ -342,8 +342,8 @@ router.post('/blast-selected', requireRole(['ADMIN']), asyncHandler(async (req, 
     const dbStoreInfo = await prisma.storeInformation.findFirst();
 
     // Store info for placeholders
-    const storeName = dbStoreInfo?.name || "Centre Labs";
-    const storeEmail = dbStoreInfo?.email || "info@centreresearch.org";
+    const storeName = dbStoreInfo?.name || "Ascendra Bio";
+    const storeEmail = dbStoreInfo?.email || "info@ascendrabio.com";
     const storePhone = dbStoreInfo?.phone || "+1 (323) 299-6900";
 
     // Construct address from DB parts or use default
@@ -439,8 +439,8 @@ router.post('/blast', requireRole(['ADMIN']), asyncHandler(async (req, res) => {
     const dbStoreInfo = await prisma.storeInformation.findFirst();
 
     // Store info for placeholders
-    const storeName = dbStoreInfo?.name || "Centre Labs";
-    const storeEmail = dbStoreInfo?.email || "info@centreresearch.org";
+    const storeName = dbStoreInfo?.name || "Ascendra Bio";
+    const storeEmail = dbStoreInfo?.email || "info@ascendrabio.com";
     const storePhone = dbStoreInfo?.phone || "+1 (323) 299-6900";
 
     // Construct address from DB parts or use default

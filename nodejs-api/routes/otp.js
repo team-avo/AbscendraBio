@@ -75,7 +75,7 @@ router.post(
     });
 
     // Send SMS via Twilio
-    const smsBody = `Your Centre Labs verification code is ${code}. It expires in 10 minutes.`;
+    const smsBody = `Your Ascendra Bio verification code is ${code}. It expires in 10 minutes.`;
     try {
       await sendSms(targetMobile, smsBody);
     } catch (e) {

@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
       <h1>New Inquiry</h1>
       <p>You have received a new inquiry from: <strong>${email}</strong></p>
       <p>Message:</p>
-      <p>I'm interested in Ascendra Bio Physician Directed. Please contact me with more information about your products and pricing. Thank you.</p>
+      <p>I'm interested in Ascendra Bio. Please contact me with more information about your products and pricing. Thank you.</p>
     `;
 
     const transporter = nodemailer.createTransport({

@@ -57,7 +57,7 @@ export default function GeneralSettingsPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="store-email">Contact Email</Label>
-                  <Input id="store-email" type="email" defaultValue="contact@centreresearch.com" />
+                  <Input id="store-email" type="email" defaultValue="contact@ascendrabio.com" />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="store-phone">Phone Number</Label>

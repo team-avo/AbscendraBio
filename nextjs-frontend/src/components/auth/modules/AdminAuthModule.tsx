@@ -329,7 +329,7 @@ export function AdminAuthModule({ onSwitchToCustomer, onSuccess, isModal = false
       {!isModal && (
         <div className="text-center mb-8">
           <div className="flex items-center justify-center">
-            <Image src="/Centre-Labs-logo-sm.png" alt="Logo" width={160} height={160} priority />
+            <Image src="/logo.png" alt="Logo" width={160} height={160} priority />
           </div>
         </div>
       )}

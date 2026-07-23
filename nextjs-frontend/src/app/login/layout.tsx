@@ -17,7 +17,7 @@ export default function LoginLayout({
             {/* Preload the logo image for faster LCP */}
             <link
                 rel="preload"
-                href="/Centre-Labs-logo-sm.png"
+                href="/logo.png"
                 as="image"
                 type="image/png"
             />

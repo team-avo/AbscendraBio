@@ -89,7 +89,7 @@ export default function NewContentPage() {
         setOgImage('');
         setContent(`
 <h2>We'd love to hear from you</h2>
-<p>Email: support@centreresearch.com<br/>Phone: +1 (555) 123-4567</p>
+<p>Email: support@ascendrabio.com<br/>Phone: +1 (555) 123-4567</p>
 <h3>Business Hours</h3>
 <p>Mon–Fri: 9:00–18:00 (EST)</p>
 `);

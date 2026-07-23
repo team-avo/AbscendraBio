@@ -15,7 +15,7 @@ const getStoreEmailData = async () => {
             storeEmail: storeInfo.email,
             storePhone: storeInfo.phone,
             storeAddress: `${storeInfo.addressLine1}${storeInfo.addressLine2 ? ', ' + storeInfo.addressLine2 : ''}, ${storeInfo.city}, ${storeInfo.state} ${storeInfo.postalCode}`,
-            storeWebsite: process.env.STORE_WEBSITE || 'https://centrelabs.org'
+            storeWebsite: process.env.STORE_WEBSITE || 'https://ascendrabio.com'
         };
     } catch (err) {
         logger.error('[PartnerBillingCron] Error fetching store info', err);
@@ -224,7 +224,7 @@ const sendPaymentReminders = async () => {
                     // Internal Escalation
                     await queueEmail({
                         type: 'RAW',
-                        to: process.env.FINANCE_EMAIL || 'finance@centreresearch.org',
+                        to: process.env.FINANCE_EMAIL || 'finance@ascendrabio.com',
                         subject: `ESCALATION: Statement ${statement.referenceId} is ${daysOverdue} days overdue`,
                         html: `<p>Statement ${statement.referenceId} for ${statement.salesChannel.companyName} is ${daysOverdue} days overdue.</p>
                    <p>Total Amount: $${statement.totalAmount}</p>

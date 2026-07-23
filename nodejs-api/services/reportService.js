@@ -31,7 +31,7 @@ async function generateOrdersExcel(orders, title = 'Orders Report') {
             status: order.status,
             totalAmount: Number(order.totalAmount || 0).toFixed(2),
             itemCount: order.items?.length || 0,
-            salesChannel: order.salesChannel?.companyName || (order.partnerOrderId ? 'Partner' : 'Centre Labs'),
+            salesChannel: order.salesChannel?.companyName || (order.partnerOrderId ? 'Partner' : 'Ascendra Bio'),
             paymentStatus: order.payments && order.payments.length > 0 ? order.payments[0].status : 'PENDING',
         });
     });

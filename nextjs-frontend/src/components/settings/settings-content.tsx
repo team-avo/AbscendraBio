@@ -1108,7 +1108,7 @@ export function SettingsContent() {
                                                     </Avatar>
                                                     <div>
                                                         <div className="font-medium text-sm">Admin User</div>
-                                                        <div className="text-xs text-muted-foreground">admin@centreresearch.com</div>
+                                                        <div className="text-xs text-muted-foreground">admin@ascendrabio.com</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -1131,7 +1131,7 @@ export function SettingsContent() {
                                                     </Avatar>
                                                     <div>
                                                         <div className="font-medium text-sm">John Doe</div>
-                                                        <div className="text-xs text-muted-foreground">john@centreresearch.com</div>
+                                                        <div className="text-xs text-muted-foreground">john@ascendrabio.com</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
