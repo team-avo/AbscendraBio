@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 import { Dialog as UIDialog, DialogContent as UIDialogContent, DialogHeader as UIDialogHeader, DialogTitle as UIDialogTitle } from '@/components/ui/dialog';
 import { RecordPaymentDialog } from './record-payment-dialog';
 import logger from '@/lib/logger';
+import { buildViewableDocument } from '@/lib/document-view';
 
 interface EditOrderDialogProps {
   order: Order | null;
@@ -155,84 +156,23 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
 
       const html = await response.text();
 
-      // Open a new window for native browser print (vector text, infinitely sharp)
-      const printWindow = window.open('', '_blank', 'width=400,height=600');
-      if (!printWindow) {
-        toast.error('Please allow popups to print the invoice');
+      // Open in a new tab so the admin can VIEW the invoice. The tab stays open
+      // (no auto-print, no auto-close); the floating button prints/saves on demand.
+      const viewWindow = window.open('', '_blank');
+      if (!viewWindow) {
+        toast.error('Please allow popups to view the invoice');
         setDownloadingInvoice(false);
         return;
       }
 
-      // Clean unsupported CSS color functions
-      let cleanHtml = html;
-      cleanHtml = cleanHtml.replace(/(?:oklch|oklab|lab|lch|hwb)\s*\([^)]*\)/gi, '#000000');
-      cleanHtml = cleanHtml.replace(/--[a-zA-Z0-9-]+:\s*(?:oklch|oklab|lab|lch|hwb)\s*\([^;]+\);/gi, '');
-
-      // Inject @media print CSS for 4×6 label layout into the HTML
-      const printCSS = `
-        <style>
-          @media print {
-            @page {
-              size: 4in 6in;
-              margin: 0;
-            }
-            html, body {
-              width: 100%;
-              margin: 0;
-              padding: 1mm;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-          }
-        </style>
-      `;
-
-      // Insert print CSS before closing </head> or at the beginning
-      if (cleanHtml.includes('</head>')) {
-        cleanHtml = cleanHtml.replace('</head>', printCSS + '</head>');
-      } else {
-        cleanHtml = printCSS + cleanHtml;
-      }
-
-      printWindow.document.open();
-      printWindow.document.write(cleanHtml);
-      printWindow.document.close();
-
-      // Wait for content to load, then trigger print
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          // Close the window after print dialog is dismissed
-          printWindow.onafterprint = () => {
-            printWindow.close();
-          };
-          // Fallback: close after a delay if onafterprint is not supported
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              printWindow.close();
-            }
-          }, 60000);
-          setDownloadingInvoice(false);
-        }, 300);
-      };
-
-      // Fallback if onload doesn't fire
-      setTimeout(() => {
-        if (!printWindow.closed) {
-          printWindow.print();
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              printWindow.close();
-            }
-          }, 60000);
-        }
-        setDownloadingInvoice(false);
-      }, 2000);
+      viewWindow.document.open();
+      viewWindow.document.write(buildViewableDocument(html));
+      viewWindow.document.close();
+      setDownloadingInvoice(false);
 
     } catch (error) {
-      logger.error('Error downloading invoice:', { error: error });
-      toast.error('Failed to download invoice');
+      logger.error('Error opening invoice:', { error: error });
+      toast.error('Failed to open invoice');
       setDownloadingInvoice(false);
     }
   };
@@ -258,84 +198,23 @@ export function EditOrderDialog({ order, open, onOpenChange, onSuccess, onDelete
 
       const html = await response.text();
 
-      // Open a new window for native browser print (vector text, infinitely sharp)
-      const printWindow = window.open('', '_blank', 'width=400,height=600');
-      if (!printWindow) {
-        toast.error('Please allow popups to print the packing slip');
+      // Open in a new tab so the admin can VIEW the packing slip. The tab stays open
+      // (no auto-print, no auto-close); the floating button prints/saves on demand.
+      const viewWindow = window.open('', '_blank');
+      if (!viewWindow) {
+        toast.error('Please allow popups to view the packing slip');
         setDownloadingPackingSlip(false);
         return;
       }
 
-      // Clean unsupported CSS color functions
-      let cleanHtml = html;
-      cleanHtml = cleanHtml.replace(/(?:oklch|oklab|lab|lch|hwb)\s*\([^)]*\)/gi, '#000000');
-      cleanHtml = cleanHtml.replace(/--[a-zA-Z0-9-]+:\s*(?:oklch|oklab|lab|lch|hwb)\s*\([^;]+\);/gi, '');
-
-      // Inject @media print CSS for 4×6 label layout into the HTML
-      const printCSS = `
-        <style>
-          @media print {
-            @page {
-              size: 4in 6in;
-              margin: 0;
-            }
-            html, body {
-              width: 100%;
-              margin: 0;
-              padding: 1mm;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-          }
-        </style>
-      `;
-
-      // Insert print CSS before closing </head> or at the beginning
-      if (cleanHtml.includes('</head>')) {
-        cleanHtml = cleanHtml.replace('</head>', printCSS + '</head>');
-      } else {
-        cleanHtml = printCSS + cleanHtml;
-      }
-
-      printWindow.document.open();
-      printWindow.document.write(cleanHtml);
-      printWindow.document.close();
-
-      // Wait for content to load, then trigger print
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-          // Close the window after print dialog is dismissed
-          printWindow.onafterprint = () => {
-            printWindow.close();
-          };
-          // Fallback: close after a delay if onafterprint is not supported
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              printWindow.close();
-            }
-          }, 60000);
-          setDownloadingPackingSlip(false);
-        }, 300);
-      };
-
-      // Fallback if onload doesn't fire
-      setTimeout(() => {
-        if (!printWindow.closed) {
-          printWindow.print();
-          setTimeout(() => {
-            if (!printWindow.closed) {
-              printWindow.close();
-            }
-          }, 60000);
-        }
-        setDownloadingPackingSlip(false);
-      }, 2000);
+      viewWindow.document.open();
+      viewWindow.document.write(buildViewableDocument(html));
+      viewWindow.document.close();
+      setDownloadingPackingSlip(false);
 
     } catch (error) {
-      logger.error('Error downloading packing slip:', { error: error });
-      toast.error('Failed to download packing slip');
+      logger.error('Error opening packing slip:', { error: error });
+      toast.error('Failed to open packing slip');
       setDownloadingPackingSlip(false);
     }
   };

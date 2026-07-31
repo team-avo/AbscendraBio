@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ArrowLeft, Package, Truck, CreditCard, CalendarDays, Receipt, XCircle, CheckCircle2, Clock, Home, Download } from "lucide-react";
 import { API_BASE_URL } from "@/lib/env";
 import { getToken } from "@/lib/api-client";
+import { openDocumentInTab } from "@/lib/document-view";
 import logger from '@/lib/logger';
 
 export default function AccountOrderDetailsPage() {
@@ -221,50 +222,16 @@ export default function AccountOrderDetailsPage() {
       }
 
       const html = await response.text();
-      const printWindow = window.open('', '_blank', 'width=400,height=600');
-      if (printWindow) {
-        // Clean unsupported CSS color functions (matches admin end)
-        let cleanHtml = html;
-        cleanHtml = cleanHtml.replace(/(?:oklch|oklab|lab|lch|hwb)\s*\([^)]*\)/gi, '#000000');
-        cleanHtml = cleanHtml.replace(/--[a-zA-Z0-9-]+:\s*(?:oklch|oklab|lab|lch|hwb)\s*\([^;]+\);/gi, '');
 
-        // Inject @media print CSS for 4×6 label layout into the HTML (matches admin end)
-        const printCSS = `
-          <style>
-            @media print {
-              @page {
-                size: 4in 6in;
-                margin: 0;
-              }
-              html, body {
-                width: 100%;
-                margin: 0;
-                padding: 1mm;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-              }
-            }
-          </style>
-        `;
-
-        if (cleanHtml.includes('</head>')) {
-          cleanHtml = cleanHtml.replace('</head>', printCSS + '</head>');
-        } else {
-          cleanHtml = printCSS + cleanHtml;
-        }
-
-        printWindow.document.write(cleanHtml);
-        printWindow.document.close();
-
-        setTimeout(() => {
-          printWindow.focus();
-          printWindow.print();
-        }, 500);
+      // Open the invoice in a new tab for viewing (stays open; print/save is optional
+      // via the floating button) instead of forcing a print dialog.
+      const opened = openDocumentInTab(html);
+      if (!opened) {
+        alert('Please allow popups to view the invoice.');
       }
     } catch (error) {
-      console.error('Invoice download failed:', error);
-      alert('Failed to download invoice. Please try again later.');
+      console.error('Invoice open failed:', error);
+      alert('Failed to open invoice. Please try again later.');
     } finally {
       setDownloadingInvoice(false);
     }

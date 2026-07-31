@@ -430,7 +430,7 @@ export default function AccountHomePage() {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-8 grid-cols-1">
           {/* Profile Card */}
           <div className="relative bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
@@ -519,7 +519,7 @@ export default function AccountHomePage() {
           </div>
 
           {/* Orders Card */}
-          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 lg:col-span-2">
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-gray-900">Orders</p>
               <div className="flex gap-2">
@@ -575,7 +575,7 @@ export default function AccountHomePage() {
 
         </div>
 
-        <div className="mt-8">
+        <div>
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-gray-900">Addresses</p>

@@ -845,26 +845,45 @@ router.get(
         <title>Invoice - ${order.orderNumber}</title>
         <style>
           @page {
-            size: 4in 6in;
-            margin: 0;
+            size: A4;
+            margin: 16mm;
           }
           * { box-sizing: border-box; }
-          html { width: 100%; margin: 0; padding: 0; }
-          body { 
-            font-family: Arial, sans-serif; 
+          html {
             width: 100%;
-            margin: 0; 
-            padding: 1mm;
-            color: #000000;
-            line-height: 1.2;
-            background: #ffffff;
-            font-size: 8pt;
-            font-weight: 500;
+            margin: 0;
+            padding: 0;
+            background: #eceef1;
           }
-          .header { 
-            margin-bottom: 8px; 
-            border-bottom: 1px solid #2c3e50;
-            padding-bottom: 6px;
+          body {
+            font-family: Arial, sans-serif;
+            width: 210mm;
+            max-width: 100%;
+            min-height: 297mm;
+            margin: 24px auto;
+            padding: 18mm;
+            color: #000000;
+            line-height: 1.5;
+            background: #ffffff;
+            font-size: 10.5pt;
+            font-weight: 500;
+            box-shadow: 0 2px 18px rgba(0, 0, 0, 0.15);
+          }
+          @media print {
+            html { background: #ffffff; }
+            body {
+              width: auto;
+              max-width: none;
+              min-height: 0;
+              margin: 0;
+              padding: 0;
+              box-shadow: none;
+            }
+          }
+          .header {
+            margin-bottom: 18px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 14px;
             page-break-inside: avoid;
           }
           .header-row {
@@ -873,116 +892,121 @@ router.get(
             align-items: flex-start;
           }
           .store-info h1 {
-            font-size: 14pt;
-            margin: 0 0 2px 0;
+            font-size: 22pt;
+            margin: 0 0 4px 0;
             color: #000000;
           }
           .store-details {
-            font-size: 7pt;
+            font-size: 9.5pt;
             color: #555;
-            line-height: 1.3;
+            line-height: 1.4;
           }
           .invoice-box {
             text-align: right;
           }
           .invoice-box h2 {
-            font-size: 12pt;
+            font-size: 20pt;
             margin: 0;
+            letter-spacing: 1px;
             color: #000000;
           }
           .invoice-box .order-num {
-            font-size: 8pt;
-            margin-top: 2px;
+            font-size: 10.5pt;
+            margin-top: 4px;
           }
-          .addresses { 
-            display: flex; 
-            gap: 10px; 
-            margin: 8px 0;
+          .addresses {
+            display: flex;
+            gap: 40px;
+            margin: 20px 0;
             page-break-inside: avoid;
           }
-          .address { 
+          .address {
             flex: 1;
-            font-size: 7pt;
-            line-height: 1.5;
-            padding-bottom: 4px;
+            font-size: 10pt;
+            line-height: 1.6;
+            padding-bottom: 6px;
           }
           .address h3 {
-            margin: 0 0 5px 0;
-            font-size: 8pt;
+            margin: 0 0 8px 0;
+            font-size: 11.5pt;
             font-weight: bold;
             border-bottom: 1px solid #ddd;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
           }
           .sales-rep-info {
-            margin-top: 4px;
-            padding: 3px 5px;
+            margin-top: 8px;
+            padding: 6px 10px;
             background: #f5f5f5;
-            border-left: 2px solid #2c3e50;
-            font-size: 6pt;
+            border-left: 3px solid #2c3e50;
+            font-size: 9pt;
           }
           .customer-info {
-            font-size: 7pt;
-            margin-bottom: 8px;
-            padding: 5px 0;
+            font-size: 10pt;
+            margin-bottom: 18px;
+            padding: 10px 0;
             border-bottom: 1px dashed #ccc;
-            line-height: 1.5;
+            line-height: 1.6;
           }
-          .items-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 6px;
-            font-size: 7pt;
+          .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 10pt;
             table-layout: fixed;
           }
           .items-table tr {
             page-break-inside: avoid;
             break-inside: avoid;
           }
-          .items-table th, .items-table td { 
-            border: 1px solid #2c3e50; 
-            padding: 5px 4px; 
+          .items-table th, .items-table td {
+            border: 1px solid #2c3e50;
+            padding: 10px 12px;
             text-align: left;
             word-wrap: break-word;
             overflow-wrap: break-word;
             word-break: break-word;
             vertical-align: top;
-            line-height: 1.4;
+            line-height: 1.45;
           }
-          .items-table th { 
-            background: #2c3e50; 
+          .items-table th {
+            background: #2c3e50;
             color: #fff;
-            font-size: 6pt;
+            font-size: 9pt;
             text-transform: uppercase;
-            padding: 6px 4px;
+            letter-spacing: 0.5px;
+            padding: 11px 12px;
           }
-          /* Fixed column widths for 4-inch display */
-          .items-table th:nth-child(1), .items-table td:nth-child(1) { width: 40%; } /* Product */
+          /* Column widths (A4) */
+          .items-table th:nth-child(1), .items-table td:nth-child(1) { width: 34%; } /* Product */
           .items-table th:nth-child(2), .items-table td:nth-child(2) { display: none; } /* Variant */
-          .items-table th:nth-child(3), .items-table td:nth-child(3) { width: 30%; } /* SKU */
+          .items-table th:nth-child(3), .items-table td:nth-child(3) { width: 24%; } /* SKU */
           .items-table th:nth-child(4), .items-table td:nth-child(4) { width: 10%; text-align: center; } /* Qty */
-          .items-table th:nth-child(5), .items-table td:nth-child(5) { display: none; } /* Unit Price */
-          .items-table th:nth-child(6), .items-table td:nth-child(6) { width: 20%; text-align: right; } /* Total */
+          .items-table th:nth-child(5), .items-table td:nth-child(5) { width: 16%; text-align: right; } /* Unit Price */
+          .items-table th:nth-child(6), .items-table td:nth-child(6) { width: 16%; text-align: right; } /* Total */
           .items-table th:nth-child(7), .items-table td:nth-child(7) { display: none; } /* Tax Rate */
           .items-table th:nth-child(8), .items-table td:nth-child(8) { display: none; } /* Tax Amount */
-          .totals-section { 
+          .totals-section {
             page-break-inside: avoid;
             break-inside: avoid;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #000;
+            margin-top: 24px;
+            padding-top: 0;
+            display: flex;
+            justify-content: flex-end;
           }
           .totals-table {
-            width: 100%;
-            font-size: 7pt;
+            width: 320px;
+            max-width: 60%;
+            font-size: 10.5pt;
             border-collapse: collapse;
           }
           .totals-table td {
-            padding: 4px 0;
+            padding: 6px 0;
             border: none;
-            line-height: 1.4;
+            line-height: 1.45;
           }
           .totals-table td:first-child {
             text-align: left;
+            color: #555;
           }
           .totals-table td:last-child {
             text-align: right;
@@ -990,35 +1014,35 @@ router.get(
           }
           .totals-table .grand-total td {
             font-weight: bold;
-            font-size: 9pt;
-            border-top: 1px solid #2c3e50;
-            padding-top: 6px;
-            margin-top: 4px;
+            font-size: 13pt;
+            border-top: 2px solid #2c3e50;
+            padding-top: 8px;
+            color: #000000;
           }
-          .footer { 
-            margin-top: 30px;
-            padding-top: 15px;
+          .footer {
+            margin-top: 40px;
+            padding-top: 18px;
             border-top: 1px solid #ddd;
-            font-size: 7pt;
+            font-size: 9pt;
             page-break-inside: avoid;
             break-inside: avoid;
           }
           .footer h4 {
-            margin: 0 0 3px 0;
-            font-size: 8pt;
+            margin: 0 0 4px 0;
+            font-size: 11pt;
           }
           .footer-content {
             display: flex;
             justify-content: space-between;
           }
           .warehouse-info {
-            font-size: 6pt;
-            line-height: 1.3;
+            font-size: 9pt;
+            line-height: 1.4;
           }
           .thank-you {
             text-align: right;
             font-style: italic;
-            font-size: 7pt;
+            font-size: 10pt;
           }
         </style>
       </head>
