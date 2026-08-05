@@ -8,16 +8,12 @@
 const Queue = require("bull");
 const odooSyncService = require("./odooSyncService");
 
-// Initialize Redis config (same pattern as emailService.js)
-const redisConfig = {
-  host: process.env.REDIS_HOST || "peptides_dev_redis",
+// Initialize Redis config (prefer REDIS_URL like emailService.js so auth/host come from one place;
+// object form is only hit in local dev where 127.0.0.1 is correct)
+const redisConfig = process.env.REDIS_URL || {
+  host: process.env.REDIS_HOST || "127.0.0.1",
   port: process.env.REDIS_PORT || 6379,
 };
-
-// Fallback for local dev if not using docker networking
-if (process.env.NODE_ENV !== "production" && !process.env.REDIS_HOST) {
-  redisConfig.host = "127.0.0.1";
-}
 
 // Initialize Bull Queue
 const odooSyncQueue = new Queue("odoo-sync-queue", {
