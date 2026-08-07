@@ -32,7 +32,7 @@ emailQueue.process(async (job) => {
 
   try {
     if (type === 'TEMPLATE') {
-      return await processEmailWithTemplateResend(data.templateType, data.recipientEmail, data.data);
+      return await processEmailWithTemplateResend(data.templateType, data.recipientEmail, data.data, data.brand);
     } else if (type === 'RAW') {
       return await processRawEmailResend(data);
     } else {
@@ -103,31 +103,84 @@ const createTransporter = () => {
 
 // ===== RESEND EMAIL FUNCTIONS =====
 
-const getFromEmail = (templateType) => {
-  const mapping = {
-    'ORDER_CONFIRMATION': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
-    'SHIPPING_NOTIFICATION': 'Ascendra Bio | Shipping <shipping@ascendrabio.com>',
-    'ORDER_CANCELLED': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
-    'PAYMENT_SUCCESS': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
-    'PASSWORD_RESET': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
-    'ACCOUNT_VERIFICATION': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
-    'WELCOME_EMAIL': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
-    'LOW_INVENTORY_ALERT': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
-    'BULK_QUOTE': 'Ascendra Bio | Orders <orders@ascendrabio.com>',
-    'MARKETING_GENERIC': 'Ascendra Bio <leadership@ascendrabio.com>',
-    'PARTNER_STATEMENT_GENERATED': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
-    'PARTNER_PAYMENT_REMINDER': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
-    'PARTNER_OVERDUE_ALERT': 'Ascendra Bio | Billing <billing@ascendrabio.com>',
-    'ABANDONED_CART': 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
-  };
-  return mapping[templateType] || 'Ascendra Bio <info@ascendrabio.com>';
+// ===== Brand presentation (multi-storefront) =====
+// Ascendra Bio is the default; a Lineará order (order.brand === 'lineara') sends from lineara.co with
+// Lineará store details + wordmark, using the Lineará Resend account (see config/resend.js). A new
+// storefront just adds an entry here. Auth/marketing/partner mail stays on Ascendra unless a brand
+// key is threaded through — only order-lifecycle mail carries order.brand today.
+const BRANDS = {
+  ascendra: {
+    key: 'ascendra',
+    name: 'Ascendra Bio',
+    storeEmail: 'info@ascendrabio.com',
+    storePhone: '+1 (323) 299-6900',
+    storeAddress: '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
+    // Email header logo — an ABSOLUTE URL (emails cannot use relative paths).
+    headerHtml: '<img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" style="max-width:150px;width:auto;height:auto;display:block;margin:0 auto;">',
+    from: {
+      ORDER_CONFIRMATION: 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+      SHIPPING_NOTIFICATION: 'Ascendra Bio | Shipping <shipping@ascendrabio.com>',
+      ORDER_CANCELLED: 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+      PAYMENT_SUCCESS: 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+      PASSWORD_RESET: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+      ACCOUNT_VERIFICATION: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+      WELCOME_EMAIL: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+      LOW_INVENTORY_ALERT: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+      BULK_QUOTE: 'Ascendra Bio | Orders <orders@ascendrabio.com>',
+      MARKETING_GENERIC: 'Ascendra Bio <leadership@ascendrabio.com>',
+      PARTNER_STATEMENT_GENERATED: 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+      PARTNER_PAYMENT_REMINDER: 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+      PARTNER_OVERDUE_ALERT: 'Ascendra Bio | Billing <billing@ascendrabio.com>',
+      ABANDONED_CART: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    },
+    fromDefault: 'Ascendra Bio <info@ascendrabio.com>',
+  },
+  lineara: {
+    key: 'lineara',
+    name: 'Lineará',
+    storeEmail: 'info@lineara.co',
+    storePhone: '', // TODO(Peter): Lineará support phone for the email footer
+    storeAddress: '', // TODO(Peter): Lineará mailing address for the email footer
+    // Lineará has no hosted raster logo (its mark is a wordmark) — render it as styled text so the
+    // header never shows a broken image. Swap to an <img> once a public lineara.co logo URL exists.
+    headerHtml: "<div style=\"font-family:Georgia,'Times New Roman',serif;font-size:30px;letter-spacing:.02em;font-weight:600;color:#111111;\">Linear&aacute;</div>",
+    from: {
+      ORDER_CONFIRMATION: 'Lineará | Orders <orders@lineara.co>',
+      SHIPPING_NOTIFICATION: 'Lineará | Shipping <shipping@lineara.co>',
+      ORDER_CANCELLED: 'Lineará | Orders <orders@lineara.co>',
+      PAYMENT_SUCCESS: 'Lineará | Orders <orders@lineara.co>',
+      PASSWORD_RESET: 'Lineará | Notifications <notifications@lineara.co>',
+      ACCOUNT_VERIFICATION: 'Lineará | Notifications <notifications@lineara.co>',
+      WELCOME_EMAIL: 'Lineará | Notifications <notifications@lineara.co>',
+      BULK_QUOTE: 'Lineará | Orders <orders@lineara.co>',
+      ABANDONED_CART: 'Lineará | Notifications <notifications@lineara.co>',
+    },
+    fromDefault: 'Lineará <info@lineara.co>',
+  },
+};
+
+// Normalize any brand hint (order.brand / job payload) to a known brand key; default = ascendra.
+const brandKey = (b) => (b === 'lineara' ? 'lineara' : 'ascendra');
+const brandConfig = (b) => BRANDS[brandKey(b)];
+
+// Store-detail block for a brand — spread into template `data` so {{storeName}}, {{storeEmail}},
+// {{storePhone}}, {{storeAddress}} render for the right storefront.
+const brandStoreData = (b) => {
+  const c = brandConfig(b);
+  return { storeName: c.name, storeEmail: c.storeEmail, storePhone: c.storePhone, storeAddress: c.storeAddress };
+};
+
+const getFromEmail = (templateType, brand) => {
+  const c = brandConfig(brand);
+  return c.from[templateType] || c.fromDefault;
 };
 
 // Process email with template using Resend (Internal function called by Queue)
 const processEmailWithTemplateResend = async (
   templateType,
   recipientEmail,
-  data = {}
+  data = {},
+  brand
 ) => {
   try {
     console.log(`[Resend] Getting email template for type: ${templateType}`);
@@ -354,7 +407,7 @@ const processEmailWithTemplateResend = async (
       <body>
         <div class="container">
           <div class="email-header">
-            <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio">
+            ${brandConfig(brand).headerHtml}
           </div>
           <div class="content">
             ${htmlContent}
@@ -380,8 +433,9 @@ const processEmailWithTemplateResend = async (
 
     // Send email using Resend
     console.log("[Resend] Attempting to send email...");
-    const response = await resend.emails.send({
-      from: getFromEmail(templateType),
+    const client = resend.getClient(brand);
+    const response = await client.emails.send({
+      from: getFromEmail(templateType, brand),
       to: recipientEmail,
       subject: subject,
       html: finalHtml,
@@ -823,13 +877,14 @@ const processRawEmail = async ({ to, subject, html, text, from }) => {
 
 
 // Public API: Queue an email with template
-const sendEmailWithTemplate = async (templateType, recipientEmail, data = {}) => {
+const sendEmailWithTemplate = async (templateType, recipientEmail, data = {}, brand) => {
   try {
     const job = await emailQueue.add({
       type: 'TEMPLATE',
       templateType,
       recipientEmail,
-      data
+      data,
+      brand
     }, {
       attempts: 3,
       backoff: {
@@ -907,10 +962,7 @@ const sendOrderConfirmation = async (order, customer) => {
       orderTotal: `$${orderTotal}`,
       orderItems: orderItems,
       estimatedDelivery: "3-5 business days",
-      storeName: "Ascendra Bio",
-      storeEmail: "info@ascendrabio.com",
-      storePhone: "+1 (323) 299-6900",
-      storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
+      ...brandStoreData(brandKey(order.brand)), // Lineará orders render Lineará store details
       orderLink: orderLink,
     };
 
@@ -922,7 +974,8 @@ const sendOrderConfirmation = async (order, customer) => {
     const result = await sendEmailWithTemplate(
       "ORDER_CONFIRMATION",
       customer.email,
-      data
+      data,
+      brandKey(order.brand)
     );
     console.log("Order confirmation email sent successfully:", result);
     return result;
@@ -959,16 +1012,14 @@ const sendShippingNotification = async (order, customer, shipment) => {
       trackingUrl,
       estimatedDelivery,
       orderItems: orderItems,
-      storeName: "Ascendra Bio",
-      storeEmail: "info@ascendrabio.com",
-      storePhone: "+1 (323) 299-6900",
-      storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
+      ...brandStoreData(brandKey(order.brand)),
     };
 
     return await sendEmailWithTemplate(
       "SHIPPING_NOTIFICATION",
       customer.email,
-      data
+      data,
+      brandKey(order.brand)
     );
   } catch (error) {
     console.error("Error sending shipping notification:", error);
@@ -1000,13 +1051,10 @@ const sendOrderCancellation = async (
       orderTotal: `$${orderTotal}`,
       orderItems: orderItems,
       cancellationReason: cancellationReason,
-      storeName: "Ascendra Bio",
-      storeEmail: "info@ascendrabio.com",
-      storePhone: "+1 (323) 299-6900",
-      storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
+      ...brandStoreData(brandKey(order.brand)),
     };
 
-    return await sendEmailWithTemplate("ORDER_CANCELLED", customer.email, data);
+    return await sendEmailWithTemplate("ORDER_CANCELLED", customer.email, data, brandKey(order.brand));
   } catch (error) {
     console.error("Error sending order cancellation:", error);
     throw error;
@@ -1025,12 +1073,9 @@ const sendPaymentSuccess = async (order, customer, amount, method = 'Manual') =>
       orderTotal: `$${orderTotal}`,
       amountPaid: `$${Number(amount || 0).toFixed(2)}`,
       paymentMethod: method,
-      storeName: 'Ascendra Bio',
-      storeEmail: 'info@ascendrabio.com',
-      storePhone: '+1 (323) 299-6900',
-      storeAddress: '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
+      ...brandStoreData(brandKey(order.brand)),
     };
-    return await sendEmailWithTemplate('PAYMENT_SUCCESS', customer.email, data);
+    return await sendEmailWithTemplate('PAYMENT_SUCCESS', customer.email, data, brandKey(order.brand));
   } catch (error) {
     console.error('Error sending payment success email:', error);
     throw error;

@@ -689,6 +689,11 @@ model Order {
   partnerOrderId String?
   salesChannel   SalesChannel? @relation(fields: [salesChannelId], references: [id])
 
+  // Storefront brand for customer-facing email (null/absent = Ascendra Bio; "lineara" = Lineará).
+  // Purely presentational — does NOT change pricing/fulfillment (unlike salesChannel). Set at order
+  // creation from the storefront that placed it; read by utils/emailService.js to pick the sender.
+  brand String?
+
   @@index([salesChannelId, partnerOrderId])
   @@map("orders")
 }

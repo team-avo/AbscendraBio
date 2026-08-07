@@ -1666,6 +1666,10 @@ router.post(
       .withMessage(
         "Selected payment type must be ZELLE, BANK_WIRE, or AUTHORIZE_NET",
       ),
+    body("brand")
+      .optional({ nullable: true })
+      .isIn(["ascendra", "lineara"])
+      .withMessage("Unsupported brand"),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {
@@ -1683,6 +1687,7 @@ router.post(
       selectedPaymentType = null,
       salesChannelId = null,
       partnerOrderId = null,
+      brand = null,
     } = req.body;
 
     // Must provide at least an addressId or inline address data for each
@@ -2166,6 +2171,8 @@ router.post(
             selectedPaymentType: selectedPaymentType || null,
             salesChannelId: salesChannelId || null,
             partnerOrderId: partnerOrderId ? String(partnerOrderId) : null,
+            // Storefront brand for customer email (null = Ascendra default; "lineara" = Lineará)
+            brand: brand === "lineara" ? "lineara" : null,
           },
         });
       } catch (error) {
