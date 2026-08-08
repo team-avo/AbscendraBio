@@ -20,6 +20,7 @@ model User {
   lastName  String
   role      UserRole @default(STAFF)
   isActive  Boolean  @default(true)
+  brand     String? // storefront that created this user ("lineara"); null = Ascendra. Drives brand-aware auth emails.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

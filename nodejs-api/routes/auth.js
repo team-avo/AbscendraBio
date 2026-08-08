@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { body, query } = require("express-validator");
 const { Resend } = require("resend");
 const resend = require("../config/resend");
+const { brandConfig } = require("../utils/emailService");
 const path = require("path");
 const prisma = require("../prisma/client");
 const validateRequest = require("../middleware/validateRequest");
@@ -16,14 +17,17 @@ const { logLoginAttempt } = require("../utils/loginAuditLogger");
 // const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Email verification using Resend API (no DB template)
-const sendVerificationEmail = async (toEmail, firstName, verificationLink) => {
+const sendVerificationEmail = async (toEmail, firstName, verificationLink, brand) => {
+  // Brand-aware: a Lineará signup (brand === 'lineara') gets the Lineará wordmark + name and sends
+  // from lineara.co via the Lineará Resend client; Ascendra is the default.
+  const c = brandConfig(brand);
   const subject = "Verify your email address";
   const html = `
     <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;">
       <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
         <tr>
           <td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-            <img src="https://www.ascendrabio.com/logo.png" alt="Verify" width="120" height="80"/>
+            ${c.headerHtml}
             <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Confirm your email</h1>
             <p style="margin:0 0 24px 0;color:#6b7280;font-size:14px;">Hi ${
               firstName || "there"
@@ -39,16 +43,16 @@ const sendVerificationEmail = async (toEmail, firstName, verificationLink) => {
         </tr>
         <tr>
           <td style="padding:16px 24px 24px 24px;color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #f0f0f0;">
-            © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
+            © ${new Date().getFullYear()} ${c.name}. All rights reserved.
           </td>
         </tr>
       </table>
     </body>
   `;
 
-  console.log("[Resend] Sending email verification...");
-  await resend.emails.send({
-    from: "Notifications | Ascendra Bio <notifications@ascendrabio.com>",
+  console.log(`[Resend] Sending email verification (${c.key})...`);
+  await resend.getClient(brand).emails.send({
+    from: c.from.ACCOUNT_VERIFICATION || c.fromDefault,
     to: toEmail,
     subject,
     html,
@@ -137,6 +141,7 @@ router.post(
       role = "STAFF",
       mobile,
       customerType,
+      brand, // storefront hint from the BFF ("lineara"); drives brand-aware verification email
       smsTransactionalConsent,
       smsMarketingConsent,
     } = req.body;
@@ -211,6 +216,7 @@ router.post(
             lastName,
             role: "CUSTOMER",
             isActive: false,
+            brand: brand === "lineara" ? "lineara" : null,
             customerId: customer.id,
           },
           select: {
@@ -261,10 +267,8 @@ router.post(
         await prisma.emailVerificationToken.create({
           data: { userId: user.id, token: verificationToken, expiresAt },
         });
-        const link = `${
-          process.env.FRONTEND_URL || "http://localhost:3000"
-        }/verify?token=${verificationToken}`;
-        await sendVerificationEmail(user.email, user.firstName || "", link);
+        const link = `${brandConfig(brand).frontendUrl}/verify?token=${verificationToken}`;
+        await sendVerificationEmail(user.email, user.firstName || "", link, brand);
         emailSent = true;
       } catch (e) {
         console.error("Failed to send verification email:", e?.message);
@@ -515,10 +519,8 @@ router.post(
           await prisma.emailVerificationToken.create({
             data: { userId: user.id, token: verificationToken, expiresAt },
           });
-          const link = `${
-            process.env.FRONTEND_URL || "http://localhost:3000"
-          }/verify?token=${verificationToken}`;
-          await sendVerificationEmail(user.email, user.firstName || "", link);
+          const link = `${brandConfig(user.brand).frontendUrl}/verify?token=${verificationToken}`;
+          await sendVerificationEmail(user.email, user.firstName || "", link, user.brand);
         } catch (e) {
           // eslint-disable-next-line no-console
           console.warn(
@@ -613,9 +615,9 @@ router.post(
     await prisma.emailVerificationToken.create({
       data: { userId: me.id, token: verificationToken, expiresAt },
     });
-    const link = `${process.env.FRONTEND_URL || "http://localhost:3000"}/verify?token=${verificationToken}`;
+    const link = `${brandConfig(me.brand).frontendUrl}/verify?token=${verificationToken}`;
     try {
-      await sendVerificationEmail(me.email, me.firstName || "", link);
+      await sendVerificationEmail(me.email, me.firstName || "", link, me.brand);
     } catch (e) {
       console.error("Failed to resend verification email:", e?.message);
     }

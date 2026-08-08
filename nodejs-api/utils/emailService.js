@@ -112,6 +112,8 @@ const BRANDS = {
   ascendra: {
     key: 'ascendra',
     name: 'Ascendra Bio',
+    // Base URL for links in auth emails (verify / reset). Per-brand so a Lineará link is lineara.co.
+    frontendUrl: process.env.FRONTEND_URL || 'https://www.ascendrabio.com',
     storeEmail: 'info@ascendrabio.com',
     storePhone: '+1 (323) 299-6900',
     storeAddress: '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
@@ -138,6 +140,7 @@ const BRANDS = {
   lineara: {
     key: 'lineara',
     name: 'Lineará',
+    frontendUrl: process.env.LINEARA_FRONTEND_URL || 'https://lineara.co',
     storeEmail: 'info@lineara.co',
     storePhone: '', // TODO(Peter): Lineará support phone for the email footer
     storeAddress: '', // TODO(Peter): Lineará mailing address for the email footer
@@ -1229,18 +1232,20 @@ const sendStockAlertEmail = async (recipientEmail, lowStockItems = [], outOfStoc
 // Send password reset email using database template
 const sendPasswordResetEmail = async (user, resetToken) => {
   try {
+    // Brand-aware: a Lineará user (user.brand === 'lineara') gets a lineara.co link, Lineará store
+    // details, and sends from lineara.co (getFromEmail + Resend client both branch on the brand key).
+    const bk = brandKey(user.brand);
+    const c = brandConfig(bk);
+    const resetLink = `${c.frontendUrl}/reset-password?token=${resetToken}`;
     const data = {
       customerName: `${user.firstName} ${user.lastName}`,
       customerEmail: user.email,
-      resetLink: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
-      resetPasswordLink: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
-      storeName: "Ascendra Bio",
-      storeEmail: "info@ascendrabio.com",
-      storePhone: "+1 (323) 299-6900",
-      storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
+      resetLink,
+      resetPasswordLink: resetLink,
+      ...brandStoreData(bk),
     };
 
-    return await sendEmailWithTemplate("PASSWORD_RESET", user.email, data);
+    return await sendEmailWithTemplate("PASSWORD_RESET", user.email, data, bk);
   } catch (error) {
     console.error("Error sending password reset email:", error);
     throw error;
@@ -1250,20 +1255,20 @@ const sendPasswordResetEmail = async (user, resetToken) => {
 // Send account verification email using database template
 const sendAccountVerificationEmail = async (user, verificationToken) => {
   try {
+    const bk = brandKey(user.brand);
+    const c = brandConfig(bk);
     const data = {
       customerName: `${user.firstName} ${user.lastName}`,
       customerEmail: user.email,
-      verificationLink: `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`,
-      storeName: "Ascendra Bio",
-      storeEmail: "info@ascendrabio.com",
-      storePhone: "+1 (323) 299-6900",
-      storeAddress: "5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028",
+      verificationLink: `${c.frontendUrl}/verify?token=${verificationToken}`,
+      ...brandStoreData(bk),
     };
 
     return await sendEmailWithTemplate(
       "ACCOUNT_VERIFICATION",
       user.email,
-      data
+      data,
+      bk
     );
   } catch (error) {
     console.error("Error sending account verification email:", error);
@@ -1611,3 +1616,7 @@ module.exports.processEmailWithTemplateResend = processEmailWithTemplateResend;
 module.exports.processRawEmailResend = processRawEmailResend;
 module.exports.queueEmail = queueEmail;
 module.exports.sendLoginOtpEmail = sendLoginOtpEmail;
+// Brand helpers — used by routes/auth.js to brand the raw verification email + build reset/verify links.
+module.exports.brandConfig = brandConfig;
+module.exports.brandKey = brandKey;
+module.exports.brandStoreData = brandStoreData;
