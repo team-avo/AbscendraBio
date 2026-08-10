@@ -1670,6 +1670,11 @@ router.post(
       .optional({ nullable: true })
       .isIn(["ascendra", "lineara"])
       .withMessage("Unsupported brand"),
+    // Affiliate attribution (capture) — passed by the storefront from the sealed lineara_ref cookie.
+    body("affiliateId").optional({ nullable: true }).isString(),
+    body("affiliateClickId").optional({ nullable: true }).isString(),
+    body("affiliateSlug").optional({ nullable: true }).isString(),
+    body("affiliateClickedAt").optional({ nullable: true }).isISO8601(),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {
@@ -1688,6 +1693,10 @@ router.post(
       salesChannelId = null,
       partnerOrderId = null,
       brand = null,
+      affiliateId = null,
+      affiliateClickId = null,
+      affiliateSlug = null,
+      affiliateClickedAt = null,
     } = req.body;
 
     // Must provide at least an addressId or inline address data for each
@@ -2173,6 +2182,11 @@ router.post(
             partnerOrderId: partnerOrderId ? String(partnerOrderId) : null,
             // Storefront brand for customer email (null = Ascendra default; "lineara" = Lineará)
             brand: brand === "lineara" ? "lineara" : null,
+            // Affiliate attribution (capture) — from the storefront's sealed lineara_ref cookie
+            affiliateId: affiliateId || null,
+            affiliateClickId: affiliateClickId || null,
+            affiliateSlug: affiliateSlug || null,
+            affiliateClickedAt: affiliateClickedAt ? new Date(affiliateClickedAt) : null,
           },
         });
       } catch (error) {

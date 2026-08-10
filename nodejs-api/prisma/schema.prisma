@@ -695,7 +695,16 @@ model Order {
   // creation from the storefront that placed it; read by utils/emailService.js to pick the sender.
   brand String?
 
+  // Affiliate attribution (capture) — set when the order arrived via a lineara.co/r/{slug} link.
+  // Sourced server-side from the sealed `lineara_ref` cookie (tamper-proof). Recorded now so the
+  // signed conversion report to the partner portal (a later step) can credit the affiliate.
+  affiliateId        String?
+  affiliateClickId   String?
+  affiliateSlug      String?
+  affiliateClickedAt DateTime?
+
   @@index([salesChannelId, partnerOrderId])
+  @@index([affiliateId])
   @@map("orders")
 }
 
