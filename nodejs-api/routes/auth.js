@@ -101,11 +101,13 @@ router.post(
     body("middleName").optional().trim(),
     body("companyName").optional().trim(),
     body("licenseNumber")
-      .if(body("role").equals("CUSTOMER"))
+      // NPI/license is required for an Ascendra CUSTOMER (503A), but NOT for Lineará signups
+      // (brand === "lineara") — per Peter 2026-08-11: no NPI at Lineará signup, form as-is.
+      .if((value, { req }) => req.body.role === "CUSTOMER" && req.body.brand !== "lineara")
       .notEmpty()
       .trim()
       .withMessage("NPI / License number is required for customer registration")
-      .if(body("role").equals("CUSTOMER"))
+      .if((value, { req }) => req.body.role === "CUSTOMER" && req.body.brand !== "lineara")
       .matches(/^\d{10}$/)
       .withMessage("NPI / License number must be exactly 10 digits"),
     body("role")
