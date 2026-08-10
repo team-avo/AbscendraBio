@@ -289,6 +289,10 @@ router.post(
         where: { id: orderId },
         data: { status: 'PROCESSING' }
       });
+      // Payment confirmed (order now fully paid, first time) → report the affiliate conversion.
+      // No-op for non-affiliate orders or a dormant portal; fire-and-forget so it never blocks/fails
+      // the payment response. Idempotent (deterministic eventId) if the PUT path also fires.
+      require('../services/affiliateConversion').reportPaidConversion(orderId).catch(() => {});
     }
 
     res.status(201).json({ success: true, data: transaction });
@@ -376,6 +380,7 @@ router.put(
       const orderTotal = parseFloat(order.totalAmount.toString());
 
       if (totalPaid >= orderTotal) {
+        const wasPending = order.status === 'PENDING';
         await prisma.order.update({
           where: { id: order.id },
           data: {
@@ -383,6 +388,9 @@ router.put(
             ...(order.status === 'PENDING' ? { status: 'PROCESSING' } : {})
           }
         });
+        // First time the order is fully paid → report the affiliate conversion (fire-and-forget,
+        // no-op unless affiliate-attributed + portal configured; idempotent with the POST path).
+        if (wasPending) require('../services/affiliateConversion').reportPaidConversion(order.id).catch(() => {});
       }
 
 
