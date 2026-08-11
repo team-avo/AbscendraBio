@@ -22,6 +22,7 @@ const {
   calculateShippingFromWarehouse,
 } = require("../services/warehouseService");
 const { createShipmentForOrder } = require("../services/shipmentService");
+const { getStoreBlock } = require("../config/shipFrom");
 const { calculatePriceWithBulk } = require("./bulkPrices");
 const { bulkUnitPrice: retailBulkUnitPrice, isRetailPricing } = require("../utils/bulkTiers");
 const { queueProductSync } = require("../integrations/skydell_odoo");
@@ -1231,6 +1232,8 @@ router.get(
 
     // Fetch store information
     const storeInfo = await prisma.storeInformation.findFirst();
+    // Brand-aware "ships from" block: a Lineará order (order.brand) renders Lineará store details.
+    const store = getStoreBlock(order.brand, storeInfo);
 
     // Render HTML packing slip (no pricing) - Pure black professional design
     const html = `
@@ -1394,11 +1397,11 @@ router.get(
         <div class='header'>
           <div class='header-row'>
             <div class='store-info'>
-              <h1>${storeInfo?.name || "Ascendra Bio, LLC"}</h1>
+              <h1>${store.name}</h1>
               <div class='store-details'>
-                ${storeInfo?.email || "accounts@ascendrabio.com"}<br>
-                ${storeInfo?.phone || ""}<br>
-                ${storeInfo?.addressLine1 || "5825 W Sunset Blvd"}${storeInfo?.addressLine2 ? ", " + storeInfo.addressLine2 : ", Suite 401"}, ${storeInfo?.city || "Los Angeles"}, ${storeInfo?.state || "CA"} ${storeInfo?.postalCode || "90028"}
+                ${store.email}<br>
+                ${store.phone ? store.phone + "<br>" : ""}
+                ${store.addressLine1}${store.addressLine2 ? ", " + store.addressLine2 : ""}, ${store.city}, ${store.state} ${store.postalCode}
               </div>
             </div>
             <div class='slip-box'>

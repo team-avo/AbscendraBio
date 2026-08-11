@@ -136,7 +136,7 @@ async function createShipmentForOrder(orderId, opts = {}) {
       shipment: {
         external_shipment_id: orderId,
         service_code: serviceCode,
-        ship_from: getShipFrom(),
+        ship_from: getShipFrom(order.brand), // Lineará orders ship as Lineará (separate sender)
         ship_to: shipTo,
         packages: [{ weight: packageWeight, dimensions: getDefaultDimensions() }],
       },
