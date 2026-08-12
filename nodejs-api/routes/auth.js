@@ -200,9 +200,11 @@ router.post(
             email,
             mobile: mobile && mobile.trim() ? mobile.trim() : null,
             customerType: customerType || "B2C",
-            isActive: false, // start inactive until approval
-            isApproved: false,
-            approvalStatus: "PENDING",
+            // Lineará AUTO-APPROVES (Peter 2026-08-12): the customer can order right after email
+            // verification, no admin gate. Ascendra stays manual (starts pending approval).
+            isActive: brand === "lineara",
+            isApproved: brand === "lineara",
+            approvalStatus: brand === "lineara" ? "APPROVED" : "PENDING",
             smsTransactionalConsent: wantsTransactional,
             smsMarketingConsent: wantsMarketing,
             smsConsentAt: wantsTransactional || wantsMarketing ? new Date() : null,
@@ -217,7 +219,7 @@ router.post(
             firstName,
             lastName,
             role: "CUSTOMER",
-            isActive: false,
+            isActive: brand === "lineara", // Lineará auto-approved → active; Ascendra inactive until approval
             brand: brand === "lineara" ? "lineara" : null,
             customerId: customer.id,
           },
