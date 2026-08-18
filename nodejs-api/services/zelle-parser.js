@@ -35,11 +35,16 @@ class ZelleParseError extends Error {
  * Strip HTML tags and collapse whitespace for easier regex matching.
  */
 function stripHtml(html) {
-  return html
+  return String(html || "")
+    // Drop <style>/<script> blocks first — their CSS/JS text survives plain tag-stripping
+    // and otherwise pollutes the body regexes (real bank emails carry large inline stylesheets).
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&nbsp;/g, " ")
     .replace(/&#39;/g, "'")
+    .replace(/&#36;/g, "$")
     .replace(/&quot;/g, '"')
     .replace(/\s+/g, " ")
     .trim();
@@ -66,6 +71,31 @@ function parseDollarAmount(str) {
  */
 function parseChase({ subject, from, html }) {
   const text = stripHtml(html);
+
+  // Real Chase "You received money with Zelle®" layout (verified against a live notification
+  // 2026-08-19): subject carries no amount; the body reads
+  //   "<NAME> sent you money ... Amount $X.XX ... Transaction number N ... Memo <memo> <NAME> is registered ..."
+  // Names are ALL CAPS. Amount is a labelled field, memo is the free-text the sender typed.
+  const sentYou = text.match(
+    /([A-Z][A-Za-z'’.-]*(?:\s+[A-Z][A-Za-z'’.-]*)+)\s+sent\s+you\s+money/,
+  );
+  const amountLabel = text.match(/\bAmount\b\s*\$?\s*([\d,]+\.\d{2}|[\d,]+)/i);
+  if (sentYou && amountLabel) {
+    const amount = parseDollarAmount(amountLabel[1]);
+    if (amount !== null) {
+      const senderName = sentYou[1].replace(/\s+/g, " ").trim();
+      // Memo sits between the "Memo" label and the sender-name-repeat + "is registered".
+      const memoMatch =
+        text.match(
+          /\bMemo\b\s+(.+?)\s+(?:[A-Z][A-Za-z'’.-]*\s+){0,4}is\s+registered\b/i,
+        ) || text.match(/\bMemo\b[:\s]+([^\n]{1,80}?)\s+(?:Transaction|Sent on)/i);
+      return {
+        senderName,
+        amount,
+        memo: memoMatch ? memoMatch[1].trim() : null,
+      };
+    }
+  }
 
   // Subject match: "You received $150.00 from John Smith with Zelle"
   const subjectMatch = subject.match(
@@ -186,6 +216,20 @@ function parseGeneric({ subject, from, html }) {
     const amount = parseDollarAmount(patternB[2]);
     if (amount !== null) {
       return { senderName: patternB[1].trim(), amount, memo: null };
+    }
+  }
+
+  // Pattern D: labelled amount ("Amount $X") + "Name sent you money" — the modern layout used
+  // by Chase (and similar) where the amount isn't inline with the name. Kept here too so a
+  // forwarded alert still parses even if content-based bank detection didn't route it to a bank.
+  const amountLabel = combined.match(/\bAmount\b\s*\$?\s*([\d,]+\.\d{2}|[\d,]+)/i);
+  const sentMoney = combined.match(
+    /([A-Z][A-Za-z'’.-]*(?:\s+[A-Z][A-Za-z'’.-]*)+)\s+sent\s+you\s+money/,
+  );
+  if (amountLabel && sentMoney) {
+    const amount = parseDollarAmount(amountLabel[1]);
+    if (amount !== null) {
+      return { senderName: sentMoney[1].replace(/\s+/g, " ").trim(), amount, memo: null };
     }
   }
 
