@@ -214,24 +214,61 @@ const PARSERS = {
 };
 
 /**
+ * Strip forwarding prefixes ("Fwd:", "Fw:", "Forward:", stacked) from a subject so a FORWARDED
+ * alert matches the same bank subject-patterns as a direct one.
+ */
+function stripForwardPrefix(subject) {
+  return String(subject || "").replace(/^(?:\s*(?:fwd?|fw|forward)\s*:\s*)+/i, "").trim();
+}
+
+/**
+ * Best-effort bank detection from the email CONTENT, not the envelope sender. When a Zelle alert
+ * reaches us via a forward (e.g. Chase alert auto-forwarded from another mailbox), `from` is the
+ * forwarding address, not the bank — but the original bank's domain survives in the quoted
+ * headers/body. Returns null when nothing matches (→ generic parser).
+ */
+function detectBank({ subject, from, html }) {
+  const hay = `${from || ""} ${subject || ""} ${html || ""}`.toLowerCase();
+  if (/chase\.com|jpmorgan/.test(hay)) return "chase";
+  if (/bankofamerica\.com|\bbofa\b/.test(hay)) return "bofa";
+  if (/wellsfargo\.com|wells\s+fargo/.test(hay)) return "wells";
+  return null;
+}
+
+/**
  * Parse a Zelle notification email.
+ *
+ * Bank selection: explicit ZELLE_BANK env → content auto-detect (so a FORWARDED alert, whose
+ * envelope sender is the forwarder rather than the bank, still routes to the right parser) →
+ * generic. If a bank-specific parser doesn't recognise the message (e.g. HTML reflowed by
+ * forwarding), fall back to the lenient generic parser before giving up — a real payment must
+ * never be dropped over formatting.
  *
  * @param {{ subject: string, from: string, html: string }} email
  * @returns {{ senderName: string, amount: number, memo: string|null }}
  * @throws {ZelleParseError} if the email is not a recognised Zelle notification
  */
 function parse(email) {
-  const bank = (process.env.ZELLE_BANK || "generic").toLowerCase();
+  const normalized = { ...email, subject: stripForwardPrefix(email.subject) };
+  const explicit = (process.env.ZELLE_BANK || "").toLowerCase();
+  const bank = explicit || detectBank(normalized) || "generic";
   const parserFn = PARSERS[bank] || parseGeneric;
-  return parserFn(email);
+  try {
+    return parserFn(normalized);
+  } catch (err) {
+    if (bank !== "generic" && err instanceof ZelleParseError) {
+      return parseGeneric(normalized);
+    }
+    throw err;
+  }
 }
 
 /**
  * Quick sanity check: does this email look like a Zelle notification at all?
- * Used to skip unrelated emails that happen to be from the same sender domain.
+ * Used to skip unrelated emails that happen to match the discovery query.
  */
-function looksLikeZelle({ subject, from }) {
-  return /zelle/i.test(subject) || /zelle/i.test(from);
+function looksLikeZelle({ subject, from, html }) {
+  return /zelle/i.test(subject || "") || /zelle/i.test(from || "") || /zelle/i.test(html || "");
 }
 
 module.exports = { parse, looksLikeZelle, ZelleParseError };
