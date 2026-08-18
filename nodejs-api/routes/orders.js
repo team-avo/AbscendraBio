@@ -3155,6 +3155,25 @@ router.put(
       }
     }
 
+    // Reverse the affiliate's commission on the portal when a PAID order is cancelled or refunded.
+    // reportReversal no-ops for non-affiliate orders and is idempotent (references evt_paid_<id>).
+    // Gate on a clearly-PAID prior state so we never send a reversal for a credit that was never
+    // reported — reportPaidConversion only fires once the order first leaves PENDING (PROCESSING).
+    // Fire-and-forget: a portal hiccup must never fail the admin's status update.
+    const AFFILIATE_PAID_STATES = ["PROCESSING", "LABEL_CREATED", "SHIPPED", "DELIVERED"];
+    const reversalEvent =
+      status === "REFUNDED" ? "order.refunded" : status === "CANCELLED" ? "order.cancelled" : null;
+    if (
+      reversalEvent &&
+      existingOrder.affiliateId &&
+      existingOrder.status !== status &&
+      AFFILIATE_PAID_STATES.includes(existingOrder.status)
+    ) {
+      require("../services/affiliateConversion")
+        .reportReversal(id, reversalEvent)
+        .catch(() => {});
+    }
+
     // Notify sales channel webhooks about inventory changes on status transitions
     if (status && existingOrder.status !== status) {
       const affectedVariantIds = (completeOrder.items || [])
