@@ -95,6 +95,26 @@ function buildItems(order) {
   });
 }
 
+/* Spread an order-level discount across the line items so commission is computed on what the customer
+   ACTUALLY paid (Peter: commission is on the paid amount, and line items MUST sum to commissionableCents
+   or the portal 400s). Proportional by line value, with largest-remainder rounding so the cents sum
+   is exact. discountCents<=0 (the common no-discount case) returns the items untouched. */
+function applyOrderDiscountToItems(items, discountCents) {
+  if (!discountCents || discountCents <= 0) return items;
+  const gross = items.reduce((s, i) => s + i.amountCents, 0);
+  if (gross <= 0) return items;
+  const cap = Math.min(discountCents, gross); // never below zero in aggregate
+  const raw = items.map((i) => (i.amountCents * cap) / gross);
+  const cut = raw.map((r) => Math.floor(r));
+  let leftover = cap - cut.reduce((a, b) => a + b, 0);
+  // hand the leftover cents to the largest fractional remainders (deterministic, exact sum)
+  const byFrac = raw
+    .map((r, idx) => ({ idx, frac: r - Math.floor(r) }))
+    .sort((a, b) => b.frac - a.frac);
+  for (let k = 0; k < leftover; k++) cut[byFrac[k % byFrac.length].idx] += 1;
+  return items.map((i, idx) => ({ ...i, amountCents: Math.max(0, i.amountCents - cut[idx]) }));
+}
+
 /* Report a confirmed payment. Call at each payment-CONFIRMED site. No-op for non-affiliate orders.
    `occurredAt` should be the confirmation instant (defaults to now). Never throws. */
 async function reportPaidConversion(orderId, { occurredAt } = {}) {
@@ -106,7 +126,9 @@ async function reportPaidConversion(orderId, { occurredAt } = {}) {
     if (!order || !order.affiliateId) return { skipped: true }; // not affiliate-attributed
     if (!isEnabled()) return { skipped: true };
 
-    const items = buildItems(order);
+    // Post-discount: reduce the line items by the order's discount so they sum to what was actually
+    // paid (referral offer, coupon, or a manual discount all flow through order.discountAmount).
+    const items = applyOrderDiscountToItems(buildItems(order), Math.round(Number(order.discountAmount || 0) * 100));
     const commissionableCents = items.reduce((s, i) => s + i.amountCents, 0);
     const payload = {
       event: "order.paid",

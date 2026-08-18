@@ -63,6 +63,36 @@ const generateOrderNumber = () => {
   return `ORD-${timestamp}-${randomStr}`;
 };
 
+/* Portal-driven affiliate offer -> order discount (offer shape locked with Peter 2026-08-17).
+   Computed HERE, on our own authoritative per-line prices (segment/sale/bulk), never on sticker
+   prices — so 10% is 10% of what the customer actually pays. Basis points end to end (1000 = 10%);
+   a per-sku override in `products` beats `sitewide`. Fails safe to 0 (full price) on anything
+   invalid, expired, all-zero, non-Lineará, or without a promotionKey — matching the portal's
+   "null (not zero) means no offer". Cents-internal to avoid float drift; returns a 2-dp number. */
+const isOfferBps = (v) => Number.isInteger(v) && v >= 0 && v <= 10000;
+function computeReferralDiscount(offer, itemsWithPrices, variants, brand) {
+  if (brand !== "lineara") return 0; // Lineará offers only
+  if (!offer || typeof offer !== "object" || offer.kind !== "percent") return 0;
+  const sw = offer.sitewide;
+  if (!sw || !isOfferBps(sw.discountBps)) return 0;
+  if (typeof offer.promotionKey !== "string" || !offer.promotionKey) return 0; // a real live offer has one
+  const exp = Date.parse(offer.expiresAt);
+  if (Number.isNaN(exp) || exp <= Date.now()) return 0; // expired / undated -> none
+  const products = Array.isArray(offer.products) ? offer.products : [];
+  const bpsForSku = (sku) => {
+    const p = products.find((r) => r && r.sku === sku && isOfferBps(r.discountBps));
+    return p ? p.discountBps : sw.discountBps;
+  };
+  let cents = 0;
+  for (const item of itemsWithPrices) {
+    const variant = variants.find((v) => v.id === item.variantId);
+    const effUnit = item.bulkUnitPrice != null ? item.bulkUnitPrice : item.unitPrice;
+    const lineCents = Math.round(Number(effUnit) * item.quantity * 100);
+    cents += Math.round((lineCents * bpsForSku(variant?.sku)) / 10000);
+  }
+  return Math.round(cents) / 100;
+}
+
 /**
  * Build denormalized address snapshot fields for an order.
  * @param {object} address - Address object (from DB or inline)
@@ -1678,6 +1708,9 @@ router.post(
     body("affiliateClickId").optional({ nullable: true }).isString(),
     body("affiliateSlug").optional({ nullable: true }).isString(),
     body("affiliateClickedAt").optional({ nullable: true }).isISO8601(),
+    // Portal-driven referral offer (sealed cookie -> BFF). The discount is recomputed here from our
+    // own prices; this only accepts the shape, computeReferralDiscount() does the trusted math.
+    body("affiliateOffer").optional({ nullable: true }).isObject(),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {
@@ -1700,6 +1733,7 @@ router.post(
       affiliateClickId = null,
       affiliateSlug = null,
       affiliateClickedAt = null,
+      affiliateOffer = null,
     } = req.body;
 
     // Must provide at least an addressId or inline address data for each
@@ -2126,6 +2160,13 @@ router.post(
       // Use the calculated coupon discount (replaces any manual discount)
       finalDiscountAmount = Math.round(discountResult.discount * 100) / 100;
       appliedCoupon = promo;
+    } else if (
+      computeReferralDiscount(affiliateOffer, itemsWithPrices, variants, brand) > 0
+    ) {
+      // Portal-driven affiliate offer: authoritative, never a client-supplied amount. Capped at
+      // subtotal. (promotionKey tracing on the order + conversion is a follow-up that needs a column.)
+      const referral = computeReferralDiscount(affiliateOffer, itemsWithPrices, variants, brand);
+      finalDiscountAmount = Math.min(referral, subtotal);
     } else {
       // Use the discount amount provided by frontend (when no coupon)
       const requestedManualDiscount =
