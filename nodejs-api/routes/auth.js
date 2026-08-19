@@ -205,6 +205,10 @@ router.post(
             isActive: brand === "lineara",
             isApproved: brand === "lineara",
             approvalStatus: brand === "lineara" ? "APPROVED" : "PENDING",
+            // Lineará AUTO-VERIFIES at signup (Peter 2026-08-19): no email-verification step before
+            // login — cold traffic goes straight into the site. Login gates on customer.emailVerified,
+            // so setting it here is what removes the block. Ascendra still verifies by email.
+            emailVerified: brand === "lineara",
             smsTransactionalConsent: wantsTransactional,
             smsMarketingConsent: wantsMarketing,
             smsConsentAt: wantsTransactional || wantsMarketing ? new Date() : null,
@@ -220,6 +224,7 @@ router.post(
             lastName,
             role: "CUSTOMER",
             isActive: brand === "lineara", // Lineará auto-approved → active; Ascendra inactive until approval
+            emailVerified: brand === "lineara", // Lineará auto-verified (no email-verify step)
             brand: brand === "lineara" ? "lineara" : null,
             customerId: customer.id,
           },
@@ -263,19 +268,23 @@ router.post(
     }
 
     if (role === "CUSTOMER") {
-      // Generate email verification token and send email
+      // Lineará auto-verifies at signup (2026-08-19) → no verification token or "verify your email"
+      // send; the account is immediately loginable. Ascendra keeps email verification.
+      const autoVerified = brand === "lineara";
       let emailSent = false;
-      try {
-        const verificationToken = crypto.randomBytes(32).toString("hex");
-        const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
-        await prisma.emailVerificationToken.create({
-          data: { userId: user.id, token: verificationToken, expiresAt },
-        });
-        const link = `${brandConfig(brand).frontendUrl}/verify?token=${verificationToken}`;
-        await sendVerificationEmail(user.email, user.firstName || "", link, brand);
-        emailSent = true;
-      } catch (e) {
-        console.error("Failed to send verification email:", e?.message);
+      if (!autoVerified) {
+        try {
+          const verificationToken = crypto.randomBytes(32).toString("hex");
+          const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
+          await prisma.emailVerificationToken.create({
+            data: { userId: user.id, token: verificationToken, expiresAt },
+          });
+          const link = `${brandConfig(brand).frontendUrl}/verify?token=${verificationToken}`;
+          await sendVerificationEmail(user.email, user.firstName || "", link, brand);
+          emailSent = true;
+        } catch (e) {
+          console.error("Failed to send verification email:", e?.message);
+        }
       }
 
       // Fire-and-forget: sync the new customer to GoHighLevel so the pipeline
@@ -290,9 +299,12 @@ router.post(
       res.status(201).json({
         success: true,
         emailSent,
-        message: emailSent
-          ? "Account created. Please verify your email and wait for admin approval."
-          : "Account created, but we couldn't send the verification email. Please use the resend option on the login page.",
+        autoVerified, // Lineará: the storefront can sign the user straight in (no verify step)
+        message: autoVerified
+          ? "Account created. You can sign in now."
+          : emailSent
+            ? "Account created. Please verify your email and wait for admin approval."
+            : "Account created, but we couldn't send the verification email. Please use the resend option on the login page.",
         data: { user },
       });
     } else {
