@@ -224,7 +224,6 @@ router.post(
             lastName,
             role: "CUSTOMER",
             isActive: brand === "lineara", // Lineará auto-approved → active; Ascendra inactive until approval
-            emailVerified: brand === "lineara", // Lineará auto-verified (no email-verify step)
             brand: brand === "lineara" ? "lineara" : null,
             customerId: customer.id,
           },
