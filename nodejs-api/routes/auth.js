@@ -271,19 +271,25 @@ router.post(
       // is set above). We still send the (Lineará-branded) verification email for now so the current
       // "check your inbox" screen stays coherent and the /verify link keeps working (idempotent);
       // the storefront's straight-to-sign-in flow ships alongside this. Ascendra: verify-to-login.
+      // Lineará auto-verifies at signup and the storefront routes straight to sign-in (no verify
+      // screen), so a "verify your email" message would be redundant + confusing — skip it. Ascendra
+      // still requires email verification, so it sends. (Login is never blocked for Lineará because
+      // customer.emailVerified was set above.)
       const autoVerified = brand === "lineara";
       let emailSent = false;
-      try {
-        const verificationToken = crypto.randomBytes(32).toString("hex");
-        const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
-        await prisma.emailVerificationToken.create({
-          data: { userId: user.id, token: verificationToken, expiresAt },
-        });
-        const link = `${brandConfig(brand).frontendUrl}/verify?token=${verificationToken}`;
-        await sendVerificationEmail(user.email, user.firstName || "", link, brand);
-        emailSent = true;
-      } catch (e) {
-        console.error("Failed to send verification email:", e?.message);
+      if (!autoVerified) {
+        try {
+          const verificationToken = crypto.randomBytes(32).toString("hex");
+          const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
+          await prisma.emailVerificationToken.create({
+            data: { userId: user.id, token: verificationToken, expiresAt },
+          });
+          const link = `${brandConfig(brand).frontendUrl}/verify?token=${verificationToken}`;
+          await sendVerificationEmail(user.email, user.firstName || "", link, brand);
+          emailSent = true;
+        } catch (e) {
+          console.error("Failed to send verification email:", e?.message);
+        }
       }
 
       // Fire-and-forget: sync the new customer to GoHighLevel so the pipeline
