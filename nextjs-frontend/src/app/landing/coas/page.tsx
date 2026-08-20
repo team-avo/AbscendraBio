@@ -20,7 +20,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const barlow = Barlow({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
-type ThirdPartyReportCategory = "PURITY" | "ENDOTOXICITY" | "STERILITY";
+type ThirdPartyReportCategory = "PURITY" | "HEAVY_METALS" | "ENDOTOXICITY" | "STERILITY";
 
 type ThirdPartyReport = {
   id: string;
@@ -34,6 +34,7 @@ type ThirdPartyReport = {
 
 const CATEGORY_LABELS: Record<ThirdPartyReportCategory, string> = {
   PURITY: "Purity & Net Peptide Content",
+  HEAVY_METALS: "Heavy Metals",
   ENDOTOXICITY: "Endotoxicity",
   STERILITY: "Sterility",
 };
@@ -41,6 +42,7 @@ const CATEGORY_LABELS: Record<ThirdPartyReportCategory, string> = {
 const CATEGORY_FILTERS: Array<{ key: "ALL" | ThirdPartyReportCategory; label: string }> = [
   { key: "ALL", label: "All" },
   { key: "PURITY", label: "Purity & Net Peptide Content" },
+  { key: "HEAVY_METALS", label: "Heavy Metals" },
   { key: "ENDOTOXICITY", label: "Endotoxicity" },
   { key: "STERILITY", label: "Sterility" },
 ];
@@ -149,10 +151,11 @@ export default function LandingThirdPartyTestingPage() {
   const grouped = useMemo(() => {
     const base: Record<ThirdPartyReportCategory, ThirdPartyReport[]> = {
       PURITY: [],
+      HEAVY_METALS: [],
       ENDOTOXICITY: [],
       STERILITY: [],
     };
-    for (const r of filtered) base[r.category].push(r);
+    for (const r of filtered) { if (base[r.category]) base[r.category].push(r); }
     return base;
   }, [filtered]);
 

@@ -38,7 +38,7 @@ router.get(
   '/',
   requireRole(['ADMIN', 'MANAGER', 'STAFF']),
   [
-    query('category').optional().isIn(['PURITY', 'ENDOTOXICITY', 'STERILITY']),
+    query('category').optional().isIn(['PURITY', 'HEAVY_METALS', 'ENDOTOXICITY', 'STERILITY']),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {
@@ -82,7 +82,7 @@ router.post(
   '/',
   requireRole(['ADMIN', 'MANAGER', 'STAFF']),
   [
-    body('category').isIn(['PURITY', 'ENDOTOXICITY', 'STERILITY']),
+    body('category').isIn(['PURITY', 'HEAVY_METALS', 'ENDOTOXICITY', 'STERILITY']),
     body('name').isString().trim().notEmpty(),
     body('description').optional({ nullable: true }).isString(),
     body('url').optional({ nullable: true }).isString().trim().notEmpty(),
@@ -170,7 +170,7 @@ router.put(
   requireRole(['ADMIN', 'MANAGER', 'STAFF']),
   [
     param('id').isString().trim().notEmpty(),
-    body('category').optional().isIn(['PURITY', 'ENDOTOXICITY', 'STERILITY']),
+    body('category').optional().isIn(['PURITY', 'HEAVY_METALS', 'ENDOTOXICITY', 'STERILITY']),
     body('name').optional().isString().trim().notEmpty(),
     body('description').optional({ nullable: true }).isString(),
     body('url').optional({ nullable: true }).isString().trim().notEmpty(),

@@ -1767,6 +1767,7 @@ model MediaFile {
 
 enum ThirdPartyReportCategory {
   PURITY
+  HEAVY_METALS
   ENDOTOXICITY
   STERILITY
 }

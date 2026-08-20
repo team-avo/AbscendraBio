@@ -15,7 +15,7 @@ const router = express.Router();
 router.get(
   '/',
   [
-    query('category').optional().isIn(['PURITY', 'ENDOTOXICITY', 'STERILITY']),
+    query('category').optional().isIn(['PURITY', 'HEAVY_METALS', 'ENDOTOXICITY', 'STERILITY']),
     validateRequest,
   ],
   asyncHandler(async (req, res) => {

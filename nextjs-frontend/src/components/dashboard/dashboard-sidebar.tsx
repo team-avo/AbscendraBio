@@ -234,6 +234,7 @@ const navItems: NavItem[] = [
         icon: FlaskConical,
         children: [
             { title: "Purity & Net Peptide Content", href: "/third-party-testing/purity", icon: FlaskConical },
+            { title: "Heavy Metals", href: "/third-party-testing/heavy-metals", icon: FlaskConical },
             { title: "Endotoxicity", href: "/third-party-testing/endotoxicity", icon: FlaskConical },
             { title: "Sterility", href: "/third-party-testing/sterility", icon: FlaskConical },
         ],

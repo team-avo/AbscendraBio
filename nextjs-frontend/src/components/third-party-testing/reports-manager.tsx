@@ -70,12 +70,14 @@ import logger from '@/lib/logger';
 
 const CATEGORY_LABELS: Record<ThirdPartyReportCategory, string> = {
   PURITY: "Purity & Net Peptide Content",
+  HEAVY_METALS: "Heavy Metals",
   ENDOTOXICITY: "Endotoxicity",
   STERILITY: "Sterility",
 };
 
 const CATEGORY_OPTIONS: Array<{ value: ThirdPartyReportCategory; label: string }> = [
   { value: "PURITY", label: "Purity & Net Peptide Content" },
+  { value: "HEAVY_METALS", label: "Heavy Metals" },
   { value: "ENDOTOXICITY", label: "Endotoxicity" },
   { value: "STERILITY", label: "Sterility" },
 ];

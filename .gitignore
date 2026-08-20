@@ -45,3 +45,7 @@ next-env.d.ts
 migration_data_*/
 migration-config.env
 .secrets
+
+# local COA source files (real certificates — never commit) + run logs
+coa-files/
+*.run.log

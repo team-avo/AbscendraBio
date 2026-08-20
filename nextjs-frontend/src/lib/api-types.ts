@@ -57,7 +57,7 @@ export interface Promotion {
   updatedAt: string;
 }
 
-export type ThirdPartyReportCategory = "PURITY" | "ENDOTOXICITY" | "STERILITY";
+export type ThirdPartyReportCategory = "PURITY" | "HEAVY_METALS" | "ENDOTOXICITY" | "STERILITY";
 
 export interface ThirdPartyReport {
   id: string;

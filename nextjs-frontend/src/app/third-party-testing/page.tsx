@@ -22,6 +22,7 @@ import { api, ThirdPartyReport, ThirdPartyReportCategory } from "@/lib/api";
 
 const CATEGORY_LABELS: Record<ThirdPartyReportCategory, string> = {
   PURITY: "Purity & Net Peptide Content",
+  HEAVY_METALS: "Heavy Metals Testing",
   ENDOTOXICITY: "Endotoxicity Testing",
   STERILITY: "Sterility Testing",
 };
@@ -59,6 +60,7 @@ const ThirdPartyTestingOverviewPage = () => {
   const grouped = useMemo(() => {
     const base: Record<ThirdPartyReportCategory, ThirdPartyReport[]> = {
       PURITY: [],
+      HEAVY_METALS: [],
       ENDOTOXICITY: [],
       STERILITY: [],
     };
@@ -80,11 +82,12 @@ const ThirdPartyTestingOverviewPage = () => {
 
   const counts = useMemo(() => ({
     PURITY: grouped.PURITY.length,
+    HEAVY_METALS: grouped.HEAVY_METALS.length,
     ENDOTOXICITY: grouped.ENDOTOXICITY.length,
     STERILITY: grouped.STERILITY.length,
   }), [grouped]);
 
-  const totalCount = counts.PURITY + counts.ENDOTOXICITY + counts.STERILITY;
+  const totalCount = counts.PURITY + counts.HEAVY_METALS + counts.ENDOTOXICITY + counts.STERILITY;
 
   const openInNewTab = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -108,6 +111,7 @@ const ThirdPartyTestingOverviewPage = () => {
 
   const cards: Array<{ category: ThirdPartyReportCategory; href: string; title: string }> = [
     { category: "PURITY", href: "/third-party-testing/purity", title: "Purity & Net Peptide Content" },
+    { category: "HEAVY_METALS", href: "/third-party-testing/heavy-metals", title: "Heavy Metals" },
     { category: "ENDOTOXICITY", href: "/third-party-testing/endotoxicity", title: "Endotoxicity" },
     { category: "STERILITY", href: "/third-party-testing/sterility", title: "Sterility" },
   ];
@@ -115,12 +119,13 @@ const ThirdPartyTestingOverviewPage = () => {
   const typePills: Array<{ label: string; value: TypeFilter }> = [
     { label: "All", value: "ALL" },
     { label: "Purity", value: "PURITY" },
+    { label: "Heavy Metals", value: "HEAVY_METALS" },
     { label: "Endotoxicity", value: "ENDOTOXICITY" },
     { label: "Sterility", value: "STERILITY" },
   ];
 
   const visibleCategories = (
-    ["PURITY", "ENDOTOXICITY", "STERILITY"] as ThirdPartyReportCategory[]
+    ["PURITY", "HEAVY_METALS", "ENDOTOXICITY", "STERILITY"] as ThirdPartyReportCategory[]
   ).filter((cat) => typeFilter === "ALL" || typeFilter === cat);
 
   return (
