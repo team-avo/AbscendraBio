@@ -178,6 +178,48 @@ const getFromEmail = (templateType, brand) => {
   return c.from[templateType] || c.fromDefault;
 };
 
+// Lineará transactional-email theme.
+//
+// The shared DB templates are built on a fixed neutral design-system palette
+// (ink #111827, body #374151, muted #6b7280, surface #fafafa, hairlines
+// #e5e7eb / #eef0f2, and a dark #111827 primary button). For Lineará we remap
+// those exact tokens to the storefront's cream + espresso palette (pulled from
+// lineara.co) and switch headings to a serif — via <style> overrides scoped to
+// the email body, keyed on the templates' own inline hex values. This recolours
+// every Lineará transactional email precisely WITHOUT editing the shared
+// templates and WITHOUT touching Ascendra (the block is only injected when
+// brand === 'lineara'). Clients that ignore <style> (e.g. Outlook desktop) fall
+// back to the neutral base — still clean and readable.
+const LINEARA_EMAIL_STYLE = `
+          /* --- Lineará brand overrides (cream + espresso, serif headings) --- */
+          body { background-color: #efe7d9 !important; }
+          .container { background: #faf6ee !important; }
+          .email-header { background-color: #faf6ee !important; }
+          .email-footer { background-color: #f2ebe0 !important; color: #6e6659 !important; }
+          .content h1, .content h2, .content h3 {
+            font-family: Georgia, 'Times New Roman', serif !important;
+            color: #1f1b17 !important;
+          }
+          .content p[style*="374151"] { color: #2c251e !important; }
+          .content p[style*="6b7280"] { color: #6e6659 !important; }
+          .content strong { color: #1f1b17 !important; }
+          .content table[style*="fafafa"] {
+            background: #f6f1e7 !important;
+            border-color: #e4d7c8 !important;
+          }
+          .content td[style*="6b7280"] { color: #6e6659 !important; }
+          .content td[style*="111827"] { color: #1f1b17 !important; }
+          .content td[style*="eef0f2"] { border-top-color: #e4d7c8 !important; }
+          .content a[style*="111827"] {
+            background: #1f1b17 !important;
+            color: #faf6ee !important;
+          }
+`;
+
+// Extra <style> rules to inject into the shared email wrapper for a given brand.
+const brandEmailStyle = (brand) =>
+  brandKey(brand) === 'lineara' ? LINEARA_EMAIL_STYLE : '';
+
 // Process email with template using Resend (Internal function called by Queue)
 const processEmailWithTemplateResend = async (
   templateType,
@@ -405,6 +447,7 @@ const processEmailWithTemplateResend = async (
               color: #cccccc;
             }
           }
+${brandEmailStyle(brand)}
         </style>
       </head>
       <body>
