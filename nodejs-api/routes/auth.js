@@ -296,7 +296,7 @@ router.post(
       // advances on signup (no-op if GHL is not configured; never throws).
       try {
         const { syncAccountCreated } = require("../services/ghl");
-        syncAccountCreated({ email, firstName, lastName, mobile });
+        syncAccountCreated({ email, firstName, lastName, mobile, brand });
       } catch (e) {
         console.error("[ghl] account_created dispatch failed:", e?.message);
       }

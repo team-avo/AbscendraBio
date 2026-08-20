@@ -91,6 +91,12 @@ function cleanPhone(mobile) {
   return v || undefined;
 }
 
+// Brand segmentation tag so GHL sequences can target one storefront only.
+// Lineará signups/orders carry brand === "lineara"; everything else is Ascendra.
+function brandTag(brand) {
+  return brand === "lineara" ? "brand:lineara" : "brand:ascendra";
+}
+
 // Upsert a contact by email; returns its contact id.
 async function upsertContact({ email, firstName, lastName, phone, tags }) {
   const payload = {
@@ -134,7 +140,7 @@ async function upsertOpportunity({ contactId, stageId, name, monetaryValue }) {
 
 /**
  * Customer created an account on the website.
- * @param {{email:string, firstName?:string, lastName?:string, mobile?:string}} customer
+ * @param {{email:string, firstName?:string, lastName?:string, mobile?:string, brand?:string}} customer
  */
 async function syncAccountCreated(customer) {
   if (!ghlEnabled() || !customer?.email) return;
@@ -144,7 +150,7 @@ async function syncAccountCreated(customer) {
       firstName: customer.firstName,
       lastName: customer.lastName,
       phone: customer.mobile,
-      tags: ["account created"],
+      tags: ["account created", brandTag(customer.brand)],
     });
     const pc = await resolvePipeline();
     await upsertOpportunity({
@@ -164,8 +170,8 @@ async function syncAccountCreated(customer) {
 
 /**
  * Customer placed an order on the website.
- * @param {{orderNumber?:string, totalAmount?:number, total?:number}} order
- * @param {{email:string, firstName?:string, lastName?:string, mobile?:string}} customer
+ * @param {{orderNumber?:string, totalAmount?:number, total?:number, brand?:string}} order
+ * @param {{email:string, firstName?:string, lastName?:string, mobile?:string, brand?:string}} customer
  */
 async function syncOrderPlaced(order, customer) {
   if (!ghlEnabled() || !customer?.email) return;
@@ -176,7 +182,7 @@ async function syncOrderPlaced(order, customer) {
       firstName: customer.firstName,
       lastName: customer.lastName,
       phone: customer.mobile,
-      tags: ["ordered"],
+      tags: ["ordered", brandTag(order?.brand ?? customer.brand)],
     });
     const pc = await resolvePipeline();
     await upsertOpportunity({
