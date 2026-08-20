@@ -288,6 +288,8 @@ app.use("/api/inquiries", inquiriesRoutes);
 app.use("/api/contact-lab", contactLabRoutes);
 // Contact form email (public)
 app.use("/api/send-email", sendEmailRoutes);
+// GHL -> Resend email bridge (public; secured by GHL_EMAIL_WEBHOOK_SECRET)
+app.use("/api/webhooks/ghl", require("./routes/ghl-webhook"));
 // Customer signup confirmation (public)
 app.use("/api/customer-signup-confirmation", customerSignupConfirmationRoutes);
 // Mobile OTP verification (auth optional per-route checks)
