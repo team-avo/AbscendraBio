@@ -8,44 +8,87 @@
  *                                       move opportunity to "Won - Active Account"
  *   syncOrderPlaced(order, customer) -> upsert contact, tag "ordered",
  *                                       move opportunity to "Ordered" + order value
+ *   syncAbandonedCart(contact)       -> upsert contact, tag "abandoned cart"
+ *                                       (drives a GHL abandoned-cart workflow)
  *
- * Fully OPTIONAL and NON-BLOCKING. If GHL_API_TOKEN is not set every function is
- * a no-op. All network errors are caught and logged so this can never break
- * signup or checkout.
+ * Brand-aware routing. Each storefront can sync into its own GHL sub-account:
+ * a Lineará signup/order (brand === "lineara") uses the Lineará token +
+ * location + pipeline when the *_LINEARA envs are set, otherwise it falls back
+ * to the base (Ascendra) token + location. So this is safe to ship dormant —
+ * behaviour is identical to a single-account setup until GHL_API_TOKEN_LINEARA
+ * and GHL_LOCATION_ID_LINEARA are provisioned. Every contact still carries a
+ * brand:<storefront> tag as a backstop segmentation signal.
  *
- * Env:
- *   GHL_API_TOKEN     Private Integration token (pit-...). Required to enable.
- *   GHL_LOCATION_ID   Sub-account id (defaults to the Ascendra Bio location).
- *   GHL_PIPELINE_NAME Pipeline to use (default "B2B Sales Pipeline").
- *   GHL_STAGE_ACCOUNT Stage for new accounts (default "Won - Active Account").
- *   GHL_STAGE_ORDER   Stage for orders (default "Ordered").
+ * Fully OPTIONAL and NON-BLOCKING. If the relevant token is not set every
+ * function is a no-op. All network errors are caught and logged so this can
+ * never break signup or checkout.
+ *
+ * Env (base / Ascendra):
+ *   GHL_API_TOKEN            Private Integration token (pit-...). Required to enable.
+ *   GHL_LOCATION_ID          Sub-account id (defaults to the Ascendra Bio location).
+ *   GHL_PIPELINE_NAME        Pipeline to use (default "B2B Sales Pipeline").
+ *   GHL_STAGE_ACCOUNT        Stage for new accounts (default "Won - Active Account").
+ *   GHL_STAGE_ORDER          Stage for orders (default "Ordered").
+ * Env (Lineará overrides — each falls back to the base value when unset):
+ *   GHL_API_TOKEN_LINEARA    Private Integration token minted INSIDE the Lineará sub-account.
+ *   GHL_LOCATION_ID_LINEARA  Lineará sub-account id.
+ *   GHL_PIPELINE_NAME_LINEARA / GHL_STAGE_ACCOUNT_LINEARA / GHL_STAGE_ORDER_LINEARA
  */
 const logger = require("../utils/logger");
 
 const BASE = "https://services.leadconnectorhq.com";
 const API_VERSION = "2021-07-28";
 
-const TOKEN = process.env.GHL_API_TOKEN;
-const LOCATION_ID = process.env.GHL_LOCATION_ID || "DJFXMlUOKfCCuRpu9aGF";
-const PIPELINE_NAME = process.env.GHL_PIPELINE_NAME || "B2B Sales Pipeline";
-const STAGE_ACCOUNT = process.env.GHL_STAGE_ACCOUNT || "Won - Active Account";
-const STAGE_ORDER = process.env.GHL_STAGE_ORDER || "Ordered";
+const DEFAULT_LOCATION_ID = "DJFXMlUOKfCCuRpu9aGF";
+const DEFAULT_PIPELINE_NAME = "B2B Sales Pipeline";
+const DEFAULT_STAGE_ACCOUNT = "Won - Active Account";
+const DEFAULT_STAGE_ORDER = "Ordered";
 
-const ghlEnabled = () => Boolean(TOKEN);
-
-function headers() {
+// Resolve the GHL routing config for a given storefront brand. Lineará values
+// fall back to the base (Ascendra) config until the Lineará sub-account is
+// provisioned, so setting the *_LINEARA envs is a zero-code cutover.
+function brandGhl(brand) {
+  const isLineara = brand === "lineara";
+  const pick = (linearaVal, baseVal) =>
+    (isLineara && linearaVal) || baseVal;
   return {
-    Authorization: `Bearer ${TOKEN}`,
+    isLineara,
+    token: pick(process.env.GHL_API_TOKEN_LINEARA, process.env.GHL_API_TOKEN),
+    locationId: pick(
+      process.env.GHL_LOCATION_ID_LINEARA,
+      process.env.GHL_LOCATION_ID || DEFAULT_LOCATION_ID,
+    ),
+    pipelineName: pick(
+      process.env.GHL_PIPELINE_NAME_LINEARA,
+      process.env.GHL_PIPELINE_NAME || DEFAULT_PIPELINE_NAME,
+    ),
+    stageAccount: pick(
+      process.env.GHL_STAGE_ACCOUNT_LINEARA,
+      process.env.GHL_STAGE_ACCOUNT || DEFAULT_STAGE_ACCOUNT,
+    ),
+    stageOrder: pick(
+      process.env.GHL_STAGE_ORDER_LINEARA,
+      process.env.GHL_STAGE_ORDER || DEFAULT_STAGE_ORDER,
+    ),
+  };
+}
+
+// Base enablement check (kept for backwards-compatible external callers).
+const ghlEnabled = () => Boolean(process.env.GHL_API_TOKEN);
+
+function headers(cfg) {
+  return {
+    Authorization: `Bearer ${cfg.token}`,
     Version: API_VERSION,
     "Content-Type": "application/json",
     Accept: "application/json",
   };
 }
 
-async function ghlFetch(path, options = {}) {
+async function ghlFetch(cfg, path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
     ...options,
-    headers: { ...headers(), ...(options.headers || {}) },
+    headers: { ...headers(cfg), ...(options.headers || {}) },
   });
   const text = await res.text();
   let body;
@@ -64,26 +107,33 @@ async function ghlFetch(path, options = {}) {
   return body;
 }
 
-// Resolve pipeline + stage ids by name once, then cache for the process lifetime.
-let pipelineCache;
-async function resolvePipeline() {
-  if (pipelineCache) return pipelineCache;
+// Resolve pipeline + stage ids by name once per (location, pipeline), then cache
+// for the process lifetime. Keyed so each sub-account resolves independently.
+const pipelineCache = new Map();
+async function resolvePipeline(cfg) {
+  const key = `${cfg.locationId}::${cfg.pipelineName}`;
+  if (pipelineCache.has(key)) return pipelineCache.get(key);
   const data = await ghlFetch(
-    `/opportunities/pipelines?locationId=${encodeURIComponent(LOCATION_ID)}`,
+    cfg,
+    `/opportunities/pipelines?locationId=${encodeURIComponent(cfg.locationId)}`,
   );
   const pipelines = data.pipelines || [];
   const pipeline =
-    pipelines.find((p) => p.name === PIPELINE_NAME) || pipelines[0];
+    pipelines.find((p) => p.name === cfg.pipelineName) || pipelines[0];
   if (!pipeline) throw new Error("No pipelines found in GHL location");
   const stageId = (name) => {
     const s = (pipeline.stages || []).find((st) => st.name === name);
     return s ? s.id : null;
   };
-  pipelineCache = {
+  const resolved = {
     pipelineId: pipeline.id,
-    stages: { account: stageId(STAGE_ACCOUNT), order: stageId(STAGE_ORDER) },
+    stages: {
+      account: stageId(cfg.stageAccount),
+      order: stageId(cfg.stageOrder),
+    },
   };
-  return pipelineCache;
+  pipelineCache.set(key, resolved);
+  return resolved;
 }
 
 function cleanPhone(mobile) {
@@ -98,9 +148,9 @@ function brandTag(brand) {
 }
 
 // Upsert a contact by email; returns its contact id.
-async function upsertContact({ email, firstName, lastName, phone, tags }) {
+async function upsertContact(cfg, { email, firstName, lastName, phone, tags }) {
   const payload = {
-    locationId: LOCATION_ID,
+    locationId: cfg.locationId,
     email,
     firstName: firstName || undefined,
     lastName: lastName || undefined,
@@ -108,7 +158,7 @@ async function upsertContact({ email, firstName, lastName, phone, tags }) {
     phone: cleanPhone(phone),
     tags: tags && tags.length ? tags : undefined,
   };
-  const data = await ghlFetch("/contacts/upsert", {
+  const data = await ghlFetch(cfg, "/contacts/upsert", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -116,15 +166,15 @@ async function upsertContact({ email, firstName, lastName, phone, tags }) {
 }
 
 // Create/update the contact's opportunity in a given stage.
-async function upsertOpportunity({ contactId, stageId, name, monetaryValue }) {
+async function upsertOpportunity(cfg, { contactId, stageId, name, monetaryValue }) {
   if (!contactId) return;
-  const pc = await resolvePipeline();
+  const pc = await resolvePipeline(cfg);
   if (!stageId) {
     logger.warn("[ghl] stage id not found; skipping opportunity move");
     return;
   }
   const payload = {
-    locationId: LOCATION_ID,
+    locationId: cfg.locationId,
     pipelineId: pc.pipelineId,
     pipelineStageId: stageId,
     contactId,
@@ -132,7 +182,7 @@ async function upsertOpportunity({ contactId, stageId, name, monetaryValue }) {
     status: "open",
     monetaryValue: monetaryValue != null ? Number(monetaryValue) : undefined,
   };
-  await ghlFetch("/opportunities/upsert", {
+  await ghlFetch(cfg, "/opportunities/upsert", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -143,17 +193,18 @@ async function upsertOpportunity({ contactId, stageId, name, monetaryValue }) {
  * @param {{email:string, firstName?:string, lastName?:string, mobile?:string, brand?:string}} customer
  */
 async function syncAccountCreated(customer) {
-  if (!ghlEnabled() || !customer?.email) return;
+  const cfg = brandGhl(customer?.brand);
+  if (!cfg.token || !customer?.email) return;
   try {
-    const contactId = await upsertContact({
+    const contactId = await upsertContact(cfg, {
       email: customer.email,
       firstName: customer.firstName,
       lastName: customer.lastName,
       phone: customer.mobile,
       tags: ["account created", brandTag(customer.brand)],
     });
-    const pc = await resolvePipeline();
-    await upsertOpportunity({
+    const pc = await resolvePipeline(cfg);
+    await upsertOpportunity(cfg, {
       contactId,
       stageId: pc.stages.account,
       name:
@@ -174,18 +225,20 @@ async function syncAccountCreated(customer) {
  * @param {{email:string, firstName?:string, lastName?:string, mobile?:string, brand?:string}} customer
  */
 async function syncOrderPlaced(order, customer) {
-  if (!ghlEnabled() || !customer?.email) return;
+  const brand = order?.brand ?? customer?.brand;
+  const cfg = brandGhl(brand);
+  if (!cfg.token || !customer?.email) return;
   try {
     const value = Number(order?.totalAmount ?? order?.total ?? 0) || undefined;
-    const contactId = await upsertContact({
+    const contactId = await upsertContact(cfg, {
       email: customer.email,
       firstName: customer.firstName,
       lastName: customer.lastName,
       phone: customer.mobile,
-      tags: ["ordered", brandTag(order?.brand ?? customer.brand)],
+      tags: ["ordered", brandTag(brand)],
     });
-    const pc = await resolvePipeline();
-    await upsertOpportunity({
+    const pc = await resolvePipeline(cfg);
+    await upsertOpportunity(cfg, {
       contactId,
       stageId: pc.stages.order,
       name: order?.orderNumber ? `Order ${order.orderNumber}` : customer.email,
@@ -201,4 +254,34 @@ async function syncOrderPlaced(order, customer) {
   }
 }
 
-module.exports = { syncAccountCreated, syncOrderPlaced, ghlEnabled };
+/**
+ * Customer left items in an active cart without checking out. Tags the contact
+ * "abandoned cart" so a GHL workflow can pick up the follow-up. Contact-only
+ * (no opportunity move) so it never depends on a bespoke pipeline stage.
+ * @param {{email:string, firstName?:string, lastName?:string, mobile?:string, brand?:string}} contact
+ */
+async function syncAbandonedCart(contact) {
+  const cfg = brandGhl(contact?.brand);
+  if (!cfg.token || !contact?.email) return;
+  try {
+    await upsertContact(cfg, {
+      email: contact.email,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      phone: contact.mobile,
+      tags: ["abandoned cart", brandTag(contact.brand)],
+    });
+    logger.info(`[ghl] synced abandoned_cart for ${contact.email}`);
+  } catch (err) {
+    logger.warn(
+      `[ghl] abandoned_cart sync failed for ${contact?.email}: ${err.message}`,
+    );
+  }
+}
+
+module.exports = {
+  syncAccountCreated,
+  syncOrderPlaced,
+  syncAbandonedCart,
+  ghlEnabled,
+};

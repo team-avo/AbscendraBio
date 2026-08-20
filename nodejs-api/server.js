@@ -9,6 +9,7 @@ const { syncShipStationInventory } = require('./utils/inventorySyncService');
 const { run: runLabelTrackingSync } = require('./cron/labelTrackingSync');
 const { run: runSupplierEmailPoll } = require('./cron/supplierEmailPoll');
 const { run: runZellePoll } = require('./cron/zellePoll');
+const { run: runAbandonedCartPoll } = require('./cron/abandonedCartPoll');
 const logger = require('./utils/logger');
 const port = process.env.PORT || 4000;
 const server = http.createServer(app);
@@ -149,6 +150,22 @@ cron.schedule(zellePollExpr, async () => {
     }
   } catch (err) {
     logger.error(`[Cron] Zelle poll error: ${err.message}`);
+  }
+});
+
+// Abandoned-cart -> GHL trigger. Dormant unless ABANDONED_CART_GHL_ENABLED=true.
+// Tags abandoned-cart contacts in GHL so a GoHighLevel workflow runs the
+// follow-up. Default every 15 minutes.
+const abandonedCartExpr = process.env.ABANDONED_CART_CRON || '*/15 * * * *';
+cron.schedule(abandonedCartExpr, async () => {
+  try {
+    const result = await runAbandonedCartPoll();
+    if (result && result.skipped) return;
+    if (result && (result.synced || result.errors)) {
+      logger.info('[Cron] Abandoned-cart poll completed', result);
+    }
+  } catch (err) {
+    logger.error(`[Cron] Abandoned-cart poll error: ${err.message}`);
   }
 });
 

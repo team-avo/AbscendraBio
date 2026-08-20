@@ -800,6 +800,10 @@ model Cart {
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  // When this cart was last synced to GHL as "abandoned cart". Null = never
+  // synced; re-armed when the cart is touched after this timestamp so a
+  // re-abandoned cart fires again. Drives the abandonedCartPoll cron.
+  abandonedSyncedAt DateTime?
 
   // Relations
   customer Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
