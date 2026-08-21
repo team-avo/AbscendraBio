@@ -32,11 +32,13 @@ const { sendEmailWithTemplate, brandStoreData } = require("../utils/emailService
 // Lifecycle/marketing sends the bridge may trigger. Deliberately excludes
 // auth (PASSWORD_RESET / ACCOUNT_VERIFICATION) and transactional
 // (ORDER_CONFIRMATION, etc.) types so a leaked secret cannot abuse them.
-//   WELCOME_EMAIL     structured welcome — copy edited in the admin template UI.
+//   LINEARA_WELCOME   Lineará's own welcome — copy edited in the admin template UI.
+//   WELCOME_EMAIL     Ascendra's shared welcome (kept available for completeness).
 //   MARKETING_GENERIC flexible branded shell — GHL supplies {{subject}},
 //                     {{heading}}, {{bodyHtml}} per email (abandoned cart,
 //                     re-engagement, any sequence step).
 const ALLOWED_TEMPLATE_TYPES = new Set([
+  "LINEARA_WELCOME",
   "WELCOME_EMAIL",
   "MARKETING_GENERIC",
 ]);

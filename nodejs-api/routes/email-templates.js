@@ -202,7 +202,7 @@ router.get('/', requirePermission('SETTINGS', 'READ'), asyncHandler(async (req, 
 
 // Get email template by type
 router.get('/:type', requirePermission('SETTINGS', 'READ'), [
-  param('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
+  param('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'LINEARA_WELCOME', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
   validateRequest
 ], asyncHandler(async (req, res) => {
   const { type } = req.params;
@@ -304,7 +304,7 @@ router.post('/upload-images', requirePermission('EMAIL_TEMPLATES', 'CREATE'), up
 // Create email template
 router.post('/', requirePermission('EMAIL_TEMPLATES', 'CREATE'), [
   body('name').notEmpty().withMessage('Name is required'),
-  body('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
+  body('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'LINEARA_WELCOME', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
   body('subject').notEmpty().withMessage('Subject is required'),
   body('contentType').isIn(['HTML_CONTENT', 'TEXT_CONTENT']).withMessage('Invalid content type'),
   body('htmlContent').optional().isString().withMessage('HTML content must be a string'),
@@ -460,7 +460,7 @@ router.delete('/:id', requirePermission('SETTINGS', 'DELETE'), [
 
 // Preview email template with sample data
 router.post('/:type/preview', requirePermission('SETTINGS', 'READ'), [
-  param('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
+  param('type').isIn(['ORDER_CONFIRMATION', 'SHIPPING_NOTIFICATION', 'WELCOME_EMAIL', 'LOW_INVENTORY_ALERT', 'ORDER_CANCELLED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'PASSWORD_RESET', 'ACCOUNT_VERIFICATION', 'MARKETING_GENERIC', 'LINEARA_WELCOME', 'BULK_QUOTE', 'BLACK_FRIDAY', 'PARTNER_STATEMENT_GENERATED', 'PARTNER_PAYMENT_REMINDER', 'PARTNER_OVERDUE_ALERT']).withMessage('Invalid template type'),
   validateRequest
 ], asyncHandler(async (req, res) => {
   const { type } = req.params;
