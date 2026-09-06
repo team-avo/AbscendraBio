@@ -8,7 +8,7 @@ const validateRequest = require("../middleware/validateRequest");
 const { asyncHandler } = require("../middleware/errorHandler");
 const { requireRole, requirePermission } = require("../middleware/auth");
 const { authMiddleware } = require("../middleware/auth");
-const { calculatePromotionDiscount } = require("../utils/promotionCalculator");
+const { calculatePromotionDiscount, isCustomerEligible } = require("../utils/promotionCalculator");
 const { getPricingCustomerType } = require("../utils/pricingMapper");
 const {
   sendOrderConfirmation,
@@ -155,6 +155,57 @@ const calculateOrderTotals = (items) => {
     totalAmount: subtotal + subtotal * 0.08,
   };
 };
+
+// Storefront coupon validation. Confirms a promo code is currently valid AND the signed-in
+// customer is eligible (same lookup + isCustomerEligible() the order route uses), and returns the
+// promotion's terms so checkout can show the discount live. It NEVER places an order and does not
+// compute the final amount — the exact discount is still applied authoritatively at placement, so
+// checkout shows this as an estimate. Auth is enforced at the /api/orders mount.
+router.post(
+  "/validate-coupon",
+  [body("couponCode").isString().trim().notEmpty().withMessage("Coupon code is required")],
+  validateRequest,
+  asyncHandler(async (req, res) => {
+    const code = String(req.body.couponCode).toUpperCase().trim();
+    const now = new Date();
+    const promo = await prisma.promotion.findFirst({
+      where: {
+        code,
+        isActive: true,
+        OR: [{ startsAt: null }, { startsAt: { lte: now } }],
+        AND: [{ OR: [{ expiresAt: null }, { expiresAt: { gte: now } }] }],
+      },
+      include: { specificCustomers: { select: { customerId: true } } },
+    });
+    if (!promo) {
+      return res.json({ success: true, data: { valid: false, message: "Invalid or expired code." } });
+    }
+    if (promo.usageLimit && promo.usageCount >= promo.usageLimit) {
+      return res.json({ success: true, data: { valid: false, message: "This code has reached its usage limit." } });
+    }
+    const customer = req.user?.customerId
+      ? await prisma.customer.findUnique({
+          where: { id: req.user.customerId },
+          select: { id: true, customerType: true },
+        })
+      : null;
+    if (!isCustomerEligible(promo, customer)) {
+      return res.json({ success: true, data: { valid: false, message: "This code isn't available on your account." } });
+    }
+    return res.json({
+      success: true,
+      data: {
+        valid: true,
+        code: promo.code,
+        type: promo.type, // PERCENTAGE | FIXED_AMOUNT | FREE_SHIPPING | BOGO | VOLUME_DISCOUNT
+        value: Number(promo.value),
+        minOrderAmount: promo.minOrderAmount != null ? Number(promo.minOrderAmount) : null,
+        maxDiscount: promo.maxDiscount != null ? Number(promo.maxDiscount) : null,
+        message: "Code applied.",
+      },
+    });
+  }),
+);
 
 // Get the shipment tracking events for an order (used by the shipping UI).
 router.get(
