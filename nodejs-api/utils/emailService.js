@@ -114,6 +114,8 @@ const BRANDS = {
     name: 'Ascendra Bio',
     // Base URL for links in auth emails (verify / reset). Per-brand so a Lineará link is lineara.co.
     frontendUrl: process.env.FRONTEND_URL || 'https://www.ascendrabio.com',
+    // Password-reset route path — per-brand: the two storefronts use different routes.
+    resetPath: '/reset-password',
     storeEmail: 'info@ascendrabio.com',
     storePhone: '+1 (323) 299-6900',
     storeAddress: '5815 W Sunset Blvd, Suite 401, Los Angeles, CA 90028',
@@ -141,6 +143,9 @@ const BRANDS = {
     key: 'lineara',
     name: 'Lineará',
     frontendUrl: process.env.LINEARA_FRONTEND_URL || 'https://lineara.co',
+    // Lineará's reset page is /login/reset (not Ascendra's /reset-password) — mismatch here 404'd
+    // every Lineará reset link. See the Lineará frontend route src/app/login/reset.
+    resetPath: '/login/reset',
     storeEmail: 'info@lineara.co',
     storePhone: '', // TODO(Peter): Lineará support phone for the email footer
     storeAddress: '', // TODO(Peter): Lineará mailing address for the email footer
@@ -1279,7 +1284,7 @@ const sendPasswordResetEmail = async (user, resetToken) => {
     // details, and sends from lineara.co (getFromEmail + Resend client both branch on the brand key).
     const bk = brandKey(user.brand);
     const c = brandConfig(bk);
-    const resetLink = `${c.frontendUrl}/reset-password?token=${resetToken}`;
+    const resetLink = `${c.frontendUrl}${c.resetPath || '/reset-password'}?token=${resetToken}`;
     const data = {
       customerName: `${user.firstName} ${user.lastName}`,
       customerEmail: user.email,
