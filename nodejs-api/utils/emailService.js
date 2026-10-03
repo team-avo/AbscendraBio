@@ -556,11 +556,15 @@ ${brandEmailStyle(brand)}
 };
 
 // Helper: Send raw email using Resend (Internal)
-const processRawEmailResend = async ({ to, subject, html, text, from, attachments }) => {
+const processRawEmailResend = async ({ to, subject, html, text, from, attachments, brand }) => {
   try {
     console.log("[Resend] Sending raw email...");
 
-    const response = await resend.emails.send({
+    // Brand-aware client: a Lineará raw email (from lineara.co) MUST go through the Lineará Resend
+    // account that verified lineara.co — the Ascendra client can't send from it. Absent/unknown brand
+    // -> Ascendra client (unchanged for existing callers). Mirrors the template path (getClient).
+    const client = resend.getClient(brand);
+    const response = await client.emails.send({
       from: from || 'Ascendra Bio <info@ascendrabio.com>',
       to: to,
       subject: subject,
@@ -991,7 +995,7 @@ const sendEmailWithTemplate = async (templateType, recipientEmail, data = {}, br
 };
 
 // Public API: Queue a raw email
-const sendRawEmail = async (to, subject, html, text, from) => {
+const sendRawEmail = async (to, subject, html, text, from, brand) => {
   try {
     const job = await emailQueue.add({
       type: 'RAW',
@@ -999,7 +1003,8 @@ const sendRawEmail = async (to, subject, html, text, from) => {
       subject,
       html,
       text,
-      from
+      from,
+      brand // brand key so the worker picks the right Resend account (Lineará sends from lineara.co)
     }, {
       attempts: 3,
       backoff: {
@@ -1390,7 +1395,7 @@ const sendAccountExistsEmail = async (user) => {
     `;
 
     const from = getFromEmail("ACCOUNT_VERIFICATION", bk); // reuse the brand's Notifications sender
-    return await sendRawEmail(user.email, subject, htmlContent, null, from);
+    return await sendRawEmail(user.email, subject, htmlContent, null, from, bk);
   } catch (error) {
     console.error("Error sending account-exists email:", error);
     throw error;
