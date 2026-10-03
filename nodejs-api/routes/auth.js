@@ -162,6 +162,17 @@ router.post(
     });
 
     if (existingUser) {
+      // Audit A5: the storefront shows the SAME success-shaped response whether or not the email is
+      // already registered (anti-enumeration — register/route.ts collapses this 409 to a 200). So the
+      // ONLY way the real owner learns "you already have an account" is out-of-band: email the address
+      // already on file (revealing nothing to whoever typed it). Best-effort + queued — a send failure
+      // must never change this response, and timing stays uncorrelated with the submitted email.
+      try {
+        const { sendAccountExistsEmail } = require("../utils/emailService");
+        await sendAccountExistsEmail(existingUser);
+      } catch (e) {
+        console.error("Failed to send account-exists (A5) email:", e);
+      }
       return res.status(409).json({
         success: false,
         error: "User already exists with this email",

@@ -1337,6 +1337,66 @@ const sendPasswordResetEmail = async (user, resetToken) => {
   }
 };
 
+/* Audit A5 — duplicate-signup recovery email ("you already have an account").
+   The storefronts deliberately DO NOT tell a visitor whether an email is registered (anti-enumeration:
+   the register BFF collapses the duplicate-409 into the same success-shaped 200 a real signup gets).
+   That closes the oracle but strands the legitimate owner, who thinks they just made a new account.
+   This closes the loop the safe way: when a signup hits an existing account, the backend emails the
+   REAL owner (the address already in our records — so this reveals nothing to the person who typed it)
+   a brand-aware "you already have an account, here's how to sign in / reset" message. Best-effort and
+   queued; a send failure is logged and never changes the register response. */
+const sendAccountExistsEmail = async (user) => {
+  try {
+    const bk = brandKey(user.brand);
+    const c = brandConfig(bk);
+    const loginLink = `${c.frontendUrl}/login`;
+    const subject = `You already have an account with ${c.name}`;
+    const firstName = (user.firstName || "there").toString();
+
+    // Per-brand palette (self-contained raw email — not dependent on DB-seeded templates).
+    const theme =
+      bk === "lineara"
+        ? { body: "#efe7d9", card: "#faf6ee", text: "#2c251e", heading: "#1f1b17", muted: "#6e6659", btnBg: "#1f1b17", btnText: "#faf6ee", footBg: "#f2ebe0", headingFont: "Georgia, 'Times New Roman', serif" }
+        : { body: "#f4f4f4", card: "#ffffff", text: "#333333", heading: "#111111", muted: "#666666", btnBg: "#111827", btnText: "#ffffff", footBg: "#f8f9fa", headingFont: "Arial, Helvetica, sans-serif" };
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${subject}</title>
+      </head>
+      <body style="margin:0;padding:0;background-color:${theme.body};font-family:Arial,Helvetica,sans-serif;">
+        <div style="max-width:600px;margin:0 auto;background:${theme.card};">
+          <div style="text-align:center;padding:24px 20px;">${c.headerHtml}</div>
+          <div style="padding:10px 30px 30px;color:${theme.text};font-size:15px;line-height:1.6;">
+            <h2 style="font-family:${theme.headingFont};color:${theme.heading};text-align:center;margin:0 0 24px;">You already have an account</h2>
+            <p>Hi ${firstName},</p>
+            <p>Someone (hopefully you) just tried to create a ${c.name} account with this email address. Good news — <strong>you already have one</strong>, so there's nothing more to set up.</p>
+            <div style="text-align:center;margin:28px 0;">
+              <a href="${loginLink}" style="display:inline-block;padding:12px 28px;background-color:${theme.btnBg};color:${theme.btnText} !important;text-decoration:none;border-radius:4px;font-weight:bold;">Sign in to your account</a>
+            </div>
+            <p style="color:${theme.muted};">Forgot your password? On the sign-in page, choose <strong>"Forgot password?"</strong> and we'll email you a secure reset link (it expires in one hour).</p>
+            <p style="color:${theme.muted};">If you didn't try to sign up, you can safely ignore this email — no changes were made to your account.</p>
+          </div>
+          <div style="background-color:${theme.footBg};padding:20px;text-align:center;font-size:13px;color:${theme.muted};">
+            <p style="margin:0 0 4px;">Questions? Contact us at ${c.storeEmail}</p>
+            ${c.storeAddress ? `<p style="margin:0;">${c.storeAddress}</p>` : ""}
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const from = getFromEmail("ACCOUNT_VERIFICATION", bk); // reuse the brand's Notifications sender
+    return await sendRawEmail(user.email, subject, htmlContent, null, from);
+  } catch (error) {
+    console.error("Error sending account-exists email:", error);
+    throw error;
+  }
+};
+
 // Send account verification email using database template
 const sendAccountVerificationEmail = async (user, verificationToken) => {
   try {
@@ -1695,6 +1755,7 @@ module.exports.sendLowInventoryAlert = sendLowInventoryAlert;
 module.exports.sendStockAlertEmail = sendStockAlertEmail;
 module.exports.sendPasswordResetEmail = sendPasswordResetEmail;
 module.exports.sendAccountVerificationEmail = sendAccountVerificationEmail;
+module.exports.sendAccountExistsEmail = sendAccountExistsEmail;
 module.exports.sendAbandonedCartEmail = sendAbandonedCartEmail;
 module.exports.processEmailWithTemplate = processEmailWithTemplate;
 module.exports.processEmailWithTemplateResend = processEmailWithTemplateResend;
