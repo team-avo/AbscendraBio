@@ -43,6 +43,43 @@ emailQueue.process(async (job) => {
     throw error;
   }
 });
+
+// Email-failure visibility. The worker above retries up to `attempts` times; without these
+// listeners a reset/confirmation email that NEVER sends (e.g. a bad recipient, Resend outage)
+// disappears into the retry machinery with no clear signal. These emit greppable `[EmailQueue]`
+// lines so an undelivered email is diagnosable from logs alone.
+const describeJob = (job) => {
+  try {
+    const d = job && job.data ? job.data : {};
+    const to = d.recipientEmail || d.to || (d.data && d.data.email) || 'unknown-recipient';
+    const kind = d.templateType || d.type || 'unknown';
+    return `type=${d.type || '?'} kind=${kind} to=${to}`;
+  } catch {
+    return 'undescribable-job';
+  }
+};
+
+emailQueue.on('failed', (job, err) => {
+  const attemptsMade = job && job.attemptsMade ? job.attemptsMade : 0;
+  const maxAttempts = (job && job.opts && job.opts.attempts) || 1;
+  const exhausted = attemptsMade >= maxAttempts;
+  const level = exhausted ? '[EmailQueue][PERMANENT-FAILURE]' : '[EmailQueue][retry]';
+  console.error(
+    `${level} job ${job && job.id} ${describeJob(job)} attempt ${attemptsMade}/${maxAttempts}: ${err && err.message}`
+  );
+  if (exhausted) {
+    console.error(`[EmailQueue][PERMANENT-FAILURE] This email was NOT delivered after ${maxAttempts} attempts. Manual follow-up required.`);
+  }
+});
+
+emailQueue.on('stalled', (job) => {
+  console.error(`[EmailQueue][stalled] job ${job && job.id} ${describeJob(job)} stalled and will be retried`);
+});
+
+emailQueue.on('error', (err) => {
+  console.error(`[EmailQueue][error] queue-level error: ${err && err.message}`);
+});
+
 // Add a job to the email queue
 const queueEmail = async (data) => {
   try {

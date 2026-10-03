@@ -62,16 +62,17 @@ const sendVerificationEmail = async (toEmail, firstName, verificationLink, brand
 
 const router = express.Router();
 
-// Generate JWT token
+// Generate JWT session token. Default 30d (was 365d — a year-long session is excessive); override
+// with JWT_EXPIRE. Password-reset tokens are issued separately and are short-lived (see below).
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || "365d",
+    expiresIn: process.env.JWT_EXPIRE || "30d",
   });
 };
 
 // Set auth cookie manually to support SameSite=None (express 4.16's cookie lib doesn't support it)
 const setAuthCookie = (res, token) => {
-  const maxAge = 365 * 24 * 60 * 60; // seconds
+  const maxAge = 30 * 24 * 60 * 60; // seconds — align with the 30d session token
   const expires = new Date(Date.now() + maxAge * 1000).toUTCString();
   res.setHeader(
     "Set-Cookie",
@@ -346,11 +347,13 @@ router.post(
       });
     }
 
-    // Generate short-lived token
+    // Generate a short-lived, single-purpose reset token (default 1h; override with
+    // RESET_TOKEN_EXPIRE). Do NOT reuse the long-lived session TTL for password resets.
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE || "365d",
+      expiresIn: process.env.RESET_TOKEN_EXPIRE || "1h",
     });
-    const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${encodeURIComponent(token)}`;
+    // NOTE: the actual reset link is built brand-aware inside sendPasswordResetEmail
+    // (Ascendra -> /reset-password, Lineará -> /login/reset). No link is constructed here.
 
     try {
       const { sendPasswordResetEmail } = require("../utils/emailService");

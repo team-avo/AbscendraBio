@@ -15,13 +15,23 @@ const port = process.env.PORT || 4000;
 const server = http.createServer(app);
 
 // Validate Critical Environment Variables at startup
-const requiredEnvVars = ['RESEND_API_KEY', 'JWT_SECRET'];
+const requiredEnvVars = ['RESEND_API_KEY', 'JWT_SECRET', 'DATABASE_URL'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
   logger.error('CRITICAL ERROR: The following environment variables are not set:');
   missingEnvVars.forEach(envVar => logger.error(`- ${envVar}`));
   logger.error('The application cannot start without these. Please set them and restart the server.');
+  process.exit(1);
+}
+
+// FRONTEND_URL must be a SINGLE origin — it is used to build password-reset links.
+// A comma-separated list (used for CORS) silently produced a broken reset URL in production.
+// CORS allow-lists belong in FRONTEND_CORS_URL / CORS_ORIGIN, not here.
+if (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes(',')) {
+  logger.error('CRITICAL ERROR: FRONTEND_URL must be a single origin, but it contains a comma:');
+  logger.error(`  FRONTEND_URL=${process.env.FRONTEND_URL}`);
+  logger.error('Put multi-origin CORS allow-lists in FRONTEND_CORS_URL / CORS_ORIGIN instead.');
   process.exit(1);
 }
 
