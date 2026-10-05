@@ -1686,9 +1686,19 @@ const sendNewOrderToSalesRep = async (order, customer, salesRepUser) => {
 };
 
 // Send login OTP email for passwordless authentication
-const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
+const sendLoginOtpEmail = async (toEmail, code, firstName = '', brand) => {
   try {
-    console.log('[Resend] Sending login OTP email to:', toEmail);
+    // Brand-aware: a Lineará user (brand === 'lineara') gets the Lineará wordmark, cream/espresso
+    // palette, a lineara.co sender, and sends via the Lineará Resend account (getClient). Unknown/
+    // absent brand -> Ascendra (unchanged). Before this, every OTP was hard-branded Ascendra.
+    const bk = brandKey(brand);
+    const c = brandConfig(bk);
+    console.log(`[Resend] Sending login OTP email to: ${toEmail} (brand=${bk})`);
+
+    const theme =
+      bk === "lineara"
+        ? { body: "#efe7d9", card: "#faf6ee", heading: "#1f1b17", muted: "#6e6659", chip: "#f6f1e7", code: "#1f1b17", hair: "#e4d7c8", headingFont: "Georgia, 'Times New Roman', serif" }
+        : { body: "#f6f7fb", card: "#ffffff", heading: "#111827", muted: "#6b7280", chip: "#f3f4f6", code: "#111827", hair: "#f0f0f0", headingFont: "Arial, Helvetica, sans-serif" };
 
     const html = `
       <!DOCTYPE html>
@@ -1698,27 +1708,27 @@ const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Your Login Code</title>
       </head>
-      <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7fb;">
-        <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff;margin:24px auto;border:1px solid #eee;border-radius:8px;overflow:hidden">
+      <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:${theme.body};">
+        <table align="center" cellpadding="0" cellspacing="0" width="600" style="background:${theme.card};margin:24px auto;border:1px solid ${theme.hair};border-radius:8px;overflow:hidden">
           <tr>
-            <td style="padding:24px 24px 0 24px;text-align:center;background:#ffffff;border-bottom:1px solid #f0f0f0;">
-              <img src="https://www.ascendrabio.com/logo.png" alt="Ascendra Bio" width="150" style="display:block;margin:0 auto;"/>
-              <h1 style="margin:16px 0 8px 0;color:#111827;font-size:22px;">Your Login Code</h1>
-              <p style="margin:0 0 24px 0;color:#6b7280;font-size:14px;">Hi ${firstName || 'there'}, use the code below to log in to your account.</p>
+            <td style="padding:24px 24px 0 24px;text-align:center;background:${theme.card};border-bottom:1px solid ${theme.hair};">
+              <div style="margin:0 auto 4px;">${c.headerHtml}</div>
+              <h1 style="margin:16px 0 8px 0;color:${theme.heading};font-size:22px;font-family:${theme.headingFont};">Your Login Code</h1>
+              <p style="margin:0 0 24px 0;color:${theme.muted};font-size:14px;">Hi ${firstName || 'there'}, use the code below to log in to your account.</p>
             </td>
           </tr>
           <tr>
             <td style="padding:32px 24px;text-align:center;">
-              <div style="background:#f3f4f6;border-radius:8px;padding:24px;display:inline-block;">
-                <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:#111827;font-family:monospace;">${code}</span>
+              <div style="background:${theme.chip};border-radius:8px;padding:24px;display:inline-block;">
+                <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:${theme.code};font-family:monospace;">${code}</span>
               </div>
-              <p style="margin:24px 0 0 0;color:#6b7280;font-size:14px;">This code will expire in <strong>15 minutes</strong>.</p>
-              <p style="margin:12px 0 0 0;color:#9ca3af;font-size:12px;">If you didn't request this code, you can safely ignore this email.</p>
+              <p style="margin:24px 0 0 0;color:${theme.muted};font-size:14px;">This code will expire in <strong>15 minutes</strong>.</p>
+              <p style="margin:12px 0 0 0;color:${theme.muted};font-size:12px;">If you didn't request this code, you can safely ignore this email.</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:16px 24px 24px 24px;color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #f0f0f0;">
-              © ${new Date().getFullYear()} Ascendra Bio. All rights reserved.
+            <td style="padding:16px 24px 24px 24px;color:${theme.muted};font-size:12px;text-align:center;border-top:1px solid ${theme.hair};">
+              © ${new Date().getFullYear()} ${c.name}. All rights reserved.
             </td>
           </tr>
         </table>
@@ -1726,10 +1736,11 @@ const sendLoginOtpEmail = async (toEmail, code, firstName = '') => {
       </html>
     `;
 
-    const response = await resend.emails.send({
-      from: 'Ascendra Bio | Notifications <notifications@ascendrabio.com>',
+    const client = resend.getClient(bk);
+    const response = await client.emails.send({
+      from: getFromEmail("ACCOUNT_VERIFICATION", bk), // brand's Notifications sender
       to: toEmail,
-      subject: `Your login code is ${code} for Ascendra Bio login`,
+      subject: `Your login code is ${code} for ${c.name} login`,
       html,
     });
 

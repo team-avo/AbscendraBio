@@ -1070,7 +1070,7 @@ router.post(
     try {
       const { sendLoginOtpEmail } = require("../utils/emailService");
       const firstName = user.customer?.firstName || user.firstName || "";
-      await sendLoginOtpEmail(user.email, code, firstName);
+      await sendLoginOtpEmail(user.email, code, firstName, user.brand);
     } catch (e) {
       console.error("[Email OTP] Failed to send email:", e?.message || e);
       return res.status(500).json({
