@@ -2116,6 +2116,7 @@ const createOrderHandler = asyncHandler(async (req, res) => {
     // Initialize discount amount
     let finalDiscountAmount = 0;
     let appliedCoupon = null;
+    let appliedPromotionKey = null; // affiliate offer's promotionKey, when a referral discount applies
 
     // Debug logging
     logger.debug("Order Creation Debug", {
@@ -2217,9 +2218,13 @@ const createOrderHandler = asyncHandler(async (req, res) => {
       computeReferralDiscount(affiliateOffer, itemsWithPrices, variants, brand) > 0
     ) {
       // Portal-driven affiliate offer: authoritative, never a client-supplied amount. Capped at
-      // subtotal. (promotionKey tracing on the order + conversion is a follow-up that needs a column.)
+      // subtotal. Record the offer's promotionKey on the order so the conversion report can trace it.
       const referral = computeReferralDiscount(affiliateOffer, itemsWithPrices, variants, brand);
       finalDiscountAmount = Math.min(referral, subtotal);
+      appliedPromotionKey =
+        affiliateOffer && typeof affiliateOffer.promotionKey === "string"
+          ? affiliateOffer.promotionKey
+          : null;
     } else {
       // Use the discount amount provided by frontend (when no coupon)
       const requestedManualDiscount =
@@ -2284,6 +2289,7 @@ const createOrderHandler = asyncHandler(async (req, res) => {
             affiliateClickId: affiliateClickId || null,
             affiliateSlug: affiliateSlug || null,
             affiliateClickedAt: affiliateClickedAt ? new Date(affiliateClickedAt) : null,
+            affiliatePromotionKey: appliedPromotionKey,
           },
         });
       } catch (error) {

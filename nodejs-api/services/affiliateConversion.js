@@ -143,6 +143,7 @@ async function reportPaidConversion(orderId, { occurredAt } = {}) {
     };
     if (order.affiliateSlug) payload.affiliateCode = order.affiliateSlug;
     if (order.affiliateClickId) payload.clickId = order.affiliateClickId;
+    if (order.affiliatePromotionKey) payload.promotionKey = order.affiliatePromotionKey;
     return await postEvent(payload);
   } catch (err) {
     logger.error(`[affiliate] reportPaidConversion(${orderId}) failed (non-fatal): ${err.message}`);
@@ -170,6 +171,7 @@ async function reportReversal(orderId, event, { items, note, occurredAt } = {}) 
       occurredAt: (occurredAt ? new Date(occurredAt) : new Date()).toISOString(),
       items: items || buildItems(order),
     };
+    if (order.affiliatePromotionKey) payload.promotionKey = order.affiliatePromotionKey;
     if (note) payload.note = note;
     return await postEvent(payload);
   } catch (err) {

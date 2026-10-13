@@ -702,6 +702,9 @@ model Order {
   affiliateClickId   String?
   affiliateSlug      String?
   affiliateClickedAt DateTime?
+  // Portal promotion key of the affiliate OFFER that discounted this order (null = no offer applied).
+  // Traces the sale on both sides; sent in the paid-conversion + reversal reports.
+  affiliatePromotionKey String?
 
   @@index([salesChannelId, partnerOrderId])
   @@index([affiliateId])
