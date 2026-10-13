@@ -236,7 +236,9 @@ router.post(
             lastName,
             role: "CUSTOMER",
             isActive: brand === "lineara", // Lineará auto-approved → active; Ascendra inactive until approval
-            brand: brand === "lineara" ? "lineara" : null,
+            // User.brand is NOT NULL (backfilled 2026-10-03) — an Ascendra signup must store "ascendra",
+            // not null (null used to mean Ascendra but now violates the constraint → register 500'd).
+            brand: brand === "lineara" ? "lineara" : "ascendra",
             customerId: customer.id,
           },
           select: {
