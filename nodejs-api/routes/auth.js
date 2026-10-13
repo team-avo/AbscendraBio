@@ -193,40 +193,47 @@ router.post(
               ...(mobile && mobile.trim() ? [{ mobile: mobile.trim() }] : []),
             ],
           },
+          include: { user: { select: { id: true } } },
         });
-        if (existingCustomer) {
+        // A customer already tied to a login is a real conflict. But a GUEST customer — one created by
+        // guest checkout, with no user and an email match — is CONVERTED into this new account instead
+        // of rejected, so the person's past guest order(s) (which reference this customerId) carry over.
+        const isGuestUpgrade =
+          existingCustomer && !existingCustomer.user && existingCustomer.email === email;
+        if (existingCustomer && !isGuestUpgrade) {
           throw new Error("Customer already exists with this email or mobile");
         }
 
         const wantsTransactional = smsTransactionalConsent === true;
         const wantsMarketing = smsMarketingConsent === true;
-        const customer = await tx.customer.create({
-          data: {
-            firstName,
-            middleName,
-            lastName,
-            companyName: trimmedCompanyName || null,
-            licenseNumber: trimmedLicenseNumber || null,
-            city: trimmedCity || null,
-            zip: trimmedZip || null,
-            email,
-            mobile: mobile && mobile.trim() ? mobile.trim() : null,
-            customerType: customerType || "B2C",
-            // Lineará AUTO-APPROVES (Peter 2026-08-12): the customer can order right after email
-            // verification, no admin gate. Ascendra stays manual (starts pending approval).
-            isActive: brand === "lineara",
-            isApproved: brand === "lineara",
-            approvalStatus: brand === "lineara" ? "APPROVED" : "PENDING",
-            // Lineará AUTO-VERIFIES at signup (Peter 2026-08-19): no email-verification step before
-            // login — cold traffic goes straight into the site. Login gates on customer.emailVerified,
-            // so setting it here is what removes the block. Ascendra still verifies by email.
-            emailVerified: brand === "lineara",
-            smsTransactionalConsent: wantsTransactional,
-            smsMarketingConsent: wantsMarketing,
-            smsConsentAt: wantsTransactional || wantsMarketing ? new Date() : null,
-            smsConsentSource: wantsTransactional || wantsMarketing ? "signup" : null,
-          },
-        });
+        const customerData = {
+          firstName,
+          middleName,
+          lastName,
+          companyName: trimmedCompanyName || null,
+          licenseNumber: trimmedLicenseNumber || null,
+          city: trimmedCity || null,
+          zip: trimmedZip || null,
+          email,
+          mobile: mobile && mobile.trim() ? mobile.trim() : null,
+          customerType: customerType || "B2C",
+          // Lineará AUTO-APPROVES (Peter 2026-08-12): the customer can order right after email
+          // verification, no admin gate. Ascendra stays manual (starts pending approval).
+          isActive: brand === "lineara",
+          isApproved: brand === "lineara",
+          approvalStatus: brand === "lineara" ? "APPROVED" : "PENDING",
+          // Lineará AUTO-VERIFIES at signup (Peter 2026-08-19): no email-verification step before
+          // login — cold traffic goes straight into the site. Login gates on customer.emailVerified,
+          // so setting it here is what removes the block. Ascendra still verifies by email.
+          emailVerified: brand === "lineara",
+          smsTransactionalConsent: wantsTransactional,
+          smsMarketingConsent: wantsMarketing,
+          smsConsentAt: wantsTransactional || wantsMarketing ? new Date() : null,
+          smsConsentSource: wantsTransactional || wantsMarketing ? "signup" : null,
+        };
+        const customer = isGuestUpgrade
+          ? await tx.customer.update({ where: { id: existingCustomer.id }, data: customerData })
+          : await tx.customer.create({ data: customerData });
 
         const createdUser = await tx.user.create({
           data: {
