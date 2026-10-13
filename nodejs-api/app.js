@@ -246,6 +246,9 @@ app.use("/api/storefront/products", publicProductsRouter);
 app.use("/api/scripts", authMiddleware, scriptsRoutes);
 app.use("/api/products", authMiddleware, productBulkRoutes);
 app.use("/api/cart", authMiddleware, cartRouter);
+// Public guest checkout (no auth) — MUST be mounted before the authMiddleware orders mount.
+// Only handles POST /api/orders/guest; everything else falls through to the authed router below.
+app.use("/api/orders", orderRoutes.publicGuestRouter);
 app.use("/api/orders", authMiddleware, orderRoutes);
 app.use("/api/inventory", authMiddleware, inventoryRoutes);
 app.use("/api/inventory-sync", authMiddleware, inventorySyncQuickRoutes);

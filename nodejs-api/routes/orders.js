@@ -1,4 +1,5 @@
 const express = require("express");
+const crypto = require("crypto");
 const logger = require("../utils/logger");
 const { body, param, query } = require("express-validator");
 const prisma = require("../prisma/client");
@@ -1689,11 +1690,11 @@ const allowCustomerCreateOr = (module, action) => (req, res, next) => {
   return requirePermission(module, action)(req, res, next);
 };
 
-// Create new order
-router.post(
-  "/",
-  allowCustomerCreateOr("ORDERS", "CREATE"),
-  [
+// Create new order.
+// The validators + handler are named/extracted here so the PUBLIC guest-order route
+// (mounted before authMiddleware in app.js) can reuse the identical order-creation logic.
+// The authenticated route is re-registered right after the handler definition below.
+const createOrderValidators = [
     body("customerId").isString().withMessage("Customer ID is required"),
     body("billingAddressId")
       .optional()
@@ -1763,8 +1764,9 @@ router.post(
     // own prices; this only accepts the shape, computeReferralDiscount() does the trusted math.
     body("affiliateOffer").optional({ nullable: true }).isObject(),
     validateRequest,
-  ],
-  asyncHandler(async (req, res) => {
+];
+
+const createOrderHandler = asyncHandler(async (req, res) => {
     const {
       customerId,
       billingAddressId,
@@ -2674,8 +2676,117 @@ router.post(
         warehouseSelection: warehouseSelectionInfo,
       },
     });
-  }),
+});
+
+// Authenticated order creation: a CUSTOMER placing their own order, or staff/admin with
+// ORDERS:CREATE. Behaviour is unchanged — this just references the extracted handler above.
+router.post(
+  "/",
+  allowCustomerCreateOr("ORDERS", "CREATE"),
+  createOrderValidators,
+  createOrderHandler,
 );
+
+/* ============================================================================
+   GUEST CHECKOUT (public) — see docs/GUEST-CHECKOUT-PLAN.md
+   A visitor can order without an account. This router is mounted at /api/orders
+   in app.js BEFORE the authMiddleware mount, so POST /api/orders/guest is public.
+   Protection: a BFF-only shared secret (the storefront verifies Turnstile + rate-limits
+   before calling us) + strict validation. Decision (confirmed): if the email already
+   belongs to a registered account, refuse with 409 ACCOUNT_EXISTS so the visitor signs
+   in instead of ordering "as" someone else. Reuses createOrderHandler verbatim.
+   ========================================================================== */
+
+// BFF-only guard: the storefront sends x-guest-order-secret. Fail CLOSED if the secret
+// isn't configured, so a missing env var can never expose an unauthenticated order endpoint.
+const guestOrderSecretGuard = (req, res, next) => {
+  const expected = process.env.GUEST_ORDER_API_SECRET;
+  if (!expected) {
+    logger.error("[GuestOrder] GUEST_ORDER_API_SECRET is not set — refusing guest orders (fail closed).");
+    return res.status(503).json({ success: false, error: "Guest ordering is not available right now." });
+  }
+  const provided = req.get("x-guest-order-secret") || "";
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    return res.status(401).json({ success: false, error: "Unauthorized." });
+  }
+  return next();
+};
+
+const guestOrderValidators = [
+  body("email").isEmail().withMessage("A valid email is required").bail()
+    .normalizeEmail({ gmail_remove_dots: false, gmail_remove_subaddress: false, gmail_convert_googlemaildotcom: false }),
+  body("firstName").isString().trim().notEmpty().withMessage("First name is required"),
+  body("lastName").isString().trim().notEmpty().withMessage("Last name is required"),
+  body("billingAddress").isObject().withMessage("Billing address is required"),
+  body("shippingAddress").isObject().withMessage("Shipping address is required"),
+  body("items").isArray({ min: 1 }).withMessage("At least one item is required"),
+  body("items.*.variantId").isString().withMessage("Variant ID is required for each item"),
+  body("items.*.quantity").isInt({ min: 1 }).withMessage("Quantity must be at least 1"),
+  body("items.*.unitPrice").isDecimal({ decimal_digits: "0,2" }).withMessage("Unit price must be a valid decimal"),
+  body("selectedPaymentType").optional().isIn(["ZELLE", "BANK_WIRE", "AUTHORIZE_NET"]).withMessage("Unsupported payment type"),
+  body("brand").optional({ nullable: true }).isIn(["ascendra", "lineara"]).withMessage("Unsupported brand"),
+  body("couponCode").optional().isString(),
+  body("affiliateId").optional({ nullable: true }).isString(),
+  body("affiliateClickId").optional({ nullable: true }).isString(),
+  body("affiliateSlug").optional({ nullable: true }).isString(),
+  body("affiliateClickedAt").optional({ nullable: true }).isISO8601(),
+  body("affiliateOffer").optional({ nullable: true }).isObject(),
+  validateRequest,
+];
+
+// Resolve (or create) the GUEST customer, then hand off to the shared createOrderHandler.
+// Collision rule: an email that belongs to a real login (a User, or a Customer linked to one)
+// is refused with 409 ACCOUNT_EXISTS — the storefront turns that into "please sign in".
+const prepGuestCustomer = asyncHandler(async (req, res, next) => {
+  const email = String(req.body.email || "").trim().toLowerCase();
+  const firstName = String(req.body.firstName || "").trim();
+  const lastName = String(req.body.lastName || "").trim();
+
+  // Belongs to a registered account? -> ask them to sign in.
+  const existingUser = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  const existingCustomer = await prisma.customer.findUnique({
+    where: { email },
+    select: { id: true, user: { select: { id: true } } },
+  });
+  if (existingUser || existingCustomer?.user) {
+    return res.status(409).json({
+      success: false,
+      code: "ACCOUNT_EXISTS",
+      error: "An account already exists for this email. Please sign in to place your order.",
+    });
+  }
+
+  // Reuse an existing guest customer (no login) for repeat guest orders; else create one.
+  let guest = existingCustomer
+    ? await prisma.customer.update({ where: { id: existingCustomer.id }, data: { firstName, lastName } })
+    : await prisma.customer.create({
+        data: {
+          email, firstName, lastName,
+          customerType: "B2C", // retail pricing tier for guests
+          isActive: true, isApproved: true, approvalStatus: "APPROVED",
+          emailVerified: false,
+        },
+      });
+
+  // Hand the shared handler exactly what it expects. No userId (guest), inline addresses only.
+  req.user = undefined;
+  req.body.customerId = guest.id;
+  // Make sure the shipping/billing snapshots carry the guest's name (the form may omit it per-address).
+  for (const k of ["billingAddress", "shippingAddress"]) {
+    if (req.body[k] && typeof req.body[k] === "object") {
+      if (!req.body[k].firstName) req.body[k].firstName = firstName;
+      if (!req.body[k].lastName) req.body[k].lastName = lastName;
+    }
+  }
+  return next();
+});
+
+const publicGuestRouter = express.Router();
+publicGuestRouter.post("/guest", guestOrderSecretGuard, guestOrderValidators, prepGuestCustomer, createOrderHandler);
+// Attach to `router` (not module.exports) so it survives the `module.exports = router` at EOF.
+router.publicGuestRouter = publicGuestRouter;
 
 // Calculate shipping rates for checkout with automatic warehouse selection
 router.post(
