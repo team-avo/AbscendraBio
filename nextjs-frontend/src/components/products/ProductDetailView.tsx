@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { api, type Product, resolveImageUrl, getPublicReportsForProduct, getPublicReportDownloadUrl, type ThirdPartyReport } from "@/lib/api";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
-import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, Lock, LogIn, FlaskConical, Dna, ArrowRight } from "lucide-react";
+import { ShieldCheck, Truck, Microscope, Award, Eye, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Check, FlaskConical, Dna, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Barlow } from "next/font/google";
@@ -68,7 +68,7 @@ const RELATED_PRODUCTS: Record<string, string[]> = {
 
 export default function ProductDetailView({ productId, isModal = false }: { productId: string; isModal?: boolean }) {
   const { add, items, update } = useCart();
-  const { user, isAuthenticated, openLoginModal } = useAuth();
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -223,7 +223,6 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
   const currentCartQty = cartItem?.quantity || 0;
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) { openLoginModal('customer'); return; }
     if (!ui.currentVariantId) { toast.error('Please select a variant'); return; }
     setAddingToCart(true);
     try {
@@ -243,61 +242,6 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
     try { await update(ui.currentVariantId, Math.max(0, newQty)); }
     catch (e: any) { toast.error(e.message || 'Failed to update'); }
   };
-
-  // ── Gate product detail behind login on ALL viewports (mobile + desktop) ──
-  if (!isAuthenticated) {
-    return (
-      <div className={`${isModal ? "bg-white w-full flex flex-col" : "force-light min-h-screen bg-white"} ${barlow.className}`}>
-        <div className={isModal ? "p-4" : "max-w-3xl mx-auto px-4 sm:px-6 py-10"}>
-          <div className="relative bg-[#043061] rounded-2xl overflow-hidden">
-            {/* Grid texture */}
-            <div
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: 'linear-gradient(rgba(77,125,242,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(77,125,242,0.6) 1px, transparent 1px)',
-                backgroundSize: '40px 40px',
-              }}
-            />
-            {/* Blue glow */}
-            <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[300px] h-[180px] bg-[#5A9ADA]/10 rounded-full blur-[100px] pointer-events-none" />
-
-            <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.08] border border-white/[0.10] flex items-center justify-center mx-auto mb-6">
-                <Lock className="w-7 h-7 text-white/80" />
-              </div>
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
-                <span className="text-[10px] font-bold tracking-[0.4em] text-[#5A9ADA] uppercase">Verified Researchers Only</span>
-                <span className="w-8 h-[1px] bg-[#5A9ADA]/50" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-lg mx-auto">
-                Sign in to view this peptide
-              </h1>
-              <p className="mt-4 text-sm sm:text-base text-white/60 max-w-md mx-auto leading-relaxed">
-                Product details, pricing, and Certificates of Analysis are available to verified researchers only.
-              </p>
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  onClick={() => openLoginModal?.('customer')}
-                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#043061] rounded-xl px-6 py-3 text-sm font-bold transition-all shadow-lg"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Sign In
-                </button>
-                <button
-                  onClick={() => openLoginModal?.('customer')}
-                  className="inline-flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.12] text-white rounded-xl px-6 py-3 text-sm font-semibold transition-all"
-                >
-                  Create an Account
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={`relative ${isModal ? "bg-white w-full h-[85vh] max-h-[800px] flex flex-col overflow-hidden" : "force-light min-h-screen bg-white"} ${barlow.className}`}>
@@ -518,25 +462,21 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-0.5">Price</p>
-                  {isAuthenticated ? (
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-[#043061] tabular-nums">
-                        ${(ui.price * quantity).toFixed(2)}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-[#043061] tabular-nums">
+                      ${(ui.price * quantity).toFixed(2)}
+                    </span>
+                    {ui.originalPrice && (
+                      <span className="text-xs text-gray-300 line-through tabular-nums">
+                        ${(ui.originalPrice * quantity).toFixed(2)}
                       </span>
-                      {ui.originalPrice && (
-                        <span className="text-xs text-gray-300 line-through tabular-nums">
-                          ${(ui.originalPrice * quantity).toFixed(2)}
-                        </span>
-                      )}
-                      {ui.isBulkPrice && (
-                        <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                          Bulk
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm font-bold text-gray-400">Sign in to see price</p>
-                  )}
+                    )}
+                    {ui.isBulkPrice && (
+                      <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                        Bulk
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Quantity stepper */}
@@ -601,8 +541,6 @@ export default function ProductDetailView({ productId, isModal = false }: { prod
                     <span className="flex items-center gap-2"><Check className="w-4 h-4" />Added to Cart</span>
                   ) : !ui.inStock ? (
                     'Out of Stock'
-                  ) : !isAuthenticated ? (
-                    <span className="flex items-center gap-2"><ShoppingCart className="w-4 h-4" />Sign in to Buy</span>
                   ) : (
                     <span className="flex items-center gap-2"><ShoppingCart className="w-4 h-4" />Add to Cart</span>
                   )}

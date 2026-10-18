@@ -52,7 +52,7 @@ export function ProductCard({
   onToggleFavorite,
   className = ""
 }: ProductCardProps) {
-  const { isAuthenticated, user, openLoginModal } = useAuth();
+  const { user } = useAuth();
   const { add, items, update } = useCart();
 
   const [addingToCart, setAddingToCart] = useState(false);
@@ -69,11 +69,6 @@ export function ProductCard({
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isAuthenticated) {
-      toast.info('Sign in to add items to your cart');
-      openLoginModal('customer');
-      return;
-    }
     if (!variantId) {
       toast.error('Product variation not found');
       return;
@@ -129,11 +124,7 @@ export function ProductCard({
             {/* Price badge */}
             <div className="absolute top-2.5 right-2.5 z-20">
               <div className="bg-[#043061]/90 text-white backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-lg min-w-[52px] flex items-center justify-center">
-                {isAuthenticated ? (
-                  <span className="text-[11px] font-black tabular-nums leading-none">${pricing.price.toFixed(2)}</span>
-                ) : (
-                  <span className="text-[8px] font-black uppercase tracking-wider opacity-60 leading-none">Login</span>
-                )}
+                <span className="text-[11px] font-black tabular-nums leading-none">${pricing.price.toFixed(2)}</span>
               </div>
             </div>
 

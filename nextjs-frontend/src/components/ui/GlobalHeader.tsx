@@ -339,11 +339,9 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                 <nav className="flex items-center space-x-1 lg:space-x-2 mr-2">
                   {isLandingRoute ? (
                     <>
-                      {isAuthenticated && (
-                        <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
-                          Products
-                        </Link>
-                      )}
+                      <Link href="/landing/products" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
+                        Products
+                      </Link>
                       <Link href="/landing/coas" className={`px-4 py-2 text-[13px] font-semibold rounded-full transition-all ${false ? 'text-white hover:text-white hover:bg-white/15' : 'text-gray-600 hover:text-[#043061] hover:bg-gray-50'}`}>
                         COAs
                       </Link>
@@ -586,16 +584,14 @@ export default function GlobalHeader({ onMenuClick: externalOnMenuClick }: Globa
                          Home
                        </Link>
 
-                       {/* Products — only for authenticated users */}
-                       {isAuthenticated && (
-                         <Link
-                           href="/landing/products"
-                           onClick={() => setMobileMenuOpen(false)}
-                           className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isProducts ? 'bg-gray-100 text-[#043061]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#043061]'}`}
-                         >
-                           Products
-                         </Link>
-                       )}
+                       {/* Products — public catalogue */}
+                       <Link
+                         href="/landing/products"
+                         onClick={() => setMobileMenuOpen(false)}
+                         className={`block px-4 py-3.5 text-center text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-colors ${isProducts ? 'bg-gray-100 text-[#043061]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#043061]'}`}
+                       >
+                         Products
+                       </Link>
 
                        <Link
                          href="/landing/coas"

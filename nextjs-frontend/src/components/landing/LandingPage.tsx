@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/auth-context';
 import { API_BASE_URL } from '@/lib/env';
 import logger from '@/lib/logger';
 import { branding } from '@/config/branding';
@@ -16,7 +15,6 @@ import { HeroBackground } from '@/components/ui/HeroBackground';
 const barlow = Barlow({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
 export default function LandingPage() {
-  const { isAuthenticated } = useAuth?.() || ({} as any);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<'customer' | 'admin'>('customer');
@@ -222,8 +220,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* PRODUCTS SECTION (authenticated only)       */}
       {/* ═══════════════════════════════════════════ */}
-      {isAuthenticated && (
-        <section className="py-16 bg-white relative">
+      <section className="py-16 bg-white relative">
           <div className="max-w-7xl mx-auto px-6 mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -247,7 +244,6 @@ export default function LandingPage() {
           </div>
           <ProductCarousel />
         </section>
-      )}
 
       {/* ═══════════════════════════════════════════ */}
       {/* UNIFIED TRUST SECTION                      */}

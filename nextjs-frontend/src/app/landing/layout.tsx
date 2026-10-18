@@ -3,7 +3,6 @@
 import React from "react";
 import { useEffect } from "react";
 import "./theme.css";
-import { ProtectedRoute } from "@/contexts/auth-context";
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
