@@ -226,9 +226,9 @@ export function CartSidebar({ trigger, open, onOpenChange }: CartSidebarProps) {
               className="w-full h-12 rounded-2xl bg-[#043061] hover:bg-[#0b4f96] text-white font-black uppercase tracking-widest text-[10px] shadow-lg transition-all duration-300"
               disabled={items.length === 0 || hasOutOfStockItems}
               onClick={() => {
-                if (!isAuthenticated) { setAuthOpen(true); return; }
                 handleOpenChange(false);
-                router.push('/landing/checkout');
+                // Guests check out without an account; signed-in customers use the account checkout.
+                router.push(isAuthenticated ? '/landing/checkout' : '/landing/checkout/guest');
               }}
             >
               {discount.isEligible
